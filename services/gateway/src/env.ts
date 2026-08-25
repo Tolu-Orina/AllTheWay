@@ -64,6 +64,17 @@ export const env = {
    *
    * Empty in development, where Vite proxies /api and the request is same-origin.
    */
+  /**
+   * Mail. Both must be present for production to send anything; either one
+   * missing leaves the mailer unconfigured, which throws on send rather than
+   * falling back to logging a credential to stdout.
+   *
+   * The key is mounted from Secret Manager by Cloud Run, so it exists in the
+   * process and nowhere else — not in the revision spec, not in Terraform.
+   */
+  resendApiKey: process.env.RESEND_API_KEY ?? "",
+  mailFrom: process.env.MAIL_FROM ?? "",
+
   webOrigins: (process.env.WEB_ORIGINS ?? "")
     .split(",")
     .map((o) => o.trim())

@@ -119,6 +119,30 @@ locals {
     # that untrue.
   }
 
+  # Per-service configuration that is not shared and not secret.
+  #
+  # MAIL_FROM belongs to the gateway alone: it is the only service that sends
+  # anything. Put in the common merge it would appear on all six, which reads
+  # as "any of these might send mail" to whoever looks at a revision next.
+  extra_env_vars = {
+    gateway = {
+      MAIL_FROM = var.mail_from
+    }
+  }
+
+  # Which secrets each service gets, by name. Empty for everything else: a
+  # service with no entry is mounted no secrets, which is the default that
+  # should require an edit to change.
+  #
+  # Conditional because an unconfigured mailer is a supported state — the
+  # gateway boots and serves every non-email route, and the email routes throw
+  # a clear error instead of logging codes to stdout.
+  secret_env_vars = var.resend_api_key_secret == "" ? {} : {
+    gateway = {
+      RESEND_API_KEY = var.resend_api_key_secret
+    }
+  }
+
   runtime_role_bindings = merge([
     for service, roles in local.service_roles : {
       for role in roles : "${service}:${role}" => {
@@ -184,7 +208,17 @@ module "service" {
     # ECONNREFUSED. Found by running the built gateway image against a
     # containerised orchestrator; nothing in a unit test can catch it.
     PUBLIC_URL = local.service_url[each.key]
-  }, local.peer_env_vars[each.key])
+
+  }, local.peer_env_vars[each.key], try(local.extra_env_vars[each.key], {}))
+
+  # Mounted, not passed. A secret env var is resolved by Cloud Run at container
+  # start from Secret Manager, so the value never appears in the service's
+  # Terraform config, its revision spec, or `gcloud run services describe`.
+  #
+  # Rotating the key is then a new secret *version* and a new revision, with no
+  # Terraform change at all — `version = "latest"` in the backend-service
+  # module is what makes that true.
+  secret_env_vars = try(local.secret_env_vars[each.key], {})
 }
 
 module "hosting" {

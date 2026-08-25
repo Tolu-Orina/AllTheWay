@@ -53,6 +53,22 @@ resource "google_identity_platform_config" "auth" {
     }
   }
 
+  lifecycle {
+    # Blocks the API populates with its own defaults whether or not they are
+    # declared here. Left alone they produce an identical "remove these"
+    # diff on every single plan — the same noise as the service-level
+    # `scaling` block in backend-service.
+    #
+    # Safe to ignore because neither is a control being relied on: phone
+    # sign-in has no client code and no route, and tenants are off. Turning
+    # either ON would be a deliberate change made here, and would then no
+    # longer be ignored drift — it would be a new declared value.
+    ignore_changes = [
+      multi_tenant,
+      sign_in[0].phone_number,
+    ]
+  }
+
   # Google sign-in needs an OAuth client id and secret, which cannot be created
   # by Terraform — the consent screen is a console flow. It is wired separately;
   # see google_identity_platform_default_supported_idp_config below.
@@ -87,14 +103,14 @@ data "google_firebase_web_app_config" "this" {
 # and password still work and the Google button fails with a clear provider
 # error instead of a blank page.
 resource "google_identity_platform_default_supported_idp_config" "google" {
-  count = var.google_oauth_client_id == "" ? 0 : 1
+  count = var.google_oauth_secrets == null ? 0 : 1
 
   provider = google-beta
   project  = var.project_id
 
   idp_id        = "google.com"
-  client_id     = var.google_oauth_client_id
-  client_secret = var.google_oauth_client_secret
+  client_id     = data.google_secret_manager_secret_version.google_oauth_client_id[0].secret_data
+  client_secret = data.google_secret_manager_secret_version.google_oauth_client_secret[0].secret_data
   enabled       = true
 
   depends_on = [google_identity_platform_config.auth]

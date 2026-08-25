@@ -70,21 +70,45 @@ variable "gemini_model" {
   default     = "gemini-3.7-flash"
 }
 
-variable "google_oauth_client_id" {
+variable "google_oauth_secrets" {
   description = <<-EOT
-    OAuth client id for Google sign-in. Empty disables the provider.
+    Secret Manager secret *names* holding the OAuth client id and secret for
+    Google sign-in. Null disables the provider.
 
-    The consent screen and OAuth client are console-only flows, so this is not
-    created by Terraform. Left empty, email and password still work and the
-    Google button fails with a provider error rather than silently doing nothing.
+    Names, not values: the consent screen and OAuth client are console-only
+    flows, so these are created by hand and referenced here. Passing the
+    credentials themselves would put them in tfvars and in every plan output.
+
+    Left null, email and password still work and the Google button fails with a
+    provider error rather than silently doing nothing.
+  EOT
+  type = object({
+    client_id     = string
+    client_secret = string
+  })
+  default = null
+}
+
+variable "resend_api_key_secret" {
+  description = <<-EOT
+    Secret Manager secret name holding the Resend API key. Empty leaves the
+    gateway's mailer unconfigured.
+
+    Unconfigured is a real, safe state: createMailer() returns a mailer that
+    throws on send rather than one that logs codes to stdout, so email routes
+    fail loudly and every other route keeps working.
   EOT
   type        = string
   default     = ""
 }
 
-variable "google_oauth_client_secret" {
-  description = "OAuth client secret for Google sign-in. Paired with google_oauth_client_id."
+variable "mail_from" {
+  description = <<-EOT
+    The From address for verification and reset mail, e.g.
+    "AllTheWay <no-reply@rinegansolutions.com>".
+
+    Its domain must be verified in Resend or delivery is rejected at send time.
+  EOT
   type        = string
   default     = ""
-  sensitive   = true
 }

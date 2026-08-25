@@ -62,3 +62,24 @@ variable "firestore_location" {
   type        = string
   default     = "europe-west1"
 }
+
+variable "google_oauth_secrets" {
+  description = "Secret Manager secret names for the Google sign-in OAuth client. Null disables the provider. See modules/stack/variables.tf."
+  type = object({
+    client_id     = string
+    client_secret = string
+  })
+  default = null
+}
+
+variable "resend_api_key_secret" {
+  description = "Secret Manager secret name holding the Resend API key. Empty leaves the mailer unconfigured."
+  type        = string
+  default     = ""
+}
+
+variable "mail_from" {
+  description = "From address for verification and reset mail. Its domain must be verified in Resend."
+  type        = string
+  default     = ""
+}
