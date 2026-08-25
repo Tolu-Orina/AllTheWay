@@ -19,6 +19,23 @@
 #
 # Installing at the root also runs the root `postinstall`, which builds
 # contracts to the JavaScript that web actually imports.
+#
+# ## Why web/package.json declares Linux binaries it never imports
+#
+# npm records only the *building* platform's binding for a package's
+# platform-specific optionalDependencies (npm/cli#4828). The lockfile was
+# generated on Windows, so `npm ci` on this Linux worker could not install
+# bindings the lockfile never mentioned — oxlint, rolldown, rollup, tailwind's
+# oxide, lightningcss and sharp all failed this way, one build at a time.
+#
+# Declaring each `-linux-x64-gnu` package explicitly puts it in the lockfile.
+# They are *optional*, so Windows and macOS skip them on an os/cpu mismatch
+# rather than failing. Only `-gnu` variants: this image is Debian (glibc), not
+# Alpine (musl).
+#
+# The alternative is `npm install` instead of `npm ci`, which resolves per
+# platform correctly — at the cost of the lockfile no longer being authoritative,
+# which is the guarantee that makes CI reproducible.
 
 substitutions:
   _SITE_ID: alltheway-dev
