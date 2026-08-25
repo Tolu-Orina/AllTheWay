@@ -106,12 +106,24 @@ steps:
         # Only the gateway is reachable from here. Anything else would be
         # testing the network, not the service.
         if [ "${_SERVICE}" = "gateway" ]; then
-          CODE=$$(curl -s -o /dev/null -w '%{http_code}' --max-time 30 "$$URL/healthz")
+          # The trailing slash is load-bearing, not a typo.
+          #
+          # Google's frontend on *.run.app intercepts the exact path /healthz and
+          # returns its own 404 — the request never reaches the container, which
+          # was proven by it appearing in no log while /api/sessions from the
+          # same probe did. /healthz/ is passed through, and Express matches it
+          # to the same route because strict routing is off.
+          #
+          # Note this trick does NOT transfer to the Python services: FastAPI
+          # redirects /healthz/ to /healthz with a 307, straight back into the
+          # intercepted path. They are internal-only and not probed here, but a
+          # future external check on one of them needs a different route.
+          CODE=$$(curl -s -o /dev/null -w '%{http_code}' --max-time 30 "$$URL/healthz/")
           if [ "$$CODE" != "200" ]; then
-            echo "smoke FAILED: $$URL/healthz returned $$CODE"
+            echo "smoke FAILED: $$URL/healthz/ returned $$CODE"
             exit 1
           fi
-          echo "smoke ok: $$URL/healthz -> 200"
+          echo "smoke ok: $$URL/healthz/ -> 200"
         fi
 
 images:

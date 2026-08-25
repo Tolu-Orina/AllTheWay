@@ -6,6 +6,19 @@
 #
 # Triggered per branch (develop -> dev site, main -> prod site) with _SITE_ID
 # supplied by the trigger, so this file is identical for both environments.
+#
+# ## Everything runs from the repo root, not from web/
+#
+# `web/src` imports `@alltheway/contracts`, a sibling workspace. It is not in
+# web's own package.json and not in web's lockfile — it resolves locally only
+# because npm workspaces hoists it into the *root* node_modules.
+#
+# So `npm ci` with `dir: web` installs an isolated tree where that package does
+# not exist, and the build fails at the first import. Same lesson as the service
+# images: a workspace member cannot be built from inside its own directory.
+#
+# Installing at the root also runs the root `postinstall`, which builds
+# contracts to the JavaScript that web actually imports.
 
 substitutions:
   _SITE_ID: alltheway-dev
@@ -17,28 +30,34 @@ options:
 steps:
   - id: install
     name: node:22-slim
-    dir: web
     entrypoint: npm
     # `npm ci` not `npm install`: fails loudly if the lockfile is out of date
     # rather than silently resolving different versions than we tested.
+    # No `dir:` — this is the workspace root, which is the point.
     args: ["ci", "--no-audit", "--no-fund"]
 
   - id: lint
     name: node:22-slim
-    dir: web
     entrypoint: npm
-    args: ["run", "lint"]
+    args: ["run", "lint", "--workspace", "web"]
 
   - id: build
     name: node:22-slim
-    dir: web
-    entrypoint: npm
-    args: ["run", "build"]
+    entrypoint: bash
+    args:
+      - -c
+      - |
+        set -euo pipefail
+        # Contracts first, explicitly. The root postinstall already does this,
+        # but relying on a lifecycle hook for a build-order dependency means a
+        # future `--ignore-scripts` breaks the build in a way nobody expects.
+        npm --workspace @alltheway/contracts run build
+        npm --workspace web run build
 
   # Bind the single hosting config to this environment's site, then deploy it.
   # One config for both environments means dev and prod cannot drift apart.
-  # Deploys from the repo root: firebase.json lives there, because Firestore,
-  # Auth and Hosting are all workspace-wide concerns.
+  # firebase.json lives at the root, because Firestore, Auth and Hosting are all
+  # workspace-wide concerns.
   - id: deploy
     name: node:22-slim
     entrypoint: bash

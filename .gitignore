@@ -59,3 +59,9 @@ desktop.ini
 
 # Local connector credentials. Never committed; Secret Manager in deployed envs.
 .secrets/
+
+# Local service run logs. These are uvicorn/npm output from running the stack on
+# a developer machine — they change on every run, and five of them were tracked
+# before this rule existed.
+**/boot.log
+**/preview.log
