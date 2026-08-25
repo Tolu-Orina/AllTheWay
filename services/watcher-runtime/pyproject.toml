@@ -5,6 +5,9 @@ requires-python = ">=3.11"
 dependencies = [
   # Shared, installed from the local wheelhouse in the image.
   "alltheway-policy",
+  # Identity for service-to-service A2A calls. Without it, every
+  # internal call is rejected by Cloud Run in a deployed environment.
+  "alltheway-agentauth",
   # Mandatory screening of untrusted external content (manifest risk table).
   "alltheway-screening",
   "fastapi>=0.115",
@@ -25,4 +28,4 @@ test = ["pytest>=8.0"]
 [tool.pytest.ini_options]
 # The shared autonomy floor. Installed properly in the image; on the path
 # here so the suite runs without an editable install step.
-pythonpath = [".", "../../libs/policy/src", "../../libs/screening/src"]
+pythonpath = [".", "../../libs/policy/src", "../../libs/screening/src", "../../libs/agentauth/src"]

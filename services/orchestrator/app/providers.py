@@ -206,6 +206,6 @@ def create_provider() -> ModelProvider:
             # `global` is where current Gemini Flash models are reachable, and is
             # independent of the Cloud Run region.
             location=os.environ.get("GOOGLE_CLOUD_LOCATION", "global"),
-            model=os.environ.get("GEMINI_MODEL", "gemini-3.6-flash"),
+            model=os.environ.get("GEMINI_MODEL", "gemini-3.7-flash"),
         )
     return FakeProvider()

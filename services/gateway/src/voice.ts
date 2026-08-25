@@ -20,11 +20,15 @@ import { env } from "./env.js";
  *
  * ## Why this is behind an interface
  *
- * Minting a real ephemeral token requires Vertex credentials, which do not
- * exist in development. The fake mints something structurally identical and
- * obviously useless, so the whole flow — auth, TTL, refusal, the browser code
- * that consumes it — runs and is tested with no GCP project. The real minter is
- * one environment variable away and changes nothing above this file.
+ * The fake mints something structurally identical and obviously useless, so the
+ * whole flow — auth, TTL, refusal, the browser code that consumes it — runs and
+ * is tested with no GCP project.
+ *
+ * The production implementation turned out not to be a swap of this class:
+ * Vertex does not issue ephemeral Live API tokens at all (see below). The
+ * interface still earns its place — it is what keeps the refusal explicit and
+ * the development path honest — but the real voice path will mediate the
+ * session server-side rather than hand the browser a credential.
  */
 
 export type EphemeralToken = {
@@ -64,16 +68,26 @@ class FakeTokenMinter implements TokenMinter {
 
 class VertexTokenMinter implements TokenMinter {
   async mint(sessionId: string, _userId: string): Promise<EphemeralToken> {
-    // Deliberately unimplemented rather than approximated.
+    // Not unimplemented — not available.
     //
-    // Vertex mints Live API auth tokens through the GenAI SDK, scoped and
-    // time-boxed by the service's own ADC identity. Writing that against no
-    // project would produce code that compiles, has never run, and would be
-    // trusted because it looks finished. It lands with Phase 0, when there is a
-    // project to verify it against.
+    // Tested against the real project on 2026-08-25: the GenAI SDK's
+    // `auth_tokens.create()` refuses with "This method is only supported in the
+    // Gemini Developer client." Ephemeral Live API tokens exist for the Gemini
+    // Developer API, which authenticates with an AI Studio key — explicitly
+    // ruled out for this product.
+    //
+    // So the browser cannot hold a short-lived Vertex credential, and the
+    // plan's "mint a token per session" shape does not apply here. The route
+    // that does is the one the architecture doc already prescribes (§3.8): a
+    // server-side mediator holding the Live API session, with the browser
+    // talking to us rather than to Google. The browser then needs no model
+    // credential at all, which is a stronger position than a short-lived one.
+    //
+    // Left throwing on purpose. A plausible-looking mint call that has never
+    // succeeded would be trusted precisely because it looks finished.
     throw new Error(
-      `No ephemeral token minter is configured for production. ` +
-        `Voice is unavailable for session ${sessionId}.`,
+      `Ephemeral Live API tokens are not available on Vertex; voice needs a ` +
+        `server-side session mediator. Voice is unavailable for session ${sessionId}.`,
     );
   }
 }

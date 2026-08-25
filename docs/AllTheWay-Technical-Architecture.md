@@ -318,7 +318,7 @@ visible alongside the original design.
   separated by Terraform workspace, `develop` → dev and `main` → prod. Cloud
   Deploy's promotion model would add per-pipeline cost for machinery this shape
   does not use.
-- **Vertex endpoint is `global`**, pinned to `gemini-3.6-flash`. Independent of
+- **Vertex endpoint is `global`**, pinned to `gemini-3.7-flash`. Independent of
   the Cloud Run region (`europe-west1`). `global` carries no EU data residency;
   if that becomes a requirement the endpoint moves and the model pins back to a
   DRZ-supported one.

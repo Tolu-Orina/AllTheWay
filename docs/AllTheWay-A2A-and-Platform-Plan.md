@@ -1,6 +1,6 @@
 # AllTheWay — A2A & Platform Implementation Plan
 
-**Status:** Phases 1–6 delivered (2026-08-25; voice and Model Armor partial); Phases 0, 7–9 proposed · **Date:** 2026-08-25 · **Assumes:** a GCP project exists, billing enabled, `gcloud auth application-default login` done.
+**Status:** Phases 0–6 delivered (2026-08-25; Live API and Model Armor still pending) · Phases 7–9 proposed · **Date:** 2026-08-25 · **Project:** `alltheway-rinegan` (`678063096671`), org `conquerorfoundation.com`, europe-west1.
 
 Covers the gap between what is built today and the Production Roadmap's phases 5–10, with **A2A at every internal boundary** as the load-bearing first phase.
 
@@ -8,18 +8,23 @@ Covers the gap between what is built today and the Production Roadmap's phases 5
 
 ## 0. Where we are
 
-| Built | Not built |
+Bootstrap and the prod stack are applied. Both Terraform roots plan clean.
+
+| Live in `alltheway-rinegan` | Still to do |
 |---|---|
-| `web` (marketing + `/app`, auth, 5 screens) | Research Cell |
-| `gateway` (Express, Firebase ID tokens, Firestore repos, Pub/Sub publisher) | Voice (Pillar 2 entire) |
-| `orchestrator` (Clarify Gate → Plan, FakeProvider) | Streaming |
-| `watcher-runtime` (autonomy floor, 22 tests) | Connectors / MCP / Model Armor |
-| `profile-synthesizer` (idempotent, ledger-safe) | Agent Registry, monetization, multi-region |
-| `infra` (Terraform, validated, never applied) | Dockerfiles → **CI cannot build anything** |
+| 6 Cloud Run services, Firestore `(default)` in europe-west1 | Live API session (Phase 5) |
+| Artifact Registry, GCS state bucket, 14 Cloud Build triggers | Model Armor REST call (Phase 6) |
+| Firebase Hosting + `alltheway.rinegansolutions.com` (CNAME, TLS) | Hosting content — the `web` trigger has not fired |
+| Least-privilege IAM per runtime identity | Agent Registry, monetization, multi-region (7–9) |
+| `USE_VERTEX=true`, `gemini-3.7-flash` pinned and measured against the live API | Action labelling is unreliable — see Phase 0 |
 
-**The critical deviation:** internal calls are plain HTTP+JSON. The architecture doc mandates A2A (JSON-RPC 2.0 + SSE, AgentCard discovery) at every inter-agent boundary. Phase 1 fixes this, and everything after depends on it.
+**Deployed from CI:** `gateway`, `watcher-runtime`, `connector-gateway` (commit
+`741b571`). The other three still run the placeholder image because their
+directories were unchanged — the path filters working as intended, not a
+failure.
 
----
+**The critical deviation is closed.** Every internal call is A2A, and as of
+Phase 1 item 1.4 every one carries a Google-signed identity token.
 
 ## Research basis
 
@@ -41,22 +46,88 @@ Findings that shaped the plan, verified against current sources:
 
 ---
 
-## Phase 0 — Make it real *(0.5 day)*
+## Phase 0 — Make it real — **DELIVERED**
 
-**Goal:** the existing stack runs against the real project.
+Applied against `alltheway-rinegan`. Bootstrap: 111 resources, state migrated to
+`gs://alltheway-rinegan-tfstate`. Prod stack: 34 resources. Both plan clean.
 
-1. Point `.env` at the real project; drop `FIRESTORE_EMULATOR_HOST` / `FIREBASE_AUTH_EMULATOR_HOST`; ensure `ALLOW_ANONYMOUS` is unset.
-2. Apply `infra/bootstrap`, then `infra` for the `dev` workspace.
-3. Set `USE_VERTEX=true` on the orchestrator and make the **first real Gemini call**. Verify `/healthz` reports `VertexProvider`, not `FakeProvider`.
-4. **Firestore indexes** — correcting my earlier overstatement: single-field `orderBy` is auto-indexed, so today's queries need nothing. The real work is:
-   - add `firestore.indexes.json` and reference it from `firebase.json`, so indexes are code before the first query that needs one;
-   - declare the composite we *will* need: `runs` on `(watcherId ASC, at DESC)`;
-   - add a **single-field exemption** for `sessions.plan` (an array of objects that would otherwise be indexed per element for no benefit);
-   - add a **TTL policy** on `authCodes.createdAt` so expired verification codes are garbage-collected rather than accumulating.
+1. ✅ Config comes from Terraform, not `.env` — emulator hosts are absent in
+   prod by construction rather than by remembering to unset them.
+2. ✅ `infra/bootstrap` then `infra`, **prod** workspace (dev deferred; the user
+   chose prod-via-`main` first).
+3. ✅ `USE_VERTEX=true` and `GEMINI_MODEL=gemini-3.7-flash`, set in Terraform so
+   the deployed value is reviewable rather than implicit in `providers.py`.
+4. ✅ Firestore indexes as code — `firestore.indexes.json`, referenced from
+   `firebase.json`, plus a TTL policy in Terraform.
 
-**Exit:** a real Gemini-produced plan renders in `/app`, from real Firestore, with a real ID token.
+### The model pin was measured, not assumed
 
----
+Both candidates were run against this project before choosing. `gemini-2.0-flash`
+**404s on the `global` endpoint**, so the pin is load-bearing rather than
+decorative.
+
+| | 3.6-flash | 3.7-flash |
+|---|---|---|
+| median latency (n=5) | 4802 ms | **3691 ms** |
+| spread | 2923–7111 | **3311–5264** |
+| schema validity | 5/5 | 5/5 |
+| gate behaviour | correct | correct |
+
+Pinned to **3.7-flash** on the tighter spread as much as the median: the max
+drops from 7.1s to 5.3s, and the maximum is what someone watching a plan build
+actually experiences.
+
+### Two findings that outlive the model choice
+
+**The real model does not stream incrementally.** Called the way the orchestrator
+calls it, it emits the whole document in 3–4 chunks at the end — every plan step
+was released within ~400ms of the others. Phase 2's machinery is correct and the
+invariants hold, but the plan panel will sit empty and then fill at once rather
+than filling in. `FAKE_STREAM_DELAY_MS` made the fake look like progressive
+delivery that the real model does not provide.
+
+**Action labelling is unreliable, and the confirm gate depends on it.** On
+explicitly risky prompts ("pay the invoice", "delete the draft and send the
+final"), *both* models marked an irreversible action in only **8 of 12 runs**. A
+third of the time the plan comes back with nothing flagged, so FR-V2's gate does
+not fire and the user is never asked.
+
+This is not a model-selection problem — the two are identical on it — and it is
+not fixed by switching. The layered design still holds at the point of effect:
+the connector gateway classifies severity from its **own registry**, never from
+the model, so an unlabelled step cannot execute unchecked. What is lost is the
+*warning*, which is the part the user sees. Addressing it needs a validation
+pass over the returned plan rather than trust in the model's own labelling.
+
+### Item 4 as written would have broken email verification
+
+The plan said a TTL on `authCodes.createdAt`. Firestore deletes a document *at
+the time held in its TTL field* — and `createdAt` is always in the past, so every
+verification code would have been deleted the instant it was written. The
+symptom reads as "verification is broken", not "the TTL field is wrong".
+
+Implemented on a new `expiresAt` field instead. The TTL is garbage collection,
+not the security control: `verifyCode` still enforces the ten-minute window
+itself, because TTL deletion is best-effort and can lag by hours.
+
+### Two gaps that would have failed silently in production
+
+**Runtime identities had no permissions.** Bootstrap grants a baseline (pull an
+image, write logs and traces) and says the rest "belongs in envs/*" — where it
+had never been written. Every service would have 403'd on its first real call:
+no Vertex for the orchestrator, no Firestore for the gateway, no Secret Manager
+for the connector gateway. Now derived per service from what its code actually
+imports.
+
+**Pub/Sub push could not deliver.** Two grants missing, both invisible until a
+message is published: Pub/Sub's service agent could not mint a token as the
+consumer's identity, and that identity was not in the consumer service's invoker
+list — `invoker_graph` grants the orchestrator, but the caller here is the
+consumer itself.
+
+**Exit:** met for infrastructure and configuration. The end-to-end assertion — a
+real Gemini plan rendering in `/app` — waits on the orchestrator deploying (its
+directory has now changed) and on Hosting content.
 
 ## Phase 1 — A2A at every internal boundary — **DELIVERED**
 
@@ -86,9 +157,36 @@ Today it is a pure function behind FastAPI. `to_a2a()` expects an ADK agent. Wor
   `INPUT_REQUIRED` → `decision: "clarify"`, `COMPLETED` → `decision: "plan"`, `FAILED`/`REJECTED` → typed `ApiError`.
   This keeps `services/contracts` stable, so **no web changes are needed in this phase**.
 
-### 1.4 Authentication between agents
+### 1.4 Authentication between agents — **DELIVERED (2026-08-25)**
 
-Use `HTTPAuthSecurityScheme` (bearer) carrying **Google-signed OIDC ID tokens** — the same identity model Terraform already provisions (`run.invoker` granted per caller SA). Each agent validates the token's audience and issuer, so the A2A layer and the IAM layer agree rather than duplicating.
+Deferred through Phases 1–5 on the grounds that there was no real identity to
+verify against. Once there was, it turned out not to be hardening at all: **no
+A2A client attached any credential**, so every internal call in the deployed
+system would have failed. Cloud Run rejects unauthenticated requests to
+`INGRESS_TRAFFIC_INTERNAL_ONLY` services, and locally nothing required auth —
+which is exactly why four phases passed without noticing.
+
+- **Gateway** (`src/a2a.ts`): a `fetchImpl` that mints an identity token per
+  audience, passed to both the transport factory *and* the card resolver — the
+  card fetch is a request to the same closed service and happens first.
+- **Python** (`libs/agentauth`): shared by the orchestrator and the watcher
+  runtime, so there is one auth path rather than two that drift.
+
+**Verification is Cloud Run's, deliberately.** It checks signature, issuer and
+audience and enforces IAM *before* the request reaches the container — stronger
+than an in-process check, which a compromised process could skip. The card's
+`HTTPAuthSecurityScheme` (bearer) is an honest description of that: the A2A
+layer and the IAM layer agree rather than duplicating.
+
+**It degrades rather than refusing.** With no token available the call goes out
+unauthenticated — because on a laptop there is no metadata server and the local
+services require nothing, while in production Cloud Run rejects it anyway.
+Failing hard would defend a boundary the platform already defends, at the cost
+of making the stack unrunnable offline.
+
+The audience is the callee's base URL, so tokens are minted per target. One
+global token would be rejected by every service except the one it was minted
+for, and the failure would look like a permissions bug.
 
 **Do not** use API keys. There is no key to leak in this architecture and adding one would create the first.
 
@@ -224,7 +322,7 @@ The gate still runs first, so an ambiguous request never spends a swarm's budget
 
 ---
 
-## Phase 4 — Ship it — **DELIVERED (images), BLOCKED (deploy)**
+## Phase 4 — Ship it — **DELIVERED**
 
 Five multi-stage images, all distroless and non-root, all building from the repo
 root, each gated by a `test` target that fails the build. `npm run docker:build`
@@ -238,7 +336,10 @@ builds and tests every one locally, exactly as Cloud Build does.
 | profile-synthesizer | 219 MB | 5 tests |
 | watcher-runtime | 231 MB | 22 tests |
 
-Full reasoning in [decisions/0003](decisions/0003-service-images.md).
+Full reasoning in [decisions/0003](decisions/0003-service-images.md). The
+bootstrap decisions taken while applying this live are recorded in
+[decisions/0004](decisions/0004-org-policy-exemption-for-public-gateway.md)
+and [decisions/0005](decisions/0005-service-to-service-identity.md).
 
 ### Corrections to the plan as written
 
@@ -282,17 +383,47 @@ preserves the rule (never log a code in production) without the blast radius.
   research delegation working across them — the deployment topology, not a
   simulation of it.
 
-### Not done — needs the GCP project
+### Deploy, proven (2026-08-25)
 
-Connecting GitHub to Cloud Build is a one-time manual step, and the deploy and
-smoke stages cannot run without a project. The exit criterion ("a commit to
-`develop` builds, tests, deploys, passes smoke") is therefore met for build and
-test, and unmet for deploy and smoke. This is the same boundary Phase 0 sits
-behind.
+A push to `main` fired 3 of 7 triggers — only the services whose directories
+changed, which is `included_files` working rather than a failure — and each ran
+`test → build → push → deploy` green. `gateway`, `watcher-runtime` and
+`connector-gateway` now run images tagged with the commit SHA.
+
+**Cloud Build is 2nd-gen, not 1st.** The legacy `github {}` block needs a
+"repository mapping" the current console no longer reliably creates; connecting
+the repo left no mapping and all 14 triggers failed with
+`Repository mapping does not exist`. Migrated to
+`google_cloudbuildv2_connection` + `repository`, which makes the connection a
+Terraform resource instead of a console step someone has to remember.
+
+### The smoke step was wrong twice
+
+It failed on every build, *after* a successful deploy:
+
+1. **`gcloud auth print-identity-token` does not work in Cloud Build.** The
+   build runs as a service account whose ID tokens come from the metadata server
+   and need an audience; there is no user credential to mint from.
+2. **An HTTP probe could not have worked anyway.** Five of six services are
+   internal-only and the default build pool is outside the VPC, so the probe
+   would fail on services that deployed perfectly.
+
+Rewritten to assert the revision reached Ready and serves all traffic — which
+Cloud Run only grants after the container starts and passes its probe — and to
+make the HTTP call only for the public gateway.
+
+### Google's frontend swallows `/healthz`
+
+`GET /healthz` on `*.run.app` returns Google's 404 page and **never reaches the
+container** (proven: the request appears in no log, while `/api/sessions` from
+the same probe does). `/healthz/` with a trailing slash returns `{"ok":true}`.
+
+This matters because `/healthz` is the health path on all six services. Nothing
+in the platform announces it.
 
 ---
 
-## Phase 5 — Voice — **DELIVERED (gates), BLOCKED (Live API)**
+## Phase 5 — Voice — **DELIVERED (gates); Live API needs a different shape**
 
 **Goal:** talk to it; it confirms before acting. The two rules that make speech
 different from typing are done, tested and verified in a browser. The audio
@@ -358,16 +489,37 @@ summary says what will happen and why; there is a visible way to refuse; the
 sending step is badged in the plan itself; declining posts 201, says nothing was
 done, and reaches the Feedback Ledger as `declined`.
 
-### Not done — needs the GCP project
+### Items 1 and 2 cannot be built as written
 
-- **The Live API WebSocket session** (item 2). The ephemeral-token endpoint,
-  its TTL and its refusal path are built and exercised; `VertexTokenMinter`
-  deliberately throws rather than approximating a minting call that has never
-  run. Writing it now would produce code that compiles, has never executed, and
-  would be trusted because it looks finished.
-- **Item 3** (single Orchestrator context) is satisfied by construction: the
-  orchestrator already delegates research as a Plan Panel step rather than
-  mid-turn, which is exactly what the constraint requires.
+Tested against the real project on 2026-08-25:
+
+```
+client.auth_tokens.create()
+  -> "This method is only supported in the Gemini Developer client."
+```
+
+**Vertex does not issue ephemeral Live API tokens.** They exist for the Gemini
+Developer API, which authenticates with an AI Studio key — explicitly ruled out
+for this product. So "the gateway mints a short-lived Live API token, the
+browser opens a WebSocket to Google" has no implementation on our stack.
+
+This is not a blocker so much as a correction, because **the architecture doc
+already prescribes the alternative** (§3.8): a mediator between the client and
+the Live API session rather than a raw client-to-Gemini connection. The plan
+contradicted it, and the plan was wrong.
+
+The mediated shape is also the stronger one: the browser holds **no model
+credential at all**, rather than a short-lived one. What it needs is a
+server-side WebSocket relay — the gateway holds the Vertex session with its own
+ADC identity and the browser talks only to us.
+
+`VertexTokenMinter` still throws, now with the accurate reason. A plausible mint
+call that has never succeeded would be trusted precisely because it looks
+finished.
+
+**Item 3** (single Orchestrator context) is satisfied by construction: the
+orchestrator delegates research as a Plan Panel step rather than mid-turn,
+which is exactly what the constraint requires.
 
 ---
 
@@ -529,8 +681,10 @@ Phases 2 and 3 can run in parallel once A2A lands. Phase 5 and 6 are independent
 
 ## Open decisions
 
-1. **Firestore location** — fixed forever at creation, and Phase 0 applies prod. Decide now.
+1. ~~**Firestore location**~~ — **settled 2026-08-25: `europe-west1`**, single region, matching Cloud Run. Created as `(default)` in the prod workspace and now unchangeable.
 2. ~~**`@a2a-js/sdk` version line**~~ — **settled in Phase 1.** Both on 1.x: Python `a2a-sdk` 1.1.2, Node `@a2a-js/sdk` 1.0.1.
 3. ~~**Does Firebase Hosting buffer SSE?**~~ — **settled in Phase 2, and the answer changed the design.** Buffering is the lesser problem; Hosting's unconfigurable 60s rewrite timeout is disqualifying on its own. The stream is served from the gateway's own hostname. See [decisions/0001](decisions/0001-sse-not-behind-firebase-hosting.md).
 4. **Plus tier price.** Currently a placeholder in shipped UI.
-5. **EU data residency.** Vertex `global` has none. If required, the endpoint moves and the model pins to a DRZ-supported one.
+5. **EU data residency.** Vertex is pinned to `global`, which has none — services run in europe-west1 but model calls do not. If residency is ever required, the endpoint moves and the model pins to a DRZ-supported one.
+6. **Voice transport.** Ephemeral tokens are unavailable on Vertex, so voice needs a server-side session mediator (architecture §3.8). Whether that is a hand-rolled WebSocket relay in the gateway or a partner integration such as LiveKit is undecided.
+7. **`/healthz` on `*.run.app`.** Google's frontend swallows the exact path; `/healthz/` works. Either move the health route or standardise on the trailing slash — the current state is a trap for whoever writes the next probe.

@@ -25,12 +25,13 @@ WORKDIR /src
 # network call would be unavailable exactly when the network is degraded,
 # which is when you least want an action proceeding unchecked.
 COPY libs/policy ./libs/policy
+COPY libs/agentauth ./libs/agentauth
 COPY services/orchestrator/pyproject.toml ./
 
 # --target gives a flat, relocatable tree that can be copied into an image with
 # no pip, which is exactly what distroless is.
 RUN pip install --no-cache-dir --upgrade pip \
- && pip wheel --no-cache-dir --wheel-dir=/wheels ./libs/policy && pip install --no-cache-dir --target=/deps --find-links=/wheels .
+ && pip wheel --no-cache-dir --wheel-dir=/wheels ./libs/policy ./libs/agentauth && pip install --no-cache-dir --target=/deps --find-links=/wheels .
 
 # ---------------------------------------------------------------------- test
 # A real build stage, not a convenience: `docker build --target test` fails the

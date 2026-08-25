@@ -24,6 +24,7 @@ import os
 from dataclasses import dataclass, field
 
 import httpx
+from alltheway_agentauth import auth_headers
 from a2a.client import ClientConfig, ClientFactory
 from a2a.types import Message, Part, Role, SendMessageRequest, TaskState
 from google.protobuf import json_format
@@ -55,7 +56,7 @@ def _message(topic: str) -> Message:
 
 
 async def _send(topic: str) -> Finding | None:
-    async with httpx.AsyncClient(timeout=TIMEOUT_S) as http:
+    async with httpx.AsyncClient(timeout=TIMEOUT_S, headers=auth_headers(RESEARCH_CELL_URL)) as http:
         factory = ClientFactory(
             # Non-streaming: the orchestrator wants the finished answer. The
             # cell's progress narration is relayed from the artifact's trace

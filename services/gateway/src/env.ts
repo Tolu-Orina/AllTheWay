@@ -32,7 +32,7 @@ export const env = {
   vertexLocation: process.env.GOOGLE_CLOUD_LOCATION ?? "global",
 
   /** Pinned, never "latest": a silent model swap changes agent behaviour. */
-  model: process.env.GEMINI_MODEL ?? "gemini-3.6-flash",
+  model: process.env.GEMINI_MODEL ?? "gemini-3.7-flash",
 
   /** The Live API model for voice. Pinned for the same reason. */
   liveModel: process.env.GEMINI_LIVE_MODEL ?? "gemini-live-2.5-flash-preview",

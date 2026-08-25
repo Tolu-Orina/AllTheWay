@@ -38,7 +38,7 @@ content.
 **The model is behind `ModelProvider`.** `FakeProvider` is deterministic and
 needs no credentials, so the graph is fully testable without a GCP project.
 `VertexProvider` uses ADC against the `global` endpoint, pinned to
-`gemini-3.6-flash` — never `latest`, because a silent model swap changes agent
+`gemini-3.7-flash` — never `latest`, because a silent model swap changes agent
 behaviour underneath you. Selection is explicit: `USE_VERTEX=true` plus a
 project, or you get the fake. It never half-connects.
 

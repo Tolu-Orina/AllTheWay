@@ -159,7 +159,7 @@ def create_provider() -> ResearchProvider:
         return VertexProvider(
             project=project,
             location=os.environ.get("GOOGLE_CLOUD_LOCATION", "global"),
-            model=os.environ.get("GEMINI_MODEL", "gemini-3.6-flash"),
+            model=os.environ.get("GEMINI_MODEL", "gemini-3.7-flash"),
             # Comfortably inside the run's wall clock, so a call that is going to
             # be abandoned gives up on its own shortly after.
             request_timeout_s=float(os.environ.get("RESEARCH_REQUEST_TIMEOUT_S", "25")),

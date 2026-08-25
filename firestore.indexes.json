@@ -1,0 +1,73 @@
+{
+  "//": [
+    "Firestore indexes, as code.",
+    "",
+    "Every query the app makes today is a single-field orderBy on a subcollection,",
+    "which Firestore indexes automatically — so nothing here is required to make",
+    "the current product work. This file exists so that the first query that DOES",
+    "need an index arrives with the index in the same commit, rather than as a",
+    "production error telling someone to click a link in a console.",
+    "",
+    "Timing matters more than it looks: building a composite index backfills the",
+    "whole collection. Declaring one now, while these collections are empty, is",
+    "effectively free. Declaring it after a year of watcher runs is an outage."
+  ],
+
+  "indexes": [
+    {
+      "//": [
+        "The Watchers screen lists runs for one watcher, newest first. listRuns()",
+        "currently orders across all watchers, so this is not yet exercised — but",
+        "filtering by watcherId while ordering by anything other than watcherId is",
+        "exactly the shape Firestore refuses without a composite."
+      ],
+      "collectionGroup": "runs",
+      "queryScope": "COLLECTION",
+      "fields": [
+        { "fieldPath": "watcherId", "order": "ASCENDING" },
+        { "fieldPath": "at", "order": "DESCENDING" }
+      ]
+    },
+    {
+      "//": [
+        "The Feedback Ledger, filtered to one session. FR-V5 records what was",
+        "confirmed, declined and corrected; reading back one session's decisions",
+        "is the query that view needs."
+      ],
+      "collectionGroup": "ledger",
+      "queryScope": "COLLECTION",
+      "fields": [
+        { "fieldPath": "sessionId", "order": "ASCENDING" },
+        { "fieldPath": "at", "order": "DESCENDING" }
+      ]
+    }
+  ],
+
+  "fieldOverrides": [
+    {
+      "//": [
+        "sessions.plan is an array of step objects. Firestore indexes every element",
+        "of an array field by default, so a four-step plan costs four index entries",
+        "per write — for a field nothing ever queries or orders by. The exemption",
+        "turns that off.",
+        "",
+        "This is a write-cost and latency saving, not a correctness fix: leaving it",
+        "on would work, just wastefully, and the waste scales with plan length."
+      ],
+      "collectionGroup": "sessions",
+      "fieldPath": "plan",
+      "indexes": []
+    },
+    {
+      "//": [
+        "Verification codes are write-once and read once, within ten minutes.",
+        "Nothing queries them by createdAt — the code is fetched by document id —",
+        "so the automatic index is pure overhead. The TTL policy in Terraform is",
+        "what deletes them; this only stops us paying to index the field meanwhile."
+      ],
+      "collectionGroup": "authCodes",
+      "fieldPath": "expiresAt",
+      "indexes": []
+    }
+  ]
+}

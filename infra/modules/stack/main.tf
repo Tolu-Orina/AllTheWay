@@ -84,6 +84,59 @@ locals {
   }
 }
 
+# ---------------------------------------------------------------------------
+# What each runtime identity may do
+#
+# Bootstrap gives every runtime account the same baseline (pull an image, write
+# logs and traces) and says the rest "belongs in envs/*". This is that.
+#
+# Derived from what each service's code actually calls, not from what might be
+# convenient later: the gateway is the only thing that publishes events, only
+# the two services with a ModelProvider reach Vertex, and only the connector
+# gateway reads secrets. A service that gains a dependency gains a line here, in
+# a diff someone reads.
+# ---------------------------------------------------------------------------
+
+locals {
+  service_roles = {
+    gateway = [
+      "roles/datastore.user",   # Firestore via firebase-admin
+      "roles/pubsub.publisher", # events.ts
+    ]
+    orchestrator        = ["roles/aiplatform.user"] # Vertex, via ModelProvider
+    research-cell       = ["roles/aiplatform.user"]
+    profile-synthesizer = ["roles/datastore.user"]
+    watcher-runtime     = ["roles/datastore.user"]
+    connector-gateway = [
+      # Project-scoped for now because no connector secret exists yet. Once one
+      # does, this should become a per-secret binding — a gateway that can read
+      # every secret in the project is more than it needs.
+      "roles/secretmanager.secretAccessor",
+    ]
+
+    # Firestore is deliberately absent from orchestrator and research-cell: both
+    # are stateless by design, and granting them data access would quietly make
+    # that untrue.
+  }
+
+  runtime_role_bindings = merge([
+    for service, roles in local.service_roles : {
+      for role in roles : "${service}:${role}" => {
+        service = service
+        role    = role
+      }
+    }
+  ]...)
+}
+
+resource "google_project_iam_member" "runtime" {
+  for_each = local.runtime_role_bindings
+
+  project = var.project_id
+  role    = each.value.role
+  member  = "serviceAccount:${local.runtime_sa["${each.value.service}-${var.env}"]}"
+}
+
 module "service" {
   source   = "../backend-service"
   for_each = local.invoker_graph
@@ -107,6 +160,20 @@ module "service" {
     APP_ENV              = var.env
     GOOGLE_CLOUD_PROJECT = var.project_id
     FIRESTORE_DATABASE   = google_firestore_database.this.name
+
+    # Phase 0 item 3. Without this every service runs FakeProvider — it would
+    # deploy, pass health checks, and answer with deterministic stub text, which
+    # is the most convincing way to look finished while being a mock.
+    #
+    # Only the two services that hold a ModelProvider are given aiplatform.user
+    # above; setting the flag on the others is harmless and keeps the env
+    # uniform, but the permission is what actually scopes it.
+    USE_VERTEX = "true"
+
+    # Pinned, never "latest": a silent model swap changes agent behaviour, and
+    # this exact string was verified against the live API before pinning —
+    # gemini-2.0-flash 404s on the `global` endpoint.
+    GEMINI_MODEL = var.gemini_model
 
     # Its own address, as other agents will see it.
     #
@@ -136,6 +203,33 @@ module "hosting" {
 }
 
 # ---------------------------------------------------------------------------
+# Verification codes expire themselves
+#
+# Deliberately on `expiresAt`, not `createdAt`. Firestore deletes a document at
+# the time held in its TTL field, so a TTL pointing at the creation time — a
+# value already in the past — deletes every code the instant it is written. The
+# plan doc said `createdAt`; that would have shipped as "email verification is
+# broken" with no obvious cause.
+#
+# This is garbage collection, not the security control: `verifyCode` enforces
+# the ten-minute window itself, because TTL deletion is best-effort and can lag
+# by hours. Without it, expired credential hashes accumulate forever.
+# ---------------------------------------------------------------------------
+
+resource "google_firestore_field" "auth_codes_ttl" {
+  project    = var.project_id
+  database   = google_firestore_database.this.name
+  collection = "authCodes"
+  field      = "expiresAt"
+
+  ttl_config {}
+
+  # The same field is exempted from indexing in firestore.indexes.json: nothing
+  # queries by it, so an automatic index would be pure write cost.
+  index_config {}
+}
+
+# ---------------------------------------------------------------------------
 # Events
 #
 # Topics were missing entirely until now: the gateway published to a topic that
@@ -157,6 +251,34 @@ locals {
     "session-ended"   = { service = "profile-synthesizer", path = "/events" }
     "watcher-trigger" = { service = "watcher-runtime", path = "/events" }
   }
+}
+
+# Pub/Sub push authenticates as the *consumer's* identity, which needs two
+# grants that are easy to miss because their absence fails at delivery time —
+# quietly, in a retry loop, long after a green apply.
+#
+#   1. Pub/Sub's own service agent must be allowed to mint a token as that
+#      identity. Without it the subscription cannot even produce a credential.
+#   2. That identity must be able to invoke the service. `invoker_graph` grants
+#      the orchestrator, but the caller here is the consumer itself.
+resource "google_service_account_iam_member" "pubsub_mints_consumer_token" {
+  for_each = local.event_consumers
+
+  service_account_id = "projects/${var.project_id}/serviceAccounts/${local.runtime_sa["${each.value.service}-${var.env}"]}"
+  role               = "roles/iam.serviceAccountTokenCreator"
+  member             = "serviceAccount:service-${data.google_project.this.number}@gcp-sa-pubsub.iam.gserviceaccount.com"
+}
+
+resource "google_cloud_run_v2_service_iam_member" "push_invoker" {
+  for_each = local.event_consumers
+
+  project  = var.project_id
+  location = var.region
+  name     = "${each.value.service}-${var.env}"
+  role     = "roles/run.invoker"
+  member   = "serviceAccount:${local.runtime_sa["${each.value.service}-${var.env}"]}"
+
+  depends_on = [module.service]
 }
 
 resource "google_pubsub_subscription" "push" {
@@ -184,4 +306,11 @@ resource "google_pubsub_subscription" "push" {
     minimum_backoff = "10s"
     maximum_backoff = "600s"
   }
+
+  # The subscription must not exist before the grants that make it
+  # deliverable, or the first messages retry against a 403.
+  depends_on = [
+    google_service_account_iam_member.pubsub_mints_consumer_token,
+    google_cloud_run_v2_service_iam_member.push_invoker,
+  ]
 }

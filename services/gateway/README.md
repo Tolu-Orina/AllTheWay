@@ -63,7 +63,7 @@ Default Credentials locally, the service account on Cloud Run.
 
 ## Vertex
 
-Model calls use the **`global`** endpoint, pinned to `gemini-3.6-flash`. That is
+Model calls use the **`global`** endpoint, pinned to `gemini-3.7-flash`. That is
 independent of where the service runs. `global` carries no EU data residency —
 if that becomes a requirement, the endpoint moves and the model pins back to a
 DRZ-supported one.

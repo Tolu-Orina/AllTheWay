@@ -26,6 +26,20 @@ type CodeDoc = {
   hash: string;
   purpose: CodePurpose;
   createdAt: Timestamp;
+  /**
+   * When Firestore should delete this document.
+   *
+   * A TTL policy deletes a document at the time held in its TTL field, so the
+   * field must be the expiry, not the creation. Pointing a TTL at `createdAt` —
+   * a value already in the past — deletes every code the instant it is written,
+   * and the symptom reads as "verification is broken" rather than "the TTL
+   * field is wrong".
+   *
+   * Deletion is best-effort and can lag by hours, so this is garbage
+   * collection, not the expiry check. `verifyCode` still enforces TTL_MS from
+   * `createdAt`, so an un-swept code is still rejected.
+   */
+  expiresAt: Timestamp;
   attempts: number;
 };
 
@@ -66,6 +80,10 @@ export async function issueCode(
     hash: hash(code),
     purpose,
     createdAt: FieldValue.serverTimestamp(),
+    // Computed here because serverTimestamp() cannot be added to. Clock skew is
+    // irrelevant: this only drives garbage collection, and verifyCode enforces
+    // the real window from createdAt.
+    expiresAt: Timestamp.fromMillis(Date.now() + TTL_MS),
     attempts: 0,
   });
 

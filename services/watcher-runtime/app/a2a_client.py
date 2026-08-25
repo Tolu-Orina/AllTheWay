@@ -13,6 +13,7 @@ import os
 from typing import Any
 
 import httpx
+from alltheway_agentauth import auth_headers
 from a2a.client import ClientConfig, ClientFactory
 from a2a.types import Message, Part, Role, SendMessageRequest, Task, TaskState
 from google.protobuf import json_format, struct_pb2
@@ -41,7 +42,7 @@ def _build_message(text: str, preferences: list[str]) -> Message:
 
 
 async def _send(text: str, preferences: list[str]) -> Task:
-    async with httpx.AsyncClient(timeout=30.0) as http:
+    async with httpx.AsyncClient(timeout=30.0, headers=auth_headers(ORCHESTRATOR_URL)) as http:
         factory = ClientFactory(
             ClientConfig(
                 httpx_client=http,
