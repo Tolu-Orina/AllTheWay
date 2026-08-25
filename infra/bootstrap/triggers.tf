@@ -1,45 +1,124 @@
 /**
- * Cloud Build triggers.
+ * Cloud Build triggers — 2nd generation.
  *
- * PREREQUISITE (manual, once): connect the GitHub repository to Cloud Build via
- * the Cloud Build GitHub App — Console > Cloud Build > Triggers > Connect
- * repository. These resources reference that connection; they do not create it.
- * There is no long-lived key anywhere: the build runs inside GCP as the service
- * account named below, which is why Workload Identity Federation is not needed
- * here (WIF is for runners *outside* GCP, e.g. GitHub Actions).
+ * The 1st-gen `github {}` block needs a legacy "repository mapping" created by
+ * the old Cloud Build GitHub App console flow. That flow no longer reliably
+ * produces one — connecting the repo left no mapping in this project, and every
+ * trigger failed with "Repository mapping does not exist". 2nd gen makes the
+ * connection and the repository into Terraform resources instead of a console
+ * step you have to remember, which is why it is worth the migration.
+ *
+ * PREREQUISITES (manual, once — see infra/bootstrap/README-ci.md):
+ *
+ *   1. Install the Cloud Build GitHub App on the repository, and note the
+ *      installation id from the URL of the app's settings page.
+ *   2. Create a GitHub personal access token with `repo` and `read:user`,
+ *      and put it in Secret Manager. The token is never a Terraform variable:
+ *      anything passed as a variable is written to state in plaintext.
+ *
+ * Set `github_app_installation_id` and `github_pat_secret_id` to switch CI on.
+ * Until both are set, everything below is skipped and `terraform apply` is
+ * still green — a half-created CI setup is worse than an absent one.
  *
  * Branch model: develop -> dev, main -> prod. Path filters keep a web-only
- * change from rebuilding five backend services.
+ * change from rebuilding six backend services.
+ *
+ * There is no long-lived key in the build itself: builds run inside GCP as the
+ * service accounts named below. Workload Identity Federation is for runners
+ * *outside* GCP (e.g. GitHub Actions), which is not what this is.
  */
 
+data "google_project" "this" {
+  project_id = var.project_id
+}
+
 locals {
+  # Both halves are required. One without the other cannot produce a working
+  # connection, so it should produce nothing at all rather than a broken one.
+  ci_enabled = var.github_app_installation_id != "" && var.github_pat_secret_id != ""
+
   branch_by_env = {
     dev  = "^develop$"
     prod = "^main$"
   }
 
-  # One trigger per (service, env). Each is scoped to its own directory so the
+  # One trigger per (service, env), each scoped to its own directory so the
   # monorepo does not rebuild everything on every commit.
-  backend_triggers = {
+  backend_triggers = local.ci_enabled ? {
     for pair in setproduct(var.backend_services, var.environments) :
     "${pair[0]}-${pair[1]}" => {
       service = pair[0]
       env     = pair[1]
     }
-  }
+  } : {}
+
+  ci_environments = local.ci_enabled ? toset(var.environments) : toset([])
 }
 
+# ---------------------------------------------------------------------------
+# The connection
+#
+# Cloud Build reads the PAT as its own service agent, not as the caller. That
+# grant is made here rather than by hand so the permission is visible in the
+# same diff as the thing that needs it.
+# ---------------------------------------------------------------------------
+
+resource "google_secret_manager_secret_iam_member" "cloudbuild_reads_pat" {
+  count = local.ci_enabled ? 1 : 0
+
+  project   = var.project_id
+  secret_id = var.github_pat_secret_id
+  role      = "roles/secretmanager.secretAccessor"
+  member    = "serviceAccount:service-${data.google_project.this.number}@gcp-sa-cloudbuild.iam.gserviceaccount.com"
+}
+
+resource "google_cloudbuildv2_connection" "github" {
+  count = local.ci_enabled ? 1 : 0
+
+  project  = var.project_id
+  location = var.region
+  name     = "github"
+
+  github_config {
+    app_installation_id = tonumber(var.github_app_installation_id)
+
+    authorizer_credential {
+      # `latest` on purpose: rotating the token is replacing the secret version,
+      # not editing Terraform and applying.
+      oauth_token_secret_version = "projects/${var.project_id}/secrets/${var.github_pat_secret_id}/versions/latest"
+    }
+  }
+
+  depends_on = [
+    google_project_service.enabled,
+    google_secret_manager_secret_iam_member.cloudbuild_reads_pat,
+  ]
+}
+
+resource "google_cloudbuildv2_repository" "repo" {
+  count = local.ci_enabled ? 1 : 0
+
+  project           = var.project_id
+  location          = var.region
+  name              = var.github_repo
+  parent_connection = google_cloudbuildv2_connection.github[0].name
+  remote_uri        = "https://github.com/${var.github_owner}/${var.github_repo}.git"
+}
+
+# ---------------------------------------------------------------------------
+# Triggers
+# ---------------------------------------------------------------------------
+
 resource "google_cloudbuild_trigger" "web" {
-  for_each = toset(var.environments)
+  for_each = local.ci_environments
 
   project     = var.project_id
   location    = var.region
   name        = "web-${each.value}"
   description = "web/ -> Firebase Hosting (${each.value})"
 
-  github {
-    owner = var.github_owner
-    name  = var.github_repo
+  repository_event_config {
+    repository = google_cloudbuildv2_repository.repo[0].id
     push {
       branch = local.branch_by_env[each.value]
     }
@@ -67,9 +146,8 @@ resource "google_cloudbuild_trigger" "backend" {
   name        = "${each.value.service}-${each.value.env}"
   description = "${each.value.service}/ -> Cloud Run (${each.value.env})"
 
-  github {
-    owner = var.github_owner
-    name  = var.github_repo
+  repository_event_config {
+    repository = google_cloudbuildv2_repository.repo[0].id
     push {
       branch = local.branch_by_env[each.value.env]
     }

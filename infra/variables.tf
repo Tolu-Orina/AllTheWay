@@ -48,3 +48,17 @@ variable "model_armor_template" {
   type        = string
   default     = ""
 }
+
+variable "firestore_location" {
+  description = <<-EOT
+    Firestore location. CANNOT BE CHANGED after the database is created, so it
+    is a root variable rather than a module default — the value that is fixed
+    forever should be visible in the tfvars a human reviews.
+
+    A single region (europe-west1) matches Cloud Run and gives lower write
+    latency and cost than a multi-region (eur3), at the price of regional rather
+    than multi-region redundancy.
+  EOT
+  type        = string
+  default     = "europe-west1"
+}

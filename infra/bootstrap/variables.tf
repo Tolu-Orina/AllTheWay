@@ -49,3 +49,25 @@ variable "environments" {
   type        = list(string)
   default     = ["dev", "prod"]
 }
+
+# ---------------------------------------------------------------------------
+# CI (2nd-gen Cloud Build). Both must be set for triggers to be created; either
+# alone produces nothing, because a half-configured connection is worse than
+# none. See the header of triggers.tf.
+# ---------------------------------------------------------------------------
+
+variable "github_app_installation_id" {
+  description = "Cloud Build GitHub App installation id, from the app settings URL. Empty disables CI triggers."
+  type        = string
+  default     = ""
+}
+
+variable "github_pat_secret_id" {
+  description = <<-EOT
+    Secret Manager secret ID (not the value) holding a GitHub PAT with `repo`
+    and `read:user`. The token is deliberately not a Terraform variable —
+    variables are written to state in plaintext. Empty disables CI triggers.
+  EOT
+  type        = string
+  default     = ""
+}

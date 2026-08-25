@@ -40,9 +40,19 @@ module "stack" {
     aws         = aws
   }
 
-  project_id = var.project_id
-  region     = var.region
-  env        = local.env
+  project_id         = var.project_id
+  region             = var.region
+  env                = local.env
+  firestore_location = var.firestore_location
+
+  # Vertex is deliberately NOT var.region. `global` is where the current Gemini
+  # Flash models are reachable, and it is independent of where Cloud Run runs —
+  # so the services sit in europe-west1 while model calls go to `global`.
+  # Pinned here rather than left to a code default, so the deployed value is
+  # reviewable in Terraform instead of discovered by reading env.ts.
+  common_env_vars = {
+    GOOGLE_CLOUD_LOCATION = "global"
+  }
 
   runtime_service_accounts = data.terraform_remote_state.bootstrap.outputs.runtime_service_accounts
 

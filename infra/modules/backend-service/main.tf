@@ -71,6 +71,16 @@ resource "google_cloud_run_v2_service" "this" {
       template[0].containers[0].image,
       client,
       client_version,
+
+      # The service-level `scaling` block, which is not the same thing as
+      # `template.scaling` above. The API populates it with defaults whether or
+      # not it is declared, so a config that omits it produces a diff that
+      # removes it, an API that re-adds it, and a plan that is never clean.
+      #
+      # Worth fixing rather than tolerating: a permanently dirty plan trains
+      # everyone to skim past it, which is how a real change gets missed. What
+      # this service actually manages is per-revision scaling, declared above.
+      scaling,
     ]
   }
 }
