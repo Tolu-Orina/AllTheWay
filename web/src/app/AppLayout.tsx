@@ -63,8 +63,11 @@ export function AppLayout() {
           <AppTopBar />
           <div
             className={cn(
-              "mx-auto w-full transition-[max-width] duration-200",
-              companionOpen ? "max-w-3xl" : "max-w-5xl",
+              // Prefixed with `xl:` because that is where the docked column
+              // exists. Unprefixed, the work column was squeezed to make room
+              // on phones and tablets for a panel that is not rendered there.
+              "mx-auto w-full transition-[max-width] duration-200 max-w-5xl",
+              companionOpen ? "xl:max-w-3xl" : "xl:max-w-5xl",
             )}
           >
             <Outlet />

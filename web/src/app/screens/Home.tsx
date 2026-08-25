@@ -8,6 +8,7 @@ import { RUN_STATE_LABELS } from "@alltheway/contracts";
 
 import { api, type SessionDetail, type WatcherRun } from "@/app/data";
 import { timeOfDay } from "@/lib/format";
+import { useAuth } from "@/auth/useAuth";
 import { cn } from "@/lib/utils";
 
 const TRACE = [
@@ -28,20 +29,34 @@ function HomeSkeleton() {
 }
 
 export default function Home() {
+  const { user } = useAuth();
   const { state, reload } = useAsync<HomeData>(async () => {
     const [plan, runs] = await Promise.all([api.homePlan(), api.watcherRuns()]);
     return { plan, runs };
   });
 
+  // Was "Tuesday, 24 August" and "Good morning, Jordan", both hardcoded — a
+  // fixed date that was wrong the next morning, and a stub name shown to a real
+  // signed-in user. The greeting follows the clock; the name follows the token.
+  const now = new Date();
+  const today = now.toLocaleDateString(undefined, {
+    weekday: "long",
+    day: "numeric",
+    month: "long",
+  });
+  const hour = now.getHours();
+  const greeting =
+    hour < 12 ? "Good morning" : hour < 18 ? "Good afternoon" : "Good evening";
+  const firstName = user?.displayName?.trim().split(/\s+/)[0];
+
   return (
     <div className="flex flex-col gap-6">
       <header className="flex items-end justify-between gap-4">
         <div className="min-w-0">
-          <p className="text-[13px] text-muted-foreground">
-            Tuesday, 24 August
-          </p>
+          <p className="text-[13px] text-muted-foreground">{today}</p>
           <h1 className="mt-1 text-[26px] leading-tight font-bold tracking-[-0.02em] sm:text-[30px]">
-            Good morning, Jordan
+            {greeting}
+            {firstName ? `, ${firstName}` : ""}
           </h1>
           <p className="mt-2 text-[15px] leading-relaxed text-muted-foreground">
             Two watchers ran overnight. One is waiting on you.

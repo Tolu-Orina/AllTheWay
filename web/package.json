@@ -16,7 +16,8 @@
     "shots:app": "node scripts/app-shots.mjs",
     "test:auth": "node scripts/auth-flow.mjs",
     "test:streaming": "node scripts/streaming.mjs",
-    "test:confirm": "node scripts/confirm-gate.mjs"
+    "test:confirm": "node scripts/confirm-gate.mjs",
+    "test:companion": "node scripts/companion.mjs"
   },
   "dependencies": {
     "@base-ui/react": "^1.7.0",
