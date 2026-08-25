@@ -139,6 +139,13 @@ resource "google_project_iam_member" "ci_web" {
     #
     # viewer, not invoker: this reads the service definition, it never calls it.
     "roles/run.viewer",
+
+    # Reads the Firebase web app config (apiKey, authDomain, appId) at build
+    # time so the browser bundle can talk to Firebase Auth. Without it the build
+    # produces a bundle with no Firebase config — which used to silently fall
+    # back to the development auth adapter and ship a site that authenticated
+    # nobody.
+    "roles/firebase.viewer",
   ])
 
   project = var.project_id

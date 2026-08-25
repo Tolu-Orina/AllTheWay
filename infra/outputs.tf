@@ -23,3 +23,8 @@ output "required_dns_updates" {
 output "firestore_database" {
   value = module.stack.firestore_database
 }
+
+output "firebase_web_config" {
+  description = "Firebase web app config. Feed these to the web build as VITE_* variables."
+  value       = module.stack.firebase_web_config
+}

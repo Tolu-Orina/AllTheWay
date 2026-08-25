@@ -69,3 +69,22 @@ variable "gemini_model" {
   type        = string
   default     = "gemini-3.7-flash"
 }
+
+variable "google_oauth_client_id" {
+  description = <<-EOT
+    OAuth client id for Google sign-in. Empty disables the provider.
+
+    The consent screen and OAuth client are console-only flows, so this is not
+    created by Terraform. Left empty, email and password still work and the
+    Google button fails with a provider error rather than silently doing nothing.
+  EOT
+  type        = string
+  default     = ""
+}
+
+variable "google_oauth_client_secret" {
+  description = "OAuth client secret for Google sign-in. Paired with google_oauth_client_id."
+  type        = string
+  default     = ""
+  sensitive   = true
+}

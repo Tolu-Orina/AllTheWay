@@ -19,7 +19,10 @@ export default defineConfig({
         short_name: "AllTheWay",
         description:
           "One companion that talks with you, watches and acts for you, and remembers how you think.",
-        start_url: "/app",
+        // Both end in a slash on purpose. A scope of "/app/" does not contain
+        // a start_url of "/app" — the browser compares path prefixes — so the
+        // scope was discarded with "property 'scope' ignored".
+        start_url: "/app/",
         scope: "/app/",
         display: "standalone",
         orientation: "portrait-primary",
@@ -55,7 +58,13 @@ export default defineConfig({
         globIgnores: ["**/android-chrome-*.png", "**/icon-maskable-*.png", "**/images/**"],
         // The PWA belongs to the product at /app, not the marketing page:
         // a first-time visitor should not pay for an app install to read a headline.
-        navigateFallback: "/app/index.html",
+        // The fallback must be a file that exists. This is a single page app:
+        // Vite emits exactly one index.html at the root, and there is no
+        // /app/index.html to precache — so the service worker threw
+        // `non-precached-url: /app/index.html` on every load and the offline
+        // fallback never worked. The allowlist below is what scopes this to
+        // /app, not the filename.
+        navigateFallback: "/index.html",
         navigateFallbackAllowlist: [/^\/app/],
         navigateFallbackDenylist: [/^\/api\//],
         cleanupOutdatedCaches: true,

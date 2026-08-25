@@ -31,11 +31,33 @@ terraform {
 provider "google" {
   project = var.project_id
   region  = var.region
+
+  # Some APIs — identitytoolkit and orgpolicy among them — refuse user
+  # credentials that carry no quota project, and the provider does not send one
+  # unless told to. Without these the call is attributed to Google's shared
+  # gcloud project and fails as SERVICE_DISABLED, which reads like a missing API
+  # rather than a missing header.
+  #
+  # `gcloud auth application-default set-quota-project` is not enough: that sets
+  # it for the SDK, not for Terraform's provider.
+  billing_project       = var.project_id
+  user_project_override = true
 }
 
 provider "google-beta" {
   project = var.project_id
   region  = var.region
+
+  # Some APIs — identitytoolkit and orgpolicy among them — refuse user
+  # credentials that carry no quota project, and the provider does not send one
+  # unless told to. Without these the call is attributed to Google's shared
+  # gcloud project and fails as SERVICE_DISABLED, which reads like a missing API
+  # rather than a missing header.
+  #
+  # `gcloud auth application-default set-quota-project` is not enough: that sets
+  # it for the SDK, not for Terraform's provider.
+  billing_project       = var.project_id
+  user_project_override = true
 }
 
 # Credentials come from the environment (AWS_PROFILE locally, or a

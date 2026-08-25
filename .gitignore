@@ -65,3 +65,6 @@ desktop.ini
 # before this rule existed.
 **/boot.log
 **/preview.log
+
+# Generated at build time from the Firebase web app config.
+web/.env.production
