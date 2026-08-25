@@ -102,6 +102,19 @@ locals {
     gateway = [
       "roles/datastore.user",   # Firestore via firebase-admin
       "roles/pubsub.publisher", # events.ts
+
+      # Admin Auth: routes/auth.ts calls getUser, getUserByEmail and
+      # updateUser to read an address off a uid, mark an address verified, and
+      # set a new password after a reset code checks out.
+      #
+      # Admin rather than viewer because two of those three write. There is no
+      # narrower role that permits updateUser.
+      #
+      # Note this is NOT what verifyIdToken needs — that validates a signature
+      # against Google's public keys and requires no permission at all, which
+      # is exactly why the gap stayed hidden: every authenticated route worked,
+      # and only the four calls into the Identity Toolkit admin API failed.
+      "roles/firebaseauth.admin",
     ]
     orchestrator        = ["roles/aiplatform.user"] # Vertex, via ModelProvider
     research-cell       = ["roles/aiplatform.user"]
