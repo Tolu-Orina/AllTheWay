@@ -130,6 +130,15 @@ resource "google_project_iam_member" "ci_web" {
     "roles/firebasehosting.admin",
     "roles/logging.logWriter",
     "roles/artifactregistry.reader",
+
+    # Hosting validates the /api/** rewrite target when it finalises a version,
+    # which needs run.services.get on the gateway. Without it the deploy uploads
+    # every file successfully and then fails at the last step with a 403 that
+    # names Cloud Run — not an obvious place to look when the symptom is
+    # "hosting deploy failed".
+    #
+    # viewer, not invoker: this reads the service definition, it never calls it.
+    "roles/run.viewer",
   ])
 
   project = var.project_id

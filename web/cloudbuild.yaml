@@ -82,7 +82,13 @@ steps:
       - -c
       - |
         set -euo pipefail
-        npx --yes firebase-tools@14 target:apply hosting web "${_SITE_ID}" --project "${PROJECT_ID}"
-        npx --yes firebase-tools@14 deploy --only hosting:web --project "${PROJECT_ID}" --non-interactive --message "${SHORT_SHA} on ${BRANCH_NAME}"
+        # The hosting target is named after the site, so one substitution drives
+        # both the binding and the deploy. firebase.json carries one hosting entry
+        # per environment because each rewrites /api/** to a differently-named
+        # Cloud Run service (gateway-dev vs gateway-prod) — a single shared entry
+        # cannot name both, and Hosting only discovers that when it finalises the
+        # version, after the upload has already succeeded.
+        npx --yes firebase-tools@14 target:apply hosting "${_SITE_ID}" "${_SITE_ID}" --project "${PROJECT_ID}"
+        npx --yes firebase-tools@14 deploy --only "hosting:${_SITE_ID}" --project "${PROJECT_ID}" --non-interactive --message "${SHORT_SHA} on ${BRANCH_NAME}"
 
 timeout: 900s
