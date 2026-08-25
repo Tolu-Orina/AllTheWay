@@ -66,8 +66,24 @@ steps:
       - --region=${_REGION}
       - --quiet
 
-  # Smoke test the revision that was just deployed, in the environment it was
-  # deployed to. A green build proves the image compiles; this proves it runs.
+  # Prove the revision actually runs.
+  #
+  # Two things this deliberately does NOT do, both learned from it failing:
+  #
+  #   `gcloud auth print-identity-token` does not work here. Cloud Build runs as
+  #   a service account whose ID tokens come from the metadata server and need an
+  #   audience; the bare command has no user credential to mint from.
+  #
+  #   An HTTP probe cannot reach most of these services. Every service except the
+  #   gateway is INGRESS_TRAFFIC_INTERNAL_ONLY, and the default build pool is
+  #   outside the VPC — so a curl would fail on a service that deployed perfectly.
+  #
+  # What is checked instead is what is observable from here and still meaningful:
+  # the revision reached Ready and is serving all traffic. Cloud Run only marks a
+  # revision Ready once the container started and passed its startup probe, so a
+  # green check means the image runs, not merely that it built.
+  #
+  # The gateway is public, so it gets the real HTTP check on top.
   - id: smoke
     name: gcr.io/google.com/cloudsdktool/cloud-sdk:slim
     entrypoint: bash
@@ -75,11 +91,28 @@ steps:
       - -c
       - |
         set -euo pipefail
-        URL=$(gcloud run services describe "${_SERVICE}-${_ENV}" \
-          --region "${_REGION}" --format='value(status.url)')
-        TOKEN=$(gcloud auth print-identity-token)
-        curl -sSf -H "Authorization: Bearer $$TOKEN" "$$URL/healthz" > /dev/null
-        echo "smoke ok: $$URL"
+        SERVICE="${_SERVICE}-${_ENV}"
+
+        READY=$$(gcloud run services describe "$$SERVICE" --region "${_REGION}"           --format='value(status.conditions[0].status)')
+        if [ "$$READY" != "True" ]; then
+          echo "smoke FAILED: $$SERVICE is not Ready (status=$$READY)"
+          gcloud run services describe "$$SERVICE" --region "${_REGION}"             --format='value(status.conditions)'
+          exit 1
+        fi
+
+        URL=$$(gcloud run services describe "$$SERVICE" --region "${_REGION}"           --format='value(status.url)')
+        echo "smoke ok: $$SERVICE is Ready at $$URL"
+
+        # Only the gateway is reachable from here. Anything else would be
+        # testing the network, not the service.
+        if [ "${_SERVICE}" = "gateway" ]; then
+          CODE=$$(curl -s -o /dev/null -w '%{http_code}' --max-time 30 "$$URL/healthz")
+          if [ "$$CODE" != "200" ]; then
+            echo "smoke FAILED: $$URL/healthz returned $$CODE"
+            exit 1
+          fi
+          echo "smoke ok: $$URL/healthz -> 200"
+        fi
 
 images:
   - ${_REGISTRY}/${_SERVICE}:${SHORT_SHA}
