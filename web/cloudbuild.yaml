@@ -76,7 +76,7 @@ steps:
       - -c
       - |
         set -euo pipefail
-        CONFIG=$$(curl -sSf           -H "Authorization: Bearer $$(gcloud auth print-access-token)"           "https://firebase.googleapis.com/v1beta1/projects/$${PROJECT_ID}/webApps/-/config")
+        CONFIG=$$(curl -sSf           -H "Authorization: Bearer $$(gcloud auth print-access-token)"           "https://firebase.googleapis.com/v1beta1/projects/${PROJECT_ID}/webApps/-/config")
 
         API_KEY=$$(echo "$$CONFIG" | python3 -c 'import json,sys; print(json.load(sys.stdin)["apiKey"])')
         AUTH_DOMAIN=$$(echo "$$CONFIG" | python3 -c 'import json,sys; print(json.load(sys.stdin)["authDomain"])')
@@ -88,10 +88,10 @@ steps:
         {
           echo "VITE_FIREBASE_API_KEY=$$API_KEY"
           echo "VITE_FIREBASE_AUTH_DOMAIN=$$AUTH_DOMAIN"
-          echo "VITE_FIREBASE_PROJECT_ID=$${PROJECT_ID}"
+          echo "VITE_FIREBASE_PROJECT_ID=${PROJECT_ID}"
         } > web/.env.production
 
-        echo "firebase config written for $${PROJECT_ID} (authDomain $$AUTH_DOMAIN)"
+        echo "firebase config written for ${PROJECT_ID} (authDomain $$AUTH_DOMAIN)"
   - id: build
     name: node:22-slim
     entrypoint: bash
