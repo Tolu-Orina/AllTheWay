@@ -9,6 +9,7 @@ import { AppTopBar } from "@/app/AppTopBar";
 import { Sidebar } from "@/app/Sidebar";
 import { TabBar } from "@/app/TabBar";
 import { CompanionPanel } from "@/app/CompanionPanel";
+import { VoiceProvider } from "@/app/use-voice";
 import { registerAppServiceWorker } from "@/app/pwa";
 import { cn } from "@/lib/utils";
 
@@ -31,7 +32,8 @@ export function AppLayout() {
   }, []);
 
   return (
-    <div className="relative isolate flex min-h-dvh flex-col bg-background lg:flex-row">
+    <VoiceProvider>
+      <div className="relative isolate flex min-h-dvh flex-col bg-background lg:flex-row">
       <Ambient />
 
       <Sidebar />
@@ -80,6 +82,7 @@ export function AppLayout() {
       <CompanionPanel open={companionOpen} onOpenChange={setCompanionOpen} />
 
       <TabBar />
-    </div>
+      </div>
+    </VoiceProvider>
   );
 }

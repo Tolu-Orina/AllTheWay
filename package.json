@@ -18,6 +18,7 @@
     "dev:watchers": "cd services/watcher-runtime && python -m uvicorn app.main:app --port 8091",
     "dev:synth": "cd services/profile-synthesizer && python -m uvicorn app.main:app --port 8092",
     "test:py": "cd libs/policy && python -m pytest tests -q && cd ../screening && python -m pytest tests -q && cd ../agentauth && python -m pytest tests -q && cd ../../services/orchestrator && python -m pytest tests -q && cd ../watcher-runtime && python -m pytest tests -q && cd ../profile-synthesizer && python -m pytest tests -q && cd ../research-cell && python -m pytest tests -q && cd ../connector-gateway && python -m pytest tests -q",
+    "test:gateway": "npm --workspace @alltheway/gateway test",
     "dev:pubsub": "node scripts/dev-pubsub.mjs",
     "test:streaming": "npm --workspace web run test:streaming",
     "verify:streaming": "cd services/orchestrator && python scripts/verify_streaming.py",

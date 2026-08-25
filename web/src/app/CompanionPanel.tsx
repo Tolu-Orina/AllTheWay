@@ -11,6 +11,7 @@ import { LogoMark } from "@/components/primitives/logo";
 import { Sheet, SheetContent } from "@/components/ui/sheet";
 import { useAuth } from "@/auth/useAuth";
 import { cn } from "@/lib/utils";
+import { VoiceCaptions, VoiceControl } from "@/app/VoiceControl";
 
 type Message = { id: number; role: "agent" | "user"; text: string };
 
@@ -132,6 +133,8 @@ function CompanionConversation({ messages, draft, setDraft, send }: Thread) {
         <div ref={endRef} />
       </div>
 
+      <VoiceCaptions />
+
       <form
         className="flex items-center gap-2 border-t p-3"
         style={{ paddingBottom: "max(env(safe-area-inset-bottom), 0.75rem)" }}
@@ -143,6 +146,7 @@ function CompanionConversation({ messages, draft, setDraft, send }: Thread) {
         <label htmlFor={inputId} className="sr-only">
           Message the companion
         </label>
+        <VoiceControl size="sm" />
         <input
           id={inputId}
           value={draft}

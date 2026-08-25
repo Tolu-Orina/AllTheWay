@@ -115,6 +115,10 @@ locals {
       # is exactly why the gap stayed hidden: every authenticated route worked,
       # and only the four calls into the Identity Toolkit admin API failed.
       "roles/firebaseauth.admin",
+      # Voice relay: the gateway holds the Vertex Live session. Without this
+      # the browser socket would open and then the upstream handshake would
+      # 401, which looks like a voice bug. See docs/decisions/0006.
+      "roles/aiplatform.user",
     ]
     orchestrator        = ["roles/aiplatform.user"] # Vertex, via ModelProvider
     research-cell       = ["roles/aiplatform.user"]
@@ -139,7 +143,8 @@ locals {
   # as "any of these might send mail" to whoever looks at a revision next.
   extra_env_vars = {
     gateway = {
-      MAIL_FROM = var.mail_from
+      MAIL_FROM         = var.mail_from
+      GEMINI_LIVE_MODEL = var.gemini_live_model
     }
   }
 
@@ -193,6 +198,12 @@ module "service" {
   min_instances = var.env == "prod" ? var.prod_min_instances : 0
   max_instances = var.env == "prod" ? 20 : 4
 
+  # Voice sockets pin an instance for their duration (ADR 0006). Cloud Run's
+  # request timeout is the socket's lifetime: 300s would hang up a call that
+  # is still talking. 3600s is the platform maximum. Other services stay at
+  # the default — a turn should not last an hour.
+  timeout_seconds = each.key == "gateway" ? 3600 : 300
+
   env_vars = merge(var.common_env_vars, {
     APP_ENV              = var.env
     GOOGLE_CLOUD_PROJECT = var.project_id
@@ -202,9 +213,9 @@ module "service" {
     # deploy, pass health checks, and answer with deterministic stub text, which
     # is the most convincing way to look finished while being a mock.
     #
-    # Only the two services that hold a ModelProvider are given aiplatform.user
-    # above; setting the flag on the others is harmless and keeps the env
-    # uniform, but the permission is what actually scopes it.
+    # The orchestrator, research-cell, and the gateway (voice relay) reach
+    # Vertex. Permission is what actually scopes it — the flag on the others
+    # is harmless.
     USE_VERTEX = "true"
 
     # Pinned, never "latest": a silent model swap changes agent behaviour, and

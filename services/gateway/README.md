@@ -24,6 +24,7 @@ npm run dev:gateway
 | Method | Path | Notes |
 |---|---|---|
 | GET | `/healthz` | Public. Cloud Run health check. |
+| WS | `/api/voice/live` | Voice relay. Auth is the first JSON message, not a header. Not behind Hosting — same origin split as the turn stream. |
 | GET | `/api/sessions` | |
 | GET | `/api/sessions/:id` | 404 when absent |
 | GET | `/api/watchers` | |
@@ -32,7 +33,10 @@ npm run dev:gateway
 | GET | `/api/preferences` | Reverted entries are hidden, not deleted |
 | POST | `/api/preferences/revert` | `{ id: string }` → 204 |
 
-Everything under `/api` requires a verified Firebase ID token.
+Everything under `/api` requires a verified Firebase ID token — except the
+voice **upgrade**, which cannot carry headers from a browser. Auth is the
+first JSON message on that socket; no token within a few seconds and it
+closes.
 
 ## Things that are deliberate
 

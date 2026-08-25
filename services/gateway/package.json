@@ -9,6 +9,7 @@
     "build": "tsc -p tsconfig.build.json",
     "seed": "tsx src/seed.ts",
     "typecheck": "tsc -p tsconfig.json --noEmit",
+    "test": "node --import tsx --test src/voice.test.ts",
     "start:tsx": "tsx src/index.ts"
   },
   "dependencies": {
@@ -18,11 +19,13 @@
     "express": "^5.1.0",
     "firebase-admin": "^13.6.0",
     "google-auth-library": "^9.15.1",
+    "ws": "^8.18.3",
     "zod": "^3.25.0"
   },
   "devDependencies": {
     "@types/express": "^5.0.0",
     "@types/node": "^24.13.3",
+    "@types/ws": "^8.18.1",
     "tsx": "^4.20.0",
     "typescript": "~6.0.2"
   }

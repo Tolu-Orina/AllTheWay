@@ -70,6 +70,18 @@ variable "gemini_model" {
   default     = "gemini-3.7-flash"
 }
 
+variable "gemini_live_model" {
+  description = <<-EOT
+    Live API model id on Vertex. Pinned, never 'latest'.
+
+    gemini-live-2.5-flash-native-audio is the GA native-audio Live model on
+    Agent Platform / Vertex. gemini-3.1-flash-live-preview is Gemini Developer
+    API only and is not available on Vertex.
+  EOT
+  type        = string
+  default     = "gemini-live-2.5-flash-native-audio"
+}
+
 variable "google_oauth_secrets" {
   description = <<-EOT
     Secret Manager secret *names* holding the OAuth client id and secret for

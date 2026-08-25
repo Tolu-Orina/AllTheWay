@@ -1,3 +1,4 @@
+import { createServer } from "node:http";
 import express from "express";
 import { RevertPreferenceSchema, ToggleWatcherSchema } from "@alltheway/contracts";
 
@@ -8,8 +9,8 @@ import { getSession, listSessions } from "./repos/sessions.js";
 import { listPreferences, revertPreference } from "./repos/preferences.js";
 import { listRuns, listWatchers, setWatcherRunning } from "./repos/watchers.js";
 import { runTurn, streamTurn } from "./orchestrator.js";
-import { createTokenMinter } from "./voice.js";
 import { listRecent, record } from "./repos/ledger.js";
+import { attachVoice } from "./voice/relay.js";
 import { applyCors, openStream } from "./sse.js";
 import { TOPICS, publish } from "./events.js";
 import { z } from "zod";
@@ -98,40 +99,6 @@ api.post(
       return;
     }
     res.json(updated);
-  }),
-);
-
-/**
- * A short-lived credential for one voice session.
- *
- * POST rather than GET because it mints something: a GET that creates a
- * credential is cacheable, prefetchable, and shows up in logs as if it were
- * free. Behind `requireUser`, so a token is only ever issued to someone who
- * already proved who they are.
- */
-api.post(
-  "/voice/token",
-  handle(async (req, res) => {
-    const body = z.object({ sessionId: z.string().min(1).max(128) }).safeParse(req.body);
-    if (!body.success) {
-      res
-        .status(400)
-        .json({ code: "invalid_request", message: "Expected { sessionId: string }." });
-      return;
-    }
-
-    try {
-      res.json(await createTokenMinter().mint(body.data.sessionId, req.uid!));
-    } catch (err) {
-      // Voice being unavailable is a normal answer, not a server fault: the
-      // rest of the product works without it, and the client shows a plain
-      // "voice is not available" rather than a generic failure.
-      console.warn(`[voice] token refused: ${(err as Error).message}`);
-      res.status(503).json({
-        code: "voice_unavailable",
-        message: "Voice is not available right now. You can keep typing.",
-      });
-    }
   }),
 );
 
@@ -280,7 +247,10 @@ api.post(
 
 app.use("/api", api);
 
-app.listen(env.port, () => {
+const server = createServer(app);
+attachVoice(server);
+
+server.listen(env.port, () => {
   console.log(`[gateway] listening on :${env.port}`);
   console.log(`[gateway] project=${env.projectId} emulator=${env.usingEmulator}`);
   if (env.webOrigins.length) {

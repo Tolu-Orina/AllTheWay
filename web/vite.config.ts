@@ -79,6 +79,7 @@ export default defineConfig({
       "/api": {
         target: process.env.GATEWAY_URL ?? "http://localhost:8080",
         changeOrigin: true,
+        ws: true,
       },
     },
   },
@@ -91,6 +92,7 @@ export default defineConfig({
       "/api": {
         target: process.env.GATEWAY_URL ?? "http://localhost:8080",
         changeOrigin: true,
+        ws: true,
       },
     },
   },

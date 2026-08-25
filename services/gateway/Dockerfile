@@ -66,18 +66,21 @@ RUN npm --workspace @alltheway/contracts run build \
 RUN npm prune --omit=dev
 
 # ---------------------------------------------------------------------- test
-# The gateway has no runtime test suite yet, so the gate here is a full
-# typecheck of both workspaces against the installed dependency tree — which
-# catches the failure this image is most exposed to: contracts and gateway
-# drifting apart. It is a build stage so CI fails rather than warns.
+# Typecheck both workspaces, then run the gateway's voice-relay tests. Env
+# vars here exist only so env.ts can boot: the suite talks to a fake Live
+# backend and never reaches Firestore or Vertex.
 FROM build AS test
 WORKDIR /repo
+ENV FIRESTORE_EMULATOR_HOST=127.0.0.1:8081
+ENV ALLOW_ANONYMOUS=true
+ENV GOOGLE_CLOUD_PROJECT=alltheway-local
 RUN npm ci --ignore-scripts \
       --workspace @alltheway/contracts \
       --workspace @alltheway/gateway \
       --include-workspace-root \
  && npm --workspace @alltheway/contracts run build \
- && npm run typecheck
+ && npm run typecheck \
+ && npm --workspace @alltheway/gateway test
 
 # --------------------------------------------------------------------- final
 FROM gcr.io/distroless/nodejs22-debian12:nonroot AS final

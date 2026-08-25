@@ -34,8 +34,8 @@ export const env = {
   /** Pinned, never "latest": a silent model swap changes agent behaviour. */
   model: process.env.GEMINI_MODEL ?? "gemini-3.7-flash",
 
-  /** The Live API model for voice. Pinned for the same reason. */
-  liveModel: process.env.GEMINI_LIVE_MODEL ?? "gemini-live-2.5-flash-preview",
+  /** Native audio Live API model. Pinned: auto language detect, no language_code. */
+  liveModel: process.env.GEMINI_LIVE_MODEL ?? "gemini-live-2.5-flash-native-audio",
 
   usingEmulator,
   production,

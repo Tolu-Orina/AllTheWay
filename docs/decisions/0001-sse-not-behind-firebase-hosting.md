@@ -53,9 +53,9 @@ behind Hosting.
 ## Consequences
 
 - The stream is **cross-origin in production**, which is why `sse.ts` does CORS
-  and why the gateway answers preflight before authentication. In development
-  Vite proxies it and it is same-origin, so this path is not exercised locally —
-  worth remembering when it first ships.
+  and why the gateway answers preflight before authentication. Voice uses the
+  same hostname and the same `VITE_STREAM_ORIGIN` (ADR 0006). In development
+  Vite proxies both and they are same-origin.
 - The Firebase ID token travels in an `Authorization` header rather than a
   cookie, so the cross-origin move costs nothing in credential handling. This is
   also why the client uses `fetch` + `ReadableStream` instead of `EventSource`,

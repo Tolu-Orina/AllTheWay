@@ -1,6 +1,6 @@
 # AllTheWay — A2A & Platform Implementation Plan
 
-**Status:** Phases 0–6 delivered (2026-08-25; Live API and Model Armor still pending) · Phases 7–9 proposed · **Date:** 2026-08-25 · **Project:** `alltheway-rinegan` (`678063096671`), org `conquerorfoundation.com`, europe-west1.
+**Status:** Phases 0–6 delivered (2026-08-26; Model Armor REST still pending) · Phases 7–9 proposed · **Date:** 2026-08-26 · **Project:** `alltheway-rinegan` (`678063096671`), org `conquerorfoundation.com`, europe-west1.
 
 Covers the gap between what is built today and the Production Roadmap's phases 5–10, with **A2A at every internal boundary** as the load-bearing first phase.
 
@@ -12,7 +12,7 @@ Bootstrap and the prod stack are applied. Both Terraform roots plan clean.
 
 | Live in `alltheway-rinegan` | Still to do |
 |---|---|
-| 6 Cloud Run services, Firestore `(default)` in europe-west1 | Live API session (Phase 5) |
+| 6 Cloud Run services, Firestore `(default)` in europe-west1 | Model Armor REST call (Phase 6) |
 | Artifact Registry, GCS state bucket, 14 Cloud Build triggers | Model Armor REST call (Phase 6) |
 | Firebase Hosting + `alltheway.rinegansolutions.com` (CNAME, TLS) | Hosting content — the `web` trigger has not fired |
 | Least-privilege IAM per runtime identity | Agent Registry, monetization, multi-region (7–9) |
@@ -37,7 +37,7 @@ Findings that shaped the plan, verified against current sources:
 - **Security schemes**: `APIKeySecurityScheme`, `HTTPAuthSecurityScheme`, `OAuth2SecurityScheme`, `OpenIdConnectSecurityScheme`, `MutualTlsSecurityScheme`.
 - **ADK exposes agents** with `to_a2a(root_agent, port=…)` from `google.adk.a2a.utils.agent_to_a2a`, which auto-generates the card and wires an `A2aAgentExecutor`, `InMemoryTaskStore` and a Starlette app. It consumes with `RemoteA2aAgent` + `AGENT_CARD_WELL_KNOWN_PATH` from `google.adk.agents.remote_a2a_agent`.
 - **A JS SDK exists** — `@a2a-js/sdk`, official. **Resolved during Phase 1:** both SDKs are on the 1.x line — Python `a2a-sdk` 1.1.2, Node `@a2a-js/sdk` 1.0.1. No version skew. (The 0.3.x figure in earlier research was stale.)
-- **Gemini Live API** is stateful over WebSocket, audio-to-audio, supports function calling, and **requires ephemeral tokens in production** rather than API keys.
+- **Gemini Live API** is stateful over WebSocket, audio-to-audio, supports function calling. **Vertex does not issue ephemeral tokens**; the gateway relays the session. Native audio auto-detects language (no picker). See [decisions/0006](decisions/0006-voice-through-the-gateway.md).
 - **Model Armor** is a REST service screening prompts/responses for prompt injection, jailbreak, PII (150+ types via Sensitive Data Protection) and malicious URLs. Model-agnostic; needs Cloud Logging enabled to see sanitisation results.
 
 ### The insight that shapes everything
@@ -423,11 +423,12 @@ in the platform announces it.
 
 ---
 
-## Phase 5 — Voice — **DELIVERED (gates); Live API needs a different shape**
+## Phase 5 — Voice — **DELIVERED (gates + gateway Live relay)**
 
 **Goal:** talk to it; it confirms before acting. The two rules that make speech
 different from typing are done, tested and verified in a browser. The audio
-transport itself needs a GCP project.
+transport is a gateway WebSocket relay to Vertex Live (native audio), not a
+browser-to-Google token. See [decisions/0006](decisions/0006-voice-through-the-gateway.md).
 
 ### The insight
 
@@ -489,7 +490,7 @@ summary says what will happen and why; there is a visible way to refuse; the
 sending step is badged in the plan itself; declining posts 201, says nothing was
 done, and reaches the Feedback Ledger as `declined`.
 
-### Items 1 and 2 cannot be built as written
+### Items 1 and 2 — gateway relay (2026-08-26)
 
 Tested against the real project on 2026-08-25:
 
@@ -503,19 +504,17 @@ Developer API, which authenticates with an AI Studio key — explicitly ruled ou
 for this product. So "the gateway mints a short-lived Live API token, the
 browser opens a WebSocket to Google" has no implementation on our stack.
 
-This is not a blocker so much as a correction, because **the architecture doc
-already prescribes the alternative** (§3.8): a mediator between the client and
-the Live API session rather than a raw client-to-Gemini connection. The plan
-contradicted it, and the plan was wrong.
+The architecture already prescribed the alternative (§3.8). Settled as
+[decisions/0006](decisions/0006-voice-through-the-gateway.md): the gateway
+holds the Vertex session; the browser talks only to us, over PCM
+(AudioWorklet, 16 kHz in / 24 kHz out), `gemini-live-2.5-flash-native-audio`;
+session resumption on `goAway`; no language picker (native audio auto-detects;
+Igbo is absent). LiveKit is out unless PSTN or multi-party arrives.
 
-The mediated shape is also the stronger one: the browser holds **no model
-credential at all**, rather than a short-lived one. What it needs is a
-server-side WebSocket relay — the gateway holds the Vertex session with its own
-ADC identity and the browser talks only to us.
-
-`VertexTokenMinter` still throws, now with the accurate reason. A plausible mint
-call that has never succeeded would be trusted precisely because it looks
-finished.
+`POST /api/voice/token` and `VertexTokenMinter` are gone. A mint that cannot
+succeed is not a feature. Function calls from Live (`plan_turn`) run the same
+orchestrator graph over A2A, so the confirm gate still sits in front of
+anything that would change the world.
 
 **Item 3** (single Orchestrator context) is satisfied by construction: the
 orchestrator delegates research as a Plan Panel step rather than mid-turn,
@@ -675,7 +674,7 @@ Phases 2 and 3 can run in parallel once A2A lands. Phase 5 and 6 are independent
 ## Cross-cutting, every phase
 
 - **Tests before the mechanism** for anything safety-bearing. The autonomy floor was written that way and it is the strongest code in the repo.
-- **No key files, ever.** ADC locally, service accounts on Cloud Run, ephemeral tokens in the browser.
+- **No key files, ever.** ADC locally, service accounts on Cloud Run, **no model credential in the browser**.
 - **Traces are the product**, not debug output. Anything an agent decides must be explicable to the person it happened to.
 - **Verify by running.** Every significant bug in this codebase so far — cold-load 401s, unwired mutations, evidence drift under redelivery, the invisible sheen — passed typecheck and was caught only by executing it.
 
@@ -686,5 +685,5 @@ Phases 2 and 3 can run in parallel once A2A lands. Phase 5 and 6 are independent
 3. ~~**Does Firebase Hosting buffer SSE?**~~ — **settled in Phase 2, and the answer changed the design.** Buffering is the lesser problem; Hosting's unconfigurable 60s rewrite timeout is disqualifying on its own. The stream is served from the gateway's own hostname. See [decisions/0001](decisions/0001-sse-not-behind-firebase-hosting.md).
 4. **Plus tier price.** Currently a placeholder in shipped UI.
 5. **EU data residency.** Vertex is pinned to `global`, which has none — services run in europe-west1 but model calls do not. If residency is ever required, the endpoint moves and the model pins to a DRZ-supported one.
-6. **Voice transport.** Ephemeral tokens are unavailable on Vertex, so voice needs a server-side session mediator (architecture §3.8). Whether that is a hand-rolled WebSocket relay in the gateway or a partner integration such as LiveKit is undecided.
+6. ~~**Voice transport.**~~ — **settled 2026-08-26: gateway WebSocket relay, not LiveKit.** Vertex cannot mint ephemeral Live tokens; native audio is the language answer (no picker; Igbo unsupported). See [decisions/0006](decisions/0006-voice-through-the-gateway.md). Revisit only for PSTN or multi-party.
 7. **`/healthz` on `*.run.app`.** Google's frontend swallows the exact path; `/healthz/` works. Either move the health route or standardise on the trailing slash — the current state is a trap for whoever writes the next probe.

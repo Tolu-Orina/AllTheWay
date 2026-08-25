@@ -1,5 +1,5 @@
 import { Link } from "react-router";
-import { ArrowRight, Check, Mic, ShieldCheck } from "lucide-react";
+import { ArrowRight, Check, ShieldCheck } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import { Async } from "@/app/async";
@@ -10,6 +10,7 @@ import { api, type SessionDetail, type WatcherRun } from "@/app/data";
 import { timeOfDay } from "@/lib/format";
 import { useAuth } from "@/auth/useAuth";
 import { cn } from "@/lib/utils";
+import { VoiceControl } from "@/app/VoiceControl";
 
 const TRACE = [
   "Clarify gate asked about scope before drafting",
@@ -67,13 +68,7 @@ export default function Home() {
             belongs with the thing that greets you, not in the app chrome.
             Slate rather than the accent — orange is reserved for the one
             primary action on a screen, and Continue already holds it. */}
-        <button
-          type="button"
-          aria-label="Start a voice session"
-          className="sheen relative isolate grid size-11 shrink-0 place-items-center overflow-hidden rounded-full bg-slate text-white shadow-e2 transition-transform hover:scale-105 active:scale-95"
-        >
-          <Mic className="relative z-10 size-5" aria-hidden="true" />
-        </button>
+        <VoiceControl />
       </header>
 
       <Async state={state} reload={reload} skeleton={<HomeSkeleton />}>
