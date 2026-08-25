@@ -1,0 +1,9 @@
+npm warn Unknown env config "arch". This will stop working in the next major version of npm. See `npm help npmrc` for supported config options.
+
+> @alltheway/gateway@0.0.0 dev
+> tsx watch src/index.ts
+
+[gateway] listening on :8080
+[gateway] project=alltheway-local emulator=true
+[gateway] stream origins allowed: http://localhost:5173
+[gateway] ALLOW_ANONYMOUS is on — every request is treated as "dev-user". Development only.

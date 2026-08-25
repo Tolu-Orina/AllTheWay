@@ -1,0 +1,87 @@
+"""HTTP surface. Receives Pub/Sub push deliveries, exactly as on Cloud Run."""
+
+from __future__ import annotations
+
+import os
+
+from fastapi import FastAPI, Response
+from google.cloud import firestore
+
+from .events import PushEnvelope
+from .firestore import preferences, runs, watchers
+from .runtime import execute_run, now_iso
+
+app = FastAPI(title="AllTheWay watcher runtime")
+
+
+@app.get("/healthz")
+def healthz() -> dict:
+    return {"ok": True}
+
+
+@app.post("/events")
+def handle(envelope: PushEnvelope, response: Response) -> dict:
+    payload = envelope.payload()
+    uid = payload.get("userId")
+    watcher_id = payload.get("watcherId")
+
+    if not uid or not watcher_id:
+        # Malformed messages are acknowledged, never retried: Pub/Sub would
+        # redeliver forever and the message will never become valid.
+        return {"status": "dropped", "reason": "missing userId or watcherId"}
+
+    delivery_id = envelope.delivery_id()
+    run_ref = runs(uid).document(delivery_id or f"{watcher_id}-{now_iso()}")
+
+    # Pub/Sub is at-least-once. Keying the run document on the delivery id makes
+    # a redelivery a no-op instead of a duplicate run.
+    if delivery_id and run_ref.get().exists:
+        return {"status": "duplicate", "runId": delivery_id}
+
+    snap = watchers(uid).document(watcher_id).get()
+    if not snap.exists:
+        return {"status": "dropped", "reason": "watcher not found"}
+
+    watcher = snap.to_dict() or {}
+    prefs = [
+        p.to_dict().get("now", "")
+        for p in preferences(uid).stream()
+        if (p.to_dict() or {}).get("revertedAt") is None
+    ]
+
+    try:
+        outcome = execute_run(
+            watcher=watcher,
+            trigger_detail=payload.get("detail", watcher.get("trigger", "")),
+            preferences=[p for p in prefs if p],
+        )
+    except Exception as exc:  # noqa: BLE001 - surfaced to the ledger, not swallowed
+        # 500 tells Pub/Sub to retry: a transient orchestrator failure should
+        # not silently lose the run.
+        response.status_code = 500
+        return {"status": "error", "reason": str(exc)[:200]}
+
+    run_ref.set(
+        {
+            "watcherId": watcher_id,
+            "name": watcher.get("name", "Watcher"),
+            "detail": outcome.detail,
+            "state": outcome.state,
+            "reason": outcome.reason,
+            "plan": outcome.plan,
+            # Persisted so a blocked run is visible in the Transparent Trace,
+            # not merely prevented. Carries no screened content.
+            "trace": outcome.trace,
+            "at": firestore.SERVER_TIMESTAMP,
+        }
+    )
+
+    if outcome.state != "skipped":
+        watchers(uid).document(watcher_id).update({"lastRunAt": firestore.SERVER_TIMESTAMP})
+
+    return {
+        "status": outcome.state,
+        "runId": run_ref.id,
+        "reason": outcome.reason,
+        "trace": outcome.trace,
+    }

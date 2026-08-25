@@ -1,0 +1,567 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AllTheWay — design concept v3</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,500;0,9..144,600;1,9..144,500&family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --parchment:#F8F3E8;
+    --page:#EFE9DC;
+    --surface:#FFFFFF;
+    --ink:#241B2E;
+    --ink-soft:#6E6478;
+    --ink-faint:#9C93A6;
+    --line:#E5DCC8;
+    --line-strong:#D5C9AE;
+    --amber:#C97A2E;
+    --amber-soft:#F6E4CE;
+    --amber-deep:#8F5620;
+    --plum:#4B3466;
+    --plum-soft:#EAE3F0;
+    --plum-deep:#2E2049;
+    --font-ui:'Poppins',-apple-system,sans-serif;
+    --font-voice:'Fraunces',Georgia,serif;
+  }
+  *{box-sizing:border-box;}
+  body{margin:0;background:var(--page);color:var(--ink);font-family:var(--font-ui);-webkit-font-smoothing:antialiased;}
+
+  .section-head{max-width:1280px;margin:0 auto;padding:48px 32px 20px;}
+  .section-head p.eyebrow{font-size:12px;letter-spacing:.12em;text-transform:uppercase;color:var(--amber-deep);font-weight:600;margin:0 0 8px;}
+  .section-head h2{font-family:var(--font-voice);font-weight:500;font-size:26px;margin:0 0 6px;}
+  .section-head p.desc{color:var(--ink-soft);font-size:14px;max-width:640px;line-height:1.6;margin:0;}
+
+  .compass svg{display:block;}
+
+  /* ============================================================
+     1. LANDING PAGE — dark, walkways hero
+     ============================================================ */
+  .landing-wrap{max-width:1280px;margin:0 auto;padding:0 32px 60px;}
+  .landing{
+    --lbg:#F4F0FA;
+    --ltext:#211A2C;
+    --ltext-soft:#6E6478;
+    --lline:#E2DAEE;
+    background:linear-gradient(165deg,#F6F1FB 0%,#F8F3E8 100%);
+    border-radius:18px;
+    overflow:hidden;
+    position:relative;
+    color:var(--ltext);
+    border:1px solid #EAE3F4;
+  }
+  .landing-nav{
+    display:flex;align-items:center;justify-content:space-between;
+    padding:20px 30px;
+    position:relative;z-index:3;
+  }
+  .landing-brand{display:flex;align-items:center;gap:9px;font-family:var(--font-voice);font-size:16px;font-weight:600;color:var(--ltext);}
+  .landing-links{display:flex;gap:26px;font-size:13.5px;color:var(--ltext-soft);}
+  .landing-cta{display:flex;gap:10px;align-items:center;}
+  .btn-ghost-dark{font-size:13px;color:var(--ltext);background:transparent;border:1px solid var(--lline);padding:9px 16px;border-radius:9px;}
+  .btn-solid-amber{
+    font-size:13px;font-weight:600;color:#2E1A05;
+    background:linear-gradient(135deg,#F0C088 0%,var(--amber) 55%,#B5622A 100%);
+    border:none;padding:9px 18px;border-radius:9px;
+    box-shadow:0 8px 18px -8px rgba(201,122,46,0.55);
+  }
+
+  .landing-hero{
+    position:relative;
+    padding:64px 30px 0;
+    text-align:center;
+  }
+  .landing-tag{
+    display:inline-flex;align-items:center;gap:6px;
+    font-size:12px;color:var(--plum-deep);
+    background:rgba(255,255,255,0.7);
+    border:1px solid var(--lline);
+    padding:6px 14px;border-radius:999px;
+    margin-bottom:26px;
+  }
+  .landing-hero h1{
+    font-family:var(--font-ui);
+    font-weight:700;
+    font-size:50px;
+    line-height:1.14;
+    margin:0 0 18px;
+    letter-spacing:-0.01em;
+    color:var(--ltext);
+  }
+  .landing-hero h1 .grad-text{
+    background:linear-gradient(120deg,var(--plum) 0%,#8B5FB0 45%,var(--amber) 100%);
+    -webkit-background-clip:text;
+    background-clip:text;
+    color:transparent;
+  }
+  .landing-hero p{
+    font-size:16px;color:var(--ltext-soft);
+    max-width:480px;margin:0 auto 30px;
+    line-height:1.6;
+  }
+
+  .walkways{
+    position:relative;
+    height:420px;
+    margin-top:10px;
+  }
+  .walkways svg{position:absolute;inset:0;width:100%;height:100%;}
+  .app-float{
+    position:absolute;
+    left:50%;
+    bottom:0;
+    transform:translateX(-50%);
+    width:640px;
+    max-width:88%;
+    border-radius:14px 14px 0 0;
+    overflow:hidden;
+    border:1px solid var(--lline);
+    border-bottom:none;
+    box-shadow:0 -26px 60px -22px rgba(107,75,155,0.28);
+    z-index:2;
+    background:var(--surface);
+  }
+  .app-float-bar{
+    display:flex;gap:6px;padding:9px 12px;background:#F4EFE3;border-bottom:1px solid var(--line);
+  }
+  .app-float-bar span{width:8px;height:8px;border-radius:50%;background:var(--line-strong);}
+  .app-float-body{
+    background:var(--surface);
+    padding:16px 18px 0;
+    display:flex;
+    gap:10px;
+  }
+  .float-msg{
+    background:var(--parchment);
+    border:1px solid var(--line);
+    border-radius:10px 10px 10px 2px;
+    padding:9px 11px;
+    font-size:12.5px;
+    color:var(--ink);
+    max-width:260px;
+  }
+
+  /* ============================================================
+     2. DESKTOP APP SHELL — sidebar / canvas / AI panel (Notion-style)
+     ============================================================ */
+  .shell-wrap{max-width:1280px;margin:0 auto;padding:0 32px 60px;}
+  .shell{
+    display:grid;
+    grid-template-columns:220px 1fr 300px;
+    height:600px;
+    border:1px solid var(--line-strong);
+    border-radius:14px;
+    overflow:hidden;
+    box-shadow:0 24px 48px -24px rgba(43,30,20,0.22);
+    background:var(--surface);
+  }
+
+  .side-nav{
+    background:#F4EFE3;
+    border-right:1px solid var(--line);
+    padding:16px 12px;
+    display:flex;
+    flex-direction:column;
+    gap:2px;
+    overflow-y:auto;
+  }
+  .side-workspace{display:flex;align-items:center;gap:8px;padding:6px 6px 14px;font-size:13.5px;font-weight:600;}
+  .side-search{
+    display:flex;align-items:center;gap:7px;
+    background:var(--surface);border:1px solid var(--line);
+    border-radius:8px;padding:7px 10px;margin-bottom:14px;
+    font-size:12.5px;color:var(--ink-faint);
+  }
+  .side-item{
+    display:flex;align-items:center;gap:9px;
+    font-size:13px;color:var(--ink-soft);
+    padding:6px 8px;border-radius:7px;
+  }
+  .side-item.active{background:var(--surface);color:var(--ink);font-weight:500;box-shadow:0 0 0 1px var(--line) inset;}
+  .side-item svg{width:15px;height:15px;flex-shrink:0;}
+  .side-label{font-size:10.5px;text-transform:uppercase;letter-spacing:.07em;color:var(--ink-faint);font-weight:600;margin:16px 0 4px;padding:0 8px;}
+  .side-recent{font-size:12.5px;color:var(--ink-faint);padding:5px 8px;}
+
+  .canvas{
+    padding:26px 34px;
+    overflow-y:auto;
+    border-right:1px solid var(--line);
+  }
+  .canvas-eyebrow{font-size:12px;color:var(--ink-faint);margin-bottom:6px;}
+  .canvas h1{font-family:var(--font-voice);font-size:27px;font-weight:500;margin:0 0 6px;}
+  .canvas .canvas-sub{font-size:12.5px;color:var(--ink-faint);margin-bottom:22px;}
+  .block-step{display:flex;align-items:flex-start;gap:10px;padding:8px 0;font-size:14px;}
+  .block-step input{margin-top:3px;}
+  .block-step.done{color:var(--ink-faint);text-decoration:line-through;}
+  .callout{
+    display:flex;gap:10px;
+    background:var(--amber-soft);
+    border-radius:9px;
+    padding:12px 14px;
+    margin:16px 0;
+    font-size:13px;
+    line-height:1.6;
+  }
+  .callout .icon{font-size:15px;}
+  .callout .delta-add{color:var(--amber-deep);font-weight:500;display:block;}
+  .callout .delta-del{color:var(--ink-faint);text-decoration:line-through;display:block;}
+
+  .ai-panel{
+    display:flex;
+    flex-direction:column;
+    background:#FBF8F1;
+  }
+  .ai-panel-head{
+    display:flex;align-items:center;justify-content:space-between;
+    padding:14px 16px;border-bottom:1px solid var(--line);
+    font-size:13px;font-weight:600;
+  }
+  .ai-panel-body{flex:1;padding:16px;overflow-y:auto;}
+  .ai-welcome{display:flex;flex-direction:column;align-items:flex-start;gap:10px;}
+  .ai-welcome .compass{width:34px;height:34px;background:var(--plum-soft);border-radius:50%;display:flex;align-items:center;justify-content:center;}
+  .ai-welcome h4{font-family:var(--font-voice);font-size:16px;font-weight:500;margin:2px 0 0;}
+  .ai-welcome p{font-size:12.5px;color:var(--ink-soft);line-height:1.6;margin:0;}
+  .ai-chip-row{display:flex;flex-wrap:wrap;gap:7px;margin-top:12px;}
+  .ai-chip{font-size:11.5px;padding:6px 11px;border-radius:999px;border:1px solid var(--line-strong);background:var(--surface);}
+  .ai-chip.selected{border-color:var(--amber);background:var(--amber-soft);color:var(--amber-deep);font-weight:500;}
+  .ai-panel-input{
+    margin:0 14px 14px;
+    display:flex;align-items:center;gap:8px;
+    border:1.5px solid var(--plum);
+    border-radius:11px;
+    padding:9px 11px;
+    background:var(--surface);
+  }
+  .ai-panel-input input{flex:1;border:none;outline:none;font-size:12.5px;background:transparent;color:var(--ink);}
+  .ai-panel-input .send-dot{width:24px;height:24px;border-radius:50%;background:var(--plum);display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+
+  /* ============================================================
+     3. MOBILE — glassmorphic buttons over gradient
+     ============================================================ */
+  .mobile-wrap{max-width:1280px;margin:0 auto;padding:0 32px 80px;display:flex;gap:40px;flex-wrap:wrap;}
+  .phone{
+    width:340px;height:700px;border-radius:38px;overflow:hidden;position:relative;
+    border:1px solid #DCD4C2;box-shadow:0 24px 48px -20px rgba(43,30,20,0.28);
+  }
+  .glass-bg{
+    height:100%;
+    background:linear-gradient(160deg,#F3D9B8 0%,#E7B7C4 32%,#C9A6D9 60%,#9FB4DC 100%);
+    display:flex;flex-direction:column;
+  }
+  .glass-status{display:flex;justify-content:space-between;padding:16px 22px 8px;font-size:14px;font-weight:700;color:#3A2E42;}
+  .glass-search{
+    margin:6px 20px 18px;
+    display:flex;align-items:center;gap:8px;
+    background:rgba(255,255,255,0.42);
+    backdrop-filter:blur(14px);
+    -webkit-backdrop-filter:blur(14px);
+    border:1px solid rgba(255,255,255,0.55);
+    border-radius:16px;
+    padding:12px 14px;
+    font-size:13px;color:#3A2E42;
+  }
+  .glass-cards{display:flex;gap:12px;padding:0 20px;}
+  .glass-card{
+    flex:1;
+    background:rgba(255,255,255,0.32);
+    backdrop-filter:blur(16px);
+    -webkit-backdrop-filter:blur(16px);
+    border:1px solid rgba(255,255,255,0.5);
+    border-radius:18px;
+    padding:16px 14px;
+    display:flex;flex-direction:column;
+    gap:34px;
+    min-height:150px;
+  }
+  .glass-card .gc-icon{
+    width:36px;height:36px;border-radius:50%;
+    background:rgba(255,255,255,0.55);
+    display:flex;align-items:center;justify-content:center;
+  }
+  .glass-card .gc-label{font-size:11.5px;color:#4A3B52;}
+  .glass-card .gc-value{font-family:var(--font-voice);font-size:19px;font-weight:500;color:#241B2E;}
+  .glass-card .gc-sub{font-size:11px;color:#4A3B52;}
+
+  .glass-section-title{padding:22px 20px 10px;font-size:13.5px;font-weight:600;color:#2E2436;}
+  .glass-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;padding:0 20px;}
+  .glass-item{display:flex;flex-direction:column;align-items:center;gap:7px;}
+  .glass-item .gi-icon{
+    width:52px;height:52px;border-radius:16px;
+    background:rgba(255,255,255,0.4);
+    backdrop-filter:blur(14px);
+    -webkit-backdrop-filter:blur(14px);
+    border:1px solid rgba(255,255,255,0.5);
+    display:flex;align-items:center;justify-content:center;
+    font-size:19px;
+  }
+  .glass-item span{font-size:11px;color:#3A2E42;text-align:center;}
+
+  .glass-tabbar-wrap{
+    margin-top:auto;
+    padding:0 16px 22px;
+  }
+  .glass-tabbar{
+    display:flex;
+    align-items:center;
+    gap:2px;
+    padding:7px;
+    border-radius:999px;
+    background:rgba(255,255,255,0.38);
+    backdrop-filter:blur(20px);
+    -webkit-backdrop-filter:blur(20px);
+    border:1px solid rgba(255,255,255,0.55);
+    box-shadow:0 12px 28px -12px rgba(58,46,66,0.35);
+  }
+  .glass-tab{
+    flex:1;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    gap:6px;
+    padding:11px 8px;
+    border-radius:999px;
+    font-size:11px;
+    color:#5A4C62;
+    transition:background .15s ease;
+  }
+  .glass-tab.active{
+    background:rgba(255,255,255,0.65);
+    color:#241B2E;
+    font-weight:600;
+  }
+  .glass-tab svg{width:18px;height:18px;flex-shrink:0;}
+  .glass-tab .tab-text{display:none;}
+  .glass-tab.active .tab-text{display:inline;}
+
+  .caption-row{display:flex;align-items:baseline;justify-content:space-between;margin-top:12px;padding:0 2px;max-width:340px;}
+  .caption-row h3{font-size:13.5px;font-weight:600;margin:0;}
+  .caption-row span{font-size:12px;color:var(--ink-faint);}
+</style>
+</head>
+<body>
+
+<!-- ================= LANDING ================= -->
+<div class="section-head">
+  <p class="eyebrow">01 — Marketing site</p>
+  <h2>Every path, held by one guide</h2>
+  <p class="desc">Reflect's dark stage with a single glowing arch, reworked as a bundle of walkways converging toward the product — many ways to start, one companion that keeps you oriented.</p>
+</div>
+<div class="landing-wrap">
+  <div class="landing">
+    <div class="landing-nav">
+      <div class="landing-brand">
+        <div class="compass" style="width:22px;height:22px;background:var(--plum-soft);border-radius:50%;display:flex;align-items:center;justify-content:center;">
+          <svg width="13" height="13" viewBox="0 0 30 30" fill="none"><circle cx="15" cy="15" r="12" stroke="var(--plum)" stroke-width="2"/><circle cx="15" cy="15" r="2.4" fill="var(--amber)"/></svg>
+        </div>
+        AllTheWay
+      </div>
+      <div class="landing-links">
+        <span>Product</span><span>Pricing</span><span>Company</span><span>Blog</span>
+      </div>
+      <div class="landing-cta">
+        <span class="btn-ghost-dark">Login</span>
+        <span class="btn-solid-amber">Start free</span>
+      </div>
+    </div>
+
+    <div class="landing-hero">
+      <span class="landing-tag">✦ New — the Cognitive Profile</span>
+      <h1>Finally, an agent that goes<br><span class="grad-text">all the way</span> with you</h1>
+      <p>A companion that guides step by step, remembers how you think, and stays with you no matter which path you take.</p>
+
+      <div class="walkways">
+        <svg viewBox="0 0 1200 420" preserveAspectRatio="xMidYMax slice">
+          <defs>
+            <linearGradient id="wA" x1="0" y1="0" x2="0" y2="1">
+              <stop offset="0" stop-color="var(--amber)" stop-opacity="0"/>
+              <stop offset="1" stop-color="var(--amber)" stop-opacity="0.65"/>
+            </linearGradient>
+            <linearGradient id="wB" x1="0" y1="0" x2="0" y2="1">
+              <stop offset="0" stop-color="var(--plum)" stop-opacity="0"/>
+              <stop offset="1" stop-color="var(--plum)" stop-opacity="0.55"/>
+            </linearGradient>
+            <radialGradient id="glow" cx="50%" cy="100%" r="60%">
+              <stop offset="0" stop-color="#EBD3F0" stop-opacity="0.9"/>
+              <stop offset="1" stop-color="#EBD3F0" stop-opacity="0"/>
+            </radialGradient>
+          </defs>
+          <ellipse cx="600" cy="400" rx="380" ry="90" fill="url(#glow)"/>
+          <path d="M 60 0 C 260 140, 420 260, 600 400" stroke="url(#wB)" stroke-width="2.5" fill="none"/>
+          <path d="M 260 0 C 380 150, 480 270, 600 400" stroke="url(#wA)" stroke-width="2" fill="none"/>
+          <path d="M 600 0 C 600 160, 600 280, 600 400" stroke="url(#wA)" stroke-width="3" fill="none"/>
+          <path d="M 940 0 C 820 150, 720 270, 600 400" stroke="url(#wA)" stroke-width="2" fill="none"/>
+          <path d="M 1140 0 C 940 140, 780 260, 600 400" stroke="url(#wB)" stroke-width="2.5" fill="none"/>
+          <circle cx="600" cy="398" r="5" fill="var(--plum)"/>
+        </svg>
+        <div class="app-float">
+          <div class="app-float-bar"><span></span><span></span><span></span></div>
+          <div class="app-float-body">
+            <div class="float-msg">Before I draft this — quick check on scope: desktop-first or mobile-first?</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ================= DESKTOP SHELL ================= -->
+<div class="section-head">
+  <p class="eyebrow">02 — Desktop workspace</p>
+  <h2>Sidebar, canvas, companion</h2>
+  <p class="desc">Borrowed structure from Notion: global navigation on the left, the actual deliverable in the main canvas, and the live conversation with the agent in a dedicated right-hand panel — instead of everything competing in one chat column.</p>
+</div>
+<div class="shell-wrap">
+  <div class="shell">
+
+    <div class="side-nav">
+      <div class="side-workspace">
+        <div class="compass" style="width:20px;height:20px;background:var(--plum-soft);border-radius:50%;display:flex;align-items:center;justify-content:center;">
+          <svg width="12" height="12" viewBox="0 0 30 30" fill="none"><circle cx="15" cy="15" r="12" stroke="var(--plum)" stroke-width="2"/><circle cx="15" cy="15" r="2.4" fill="var(--amber)"/></svg>
+        </div>
+        Jordan's space
+      </div>
+      <div class="side-search">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3"/></svg>
+        Open
+      </div>
+      <div class="side-item active">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M4 11l8-6 8 6v8a1 1 0 0 1-1 1h-4v-6H9v6H5a1 1 0 0 1-1-1z"/></svg>
+        Home
+      </div>
+      <div class="side-item">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="4" y="4" width="7" height="7" rx="1.5"/><rect x="13" y="4" width="7" height="7" rx="1.5"/><rect x="4" y="13" width="7" height="7" rx="1.5"/><rect x="13" y="13" width="7" height="7" rx="1.5"/></svg>
+        Sessions
+      </div>
+      <div class="side-item">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="8"/><path d="M12 7v5l3 2"/></svg>
+        Cognitive profile
+      </div>
+      <div class="side-item">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="7" cy="7" r="2.6"/><circle cx="17" cy="7" r="2.6"/><circle cx="7" cy="17" r="2.6"/><circle cx="17" cy="17" r="2.6"/></svg>
+        Connectors
+      </div>
+      <div class="side-label">Recents</div>
+      <div class="side-recent">Grant application draft</div>
+      <div class="side-recent">Contract law, chapter 4</div>
+    </div>
+
+    <div class="canvas">
+      <div class="canvas-eyebrow">Sessions / Design work</div>
+      <h1>Nav wireframe</h1>
+      <div class="canvas-sub">Desktop-first · 2 of 4 steps done</div>
+
+      <div class="block-step done"><input type="checkbox" checked>Scope the layout</div>
+      <div class="block-step"><input type="checkbox">Draft nav wireframe</div>
+
+      <div class="callout">
+        <span class="icon">✏️</span>
+        <div>
+          Nav structure, first pass:
+          <span class="delta-del">Sidebar nav with 6 top-level items</span>
+          <span class="delta-add">Sidebar nav, collapsed by default, 4 items</span>
+        </div>
+      </div>
+
+      <div class="block-step"><input type="checkbox">Draft content grid</div>
+      <div class="block-step"><input type="checkbox">Review together</div>
+    </div>
+
+    <div class="ai-panel">
+      <div class="ai-panel-head">
+        <span>Companion</span>
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--ink-faint)" stroke-width="1.8"><path d="M6 9l6 6 6-6"/></svg>
+      </div>
+      <div class="ai-panel-body">
+        <div class="ai-welcome">
+          <div class="compass"><svg width="17" height="17" viewBox="0 0 30 30" fill="none"><circle cx="15" cy="15" r="12" stroke="var(--plum)" stroke-width="2"/><circle cx="15" cy="15" r="2.4" fill="var(--amber)"/></svg></div>
+          <h4>Welcome back, Jordan</h4>
+          <p>I noticed you tend to trim navigation down rather than add to it — want me to default to that this time?</p>
+          <div class="ai-chip-row">
+            <button class="ai-chip selected">Yes, default to minimal</button>
+            <button class="ai-chip">Ask me each time</button>
+          </div>
+        </div>
+      </div>
+      <div class="ai-panel-input">
+        <input type="text" placeholder="Reply to your companion…">
+        <div class="send-dot"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="var(--parchment)" stroke-width="2.4" stroke-linecap="round"><path d="M4 12l16-7-6 16-3-6-7-3z"/></svg></div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- ================= MOBILE GLASS ================= -->
+<div class="section-head">
+  <p class="eyebrow">03 — Mobile home</p>
+  <h2>Frosted glass over a soft field</h2>
+  <p class="desc">Klarna's translucent, blurred cards over a colour wash — reworked in our own gradient (amber to plum) instead of pink-blue, so it reads as AllTheWay and not a wallet app.</p>
+</div>
+<div class="mobile-wrap">
+  <div>
+    <div class="phone">
+      <div class="glass-bg">
+        <div class="glass-status"><span>9:41</span><span>●●●</span></div>
+        <div class="glass-search">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#3A2E42" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3"/></svg>
+          Ask anything
+        </div>
+        <div class="glass-cards">
+          <div class="glass-card">
+            <div class="gc-icon">
+              <svg width="17" height="17" viewBox="0 0 30 30" fill="none"><circle cx="15" cy="15" r="12" stroke="#8F5620" stroke-width="2"/><circle cx="15" cy="15" r="2.4" fill="#8F5620"/></svg>
+            </div>
+            <div>
+              <div class="gc-label">Continue</div>
+              <div class="gc-value">Nav wireframe</div>
+              <div class="gc-sub">2 of 4 steps</div>
+            </div>
+          </div>
+          <div class="glass-card">
+            <div class="gc-icon">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#3A2E42" stroke-width="2"><path d="M12 5v14M5 12h14"/></svg>
+            </div>
+            <div>
+              <div class="gc-label">Start</div>
+              <div class="gc-value">New session</div>
+              <div class="gc-sub">I'll ask what I need to</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="glass-section-title">Your companion</div>
+        <div class="glass-grid">
+          <div class="glass-item"><div class="gi-icon">🧭</div><span>Profile</span></div>
+          <div class="glass-item"><div class="gi-icon">🗂️</div><span>Sessions</span></div>
+          <div class="glass-item"><div class="gi-icon">🔌</div><span>Connectors</span></div>
+        </div>
+
+        <div class="glass-tabbar-wrap">
+          <div class="glass-tabbar">
+            <div class="glass-tab active">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M4 11l8-6 8 6v8a1 1 0 0 1-1 1h-4v-6H9v6H5a1 1 0 0 1-1-1z"/></svg>
+              <span class="tab-text">Home</span>
+            </div>
+            <div class="glass-tab">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="4" y="4" width="7" height="7" rx="1.5"/><rect x="13" y="4" width="7" height="7" rx="1.5"/><rect x="4" y="13" width="7" height="7" rx="1.5"/><rect x="13" y="13" width="7" height="7" rx="1.5"/></svg>
+              <span class="tab-text">Sessions</span>
+            </div>
+            <div class="glass-tab">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="8"/><path d="M12 7v5l3 2"/></svg>
+              <span class="tab-text">Profile</span>
+            </div>
+            <div class="glass-tab">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="8" r="3.4"/><path d="M5 20c1.3-3.8 4.2-5.6 7-5.6s5.7 1.8 7 5.6"/></svg>
+              <span class="tab-text">You</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="caption-row"><h3>Home</h3><span>mobile · glass</span></div>
+  </div>
+</div>
+
+</body>
+</html>

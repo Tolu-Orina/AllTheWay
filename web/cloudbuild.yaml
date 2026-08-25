@@ -1,0 +1,52 @@
+# Web build + Firebase Hosting deploy.
+#
+# Deliberately browserless: the site is a client-rendered SPA, so there is no
+# prerender step and nothing here needs Chromium. Playwright stays a
+# devDependency for local audits and is never installed in CI.
+#
+# Triggered per branch (develop -> dev site, main -> prod site) with _SITE_ID
+# supplied by the trigger, so this file is identical for both environments.
+
+substitutions:
+  _SITE_ID: alltheway-dev
+
+options:
+  logging: CLOUD_LOGGING_ONLY
+  machineType: E2_HIGHCPU_8
+
+steps:
+  - id: install
+    name: node:22-slim
+    dir: web
+    entrypoint: npm
+    # `npm ci` not `npm install`: fails loudly if the lockfile is out of date
+    # rather than silently resolving different versions than we tested.
+    args: ["ci", "--no-audit", "--no-fund"]
+
+  - id: lint
+    name: node:22-slim
+    dir: web
+    entrypoint: npm
+    args: ["run", "lint"]
+
+  - id: build
+    name: node:22-slim
+    dir: web
+    entrypoint: npm
+    args: ["run", "build"]
+
+  # Bind the single hosting config to this environment's site, then deploy it.
+  # One config for both environments means dev and prod cannot drift apart.
+  # Deploys from the repo root: firebase.json lives there, because Firestore,
+  # Auth and Hosting are all workspace-wide concerns.
+  - id: deploy
+    name: node:22-slim
+    entrypoint: bash
+    args:
+      - -c
+      - |
+        set -euo pipefail
+        npx --yes firebase-tools@14 target:apply hosting web "${_SITE_ID}" --project "${PROJECT_ID}"
+        npx --yes firebase-tools@14 deploy --only hosting:web --project "${PROJECT_ID}" --non-interactive --message "${SHORT_SHA} on ${BRANCH_NAME}"
+
+timeout: 900s

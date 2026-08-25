@@ -1,0 +1,362 @@
+@import "tailwindcss";
+@import "tw-animate-css";
+@import "shadcn/tailwind.css";
+
+/* `dark:` utilities must follow BOTH the explicit class and the OS preference. */
+@custom-variant dark {
+  &:is(.dark *) {
+    @slot;
+  }
+  @media (prefers-color-scheme: dark) {
+    &:is(:root:not(.light) *) {
+      @slot;
+    }
+  }
+}
+
+/* ============================================================
+   AllTheWay design tokens - derived from the brand mark.
+   One value per visual axis. Components read semantics only
+   (bg-card, text-muted-foreground), never a raw hex.
+   Rebrand = edit this block, nothing else.
+   ============================================================ */
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-destructive: var(--destructive);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+
+  /* Brand hues - for atmosphere, illustration and brand voice only.
+     Never for a call to action: `primary` is the one action colour. */
+  --color-navy-deep: var(--at-navy-deep);
+  --color-navy: var(--at-navy);
+  --color-blue: var(--at-blue);
+  --color-blue-deep: var(--at-blue-deep);
+  --color-blue-bright: var(--at-blue-bright);
+  --color-violet: var(--at-violet);
+  --color-violet-light: var(--at-violet-light);
+  --color-magenta: var(--at-magenta);
+  --color-orange-light: var(--at-orange-light);
+  --color-slate: var(--slate);
+  --color-porcelain: var(--at-porcelain);
+  --color-navy-fg: var(--at-navy-fg);
+  --color-ink-faint: var(--at-ink-faint);
+
+  --font-sans: var(--font-poppins);
+
+  /* two radius tiers, no third */
+  --radius-brand: 12px;
+  --radius-brand-lg: 20px;
+  --radius-sm: 8px;
+  --radius-md: 10px;
+  --radius-lg: 12px;
+  --radius-xl: 20px;
+
+  --shadow-e1: 0 1px 2px 0 rgb(11 21 51 / 0.06);
+  --shadow-e2: 0 12px 28px -12px rgb(11 21 51 / 0.2);
+  --shadow-float: 0 28px 64px -28px rgb(4 20 90 / 0.45);
+  --shadow-accent: 0 10px 22px -10px rgb(251 157 36 / 0.55);
+}
+
+:root {
+  /* ---- typeface: Poppins only, self-hosted via @fontsource ---- */
+  --font-poppins: "Poppins", ui-sans-serif, system-ui, sans-serif;
+
+  /* ---- primitives, sampled from the brand mark ---- */
+  --at-navy-deep: #04145a;
+  --at-navy: #022478;
+  --at-blue-deep: #0356c0;
+  --at-blue: #0269e6;
+  --at-blue-bright: #24b3fb;
+  --at-blue-light: #41bdfa;
+  --at-indigo: #3835e5;
+  --at-violet: #6b35d4;
+  --at-violet-light: #ae44d1;
+  --at-magenta: #c92c72;
+  --at-magenta-light: #e34d8a;
+  --at-orange: #fb9d24;
+  --at-orange-light: #fbb21e;
+  --at-porcelain: #f3f6fd;
+  /* static: text on the always-navy trust band (10.84:1) */
+  --at-navy-fg: #c3d0ee;
+
+  /* ---- light palette (values defined once) ---- */
+  --l-background: #f3f6fd;
+  --l-foreground: #0b1533;
+  --l-card: #ffffff;
+  --l-card-foreground: #0b1533;
+  --l-popover: #ffffff;
+  --l-popover-foreground: #0b1533;
+  --l-primary: #fb9d24;
+  --l-primary-foreground: #2a1500;
+  --l-secondary: #ffffff;
+  --l-secondary-foreground: #0b1533;
+  --l-muted: #e9eefb;
+  --l-muted-foreground: #5a6785;
+  --l-accent: #e4edfc;
+  --l-accent-foreground: #04145a;
+  --l-destructive: #b3261e;
+  --l-border: #dce3f2;
+  --l-input: #dce3f2;
+  /* Focus ring is blue, not the orange accent: #fb9d24 scores 1.95 against the
+     page ground, far under the 3:1 floor for non-text UI. Legibility wins. */
+  --l-ring: #0269e6;
+  --l-ink-faint: #8492ad;
+  --l-glass-tint: rgb(243 246 253 / 0.86);
+  --l-glass-border: rgb(255 255 255 / 0.72);
+  /* display gradient: 4.66 / 6.29 / 4.75 on the light ground */
+  /* voice control: blue-biased slate, not stock grey.
+     white icon 8.09:1, and 7.47:1 against the page ground */
+  --l-slate: #41506e;
+  --l-grad-1: #0269e6;
+  --l-grad-2: #6b35d4;
+  --l-grad-3: #c92c72;
+
+  /* ---- dark palette: designed as a peer, not an inversion ---- */
+  --d-background: #060d24;
+  --d-foreground: #e8edfa;
+  --d-card: #0e1838;
+  --d-card-foreground: #e8edfa;
+  --d-popover: #0e1838;
+  --d-popover-foreground: #e8edfa;
+  --d-primary: #fbb21e; /* lighter orange stop - the light one dulls on navy */
+  --d-primary-foreground: #2a1500;
+  --d-secondary: #0e1838;
+  --d-secondary-foreground: #e8edfa;
+  --d-muted: #0e1838;
+  --d-muted-foreground: #9aa8c6;
+  --d-accent: #12225c;
+  --d-accent-foreground: #dbe6fb;
+  --d-destructive: #ef6f66;
+  --d-border: #1d2b53;
+  --d-input: #1d2b53;
+  --d-ring: #41bdfa;
+  --d-ink-faint: #7d8bab;
+  --d-glass-tint: rgb(6 13 36 / 0.86);
+  --d-glass-border: rgb(255 255 255 / 0.1);
+  /* the light stops sink below the floor on navy, so dark gets its own */
+  /* lighter stop so the control still reads against the navy canvas (3.66:1) */
+  --d-slate: #5d6c8c;
+  --d-grad-1: #41bdfa;
+  --d-grad-2: #ae44d1;
+  --d-grad-3: #fbb21e;
+
+  /* ---- active mapping: light is the default ---- */
+  --background: var(--l-background);
+  --foreground: var(--l-foreground);
+  --card: var(--l-card);
+  --card-foreground: var(--l-card-foreground);
+  --popover: var(--l-popover);
+  --popover-foreground: var(--l-popover-foreground);
+  --primary: var(--l-primary);
+  --primary-foreground: var(--l-primary-foreground);
+  --secondary: var(--l-secondary);
+  --secondary-foreground: var(--l-secondary-foreground);
+  --muted: var(--l-muted);
+  --muted-foreground: var(--l-muted-foreground);
+  --accent: var(--l-accent);
+  --accent-foreground: var(--l-accent-foreground);
+  --destructive: var(--l-destructive);
+  --border: var(--l-border);
+  --input: var(--l-input);
+  --ring: var(--l-ring);
+  --at-ink-faint: var(--l-ink-faint);
+  --slate: var(--l-slate);
+  --grad-1: var(--l-grad-1);
+  --grad-2: var(--l-grad-2);
+  --grad-3: var(--l-grad-3);
+  --glass-tint: var(--l-glass-tint);
+  --glass-border: var(--l-glass-border);
+
+  --radius: 12px;
+  --glass-blur: 20px;
+  color-scheme: light;
+}
+
+/* Default for a visitor who has expressed no preference in-app.
+   `:not(.light)` lets an explicit light choice beat a dark OS. */
+@media (prefers-color-scheme: dark) {
+  :root:not(.light) {
+    --background: var(--d-background);
+    --foreground: var(--d-foreground);
+    --card: var(--d-card);
+    --card-foreground: var(--d-card-foreground);
+    --popover: var(--d-popover);
+    --popover-foreground: var(--d-popover-foreground);
+    --primary: var(--d-primary);
+    --primary-foreground: var(--d-primary-foreground);
+    --secondary: var(--d-secondary);
+    --secondary-foreground: var(--d-secondary-foreground);
+    --muted: var(--d-muted);
+    --muted-foreground: var(--d-muted-foreground);
+    --accent: var(--d-accent);
+    --accent-foreground: var(--d-accent-foreground);
+    --destructive: var(--d-destructive);
+    --border: var(--d-border);
+    --input: var(--d-input);
+    --ring: var(--d-ring);
+    --at-ink-faint: var(--d-ink-faint);
+    --slate: var(--d-slate);
+    --grad-1: var(--d-grad-1);
+    --grad-2: var(--d-grad-2);
+    --grad-3: var(--d-grad-3);
+    --glass-tint: var(--d-glass-tint);
+    --glass-border: var(--d-glass-border);
+    color-scheme: dark;
+  }
+}
+
+/* Explicit in-app choice wins in both directions. */
+:root.dark {
+  --background: var(--d-background);
+  --foreground: var(--d-foreground);
+  --card: var(--d-card);
+  --card-foreground: var(--d-card-foreground);
+  --popover: var(--d-popover);
+  --popover-foreground: var(--d-popover-foreground);
+  --primary: var(--d-primary);
+  --primary-foreground: var(--d-primary-foreground);
+  --secondary: var(--d-secondary);
+  --secondary-foreground: var(--d-secondary-foreground);
+  --muted: var(--d-muted);
+  --muted-foreground: var(--d-muted-foreground);
+  --accent: var(--d-accent);
+  --accent-foreground: var(--d-accent-foreground);
+  --destructive: var(--d-destructive);
+  --border: var(--d-border);
+  --input: var(--d-input);
+  --ring: var(--d-ring);
+  --at-ink-faint: var(--d-ink-faint);
+  --slate: var(--d-slate);
+  --grad-1: var(--d-grad-1);
+  --grad-2: var(--d-grad-2);
+  --grad-3: var(--d-grad-3);
+  --glass-tint: var(--d-glass-tint);
+  --glass-border: var(--d-glass-border);
+  color-scheme: dark;
+}
+
+@layer base {
+  * {
+    @apply border-border outline-ring/50;
+  }
+  body {
+    @apply bg-background text-foreground;
+    font-synthesis-weight: none;
+    text-rendering: optimizeLegibility;
+  }
+  /* visible keyboard focus everywhere - never removed */
+  :focus-visible {
+    outline: 2px solid var(--ring);
+    outline-offset: 2px;
+    border-radius: 4px;
+  }
+  ::selection {
+    background: var(--accent);
+    color: var(--accent-foreground);
+  }
+  h1,
+  h2,
+  h3 {
+    text-wrap: balance;
+  }
+  p {
+    text-wrap: pretty;
+  }
+}
+
+/* one glass material, reused on every frosted surface */
+@utility glass {
+  background: var(--glass-tint);
+  backdrop-filter: blur(var(--glass-blur)) saturate(180%);
+  -webkit-backdrop-filter: blur(var(--glass-blur)) saturate(180%);
+  border: 1px solid var(--glass-border);
+}
+
+/* solid fallback when the OS asks for less transparency */
+@media (prefers-reduced-transparency: reduce), (prefers-contrast: more) {
+  .glass {
+    background: var(--card);
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
+    border-color: var(--border);
+  }
+}
+
+/* reduced motion means stopped, not slowed */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+/* ambient orb drift - transform only, so it stays on the compositor */
+@keyframes drift {
+  0%,
+  100% {
+    transform: translate3d(0, 0, 0) scale(1);
+  }
+  33% {
+    transform: translate3d(4%, -3%, 0) scale(1.06);
+  }
+  66% {
+    transform: translate3d(-3%, 4%, 0) scale(0.96);
+  }
+}
+
+/* ============================================================
+   Glassy sheen — a slow highlight sweeping left to right.
+   Purely decorative, so it stops entirely under reduced motion
+   rather than merely slowing down.
+   ============================================================ */
+
+@media (prefers-reduced-motion: no-preference) {
+  .sheen::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(
+      100deg,
+      transparent 25%,
+      rgb(255 255 255 / 0.42) 50%,
+      transparent 75%
+    );
+    transform: translateX(-160%);
+    /* linear, not eased: a steady glide reads as glass, whereas easing
+       accelerates through the middle and snaps past the icon */
+    animation: sheen 3.6s linear infinite;
+    pointer-events: none;
+  }
+}
+
+@keyframes sheen {
+  0% {
+    transform: translateX(-160%);
+  }
+  /* the sweep occupies most of the cycle so it is slow enough to read,
+     with a short rest before it repeats */
+  75%,
+  100% {
+    transform: translateX(160%);
+  }
+}

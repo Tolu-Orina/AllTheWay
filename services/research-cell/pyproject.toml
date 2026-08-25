@@ -1,0 +1,26 @@
+[project]
+name = "alltheway-research-cell"
+version = "0.0.0"
+description = "Bounded research swarm: two workers, one synthesis, reachable only over A2A."
+requires-python = ">=3.11"
+dependencies = [
+  "fastapi>=0.115",
+  "uvicorn[standard]>=0.34",
+  "pydantic>=2.9",
+  # The [fastapi] extra, not bare a2a-sdk: the JSON-RPC server path imports
+  # sse_starlette, which the base package does not install. Bare a2a-sdk
+  # builds fine and then fails at container start.
+  "a2a-sdk[fastapi]>=1.1",
+  # Imported directly (json_format, struct_pb2), not just via a2a-sdk.
+  "protobuf>=5.0",
+]
+
+[project.optional-dependencies]
+# Installed only in the image's test stage, never in the runtime layer.
+test = ["pytest>=8.0"]
+# Vertex is only needed to run against a real model. The fake provider makes
+# the whole cell runnable and testable with no credentials at all.
+vertex = ["google-genai>=1.0"]
+
+[tool.pytest.ini_options]
+pythonpath = ["."]

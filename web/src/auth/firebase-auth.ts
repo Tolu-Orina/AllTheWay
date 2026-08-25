@@ -1,0 +1,140 @@
+import {
+  GoogleAuthProvider,
+  createUserWithEmailAndPassword,
+  onIdTokenChanged,
+  signInWithEmailAndPassword,
+  signInWithPopup,
+  signOut as fbSignOut,
+} from "firebase/auth";
+
+import { firebaseAuth } from "@/auth/firebase";
+import { ApiError, apiPost } from "@/lib/api";
+import type { AuthAdapter, AuthResult, AuthUser } from "@/auth/types";
+
+/**
+ * Firebase Auth for identity, the gateway for the six-digit codes.
+ *
+ * Firebase has no native email-code flow — its verification and passwordless
+ * sign-in are both links — so codes are issued and checked server-side. Firebase
+ * owns who you are; the gateway owns whether your address is proven.
+ */
+
+/**
+ * Firebase error codes are specific enough to enumerate accounts
+ * (`user-not-found` vs `wrong-password`), so sign-in collapses them into one
+ * message. Only genuinely actionable states get their own wording.
+ */
+function toMessage(err: unknown): string {
+  const code = (err as { code?: string })?.code ?? "";
+  switch (code) {
+    case "auth/email-already-in-use":
+      return "That email already has an account. Try signing in.";
+    case "auth/weak-password":
+      return "Choose a longer password — at least 8 characters.";
+    case "auth/popup-closed-by-user":
+    case "auth/cancelled-popup-request":
+      return "That sign-in window closed before it finished. Try again.";
+    case "auth/network-request-failed":
+      return "We could not reach the network. Check your connection and try again.";
+    case "auth/too-many-requests":
+      return "Too many attempts. Wait a moment and try again.";
+    default:
+      return "Incorrect email or password.";
+  }
+}
+
+const toUser = (u: NonNullable<typeof firebaseAuth.currentUser>): AuthUser => ({
+  uid: u.uid,
+  email: u.email ?? "",
+  displayName: u.displayName ?? undefined,
+  photoURL: u.photoURL ?? undefined,
+  emailVerified: u.emailVerified,
+});
+
+const fromApi = (err: unknown): AuthResult =>
+  err instanceof ApiError
+    ? { ok: false, message: err.message }
+    : { ok: false, message: "Something went wrong. Try again." };
+
+export function createFirebaseAuth(): AuthAdapter {
+  return {
+    init(onChange) {
+      // onIdTokenChanged, not onAuthStateChanged: it also fires on token
+      // refresh and after emailVerified flips, so the UI stays truthful.
+      return onIdTokenChanged(firebaseAuth, (u) => onChange(u ? toUser(u) : null));
+    },
+
+    async signIn(email, password) {
+      try {
+        await signInWithEmailAndPassword(firebaseAuth, email, password);
+        return { ok: true };
+      } catch (err) {
+        return { ok: false, message: toMessage(err) };
+      }
+    },
+
+    async signUp(email, password) {
+      try {
+        await createUserWithEmailAndPassword(firebaseAuth, email, password);
+        return { ok: true };
+      } catch (err) {
+        return { ok: false, message: toMessage(err) };
+      }
+    },
+
+    async signInWithGoogle() {
+      try {
+        await signInWithPopup(firebaseAuth, new GoogleAuthProvider());
+        return { ok: true };
+      } catch (err) {
+        return { ok: false, message: toMessage(err) };
+      }
+    },
+
+    async signOut() {
+      await fbSignOut(firebaseAuth);
+    },
+
+    async sendVerificationCode() {
+      // The address comes from the ID token server-side, never from the client,
+      // so nobody can ask us to send a code to an address they do not own.
+      try {
+        await apiPost("/auth/send-code", {});
+        return { ok: true };
+      } catch (err) {
+        return fromApi(err);
+      }
+    },
+
+    async verifyCode(_email, code) {
+      try {
+        await apiPost("/auth/verify-code", { code });
+        // Pull a fresh token so emailVerified is current on the client too.
+        await firebaseAuth.currentUser?.getIdToken(true);
+        await firebaseAuth.currentUser?.reload();
+        return { ok: true };
+      } catch (err) {
+        return fromApi(err);
+      }
+    },
+
+    async requestPasswordReset(email) {
+      try {
+        await apiPost("/auth/reset-request", { email });
+      } catch {
+        // The endpoint answers identically for unknown addresses; a transport
+        // failure must not reveal anything either.
+      }
+      return { ok: true };
+    },
+
+    async resetPassword(email, code, password) {
+      try {
+        await apiPost("/auth/reset-confirm", { email, code, password });
+        return { ok: true };
+      } catch (err) {
+        return fromApi(err);
+      }
+    },
+  };
+}

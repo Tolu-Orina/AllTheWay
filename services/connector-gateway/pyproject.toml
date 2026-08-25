@@ -1,0 +1,30 @@
+[project]
+name = "alltheway-connector-gateway"
+version = "0.0.0"
+description = "The Agent Gateway: one policy enforcement point in front of every connector."
+requires-python = ">=3.11"
+dependencies = [
+  # Shared, installed from the local wheelhouse in the image.
+  "alltheway-policy",
+  "alltheway-screening",
+  "fastapi>=0.115",
+  "uvicorn[standard]>=0.34",
+  "pydantic>=2.9",
+  "a2a-sdk[fastapi]>=1.1",
+  "protobuf>=5.0",
+  # The connector layer speaks MCP outward. A2A is for agent-to-agent; MCP is
+  # for agent-to-tool, and the two are deliberately not conflated.
+  # Pinned to the 1.x line, not floated. mcp 2.x restructures the server
+  # API (`mcp.server.fastmcp` becomes `mcp.server.mcpserver`), so an open
+  # upper bound builds an image against an API this code has never run on.
+  # The local environment resolved 1.26 and the image resolved 2.1.0 —
+  # same manifest, different code, and only the image build noticed.
+  "mcp>=1.26,<2",
+]
+
+[project.optional-dependencies]
+test = ["pytest>=8.0", "pytest-asyncio>=0.24"]
+
+[tool.pytest.ini_options]
+pythonpath = [".", "../../libs/policy/src", "../../libs/screening/src"]
+asyncio_mode = "auto"

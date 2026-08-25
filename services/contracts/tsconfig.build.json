@@ -1,0 +1,16 @@
+{
+  // Emit-only. The base config stays `noEmit` so `npm run typecheck` and the
+  // editor are unchanged; this exists purely so the package can be consumed as
+  // JavaScript by a runtime with no TypeScript loader — which is what shipping
+  // the gateway on distroless requires.
+  "extends": "./tsconfig.json",
+  "compilerOptions": {
+    "noEmit": false,
+    "outDir": "dist",
+    "rootDir": "src",
+    "declaration": true,
+    "declarationMap": true,
+    "sourceMap": true
+  },
+  "include": ["src"]
+}

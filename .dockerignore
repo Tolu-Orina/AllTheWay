@@ -1,0 +1,40 @@
+# The build context is the repo root for every service, because the gateway
+# depends on services/contracts and a per-service context cannot see a sibling.
+# That makes this file load-bearing: without it the daemon receives the whole
+# workspace, including a node_modules that is larger than any image we ship.
+
+.git
+.gitignore
+**/node_modules
+**/__pycache__
+**/*.pyc
+**/.pytest_cache
+**/.venv
+**/venv
+
+# Build output — always rebuilt inside the image, never copied in. Copying it
+# would let a stale local build ship instead of the one CI just produced.
+web/dist
+web/dev-dist
+services/*/dist
+
+# Local-only state
+**/boot.log
+**/preview.log
+**/*.log
+.env
+.env.*
+!.env.example
+firebase-debug.log
+firestore-debug.log
+pubsub-debug.log
+ui-debug.log
+.firebase
+
+# Verification artefacts and infrastructure: not inputs to a service image.
+web/screenshots
+web/test-results
+web/playwright-report
+infra
+docs
+.claude

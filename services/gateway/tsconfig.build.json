@@ -1,0 +1,17 @@
+{
+  // Emit-only. The base config stays `noEmit` so `npm run typecheck` and the
+  // editor are unchanged. Distroless has no TypeScript loader, so the image
+  // ships compiled JavaScript rather than sources plus tsx.
+  //
+  // Safe to emit as ESM because every relative import in src already carries a
+  // .js extension and nothing uses the @/ path alias — tsc does not rewrite
+  // either, so both would have failed at runtime rather than at build.
+  "extends": "./tsconfig.json",
+  "compilerOptions": {
+    "noEmit": false,
+    "outDir": "dist",
+    "rootDir": "src",
+    "sourceMap": true
+  },
+  "include": ["src"]
+}

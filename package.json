@@ -1,0 +1,34 @@
+{
+  "name": "alltheway",
+  "private": true,
+  "description": "AllTheWay monorepo. See docs/ for architecture.",
+  "workspaces": [
+    "services/contracts",
+    "services/gateway",
+    "web"
+  ],
+  "scripts": {
+    "dev:emulators": "firebase emulators:start --only firestore,auth,pubsub --project alltheway-local",
+    "dev:gateway": "npm --workspace @alltheway/gateway run dev",
+    "dev:web": "npm --workspace web run dev",
+    "seed": "npm --workspace @alltheway/gateway run seed",
+    "build": "npm --workspace @alltheway/contracts run build && npm --workspace @alltheway/gateway run build && npm --workspace web run build",
+    "typecheck": "npm --workspace @alltheway/contracts run typecheck && npm --workspace @alltheway/gateway run typecheck",
+    "dev:orchestrator": "cd services/orchestrator && python -m uvicorn app.main:app --port 8090",
+    "dev:watchers": "cd services/watcher-runtime && python -m uvicorn app.main:app --port 8091",
+    "dev:synth": "cd services/profile-synthesizer && python -m uvicorn app.main:app --port 8092",
+    "test:py": "cd libs/policy && python -m pytest tests -q && cd ../screening && python -m pytest tests -q && cd ../../services/orchestrator && python -m pytest tests -q && cd ../watcher-runtime && python -m pytest tests -q && cd ../profile-synthesizer && python -m pytest tests -q && cd ../research-cell && python -m pytest tests -q && cd ../connector-gateway && python -m pytest tests -q",
+    "dev:pubsub": "node scripts/dev-pubsub.mjs",
+    "test:streaming": "npm --workspace web run test:streaming",
+    "verify:streaming": "cd services/orchestrator && python scripts/verify_streaming.py",
+    "dev:research": "cd services/research-cell && python -m uvicorn app.main:app --port 8093",
+    "verify:cell": "cd services/research-cell && python scripts/verify_cell.py healthy",
+    "postinstall": "npm --workspace @alltheway/contracts run build",
+    "docker:build": "node scripts/docker-build.mjs",
+    "test:confirm": "npm --workspace web run test:confirm",
+    "dev:connectors": "cd services/connector-gateway && python -m uvicorn app.main:app --port 8094"
+  },
+  "devDependencies": {
+    "firebase-tools": "^14.27.0"
+  }
+}
