@@ -162,8 +162,30 @@ resource "google_cloudbuild_trigger" "backend" {
     }
   }
 
-  included_files = ["services/${each.value.service}/**"]
-  filename       = "services/${each.value.service}/cloudbuild.yaml"
+  # The service's own directory, plus the shared code its image bakes in.
+  #
+  # Its own directory alone is not enough, and the gap is invisible: every
+  # backend image builds from the repo root and copies shared source into
+  # itself — `libs/policy`, `libs/screening` and `libs/agentauth` for the
+  # Python services, `services/contracts` for the gateway. A change to any of
+  # those changes the image and fires no trigger, so the running container
+  # keeps the old copy while the repo looks up to date.
+  #
+  # Found the hard way: a rewritten Model Armor screener in `libs/screening`
+  # was pushed, no build ran, and the deployed services were left holding the
+  # previous version — while Terraform had already pointed them at a real
+  # template, which the old code answers by raising. Fail-closed made that an
+  # outage rather than a hole, but nothing announced it.
+  #
+  # Deliberately over-broad: any libs change rebuilds every backend service.
+  # Rebuilding an image that did not need it costs a few minutes; not
+  # rebuilding one that did costs a service running code nobody shipped.
+  included_files = [
+    "services/${each.value.service}/**",
+    "libs/**",
+    "services/contracts/**",
+  ]
+  filename = "services/${each.value.service}/cloudbuild.yaml"
 
   substitutions = {
     _SERVICE    = each.value.service

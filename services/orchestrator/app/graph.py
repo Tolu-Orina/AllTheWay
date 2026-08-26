@@ -38,6 +38,7 @@ from alltheway_policy import Ceiling
 
 from .jsonstream import parse_partial
 from .models import ClarifyQuestion, PlanStep, TurnEvent, TurnRequest, TurnResponse
+from .plan_validation import validate
 from .providers import ModelProvider, iter_text
 from .research_client import research
 from .voice import UNCLEAR, confirmation_for, transcript_verdict
@@ -204,6 +205,16 @@ def _finish(
     # Typed text is certain: there is no transcription to be unsure about. Only
     # a spoken turn carries a confidence, and only then can it be below 1.
     confidence = 1.0 if request.transcript_confidence is None else request.transcript_confidence
+
+    # The model's own labelling is checked before the gate reads it.
+    #
+    # Measured: both models flagged an irreversible step in only 8 of 12 runs
+    # on explicitly risky requests. The gate keys on `action`, so an unlabelled
+    # payment step meant no gate and no question. This escalates only — it can
+    # never talk the gate out of firing.
+    planned, corrections = validate(planned)
+    for correction in corrections:
+        yield TurnEvent(kind="trace", text=correction)
 
     confirmation = confirmation_for(
         planned,
