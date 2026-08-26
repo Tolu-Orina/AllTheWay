@@ -106,6 +106,7 @@ locals {
       # inbound and the plan outbound (runtime.py), and until now it did both
       # with the heuristic screener because nothing set this.
       MODEL_ARMOR_TEMPLATE = google_model_armor_template.screening.name
+      GEMMA_SCREENING      = "true"
     }
     profile-synthesizer = {}
     research-cell       = {}
@@ -114,6 +115,14 @@ locals {
     # catalogue cannot disagree with what Cloud Run actually serves.
     librarian = {
       MODEL_ARMOR_TEMPLATE = google_model_armor_template.screening.name
+
+      # The second opinion. Gemma is served as a managed API — serverless,
+      # per-token — not a self-deployed endpoint, which an earlier
+      # investigation wrongly concluded. Measured: the heuristic layer misses a
+      # paraphrased injection that Gemma catches, and neither blocks "please
+      # ignore my earlier email".
+      GEMMA_SCREENING = "true"
+
 
       # Deliberately NOT GOOGLE_CLOUD_LOCATION. That is `global`, where text
       # generation runs. Every embedding model is available in europe-west1, so
@@ -142,7 +151,9 @@ locals {
     # real thing.
     connector-gateway = {
       MODEL_ARMOR_TEMPLATE = google_model_armor_template.screening.name
-      USE_SECRET_MANAGER   = "true"
+      GEMMA_SCREENING      = "true"
+
+      USE_SECRET_MANAGER = "true"
     }
   }
 }

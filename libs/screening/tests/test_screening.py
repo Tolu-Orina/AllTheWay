@@ -9,7 +9,9 @@ import pytest
 from alltheway_screening import (
     DIRECTIONS,
     Finding,
+    GemmaScreener,
     HeuristicScreener,
+    LayeredScreener,
     ModelArmorScreener,
     Verdict,
     create_screener,
@@ -248,9 +250,105 @@ def test_the_unconfigured_default_is_the_local_screener(monkeypatch):
     assert isinstance(create_screener(), HeuristicScreener)
 
 
-def test_a_configured_template_selects_model_armor(monkeypatch):
+def test_a_configured_template_adds_model_armor_beside_the_heuristic(monkeypatch):
+    """Composition, not selection.
+
+    Model Armor used to *replace* the heuristic screener. It now joins it,
+    because `LayeredScreener` guarantees a layer can only ever add a block —
+    so keeping the cheap local layer costs nothing and catches the obvious
+    cases even when a network layer is unavailable.
+    """
     monkeypatch.setenv("MODEL_ARMOR_TEMPLATE", "projects/x/locations/y/templates/z")
-    assert isinstance(create_screener(), ModelArmorScreener)
+    chosen = create_screener()
+
+    assert isinstance(chosen, LayeredScreener)
+    assert [type(layer) for layer in chosen.screeners] == [HeuristicScreener, ModelArmorScreener]
+
+
+def test_a_layer_can_only_ever_add_a_block(monkeypatch):
+    """FR-S2, and the reason it is a rule rather than a convention.
+
+    If one layer could overturn another's block, adding a layer could make the
+    system *less* cautious — and every new layer would need a security review
+    of its interaction with every existing one.
+    """
+
+    class AlwaysAllows:
+        name = "permissive"
+
+        def screen(self, text, direction):
+            return Verdict(allowed=True, screener=self.name, direction=direction)
+
+    class AlwaysBlocks:
+        name = "strict"
+
+        def screen(self, text, direction):
+            return Verdict(
+                allowed=False,
+                screener=self.name,
+                direction=direction,
+                findings=[Finding(category="test", rule="blocked on purpose")],
+            )
+
+    # In either order, the block wins.
+    assert not LayeredScreener([AlwaysAllows(), AlwaysBlocks()]).screen("x", "inbound").allowed
+    assert not LayeredScreener([AlwaysBlocks(), AlwaysAllows()]).screen("x", "inbound").allowed
+
+
+def test_a_layer_that_fails_blocks_rather_than_abstaining(monkeypatch):
+    """A second opinion that cannot be obtained is not a second opinion that
+    said yes."""
+
+    class Raises:
+        name = "broken"
+
+        def screen(self, text, direction):
+            raise RuntimeError("upstream is down")
+
+    class AlwaysAllows:
+        name = "permissive"
+
+        def screen(self, text, direction):
+            return Verdict(allowed=True, screener=self.name, direction=direction)
+
+    verdict = screen("anything", "inbound", screener=LayeredScreener([AlwaysAllows(), Raises()]))
+    assert not verdict.allowed
+    assert verdict.degraded
+
+
+def test_every_layers_findings_survive_composition():
+    """A trace that names only one reason hides the others."""
+
+    def blocker(tag):
+        class Blocks:
+            name = tag
+
+            def screen(self, text, direction):
+                return Verdict(
+                    allowed=False,
+                    screener=tag,
+                    direction=direction,
+                    findings=[Finding(category=tag, rule=f"{tag} rule")],
+                )
+
+        return Blocks()
+
+    verdict = LayeredScreener([blocker("a"), blocker("b")]).screen("x", "inbound")
+    assert {f.category for f in verdict.findings} == {"a", "b"}
+
+
+def test_gemma_joins_only_when_asked(monkeypatch):
+    monkeypatch.setenv("MODEL_ARMOR_TEMPLATE", "projects/x/locations/y/templates/z")
+    monkeypatch.delenv("GEMMA_SCREENING", raising=False)
+    assert len(create_screener().screeners) == 2
+
+    monkeypatch.setenv("GEMMA_SCREENING", "true")
+    layers = create_screener().screeners
+    assert [type(layer) for layer in layers] == [
+        HeuristicScreener,
+        ModelArmorScreener,
+        GemmaScreener,
+    ]
 
 
 def test_model_armor_failing_still_fails_closed(monkeypatch):
