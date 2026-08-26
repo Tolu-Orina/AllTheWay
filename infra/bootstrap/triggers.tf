@@ -138,6 +138,10 @@ resource "google_cloudbuild_trigger" "web" {
     # while the same request direct to Cloud Run upgrades.
     _ENV    = each.value
     _REGION = var.region
+
+    # The Web Push public key, baked into the bundle. See the variable for why
+    # this is a substitution and not a secret.
+    _VAPID_KEY = var.firebase_vapid_key
   }
 
   # A trigger running as a non-default service account must not write build

@@ -39,6 +39,9 @@
 
 substitutions:
   _SITE_ID: alltheway-dev
+  # Empty is supported: the app then reports that notifications are not
+  # configured for this deployment rather than failing at runtime.
+  _VAPID_KEY: ""
   _ENV: dev
   _REGION: europe-west1
 
@@ -91,6 +94,7 @@ steps:
           echo "VITE_FIREBASE_API_KEY=$$API_KEY"
           echo "VITE_FIREBASE_AUTH_DOMAIN=$$AUTH_DOMAIN"
           echo "VITE_FIREBASE_PROJECT_ID=${PROJECT_ID}"
+          echo "VITE_FIREBASE_VAPID_KEY=${_VAPID_KEY}"
         } > web/.env.production
 
         # Where the browser opens the SSE turn stream and the voice WebSocket.

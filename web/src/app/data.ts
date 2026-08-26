@@ -284,6 +284,14 @@ export const api = {
     apiPost(`/artifacts/${artifactId}/comments`, { versionAnchor, body, owner }),
   resolveComment: (artifactId: string, commentId: string, owner?: string) =>
     apiPost(`/artifacts/${artifactId}/comments/resolve`, { commentId, owner }),
+  // A push token is per browser, so the same person on a laptop and a phone
+  // registers two and both should ring.
+  recoveryOffered: (turnId: string, failureKind: string) =>
+    apiPost("/recoveries", { turnId, failureKind }),
+  recoveryTaken: (id: string, routeId: string) =>
+    apiPost("/recoveries/taken", { id, routeId }),
+  registerPushToken: (token: string) => apiPost("/push/tokens", { token }),
+  unregisterPushToken: (token: string) => apiPost("/push/tokens/remove", { token }),
   setMeetingNotes: (enabled: boolean) =>
     apiPost("/settings/meetings", { enabled }),
   optOutOfMeeting: (meetingId: string) =>

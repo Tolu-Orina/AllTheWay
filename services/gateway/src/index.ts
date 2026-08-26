@@ -19,6 +19,9 @@ import { runTurn, streamTurn } from "./orchestrator.js";
 import { listRecent, record } from "./repos/ledger.js";
 import { readUsage } from "./repos/usage.js";
 import { buildDigest } from "./repos/digest.js";
+import { registerToken, removeToken } from "./repos/push.js";
+import { recordOffered, recordTaken } from "./repos/recoveries.js";
+import { FailureKindSchema } from "@alltheway/contracts";
 import { retrieve } from "./repos/retrieval.js";
 import { attachVoice } from "./voice/relay.js";
 import { applyCors, openStream } from "./sse.js";
@@ -308,6 +311,78 @@ api.get(
   "/digest",
   handle(async (req, res) => {
     res.json(await buildDigest(req.uid!));
+  }),
+);
+
+const PushTokenSchema = z.object({ token: z.string().min(1).max(1500) });
+
+api.post(
+  "/push/tokens",
+  handle(async (req, res) => {
+    const body = PushTokenSchema.safeParse(req.body);
+    if (!body.success) {
+      res.status(400).json({ code: "invalid_request", message: "Expected { token: string }." });
+      return;
+    }
+    const stored = await registerToken(req.uid!, body.data.token);
+    if (!stored) {
+      res.status(400).json({ code: "invalid_request", message: "That token cannot be stored." });
+      return;
+    }
+    res.status(204).end();
+  }),
+);
+
+api.post(
+  "/push/tokens/remove",
+  handle(async (req, res) => {
+    const body = PushTokenSchema.safeParse(req.body);
+    if (!body.success) {
+      res.status(400).json({ code: "invalid_request", message: "Expected { token: string }." });
+      return;
+    }
+    await removeToken(req.uid!, body.data.token);
+    res.status(204).end();
+  }),
+);
+
+const OfferedSchema = z.object({
+  turnId: z.string().min(1).max(200),
+  failureKind: FailureKindSchema,
+});
+
+api.post(
+  "/recoveries",
+  handle(async (req, res) => {
+    const body = OfferedSchema.safeParse(req.body);
+    if (!body.success) {
+      res.status(400).json({ code: "invalid_request", message: "Expected a turnId and a failureKind." });
+      return;
+    }
+    const id = await recordOffered(req.uid!, body.data.turnId, body.data.failureKind);
+    res.status(201).json({ id });
+  }),
+);
+
+const TakenSchema = z.object({
+  id: z.string().min(1).max(200),
+  routeId: z.string().min(1).max(100),
+});
+
+api.post(
+  "/recoveries/taken",
+  handle(async (req, res) => {
+    const body = TakenSchema.safeParse(req.body);
+    if (!body.success) {
+      res.status(400).json({ code: "invalid_request", message: "Expected an id and a routeId." });
+      return;
+    }
+    const ok = await recordTaken(req.uid!, body.data.id, body.data.routeId);
+    if (!ok) {
+      res.status(404).json({ code: "not_found", message: "That recovery is not there." });
+      return;
+    }
+    res.status(204).end();
   }),
 );
 

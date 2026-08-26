@@ -92,6 +92,31 @@ export const sharedWithMe = (granteeUid: string) =>
   userDoc(granteeUid).collection("sharedWithMe");
 
 /**
+ * Web push tokens, one document per browser.
+ *
+ * Path-scoped like everything else. A token is not secret in the way a
+ * credential is — it authorises sending *to* a device, not acting *as* anyone —
+ * but it identifies a person's browser, and that is enough to keep it under
+ * them rather than in a root collection keyed by token.
+ *
+ * The document id is the token itself, which makes re-registering the same
+ * browser idempotent: FCM hands back the same token until it rotates, and an
+ * `add()` here would accumulate a row per page load.
+ */
+export const pushTokens = (uid: string) => userDoc(uid).collection("pushTokens");
+
+/**
+ * What was offered when something failed, and what the person did next.
+ *
+ * Recorded because **which route a user takes after a failure is the most
+ * honest product feedback available** — it says what they actually wanted at
+ * the moment the system could not deliver it. A person who always picks "I'll
+ * do this one myself" over "connect the account" is telling us something no
+ * survey would.
+ */
+export const recoveries = (uid: string) => userDoc(uid).collection("recoveries");
+
+/**
  * Comments on an artifact, anchored to a version.
  *
  * Under the artifact rather than under the author: a comment is part of the

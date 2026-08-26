@@ -23,3 +23,5 @@ resend_api_key_secret = "RESEND_API_KEY"
 # The sending domain must be verified in Resend (DNS records on
 # rinegansolutions.com) or every send is rejected at the API.
 mail_from = "AllTheWay <no-reply@rinegansolutions.com>"
+
+firebase_vapid_key = "BPQBAM1BmJqXGZYARH6McZdMf9xUG0MvLywEmRh_kNmrQb4T6_Ih1KKEWOD6XUqGUSc4d3ftez6p0MI2QCXekgA"

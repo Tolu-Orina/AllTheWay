@@ -12,5 +12,10 @@
     "declarationMap": true,
     "sourceMap": true
   },
-  "include": ["src"]
+  "include": ["src"],
+  // Tests are not part of the published surface. Without this they are
+  // compiled into dist and — worse — their node imports fail the build,
+  // which breaks every service, because every service builds contracts
+  // before it builds itself.
+  "exclude": ["src/**/*.test.ts"]
 }

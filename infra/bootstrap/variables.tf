@@ -28,6 +28,27 @@ variable "github_repo" {
   type        = string
 }
 
+variable "firebase_vapid_key" {
+  description = <<-EOT
+    The Web Push certificate's PUBLIC key, from Firebase Console ->
+    Project settings -> Cloud Messaging -> Web Push certificates.
+
+    Public by design: the browser sends it to the push service so that service
+    can verify messages came from this application. It is not a credential and
+    is deliberately a substitution rather than a secret — putting a public key
+    in Secret Manager implies a handling requirement that does not exist, and
+    that costs more in confusion than it buys in caution.
+
+    The matching PRIVATE key stays with Firebase. Sending authenticates by
+    service account, so nothing in this repo ever needs it.
+
+    Empty is a supported state: the app reports that notifications are not
+    configured for the deployment, rather than failing.
+  EOT
+  type        = string
+  default     = ""
+}
+
 variable "backend_services" {
   description = "Cloud Run service base names, used to pre-create runtime service accounts."
   type        = list(string)

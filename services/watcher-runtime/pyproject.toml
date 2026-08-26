@@ -14,6 +14,11 @@ dependencies = [
   "uvicorn[standard]>=0.34",
   "pydantic>=2.9",
   "google-cloud-firestore>=2.19",
+  # Sending the digest notification authenticates to FCM with this service's own
+  # identity. Declared rather than inherited: it arrives today only as a
+  # transitive of google-cloud-firestore, and a package present because
+  # something else happens to want it is how the `ws` outage happened.
+  "google-auth>=2.35",
   "httpx>=0.27",
   # Imported by app/a2a_client.py. Was missing: the dev machine had it
   # installed globally, so nothing failed until a clean image build.

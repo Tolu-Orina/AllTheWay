@@ -1,6 +1,7 @@
 import { AlertTriangle, ShieldCheck, ShieldX } from "lucide-react";
 
 import { Async } from "@/app/async";
+import { Specialists } from "@/app/Specialists";
 import { useAsync } from "@/app/use-async";
 import { api, type Agent } from "@/app/data";
 import { cn } from "@/lib/utils";
@@ -39,6 +40,8 @@ export default function Agents() {
           checked at the moment you asked — not when it was deployed.
         </p>
       </header>
+
+      <Specialists />
 
       <Async state={state} reload={reload}>
         {(registry) => (

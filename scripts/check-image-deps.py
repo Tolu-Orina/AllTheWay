@@ -156,6 +156,38 @@ def main() -> int:
 
     print()
     for service in python_services():
+        dockerfile = io.open(
+            ROOT / "services" / service / "Dockerfile", encoding="utf-8"
+        ).read()
+
+        # A library can be COPYed into the build context and still not be built
+        # into the wheelhouse the install resolves from. pip then reports
+        # "No matching distribution found", which reads like a missing package
+        # on PyPI rather than a line missing from this Dockerfile.
+        #
+        # That is exactly how the orchestrator's screening dependency failed: the
+        # COPY was present, this check passed, and the build broke anyway.
+        copied = set(re.findall(r"COPY libs/(\w+)", dockerfile))
+
+        # Only what the `pip wheel` invocation names. Scanning the whole file
+        # would match each COPY's own destination — `COPY libs/x ./libs/x` — so
+        # every copied library would look built and this check could never fail.
+        # It did exactly that when first written.
+        wheel_lines = [
+            line for line in dockerfile.splitlines() if "pip wheel" in line
+        ]
+        wheeled = set(re.findall(r"\./libs/(\w+)", " ".join(wheel_lines)))
+
+        unbuilt = sorted(copied - wheeled)
+        if unbuilt:
+            failures.append(
+                f"{service}: copies {unbuilt} into the image but never builds "
+                "them into the wheelhouse, so the install cannot resolve them"
+            )
+        print(f"  {service:20} wheelhouse           {'OK' if not unbuilt else 'MISSING'}")
+
+    print()
+    for service in python_services():
         directory = ROOT / "services" / service
         sources = glob.glob(str(directory / "app" / "*.py")) + glob.glob(
             str(directory / "connectors" / "*.py")
