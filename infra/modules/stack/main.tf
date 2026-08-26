@@ -381,7 +381,30 @@ module "service" {
   # request timeout is the socket's lifetime: 300s would hang up a call that
   # is still talking. 3600s is the platform maximum. Other services stay at
   # the default — a turn should not last an hour.
-  timeout_seconds = each.key == "gateway" ? 3600 : 300
+  #
+  # The scribe is the second service with that shape. A Tier 2 meeting holds a
+  # WebRTC session open for as long as the meeting lasts, so a 300s timeout
+  # would drop the agent out of every call after five minutes — and it would
+  # look like a flaky connection rather than a configured limit.
+  #
+  # 3600s is the ceiling, which covers the 60-minute meeting the plan requires
+  # to survive. A 90-minute meeting still exceeds it; that is what session
+  # resumption in Phase F is for, and it is a reconnect problem rather than a
+  # number that can be raised.
+  timeout_seconds = contains(["gateway", "scribe"], each.key) ? 3600 : 300
+
+  # Concurrency, set for the pinned case rather than for today's traffic.
+  #
+  # Tier 2 is refused for every meeting right now — the preview is not enrolled
+  # — so the scribe currently serves short REST calls that would be perfectly
+  # happy at the default of 40. The day enrolment arrives, that same 40 becomes
+  # forty simultaneous meetings decoding audio on one instance, and nobody will
+  # remember to come back and change it.
+  #
+  # So it is chosen now for the shape this service is built for. Four is small
+  # enough that a pinned session has room, and large enough that the REST path
+  # does not scale out for no reason.
+  concurrency = each.key == "scribe" ? 4 : 40
 
   env_vars = merge(var.common_env_vars, {
     APP_ENV              = var.env
@@ -509,7 +532,11 @@ resource "google_firestore_field" "auth_codes_ttl" {
 # ---------------------------------------------------------------------------
 
 resource "google_pubsub_topic" "events" {
-  for_each = toset(["session-ended", "watcher-trigger"])
+  # Derived from the consumer map rather than listed again. Two lists that must
+  # agree is one list too many: a topic added here but not there is unconsumed,
+  # and a consumer added there but not here fails at delivery — quietly, in a
+  # retry loop, long after a green apply.
+  for_each = toset(keys(local.event_consumers))
 
   project = var.project_id
   name    = "${each.value}-${var.env}"
@@ -520,6 +547,10 @@ locals {
   event_consumers = {
     "session-ended"   = { service = "profile-synthesizer", path = "/events" }
     "watcher-trigger" = { service = "watcher-runtime", path = "/events" }
+    # Tier 1's trigger. Google Workspace Events publishes here when a conference
+    # ends, which is the moment a transcript can exist — polling for something
+    # that happens twice a day would be both wasteful and late.
+    "meet-events" = { service = "scribe", path = "/events/meet" }
   }
 }
 

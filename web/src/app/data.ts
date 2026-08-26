@@ -259,6 +259,10 @@ export const api = {
   // Until this is called, nothing has been done about it.
   confirmCommitment: (meetingId: string, id: string) =>
     apiPost(`/meetings/${meetingId}/commitments/confirm`, { id }),
+  setMeetingNotes: (enabled: boolean) =>
+    apiPost("/settings/meetings", { enabled }),
+  optOutOfMeeting: (meetingId: string) =>
+    apiPost(`/meetings/${meetingId}/opt-out`, { optedOut: true }),
 
   /** Home needs the in-progress session; the list is already sorted by recency. */
   homePlan: async (): Promise<SessionDetail | null> => {

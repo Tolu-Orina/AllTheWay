@@ -79,12 +79,37 @@ WORKDIR /repo
 ENV FIRESTORE_EMULATOR_HOST=127.0.0.1:8081
 ENV ALLOW_ANONYMOUS=true
 ENV GOOGLE_CLOUD_PROJECT=alltheway-local
+ARG FIRESTORE_EMULATOR_VERSION=1.19.8
+RUN apt-get update \
+    && apt-get install -y --no-install-recommends default-jre-headless curl \
+    && rm -rf /var/lib/apt/lists/* \
+    && curl -sSfL -o /opt/firestore-emulator.jar \
+        "https://storage.googleapis.com/firebase-preview-drop/emulator/cloud-firestore-emulator-v${FIRESTORE_EMULATOR_VERSION}.jar"
+
+# One RUN: a background process does not survive between layers. The emulator
+# is waited for rather than slept at — a fixed sleep is either too short on a
+# slow builder or wasted on a fast one, and too-short surfaces as a connection
+# error that reads like a broken test.
 RUN npm ci --ignore-scripts \
       --workspace @alltheway/contracts \
       --workspace @alltheway/gateway \
       --include-workspace-root \
  && npm --workspace @alltheway/contracts run build \
- && npm --workspace @alltheway/gateway run typecheck \
+ && npm --workspace @alltheway/gateway run typecheck
+
+# A separate RUN, and that is the whole point.
+#
+# `A && B && java ... &` backgrounds the ENTIRE chain, not just java — `&`
+# terminates the whole && list. Folded into the install above, npm ci would
+# have gone to the background and the tests would have started against a
+# half-installed tree. Starting the emulator as the first command of its own
+# RUN is what keeps `&` attached to java alone.
+RUN java -jar /opt/firestore-emulator.jar --host=127.0.0.1 --port=8081 & \
+    for i in $(seq 1 60); do \
+      if curl -sf "http://127.0.0.1:8081/" >/dev/null 2>&1; then break; fi; \
+      if [ "$i" = "60" ]; then echo "Firestore emulator never came up." >&2; exit 1; fi; \
+      sleep 1; \
+    done \
  && npm --workspace @alltheway/gateway test
 
 # --------------------------------------------------------------------- final

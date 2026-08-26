@@ -105,6 +105,45 @@ meetingRoutes.get("/meetings/:id/commitments", (req, res) => {
   })();
 });
 
+meetingRoutes.post("/settings/meetings", (req, res) => {
+  void (async () => {
+    if (unavailable(res)) return;
+
+    const enabled = z.boolean().safeParse(req.body?.enabled);
+    if (!enabled.success) {
+      res.status(400).json({ code: "invalid_request", message: "Expected { enabled: boolean }." });
+      return;
+    }
+
+    try {
+      const upstream = await callScribe(req.uid!, "/settings/meetings", {
+        method: "POST",
+        body: JSON.stringify({ enabled: enabled.data }),
+      });
+      await relay(res, upstream);
+    } catch {
+      res.status(502).json({ code: "upstream_error", message: "That could not be saved." });
+    }
+  })();
+});
+
+meetingRoutes.post("/meetings/:id/opt-out", (req, res) => {
+  void (async () => {
+    if (unavailable(res)) return;
+
+    try {
+      const upstream = await callScribe(
+        req.uid!,
+        `/meetings/${encodeURIComponent(req.params.id)}/opt-out`,
+        { method: "POST", body: JSON.stringify({ optedOut: req.body?.optedOut ?? true }) },
+      );
+      await relay(res, upstream);
+    } catch {
+      res.status(502).json({ code: "upstream_error", message: "That could not be saved." });
+    }
+  })();
+});
+
 const ConfirmSchema = z.object({ id: z.string().min(1).max(200) });
 
 meetingRoutes.post("/meetings/:id/commitments/confirm", (req, res) => {

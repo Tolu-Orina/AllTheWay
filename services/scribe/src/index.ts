@@ -12,6 +12,8 @@ import {
 } from "./meetings.js";
 import { resolveTier, type Attempt } from "./tier.js";
 import { connectTier1, connectTier2 } from "./meet.js";
+import { mayJoin, setGlobal, setMeetingOptOut } from "./consent.js";
+import { readMeetEvent } from "./events.js";
 
 /**
  * The scribe: one service owns meetings, whichever tier serves them.
@@ -73,6 +75,24 @@ app.post("/meetings/start", (req, res) => {
     const body = StartSchema.safeParse(req.body);
     if (!body.success) {
       res.status(400).json({ code: "invalid_request", message: "Expected a meeting to join." });
+      return;
+    }
+
+    // Consent first, upstream of the ladder (FR-C3).
+    //
+    // Attempting Tier 2 is itself visible: every participant sees a dialog when
+    // the agent connects. So an opted-out meeting must produce no attempt at
+    // all — a refusal that still showed the room a dialog would have already
+    // done the thing the user opted out of.
+    const consent = await mayJoin(uid, body.data.meetingId);
+    if (!consent.allowed) {
+      // Recorded, not silent. A meeting with no notes and no explanation is
+      // indistinguishable from one where something broke.
+      await openMeeting(uid, {
+        ...body.data,
+        outcome: { tier: 0, reason: consent.reason },
+      });
+      res.json({ tier: 0, reason: consent.reason });
       return;
     }
 
@@ -189,6 +209,82 @@ app.post("/meetings/:id/commitments/confirm", (req, res) => {
       res.status(404).json({ code: "not_found", message: "That commitment is not here." });
       return;
     }
+    res.status(204).end();
+  })();
+});
+
+app.post("/settings/meetings", (req, res) => {
+  void (async () => {
+    const uid = userOf(req);
+    if (!uid) {
+      res.status(401).json({ code: "unauthenticated", message: "No user on this request." });
+      return;
+    }
+
+    const enabled = z.boolean().safeParse(req.body?.enabled);
+    if (!enabled.success) {
+      res.status(400).json({ code: "invalid_request", message: "Expected { enabled: boolean }." });
+      return;
+    }
+
+    await setGlobal(uid, enabled.data);
+    res.status(204).end();
+  })();
+});
+
+app.post("/meetings/:id/opt-out", (req, res) => {
+  void (async () => {
+    const uid = userOf(req);
+    if (!uid) {
+      res.status(401).json({ code: "unauthenticated", message: "No user on this request." });
+      return;
+    }
+
+    const optedOut = z.boolean().default(true).safeParse(req.body?.optedOut ?? true);
+    if (!optedOut.success) {
+      res.status(400).json({ code: "invalid_request", message: "Expected { optedOut: boolean }." });
+      return;
+    }
+
+    await setMeetingOptOut(uid, req.params.id, optedOut.data);
+    res.status(204).end();
+  })();
+});
+
+/**
+ * Workspace Events push: a conference ended, so Tier 1 has something to fetch.
+ *
+ * Unauthenticated in the sense that no user session exists here — the caller is
+ * Pub/Sub, authenticated by IAM at the Cloud Run boundary. It carries no
+ * meeting content and none is trusted from it: the event names a conference,
+ * and the transcript is fetched separately with the user's own credential.
+ *
+ * **Always 204, except for something worth retrying.** Pub/Sub redelivers
+ * anything unacknowledged, so returning an error for an event that will never
+ * parse produces an infinite loop that is invisible until the bill arrives.
+ */
+app.post("/events/meet", (req, res) => {
+  void (async () => {
+    const event = readMeetEvent(req.body);
+    if (!event) {
+      // Understood well enough to reject. Acknowledged so it stops coming back.
+      res.status(204).end();
+      return;
+    }
+
+    if (!event.ended || !event.conferenceId) {
+      // A real event we have no work for. Also acknowledged.
+      res.status(204).end();
+      return;
+    }
+
+    // The meeting record is keyed per user, and this envelope names a
+    // conference rather than a person. Resolving one to the other is what the
+    // Tier 1 subscription registry is for; until a user has connected Meet
+    // there is nothing to resolve, and acknowledging is correct.
+    console.log(
+      JSON.stringify({ message: "meet conference ended", conferenceId: event.conferenceId }),
+    );
     res.status(204).end();
   })();
 });

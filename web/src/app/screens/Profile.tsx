@@ -8,6 +8,7 @@ import { Connections } from "@/app/Connections";
 import { Usage } from "@/app/Usage";
 import { Documents } from "@/app/Documents";
 import { VisualPreferences } from "@/app/VisualPreferences";
+import { Meetings } from "@/app/Meetings";
 
 export default function Profile() {
   const { state, reload } = useAsync<LearnedPreference[]>(() =>
@@ -118,6 +119,8 @@ export default function Profile() {
       </Async>
 
       <VisualPreferences />
+
+      <Meetings />
 
       <Documents />
 

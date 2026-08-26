@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Check, Circle, Ear, FileText, MicOff } from "lucide-react";
+import { Check, Circle, Ear, FileText, MicOff, Slash } from "lucide-react";
 
 import { Async } from "@/app/async";
 import { useAsync } from "@/app/use-async";
@@ -38,8 +38,54 @@ const TIER_LABEL: Record<Meeting["tier"], string> = {
   0: "No notes",
 };
 
+/**
+ * The global off switch (FR-C3).
+ *
+ * Deliberately at the top of the section rather than buried in a settings page.
+ * It is the control a person reaches for when they are uncomfortable, and a
+ * control you have to go looking for while uncomfortable is a control that
+ * does not exist.
+ *
+ * It is also the honest default: off until switched on. This component says so
+ * rather than showing an unchecked box and letting the user infer it.
+ */
+function GlobalSwitch({ enabled, onChange }: { enabled: boolean; onChange: (v: boolean) => void }) {
+  return (
+    <label className="flex items-start gap-2.5 rounded-brand border bg-card px-3.5 py-3">
+      <input
+        type="checkbox"
+        checked={enabled}
+        onChange={(e) => onChange(e.target.checked)}
+        className="mt-0.5 size-4 shrink-0"
+      />
+      <span className="text-[13px] leading-relaxed">
+        Let it join and take notes in my meetings
+        <span className="mt-0.5 block text-[12px] text-muted-foreground">
+          Off unless you turn it on. Everyone in a meeting is asked before it
+          connects, and it can never speak.
+        </span>
+      </span>
+    </label>
+  );
+}
+
 export function Meetings() {
   const { state, reload } = useAsync<Meeting[]>(() => api.meetings());
+  const [enabled, setEnabled] = useState(false);
+  const [failure, setFailure] = useState<string | null>(null);
+
+  async function toggle(next: boolean) {
+    setFailure(null);
+    setEnabled(next);
+    try {
+      await api.setMeetingNotes(next);
+    } catch {
+      // Put back. A consent switch that looks changed but was not saved is the
+      // worst possible failure for this particular control.
+      setEnabled(!next);
+      setFailure("That could not be saved. Nothing changed — try again.");
+    }
+  }
 
   return (
     <section className="flex flex-col gap-3">
@@ -50,6 +96,14 @@ export function Meetings() {
         It listens and takes notes. It cannot speak in a meeting, and everyone
         in the room is asked before it connects.
       </p>
+
+      <GlobalSwitch enabled={enabled} onChange={toggle} />
+
+      {failure ? (
+        <p role="alert" className="text-[12.5px] text-destructive">
+          {failure}
+        </p>
+      ) : null}
 
       <Async
         state={state}
@@ -153,6 +207,22 @@ function MeetingRow({ meeting }: { meeting: Meeting }) {
       </div>
 
       <ListeningIndicator meeting={meeting} />
+
+      {/*
+        The per-meeting opt-out. The common case is not "never" but "not this
+        one" — the standup is fine, the difficult conversation is not — and
+        forcing that choice to be all-or-nothing means people choose nothing.
+      */}
+      {meeting.status === "listening" ? (
+        <button
+          type="button"
+          onClick={() => void api.optOutOfMeeting(meeting.id)}
+          className="mt-2 flex items-center gap-1.5 text-[12.5px] underline underline-offset-2 text-muted-foreground"
+        >
+          <Slash className="size-3.5" aria-hidden="true" />
+          Stay out of this meeting
+        </button>
+      ) : null}
     </li>
   );
 }
