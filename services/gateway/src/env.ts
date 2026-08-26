@@ -64,6 +64,14 @@ export const env = {
 
   devUserId: process.env.DEV_USER_ID ?? "dev-user",
 
+  /**
+   * The Agent Registry. Internal-only, proxied for the browser.
+   *
+   * Empty disables the endpoint rather than producing a confusing upstream
+   * error — a registry that is not deployed is a supported state.
+   */
+  registryUrl: (process.env.REGISTRY_URL ?? "").replace(/\/$/, ""),
+
   /** Internal-only service; never reachable from the internet. */
   orchestratorUrl: process.env.ORCHESTRATOR_URL ?? "http://localhost:8090",
 

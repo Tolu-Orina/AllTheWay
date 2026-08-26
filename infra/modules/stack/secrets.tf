@@ -71,12 +71,22 @@ resource "google_secret_manager_secret_iam_member" "gateway_reads_resend_key" {
 # Per-secret and per-service: the gateway signs nothing and is deliberately not
 # on this list, so a bug there cannot produce a card that verifies.
 resource "google_secret_manager_secret_iam_member" "card_keys" {
-  for_each = {
-    for pair in setproduct(
-      ["orchestrator", "research-cell", "connector-gateway"],
-      ["agentcard_signing_key", "agentcard_public_key"],
-    ) : "${pair[0]}:${pair[1]}" => { service = pair[0], secret = pair[1] }
-  }
+  for_each = merge(
+    {
+      for pair in setproduct(
+        ["orchestrator", "research-cell", "connector-gateway"],
+        ["agentcard_signing_key", "agentcard_public_key"],
+      ) : "${pair[0]}:${pair[1]}" => { service = pair[0], secret = pair[1] }
+    },
+    # The registry gets the public key and nothing else. A registry that could
+    # sign could manufacture a trusted entry for an agent nobody deployed.
+    {
+      "registry:agentcard_public_key" = {
+        service = "registry"
+        secret  = "agentcard_public_key"
+      }
+    },
+  )
 
   project   = var.project_id
   secret_id = each.value.secret

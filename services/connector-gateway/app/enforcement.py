@@ -44,6 +44,7 @@ class Refusal(StrEnum):
     QUOTA_EXHAUSTED = "quota_exhausted"   # too many calls today
     UNKNOWN_TOOL = "unknown_tool"         # the connector does not offer this
     NEEDS_CONSENT = "needs_consent"       # real account, and the user has not connected it
+    PLAN_LIMIT = "plan_limit"             # this month's allowance is spent
 
 
 @dataclass(frozen=True)

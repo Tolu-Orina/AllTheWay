@@ -5,6 +5,7 @@ import { uidFromToken } from "../auth.js";
 import { env } from "../env.js";
 import { runTurn } from "../orchestrator.js";
 import { listPreferences } from "../repos/preferences.js";
+import { recordUsage } from "../repos/usage.js";
 import { createLiveOpener, type LiveOpener } from "./backend.js";
 import {
   AUTH_TIMEOUT_MS,
@@ -208,8 +209,27 @@ async function handleConnection(ws: WebSocket, opener: LiveOpener): Promise<void
     }
   });
 
+  // Voice minutes are metered here because here is the only place that knows.
+  //
+  // The relay holds the socket, so the gateway is the only process that can
+  // observe how long a session actually lasted. Asking the browser would mean
+  // trusting a client to report its own consumption.
+  //
+  // Measured from the point the session became usable, not from connect: a
+  // user should not be billed for the time we spent opening a Vertex session,
+  // or for one that never opened at all.
+  const startedAt = Date.now();
+
   ws.on("close", () => {
     slot.live?.close();
+
+    const seconds = (Date.now() - startedAt) / 1000;
+    // Rounded up, and only once a session has lasted long enough to be worth
+    // counting. Charging a whole minute for a two-second misfire is the kind
+    // of billing detail people notice and resent.
+    if (seconds >= 5) {
+      void recordUsage(uid, "voice_minutes", Math.ceil(seconds / 60));
+    }
   });
 }
 

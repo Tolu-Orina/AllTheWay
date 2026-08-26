@@ -9,6 +9,8 @@ executed over MCP, and screened what came back.
 import pytest
 from alltheway_policy import Ceiling, Waiver
 
+from alltheway_policy import Ceiling
+from app.org_policy import InMemoryPolicies, OrgPolicy
 from app.enforcement import Grant, Refusal, Usage
 from app.service import invoke
 
@@ -88,12 +90,75 @@ async def test_the_same_call_runs_once_confirmed():
 
 
 async def test_a_waiver_permits_an_unattended_irreversible_call():
+    # Phase 7 tightened this: a waiver now also needs an organisation that
+    # permits waivers. Without one there is no admin to have granted it, and
+    # the strictest reading of "no policy configured" is the only safe one —
+    # a missing row must never be the permissive case.
     outcome = await call(
         "send_invite", {"event_id": "evt-2", "email": "ana@example.com"},
         grant=FULL,
         waiver=Waiver(granted_by="admin@example.com", justification="Approved for the pilot cohort"),
+        org="acme",
+        policy_store=InMemoryPolicies({"acme": OrgPolicy(org="acme", allow_waivers=True)}),
     )
     assert outcome.ok is True
+
+
+async def test_a_waiver_is_refused_when_the_org_has_no_policy():
+    # The behaviour the test above used to have. Stated explicitly so the
+    # tightening is visible rather than implied by its absence.
+    outcome = await call(
+        "send_invite", {"event_id": "evt-3", "email": "ana@example.com"},
+        grant=FULL,
+        waiver=Waiver(granted_by="admin@example.com", justification="Approved for the pilot cohort"),
+    )
+    assert outcome.ok is False
+    assert "does not permit" in outcome.reason
+
+
+async def test_an_org_can_lower_a_ceiling_but_never_raise_it():
+    # An org policy that could raise a ceiling would hand an agent more
+    # autonomy than the person it acts for agreed to. It composes downward.
+    strict = InMemoryPolicies(
+        {"acme": OrgPolicy(org="acme", max_ceiling=Ceiling.DRAFT_ONLY)}
+    )
+    outcome = await call(
+        "send_invite", {"event_id": "evt-4", "email": "ana@example.com"},
+        grant=FULL,
+        org="acme",
+        policy_store=strict,
+    )
+    assert outcome.ok is False
+    assert any("lowered the ceiling" in line for line in outcome.trace)
+
+
+async def test_a_named_grantor_list_is_enforced():
+    store = InMemoryPolicies(
+        {
+            "acme": OrgPolicy(
+                org="acme",
+                allow_waivers=True,
+                waiver_grantors=frozenset({"security@example.com"}),
+            )
+        }
+    )
+    outcome = await call(
+        "send_invite", {"event_id": "evt-5", "email": "ana@example.com"},
+        grant=FULL,
+        waiver=Waiver(granted_by="intern@example.com", justification="Seemed fine to me"),
+        org="acme",
+        policy_store=store,
+    )
+    assert outcome.ok is False
+    assert "may not grant waivers" in outcome.reason
+
+
+async def test_every_call_is_attributable_to_a_card_version():
+    # Phase 7 exit: an action must be attributable to an agent version and an
+    # identity. The version is the card's, not the build's, because the card is
+    # the published contract the caller relied on.
+    outcome = await call("list_events", {}, grant=FULL)
+    assert any("connector-gateway card" in line for line in outcome.trace)
 
 
 async def test_rate_limiting_stops_the_call_before_the_connector():

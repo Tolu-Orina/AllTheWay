@@ -19,7 +19,7 @@ put a line in a shared calendar event.
 
 from __future__ import annotations
 
-from dataclasses import dataclass, field
+from dataclasses import dataclass, field, replace
 from typing import Any
 
 from alltheway_policy import Waiver
@@ -27,7 +27,13 @@ from alltheway_screening import screen
 
 from .enforcement import Call, Grant, Refusal, Usage, authorise
 from .mcp_client import ConnectorUnavailable, call_tool, list_tools
+from .a2a_card import CARD_VERSION
+from .audit import record_waiver
 from .oauth import ConsentRequired, RefreshTokenStore, access_token_for
+from .org_policy import PolicyStore, resolve
+from .subscription import FREE, SubscriptionStore
+from alltheway_metering import Meter, check
+
 from .registry import NEEDS_OAUTH, UnregisteredTool, action_for
 
 
@@ -52,8 +58,42 @@ async def invoke(
     waiver: Waiver | None = None,
     user: str = "",
     token_store: RefreshTokenStore | None = None,
+    org: str = "",
+    policy_store: PolicyStore | None = None,
+    subscriptions: SubscriptionStore | None = None,
 ) -> Outcome:
-    trace: list[str] = []
+    # Every line of this list is attributable: it names the agent and the card
+    # version that made the call, so an action in the Transparent Trace can be
+    # traced to a specific published contract rather than to "the system".
+    trace: list[str] = [f"connector-gateway card {CARD_VERSION} handled this call"]
+
+    # The organisation's policy composes with the user's grant, and only ever
+    # downward. An org policy that could raise a ceiling would hand an agent
+    # more autonomy than the person it acts for agreed to.
+    org_policy = resolve(org, policy_store)
+    if grant is not None:
+        capped = org_policy.effective_ceiling(grant.ceiling)
+        if capped is not grant.ceiling:
+            trace.append(
+                f"Organisation policy lowered the ceiling from {grant.ceiling} to {capped}"
+            )
+            grant = replace(grant, ceiling=capped)
+
+    permitted, refusal = org_policy.permits(waiver)
+    if not permitted:
+        trace.append("Waiver refused by organisation policy")
+        return Outcome(False, reason=refusal, refusal=Refusal.ABOVE_CEILING, trace=trace)
+
+    if waiver is not None:
+        # Written before the call proceeds, never after. A waiver recorded on
+        # success is a record of the calls that worked, which is exactly the
+        # set nobody needs.
+        record_waiver(
+            org=org, user=user, connector=connector, tool=tool, waiver=waiver
+        )
+        trace.append(
+            f"Autonomy floor waived by {waiver.granted_by}, recorded for audit"
+        )
 
     # What this tool does in the world, from the gateway's own registry rather
     # than from the connector or the caller.
@@ -85,6 +125,29 @@ async def invoke(
 
     if not decision.allowed:
         return Outcome(False, reason=decision.reason, refusal=decision.refusal, trace=trace)
+
+    # The plan allowance, checked before the call runs and never supplied by
+    # the caller. A caller that could state its own tier could grant itself an
+    # upgrade, which is the whole reason limits live here beside the autonomy
+    # floor rather than in a billing service the acting path can route around.
+    subscription = subscriptions.read(user) if subscriptions else FREE
+    allowance = check(
+        tier=subscription.tier,
+        meter=Meter.CONNECTOR_CALLS,
+        used=subscription.usage(Meter.CONNECTOR_CALLS),
+    )
+    if not allowance.allowed:
+        trace.append(allowance.summary())
+        return Outcome(
+            False,
+            reason=allowance.summary(),
+            refusal=Refusal.PLAN_LIMIT,
+            trace=trace,
+        )
+    if allowance.near_limit:
+        # Said while it is still actionable. A user who learns of a limit by
+        # being refused cannot do anything about it.
+        trace.append(allowance.summary())
 
     # Credentials are resolved only after the call has been authorised.
     #

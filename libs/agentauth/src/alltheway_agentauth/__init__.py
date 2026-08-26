@@ -43,11 +43,16 @@ import logging
 
 log = logging.getLogger(__name__)
 
+#: How long a failed mint is remembered. See id_token_for.
+_FAILURE_TTL_SECONDS = 30
+
 #: Tokens are valid for an hour; refreshing a few minutes early avoids handing
 #: Cloud Run a credential that expires mid-flight.
 _SKEW_SECONDS = 300
 
-_cache: dict[str, tuple[str, float]] = {}
+#: audience -> (token or None, expiry). A None entry is a remembered
+#: failure, which is why the value is optional.
+_cache: dict[str, tuple[str | None, float]] = {}
 
 
 def _now() -> float:
@@ -64,6 +69,7 @@ def id_token_for(audience: str) -> str | None:
     """
     hit = _cache.get(audience)
     if hit and hit[1] > _now():
+        # A cached None is a remembered failure, and is returned as one.
         return hit[0]
 
     try:
@@ -76,6 +82,19 @@ def id_token_for(audience: str) -> str | None:
         # Debug, not warning: on a developer machine this is the normal path and
         # a warning per call would train everyone to ignore the log.
         log.debug("no identity token for %s: %s", audience, exc)
+
+        # The failure is cached too, briefly.
+        #
+        # Minting against an absent metadata server costs about three and a half
+        # seconds, and without this every call pays it again: a laptop where it
+        # never works, and — worse — a production instance during a metadata
+        # hiccup, where every internal call would suddenly take seconds instead
+        # of failing fast.
+        #
+        # Short, because a cached failure that outlives the outage turns a blip
+        # into a longer one. Thirty seconds is long enough to stop the
+        # multiplication and short enough that recovery is nearly immediate.
+        _cache[audience] = (None, _now() + _FAILURE_TTL_SECONDS)
         return None
 
     # Cached well short of the token's real lifetime; the library re-mints

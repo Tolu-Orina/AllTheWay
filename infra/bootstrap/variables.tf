@@ -41,6 +41,10 @@ variable "backend_services" {
     # created, so the first deploy of the Agent Gateway would fail on a
     # service account that does not exist.
     "connector-gateway",
+    # Added in Phase 7. Same lesson as the line above: a service absent here has
+    # no runtime identity, and its first deploy fails on a service account that
+    # does not exist.
+    "registry",
   ]
 }
 

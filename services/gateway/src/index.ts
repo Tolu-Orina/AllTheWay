@@ -6,11 +6,13 @@ import { env } from "./env.js";
 import { requireUser } from "./auth.js";
 import { authRoutes } from "./routes/auth.js";
 import { connectorRoutes } from "./routes/connectors.js";
+import { registryRoutes } from "./routes/registry.js";
 import { getSession, listSessions } from "./repos/sessions.js";
 import { listPreferences, revertPreference } from "./repos/preferences.js";
 import { listRuns, listWatchers, setWatcherRunning } from "./repos/watchers.js";
 import { runTurn, streamTurn } from "./orchestrator.js";
 import { listRecent, record } from "./repos/ledger.js";
+import { readUsage } from "./repos/usage.js";
 import { attachVoice } from "./voice/relay.js";
 import { applyCors, openStream } from "./sse.js";
 import { TOPICS, publish } from "./events.js";
@@ -47,6 +49,10 @@ app.use("/api/auth", authRoutes);
 // individually.
 app.use("/api/connectors", connectorRoutes);
 
+// The Agent Registry, proxied. Authenticated per-route inside, like the
+// connector routes, because the browser has no other way to reach it.
+app.use("/api/registry", registryRoutes);
+
 const api = express.Router();
 api.use(requireUser);
 
@@ -65,6 +71,18 @@ const handle =
       res.status(500).json({ code: "internal", message: "Something went wrong on our side." });
     });
   };
+
+// Where the user stands this month.
+//
+// Advisory: entitlement is decided in the connector gateway, beside the
+// autonomy floor. This exists so someone can see a limit coming rather than
+// discovering it by being refused.
+api.get(
+  "/usage",
+  handle(async (req, res) => {
+    res.json(await readUsage(req.uid!));
+  }),
+);
 
 api.get(
   "/sessions",

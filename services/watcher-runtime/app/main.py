@@ -9,6 +9,7 @@ from google.cloud import firestore
 
 from .events import PushEnvelope
 from .firestore import preferences, runs, watchers
+from .firestore import record_run
 from .runtime import execute_run, now_iso
 
 app = FastAPI(title="AllTheWay watcher runtime")
@@ -90,6 +91,9 @@ def handle(envelope: PushEnvelope, response: Response) -> dict:
 
     if outcome.state != "skipped":
         watchers(uid).document(watcher_id).update({"lastRunAt": firestore.SERVER_TIMESTAMP})
+        # Metered only when the watcher actually ran. A skipped run consumed
+        # nothing and must not consume an allowance either.
+        record_run(uid)
 
     return {
         "status": outcome.state,

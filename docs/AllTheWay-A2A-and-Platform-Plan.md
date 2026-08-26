@@ -614,29 +614,117 @@ same failure modes as the real one.
 
 ---
 
-## Phase 7 — Agent Registry & governance *(1–2 weeks)*
+## Phase 7 — Agent Registry & governance — **DELIVERED**
 
-**Goal:** discovery and audit, at scale.
+**Goal:** discovery and audit, at scale. The registry is a catalogue of
+AgentCards, which is why Phase 1's decision to hand-author and commit them pays
+off twice.
 
-**The registry is a catalogue of AgentCards** — which is why Phase 1 pays off twice. Each agent already publishes a signed, versioned card; the registry indexes them.
+### Card signing, and why an authoritative card must be attested
 
-- Registry service: list/describe agents, versions, owners, skills.
-- Card **signing** (the spec supports it) so a card cannot be spoofed.
-- Transparent Trace as the consumer-facing view of the same audit log a security team consumes.
-- Per-org policy: the FR-W4 ceiling waiver, with the auditable justification `watcher-runtime/app/policy.py` already models.
+An A2A client talks to the URL the *card* advertises, not the one it was handed
+— Phase 4 proved that when a card built without `PUBLIC_URL` sent every caller
+to `localhost`. Authoritative and unauthenticated is a bad combination: anything
+that can answer a card fetch can redirect an agent's traffic, rename its skills,
+or declare a weaker security scheme.
 
-**Exit:** a new agent is discoverable by card alone; every action is attributable to an agent version and an identity.
+`libs/agentcards` signs a detached JWS (ES256) over canonical JSON with the
+`signatures` field excluded. Verified against the real route before being
+trusted: the signature covers `MessageToDict(card)`, which was checked
+byte-for-byte against what the endpoint actually serves. Signing a hand-built
+dict would have produced a signature that verifies with our code and nothing
+else.
+
+Live in production — all three agents log `agent card signed` at boot.
+
+### The registry is a service, not a static list
+
+It fetches every agent's card over authenticated HTTP and verifies it *now*,
+because a catalogue saying an agent was trustworthy five minutes ago answers a
+question nobody asked. It reports and never routes: an unverified card is
+information about a problem, not a thing to act on.
+
+`UNSIGNED` is not treated as a lesser failure than `INVALID`. Both mean the
+contents are unattested, and "we could not check" must never read as "it is
+fine".
+
+Given the public key and never the private one — a registry that could sign
+could manufacture a trusted entry for an agent nobody deployed.
+
+### Per-org policy composes downward only
+
+The effective ceiling is the **lower** of what the user granted and what the org
+permits. An org policy that could raise a ceiling would hand an agent more
+autonomy than the person it acts for agreed to, which inverts consent rather
+than governing it.
+
+A waiver now needs an org that permits waivers — **a deliberate tightening**.
+Previously a valid `Waiver` was sufficient; a missing org policy is now the
+strictest state, not the loosest, because a missing row is the most likely thing
+during an outage. Every use is written to `waiverAudit` **before** the call
+proceeds: a waiver recorded on success is a record of the calls that worked,
+which is exactly the set nobody needs.
+
+### Attribution
+
+Every connector call opens its trace with the card version that handled it, so
+an action is attributable to a published contract rather than to "the system".
+
+**Exit:** met. A new agent is discoverable by adding it to the roster, and its
+card is verified on every read.
 
 ---
 
-## Phase 8 — Monetization *(1–2 weeks)*
+## Phase 8 — Monetization — **DELIVERED**
 
-- Meter the two dimensions with real marginal cost: **voice minutes** and **watcher runs**.
-- Enforce at the Agent Gateway (limits are a policy concern, not a billing afterthought).
-- Free / Plus / Team per the manifest §7. **The `$18` Plus price in the UI is a placeholder** and must be replaced with a real decision.
-- Usage visible to the user *before* they hit a limit.
+Metered on the two dimensions with real marginal cost: **voice minutes** and
+**watcher runs**. Not turns or messages — those are cheap, and metering them
+would punish ordinary use while missing the expensive cases. A voice minute
+holds a WebSocket open, pins an instance and streams audio through a model; a
+watcher run is an unattended turn plus whatever connector calls it makes.
 
-**Exit:** a Free account is stopped at its ceiling with a clear upgrade path; usage reconciles with billing.
+Connector calls are counted too, though not billed: a connector call is the
+thing that reaches someone else's API, and an unbounded one is an abuse surface
+even when it is cheap.
+
+| | Free | Plus | Team |
+|---|---|---|---|
+| price | £0 | **£18/mo** | £32/seat |
+| voice minutes | 30 | 600 | unmetered |
+| watcher runs | 50 | 1000 | unmetered |
+| connector calls | 200 | 5000 | unmetered |
+
+### Enforced where the effect happens
+
+In the Agent Gateway, beside the autonomy floor and connector scope — not in a
+billing service the acting path could route around. `invoke()` takes a *store*,
+never a tier: a caller that could state its own plan could grant itself an
+upgrade, and there is a test asserting the parameter does not exist.
+
+### The failure directions are chosen, not inherited
+
+- An unrecognised tier resolves to **Free**. A corrupted subscription record
+  must never become an upgrade.
+- An unreadable subscription is Free, never unmetered — an outage that resolved
+  everyone to Team would be an outage that also gave the product away.
+- Usage is counted **after** success. Charging for refused calls would let a
+  caller exhaust its own allowance by being denied.
+- A lost count does not fail completed work, but is logged as an error: a meter
+  that silently stops counting is a billing problem nobody notices.
+
+### Visible before it binds
+
+`GET /api/usage` reports where a user stands, and the trace warns at 80%. Someone
+told "you have three runs left" can act; someone who discovers the limit by being
+refused cannot.
+
+Voice minutes are metered in the relay, because the gateway is the only process
+that can observe how long a session lasted — asking the browser would mean
+trusting a client to report its own consumption. Measured from the point the
+session became usable, so nobody pays for a Vertex session that never opened.
+
+**Exit:** met, except that no payment provider is wired — a tier is a Firestore
+value today, so nothing yet *sells* a plan.
 
 ---
 
@@ -683,7 +771,7 @@ Phases 2 and 3 can run in parallel once A2A lands. Phase 5 and 6 are independent
 1. ~~**Firestore location**~~ — **settled 2026-08-25: `europe-west1`**, single region, matching Cloud Run. Created as `(default)` in the prod workspace and now unchangeable.
 2. ~~**`@a2a-js/sdk` version line**~~ — **settled in Phase 1.** Both on 1.x: Python `a2a-sdk` 1.1.2, Node `@a2a-js/sdk` 1.0.1.
 3. ~~**Does Firebase Hosting buffer SSE?**~~ — **settled in Phase 2, and the answer changed the design.** Buffering is the lesser problem; Hosting's unconfigurable 60s rewrite timeout is disqualifying on its own. The stream is served from the gateway's own hostname. See [decisions/0001](decisions/0001-sse-not-behind-firebase-hosting.md).
-4. **Plus tier price.** Currently a placeholder in shipped UI.
+4. ~~**Plus tier price.**~~ — **settled 2026-08-26: £18/month.** It lives in `libs/metering` beside the allowances it buys, because a limit and its price must change in the same diff — splitting them is how a plan ends up costing more without offering more, with neither change looking wrong alone.
 5. **EU data residency.** Vertex is pinned to `global`, which has none — services run in europe-west1 but model calls do not. If residency is ever required, the endpoint moves and the model pins to a DRZ-supported one.
 6. ~~**Voice transport.**~~ — **settled 2026-08-26: gateway WebSocket relay, not LiveKit.** Vertex cannot mint ephemeral Live tokens; native audio is the language answer (no picker; Igbo unsupported). See [decisions/0006](decisions/0006-voice-through-the-gateway.md). Revisit only for PSTN or multi-party.
 7. ~~**`/healthz` on `*.run.app`.**~~ — **settled 2026-08-26: both spellings are registered** on all six services. Google's frontend swallows the exact path `/healthz`, while `/healthz/` gets through — and FastAPI would answer the latter with a 307 redirect to the path that never arrives, so the trailing-slash route is declared explicitly rather than left to `redirect_slashes`. Whoever writes the next probe cannot pick the wrong one.

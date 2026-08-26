@@ -53,7 +53,7 @@ const auth = new GoogleAuth();
  * here would break every local run to defend a boundary the platform already
  * defends.
  */
-function authenticatingFetch(audience: string): typeof fetch {
+export function authenticatingFetch(audience: string): typeof fetch {
   return async (input, init) => {
     const headers = new Headers(init?.headers);
 

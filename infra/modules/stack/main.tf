@@ -12,15 +12,24 @@ locals {
   # point for the architecture doc's zero-trust service-to-service rule.
   invoker_graph = {
     gateway             = []
-    orchestrator        = ["gateway"]
-    research-cell       = ["orchestrator"]
+    orchestrator        = ["gateway", "registry"]
+    research-cell       = ["orchestrator", "registry"]
     profile-synthesizer = ["orchestrator"]
     watcher-runtime     = ["orchestrator"]
     # The Agent Gateway is reachable only by the two things that act: the
     # orchestrator on a user's behalf, and the watcher runtime on a trigger.
     # Nothing else, and never the browser -- the browser has no path to a
     # connector that does not pass through policy enforcement.
-    connector-gateway = ["orchestrator", "watcher-runtime"]
+    connector-gateway = ["orchestrator", "watcher-runtime", "registry"]
+
+    # The Agent Registry reads every agent's card, so it calls all three and is
+    # called only by the gateway.
+    #
+    # Giving the gateway invoker rights here does not weaken the rule above.
+    # The registry holds no connector power — it fetches cards and reports what
+    # it found — so a path from the browser to the registry is not a path from
+    # the browser to a connector.
+    registry = ["gateway"]
   }
 
   runtime_sa = var.runtime_service_accounts
@@ -71,6 +80,8 @@ locals {
       # Always non-empty, which also matters: the relay treats an empty
       # allow-list as development and accepts any origin, so an unset value
       # would turn a security check off rather than on.
+      REGISTRY_URL = local.service_url["registry"]
+
       WEB_ORIGINS = join(",", compact([
         var.custom_domain != "" ? "https://${var.custom_domain}" : "",
         "https://${var.hosting_site_id}.web.app",
@@ -91,6 +102,14 @@ locals {
     }
     profile-synthesizer = {}
     research-cell       = {}
+
+    # Derived here rather than listed in the registry's own code, so the
+    # catalogue cannot disagree with what Cloud Run actually serves.
+    registry = {
+      ORCHESTRATOR_URL      = local.service_url["orchestrator"]
+      RESEARCH_CELL_URL     = local.service_url["research-cell"]
+      CONNECTOR_GATEWAY_URL = local.service_url["connector-gateway"]
+    }
     # Screening is mandatory on untrusted external content, and it fails closed:
     # without a template these services refuse rather than passing content
     # through unscreened. See libs/screening.
@@ -209,12 +228,22 @@ locals {
   #: secret version rather than a deploy.
   card_signing_services = ["orchestrator", "research-cell", "connector-gateway"]
 
-  card_secret_env = {
-    for service in local.card_signing_services : service => {
-      AGENT_CARD_SIGNING_KEY = "agentcard_signing_key"
-      AGENT_CARD_PUBLIC_KEY  = "agentcard_public_key"
-    }
-  }
+  card_secret_env = merge(
+    {
+      for service in local.card_signing_services : service => {
+        AGENT_CARD_SIGNING_KEY = "agentcard_signing_key"
+        AGENT_CARD_PUBLIC_KEY  = "agentcard_public_key"
+      }
+    },
+    {
+      # Verifies, never signs. Deliberately given the public key only: a
+      # registry that could sign could manufacture a trusted entry for an agent
+      # nobody deployed, which is precisely what it exists to detect.
+      registry = {
+        AGENT_CARD_PUBLIC_KEY = "agentcard_public_key"
+      }
+    },
+  )
 
   secret_env_vars = merge(local.card_secret_env, {
     gateway = merge(

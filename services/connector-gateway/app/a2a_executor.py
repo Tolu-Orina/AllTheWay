@@ -35,7 +35,28 @@ from alltheway_policy import Ceiling, Waiver
 from .enforcement import Grant, Refusal, Usage
 from .service import invoke
 from .oauth import FirestoreRefreshTokens, RefreshTokenStore
+from alltheway_metering import Meter
+
+from .org_policy import FirestorePolicies, PolicyStore
+from .subscription import SubscriptionStore, default_store
 from .usage import UsageStore
+
+
+def _default_policy_store() -> PolicyStore | None:
+    """Firestore in a deployed service, nothing locally.
+
+    None means every org resolves to the strict default, which is the correct
+    behaviour when policy cannot be read: absent policy is the strictest
+    policy, never the loosest.
+    """
+    import os
+
+    if not os.environ.get("GOOGLE_CLOUD_PROJECT"):
+        return None
+    try:
+        return FirestorePolicies()
+    except Exception:  # pragma: no cover - absent client or credentials
+        return None
 
 
 def _default_token_store() -> RefreshTokenStore | None:
@@ -110,11 +131,15 @@ class ConnectorExecutor(AgentExecutor):
         self,
         usage: UsageStore | None = None,
         token_store: "RefreshTokenStore | None" = None,
+        policy_store: "PolicyStore | None" = None,
+        subscriptions: "SubscriptionStore | None" = None,
     ) -> None:
         self._usage = usage or UsageStore()
         # Built lazily and only when a connector actually needs it, so neither
         # the tests nor the in-memory connector path require Firestore.
         self._token_store = token_store or _default_token_store()
+        self._policy_store = policy_store or _default_policy_store()
+        self._subscriptions = subscriptions or default_store()
 
     async def execute(self, context: RequestContext, event_queue: EventQueue) -> None:
         if context.current_task is None:
@@ -164,12 +189,23 @@ class ConnectorExecutor(AgentExecutor):
             waiver=waiver,
             user=user,
             token_store=self._token_store,
+            # The organisation this call belongs to. Sent by the caller, which
+            # is the only party that knows it — the connector gateway sees a
+            # user id, not a directory. Absent means the strict default.
+            org=str(payload.get("org", "")).strip(),
+            policy_store=self._policy_store,
+            subscriptions=self._subscriptions,
         )
 
         if outcome.ok:
             # Counted only when it actually ran. Charging for refused calls
             # would let a caller exhaust its own quota by being denied.
             self._usage.record(key)
+            # Metered only on success, for the same reason as the per-connector
+            # quota above: charging for refused calls would let a caller
+            # exhaust its own allowance by being denied.
+            if self._subscriptions is not None:
+                self._subscriptions.record(user, Meter.CONNECTOR_CALLS, 1)
             await updater.add_artifact(
                 [_data_part({"data": outcome.data, "trace": outcome.trace})],
                 artifact_id=RESULT_ARTIFACT_ID,
