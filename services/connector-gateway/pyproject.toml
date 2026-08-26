@@ -5,6 +5,7 @@ description = "The Agent Gateway: one policy enforcement point in front of every
 requires-python = ">=3.11"
 dependencies = [
   # Shared, installed from the local wheelhouse in the image.
+  "alltheway-agentcards",
   "alltheway-policy",
   "alltheway-screening",
   "fastapi>=0.115",
@@ -33,5 +34,5 @@ dependencies = [
 test = ["pytest>=8.0", "pytest-asyncio>=0.24"]
 
 [tool.pytest.ini_options]
-pythonpath = [".", "../../libs/policy/src", "../../libs/screening/src"]
+pythonpath = [".", "../../libs/agentcards/src", "../../libs/policy/src", "../../libs/screening/src"]
 asyncio_mode = "auto"

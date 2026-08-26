@@ -65,3 +65,21 @@ resource "google_secret_manager_secret_iam_member" "gateway_reads_resend_key" {
   role      = "roles/secretmanager.secretAccessor"
   member    = "serviceAccount:${local.runtime_sa["gateway-${var.env}"]}"
 }
+
+# The card signing keypair, readable only by the services that serve a card.
+#
+# Per-secret and per-service: the gateway signs nothing and is deliberately not
+# on this list, so a bug there cannot produce a card that verifies.
+resource "google_secret_manager_secret_iam_member" "card_keys" {
+  for_each = {
+    for pair in setproduct(
+      ["orchestrator", "research-cell", "connector-gateway"],
+      ["agentcard_signing_key", "agentcard_public_key"],
+    ) : "${pair[0]}:${pair[1]}" => { service = pair[0], secret = pair[1] }
+  }
+
+  project   = var.project_id
+  secret_id = each.value.secret
+  role      = "roles/secretmanager.secretAccessor"
+  member    = "serviceAccount:${local.runtime_sa["${each.value.service}-${var.env}"]}"
+}

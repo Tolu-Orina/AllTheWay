@@ -1,5 +1,7 @@
 import { useEffect, useId, useRef, useState } from "react";
 import {
+  AlertTriangle,
+  Loader2,
   MessageCircle,
   PanelRightClose,
   PanelRightOpen,
@@ -10,16 +12,19 @@ import { motion, useReducedMotion } from "motion/react";
 import { LogoMark } from "@/components/primitives/logo";
 import { Sheet, SheetContent } from "@/components/ui/sheet";
 import { useAuth } from "@/auth/useAuth";
+import { useTurn, type ProposedAction, type TurnPhase } from "@/app/use-turn";
 import { cn } from "@/lib/utils";
 import { VoiceCaptions, VoiceControl } from "@/app/VoiceControl";
 
-type Message = { id: number; role: "agent" | "user"; text: string };
-
-const CHIPS = [
-  "Yes, default to minimal",
-  "Ask me each time",
-  "Show me the trace",
-];
+type Message = {
+  id: number;
+  role: "agent" | "user";
+  text: string;
+  /** Set on an agent message when the turn stopped rather than completed. */
+  phase?: TurnPhase;
+  options?: string[];
+  actions?: ProposedAction[];
+};
 
 /**
  * Tailwind's `xl`, as a media query.
@@ -30,36 +35,93 @@ const CHIPS = [
  */
 const DOCKED_FROM = "(min-width: 80rem)";
 
+/**
+ * The companion session.
+ *
+ * A fixed id rather than a new session per visit: the companion is one
+ * continuing conversation, not a series of unrelated ones. It is scoped to the
+ * signed-in user at the repository layer, so the constant is not a shared
+ * namespace — `getSession(uid, id)` is what makes it private.
+ */
+const COMPANION_SESSION = "companion";
+
 function useCompanionThread() {
   const { user } = useAuth();
   const firstName = user?.displayName?.trim().split(/\s+/)[0];
 
-  const [messages, setMessages] = useState<Message[]>(() => [
+  const { turn, send: runTurn } = useTurn(COMPANION_SESSION);
+  const [history, setHistory] = useState<Message[]>(() => [
     {
       id: 1,
       role: "agent",
-      text: `Welcome back${firstName ? `, ${firstName}` : ""}. I noticed you tend to trim navigation rather than add to it — want me to default to that this time?`,
+      text: `Welcome back${firstName ? `, ${firstName}` : ""}. Ask me for something, or correct me — I learn from the corrections more than the requests.`,
     },
   ]);
   const [draft, setDraft] = useState("");
+  const settled = useRef<string>("");
+
+  /**
+   * The reply, derived from which terminal state the turn reached.
+   *
+   * Deliberately not announced up front. A plan that turns out to be empty
+   * ends as a question, so claiming "here is your plan" while it streams would
+   * mean taking it back — which is the same invariant the Plan Panel keeps.
+   */
+  useEffect(() => {
+    if (turn.phase === "working" || turn.phase === "idle") return;
+
+    // Each turn settles once. Without this the effect re-appends on every
+    // unrelated re-render.
+    const key = `${turn.request}:${turn.phase}`;
+    if (settled.current === key) return;
+    settled.current = key;
+
+    const text =
+      turn.phase === "clarify"
+        ? turn.question
+        : turn.phase === "confirm"
+          ? turn.summary
+          : turn.phase === "error"
+            ? turn.error ||
+              "Something went wrong and nothing was done. Try again in a moment."
+            : turn.note || "Done.";
+
+    setHistory((prev) => [
+      ...prev,
+      {
+        id: prev.length + 1,
+        role: "agent",
+        text,
+        // Carried so the panel can show that a turn stopped rather than
+        // finished. A confirmation that reads like a completion is the exact
+        // lie FR-V2 exists to prevent.
+        phase: turn.phase,
+        options: turn.options,
+        actions: turn.actions,
+      },
+    ]);
+  }, [turn]);
 
   function send(text: string) {
     const trimmed = text.trim();
-    if (!trimmed) return;
+    if (!trimmed || turn.phase === "working") return;
 
-    setMessages((prev) => [
+    setHistory((prev) => [
       ...prev,
       { id: prev.length + 1, role: "user", text: trimmed },
-      {
-        id: prev.length + 2,
-        role: "agent",
-        text: "Noted — I have written that to your profile, and you can revert it from the Profile tab whenever you like.",
-      },
     ]);
     setDraft("");
+    void runTurn(trimmed);
   }
 
-  return { messages, draft, setDraft, send };
+  return {
+    messages: history,
+    draft,
+    setDraft,
+    send,
+    working: turn.phase === "working",
+    trace: turn.trace,
+  };
 }
 
 type Thread = ReturnType<typeof useCompanionThread>;
@@ -72,7 +134,14 @@ type Thread = ReturnType<typeof useCompanionThread>;
  * which is what lets a half-typed message survive a resize across the
  * breakpoint.
  */
-function CompanionConversation({ messages, draft, setDraft, send }: Thread) {
+function CompanionConversation({
+  messages,
+  draft,
+  setDraft,
+  send,
+  working,
+}: Thread) {
+  const last = messages[messages.length - 1];
   const reduced = useReducedMotion();
   const endRef = useRef<HTMLDivElement>(null);
 
@@ -102,32 +171,77 @@ function CompanionConversation({ messages, draft, setDraft, send }: Thread) {
             {m.role === "agent" ? (
               <LogoMark className="mt-0.5 size-6 shrink-0" />
             ) : null}
-            <p
-              className={cn(
-                "max-w-[15rem] rounded-brand px-3 py-2 text-[13.5px] leading-relaxed",
-                m.role === "agent"
-                  ? "rounded-tl-sm border bg-background"
-                  : "rounded-tr-sm bg-accent text-accent-foreground",
-              )}
-            >
-              {m.text}
-            </p>
+            <div className="max-w-[15rem]">
+              <p
+                className={cn(
+                  "rounded-brand px-3 py-2 text-[13.5px] leading-relaxed",
+                  m.role === "agent"
+                    ? "rounded-tl-sm border bg-background"
+                    : "rounded-tr-sm bg-accent text-accent-foreground",
+                  // A stopped turn must not look like a finished one. FR-V2 is
+                  // about the user being asked, and a confirmation styled like
+                  // a completion is the lie it exists to prevent.
+                  m.phase === "confirm" && "border-primary/40 bg-primary/5",
+                  m.phase === "error" && "border-destructive/40 bg-destructive/5",
+                )}
+              >
+                {m.text}
+              </p>
+
+              {m.actions?.length ? (
+                <ul className="mt-1.5 flex flex-col gap-1">
+                  {m.actions.map((a) => (
+                    <li
+                      key={a.label}
+                      className="flex items-start gap-1.5 text-[12px] text-muted-foreground"
+                    >
+                      <AlertTriangle
+                        className="mt-0.5 size-3 shrink-0 text-primary"
+                        aria-hidden="true"
+                      />
+                      <span>
+                        <span className="font-medium text-foreground">{a.label}</span>
+                        {a.reason ? ` — ${a.reason}` : ""}
+                      </span>
+                    </li>
+                  ))}
+                </ul>
+              ) : null}
+            </div>
           </motion.div>
         ))}
 
-        {messages.length === 1 ? (
+        {/* The options belong to the message that offered them, not to the
+            panel. A clarify question and a confirmation both arrive with the
+            answers that resolve them, and showing stale chips from an earlier
+            turn would invite answering a question nobody asked. */}
+        {last?.role === "agent" && last.options?.length ? (
           <div className="flex flex-wrap gap-2 pl-[34px]">
-            {CHIPS.map((chip) => (
+            {last.options.map((option) => (
               <button
-                key={chip}
+                key={option}
                 type="button"
-                onClick={() => send(chip)}
-                className="rounded-full border bg-background px-3 py-1.5 text-[12.5px] text-muted-foreground transition-colors hover:border-primary/40 hover:text-foreground"
+                onClick={() => send(option)}
+                disabled={working}
+                className="rounded-full border bg-background px-3 py-1.5 text-[12.5px] text-muted-foreground transition-colors hover:border-primary/40 hover:text-foreground disabled:opacity-50"
               >
-                {chip}
+                {option}
               </button>
             ))}
           </div>
+        ) : null}
+
+        {working ? (
+          <p
+            role="status"
+            className="flex items-center gap-2 pl-[34px] text-[12.5px] text-muted-foreground"
+          >
+            <Loader2
+              className="size-3.5 animate-spin motion-reduce:animate-none"
+              aria-hidden="true"
+            />
+            Thinking…
+          </p>
         ) : null}
 
         <div ref={endRef} />
@@ -151,13 +265,14 @@ function CompanionConversation({ messages, draft, setDraft, send }: Thread) {
           id={inputId}
           value={draft}
           onChange={(e) => setDraft(e.target.value)}
-          placeholder="Ask, or correct it…"
+          disabled={working}
+          placeholder={working ? "Working…" : "Ask, or correct it…"}
           className="min-w-0 flex-1 rounded-full border bg-background px-3.5 py-2 text-[13.5px] outline-none placeholder:text-muted-foreground"
         />
         <button
           type="submit"
           aria-label="Send"
-          disabled={!draft.trim()}
+          disabled={!draft.trim() || working}
           className="grid size-9 shrink-0 place-items-center rounded-full bg-primary text-primary-foreground transition-opacity disabled:opacity-40"
         >
           <Send className="size-4" aria-hidden="true" />

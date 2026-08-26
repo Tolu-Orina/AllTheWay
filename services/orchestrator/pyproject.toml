@@ -5,6 +5,7 @@ description = "Orchestrator: Clarify Gate, Plan Panel graph, research delegation
 requires-python = ">=3.11"
 dependencies = [
   # Shared, installed from the local wheelhouse in the image.
+  "alltheway-agentcards",
   "alltheway-policy",
   # Identity for service-to-service A2A calls. Without it, every
   # internal call is rejected by Cloud Run in a deployed environment.
@@ -34,4 +35,4 @@ vertex = ["google-genai>=1.0"]
 [tool.pytest.ini_options]
 # The shared autonomy floor. Installed properly in the image; on the path
 # here so the suite runs without an editable install step.
-pythonpath = [".", "../../libs/policy/src", "../../libs/agentauth/src"]
+pythonpath = [".", "../../libs/agentcards/src", "../../libs/policy/src", "../../libs/agentauth/src"]

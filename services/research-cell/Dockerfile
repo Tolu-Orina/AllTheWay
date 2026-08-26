@@ -20,11 +20,13 @@ FROM python:3.11-slim AS deps
 WORKDIR /src
 
 # Manifest first, so editing source does not invalidate the dependency layer.
+# Card signing, which this service now imports to sign its own card.
+COPY libs/agentcards ./libs/agentcards
 COPY services/research-cell/pyproject.toml ./
 
 # --target gives a flat, relocatable tree that can be copied into an image with
 # no pip -- which is exactly what distroless is.
-RUN pip install --no-cache-dir --upgrade pip  && pip install --no-cache-dir --target=/deps .
+RUN pip install --no-cache-dir --upgrade pip && pip wheel --no-cache-dir --wheel-dir=/wheels ./libs/agentcards && pip install --no-cache-dir --target=/deps --find-links=/wheels .
 
 # ---------------------------------------------------------------------- test
 # A real build stage, not a convenience: `docker build --target test` exits

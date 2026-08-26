@@ -20,10 +20,13 @@ WORKDIR /src
 # when the network is degraded, and both of these fail closed.
 COPY libs/policy ./libs/policy
 COPY libs/screening ./libs/screening
+# Card signing. The image must carry it: an import that resolves on a dev
+# machine and not in the image is how a container exits before it listens.
+COPY libs/agentcards ./libs/agentcards
 COPY services/connector-gateway/pyproject.toml ./
 
 RUN pip install --no-cache-dir --upgrade pip \
- && pip wheel --no-cache-dir --wheel-dir=/wheels ./libs/policy ./libs/screening \
+ && pip wheel --no-cache-dir --wheel-dir=/wheels ./libs/agentcards ./libs/policy ./libs/screening \
  && pip install --no-cache-dir --target=/deps --find-links=/wheels .
 
 # ---------------------------------------------------------------------- test

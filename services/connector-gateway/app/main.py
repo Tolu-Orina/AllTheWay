@@ -19,6 +19,8 @@ from a2a.server.routes import (
 from a2a.server.tasks import InMemoryTaskStore
 from fastapi import FastAPI
 
+from alltheway_agentcards.a2a import attach_signature
+
 from .a2a_card import build_agent_card
 from .a2a_executor import ConnectorExecutor
 from .mcp_client import SERVERS
@@ -27,6 +29,21 @@ from .registry import TOOL_ACTIONS
 app = FastAPI(title="AllTheWay Agent Gateway")
 
 agent_card = build_agent_card()
+
+# Signed before the routes are built from it.
+#
+# An A2A client talks to the URL the *card* advertises, not the one it was
+# handed — so whatever can answer a card fetch can redirect this agent's
+# traffic, rename its skills, or declare a weaker security scheme. IAM stops
+# that between our own services today; the registry exists so agents we did not
+# deploy become discoverable, and at that point "it came from the right host"
+# stops being an argument.
+#
+# Returns False when no key is configured, which is a supported state: the card
+# is still served, and a verifier that requires a signature refuses it rather
+# than being quietly satisfied.
+if attach_signature(agent_card):
+    print(f"[{app.title}] agent card signed", flush=True)
 executor: AgentExecutor = ConnectorExecutor()
 request_handler = DefaultRequestHandler(
     agent_executor=executor,

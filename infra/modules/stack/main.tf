@@ -202,7 +202,21 @@ locals {
   # Conditional because an unconfigured mailer is a supported state — the
   # gateway boots and serves every non-email route, and the email routes throw
   # a clear error instead of logging codes to stdout.
-  secret_env_vars = {
+  #: Every service that serves or verifies an AgentCard.
+  #:
+  #: The private key signs; the public key verifies. Both are mounted rather
+  #: than passed, so neither reaches Terraform state — and a rotation is a new
+  #: secret version rather than a deploy.
+  card_signing_services = ["orchestrator", "research-cell", "connector-gateway"]
+
+  card_secret_env = {
+    for service in local.card_signing_services : service => {
+      AGENT_CARD_SIGNING_KEY = "agentcard_signing_key"
+      AGENT_CARD_PUBLIC_KEY  = "agentcard_public_key"
+    }
+  }
+
+  secret_env_vars = merge(local.card_secret_env, {
     gateway = merge(
       var.resend_api_key_secret == "" ? {} : {
         RESEND_API_KEY = var.resend_api_key_secret
@@ -215,7 +229,7 @@ locals {
         GOOGLE_OAUTH_CLIENT_SECRET = var.google_oauth_secrets.client_secret
       },
     )
-  }
+  })
 
   runtime_role_bindings = merge([
     for service, roles in local.service_roles : {
@@ -289,6 +303,11 @@ module "service" {
     # containerised orchestrator; nothing in a unit test can catch it.
     PUBLIC_URL = local.service_url[each.key]
 
+    # Which key signed this card. Not a secret — it is a name, and it is what
+    # lets a rotation publish the new key before the old one is retired
+    # without redeploying every verifier.
+    AGENT_CARD_KEY_ID = "alltheway-${var.env}"
+
   }, local.peer_env_vars[each.key], try(local.extra_env_vars[each.key], {}))
 
   # Mounted, not passed. A secret env var is resolved by Cloud Run at container
@@ -299,6 +318,16 @@ module "service" {
   # Terraform change at all — `version = "latest"` in the backend-service
   # module is what makes that true.
   secret_env_vars = try(local.secret_env_vars[each.key], {})
+
+  # Cloud Run resolves a mounted secret at revision creation, so the binding
+  # must already exist. Terraform cannot infer that from a secret *name* passed
+  # as a string — the first apply of a new environment fails with "Permission
+  # denied on secret", having created the grant moments later in the same run.
+  depends_on = [
+    google_secret_manager_secret_iam_member.card_keys,
+    google_secret_manager_secret_iam_member.gateway_reads_oauth_client,
+    google_secret_manager_secret_iam_member.gateway_reads_resend_key,
+  ]
 }
 
 module "hosting" {
