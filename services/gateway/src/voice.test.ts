@@ -4,6 +4,7 @@ import { createServer } from "node:http";
 import { after, test } from "node:test";
 import WebSocket from "ws";
 
+import { env } from "./env.js";
 import { attachVoice } from "./voice/relay.js";
 import { openFakeLive } from "./voice/backend.js";
 import {
@@ -18,6 +19,17 @@ test("auth message requires a session id", () => {
   assert.equal(isAuthMessage({ auth: { token: "x", sessionId: "s1" } }), true);
   assert.equal(isAuthMessage({ auth: { token: "x", sessionId: "" } }), false);
   assert.equal(isAuthMessage({ pcm: "aa" }), false);
+});
+
+test("the Live session is never opened at `global`", () => {
+  // `global` has no Live model. The setup message is refused with
+  // "Publisher model .../locations/global/... was not found", so voice fails
+  // on every attempt — and nothing else catches it, because the URL builder is
+  // perfectly correct for `global` and the model name is perfectly valid.
+  //
+  // This asserts the two are not allowed to be the same setting again.
+  assert.notEqual(env.liveLocation, "global");
+  assert.match(env.liveLocation, /^[a-z]+-[a-z]+\d$/);
 });
 
 test("global Live endpoint is not location-prefixed", () => {

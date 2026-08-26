@@ -36,6 +36,7 @@ export type LiveOpener = (opts: { resumeHandle?: string; events: LiveEvents }) =
 
 const OPEN_TIMEOUT_MS = 8_000;
 const RECONNECT_PAUSE_MS = 250;
+const RECONNECT_MAX_ATTEMPTS = 5;
 const PCM_BUFFER_BYTES = 16_000 * 2 * 2; // 2s of 16 kHz s16le
 
 function tonePcmBase64(hz = 440, ms = 280): string {
@@ -131,8 +132,10 @@ async function openVertexLive(opts: {
 }): Promise<LiveSession> {
   const events = opts.events;
   const model = env.liveModel || DEFAULT_LIVE_MODEL;
-  const modelResource = liveModelResource(env.projectId, env.vertexLocation, model);
-  const url = liveWebSocketUrl(env.vertexLocation);
+  // env.liveLocation, not env.vertexLocation — the Live model does not exist
+  // at `global`, which is where text generation runs. See env.ts.
+  const modelResource = liveModelResource(env.projectId, env.liveLocation, model);
+  const url = liveWebSocketUrl(env.liveLocation);
 
   let handle = opts.resumeHandle;
   let closed = false;
@@ -141,6 +144,10 @@ async function openVertexLive(opts: {
   const pending: string[] = [];
   let pendingBytes = 0;
   let reconnecting = false;
+  // A session that opens and is immediately closed by Vertex would otherwise
+  // reconnect forever, a quarter second apart, for as long as the browser
+  // holds the socket. Reset once a reconnect actually produces a live session.
+  let attempts = 0;
 
   const flushPending = (ws: WebSocket) => {
     for (const chunk of pending) ws.send(JSON.stringify(realtimePcm(chunk)));
@@ -167,9 +174,12 @@ async function openVertexLive(opts: {
         return;
       }
       const msg: ParsedServer = parseServerMessage(parsed);
-      if (msg.setupComplete && !ready) {
-        ready = true;
-        events.onReady();
+      if (msg.setupComplete) {
+        attempts = 0;
+        if (!ready) {
+          ready = true;
+          events.onReady();
+        }
         flushPending(ws);
       }
       if (msg.interrupted) events.onInterrupted();
@@ -210,7 +220,20 @@ async function openVertexLive(opts: {
     } catch {
       /* already gone */
     }
-    await new Promise((r) => setTimeout(r, RECONNECT_PAUSE_MS));
+    attempts += 1;
+    if (attempts > RECONNECT_MAX_ATTEMPTS) {
+      reconnecting = false;
+      events.onError("Voice keeps dropping. You can keep typing.");
+      events.onClose("resume_failed");
+      return;
+    }
+
+    // Backs off rather than retrying at a fixed interval: whatever made Vertex
+    // hang up is unlikely to be fixed 250ms later, and a tight loop turns one
+    // failing session into sustained load.
+    await new Promise((r) =>
+      setTimeout(r, RECONNECT_PAUSE_MS * 2 ** (attempts - 1)),
+    );
     if (closed) return;
     try {
       await connect(handle);

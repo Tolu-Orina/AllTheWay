@@ -95,6 +95,21 @@ COPY --from=build /repo/services/contracts/dist ./services/contracts/dist
 COPY --from=build /repo/services/gateway/package.json ./services/gateway/
 COPY --from=build /repo/services/gateway/dist ./services/gateway/dist
 
+# The workspace's OWN node_modules, which is not the same set as the root's.
+#
+# npm hoists what it can, but a package whose hoisted slot is already taken by
+# an incompatible version gets nested under the workspace instead. `ws` is the
+# first one here: the root slot holds ws@7, a dev dependency of firebase-tools,
+# so the gateway's ws@8 lands in services/gateway/node_modules. `npm prune
+# --omit=dev` then deletes the root ws@7 as dev, and without this line the
+# nested ws@8 never reaches the image — so `import "ws"` resolves to nothing
+# and the container exits(1) before it can listen.
+#
+# Four packages are in that state today (ws, google-auth-library, gcp-metadata,
+# google-logging-utils), and which ones they are changes with any dependency
+# bump. Copying the directory is what makes that reshuffling harmless.
+COPY --from=build /repo/services/gateway/node_modules ./services/gateway/node_modules
+
 ENV NODE_ENV=production
 
 # The distroless nodejs entrypoint is already `node`, so this is arguments to

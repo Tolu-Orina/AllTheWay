@@ -34,6 +34,21 @@ export const env = {
   /** Pinned, never "latest": a silent model swap changes agent behaviour. */
   model: process.env.GEMINI_MODEL ?? "gemini-3.7-flash",
 
+  /**
+   * Where the Live API session is opened. Deliberately NOT `vertexLocation`.
+   *
+   * `global` has no Live model. Verified against this project: the setup
+   * message is answered with `1008 Publisher model .../locations/global/...
+   * was not found`, while europe-west1, europe-west4 and us-central1 all
+   * return setupComplete. Voice therefore failed on every attempt in
+   * production, while the unit tests — which only check that the URL for
+   * `global` is not location-prefixed — passed.
+   *
+   * europe-west1 matches where Cloud Run runs, so voice audio stays in the EU
+   * even though text generation on `global` does not.
+   */
+  liveLocation: process.env.GOOGLE_CLOUD_LIVE_LOCATION ?? "europe-west1",
+
   /** Native audio Live API model. Pinned: auto language detect, no language_code. */
   liveModel: process.env.GEMINI_LIVE_MODEL ?? "gemini-live-2.5-flash-native-audio",
 

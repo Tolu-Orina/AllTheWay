@@ -145,6 +145,16 @@ locals {
     gateway = {
       MAIL_FROM         = var.mail_from
       GEMINI_LIVE_MODEL = var.gemini_live_model
+
+      # Where the Live session opens, and deliberately NOT
+      # GOOGLE_CLOUD_LOCATION. That is `global`, which has no Live model at
+      # all: the setup message comes back "Publisher model ... was not found"
+      # and voice fails every time, while the unit tests pass because they only
+      # check URL shape. Verified against this project — europe-west1,
+      # europe-west4 and us-central1 all answer setupComplete.
+      #
+      # var.region also keeps voice audio in the region the services run in.
+      GOOGLE_CLOUD_LIVE_LOCATION = var.region
     }
   }
 
