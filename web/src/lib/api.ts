@@ -90,6 +90,10 @@ export async function apiText(path: string): Promise<string> {
   return res.text();
 }
 
+export async function apiDelete(path: string): Promise<void> {
+  await request(path, { method: "DELETE" });
+}
+
 export async function apiGet<S extends z.ZodTypeAny>(path: string, schema: S): Promise<z.infer<S>> {
   const res = await request(path);
   return schema.parse(await res.json());

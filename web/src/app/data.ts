@@ -8,7 +8,7 @@ import {
 } from "@alltheway/contracts";
 import { z } from "zod";
 
-import { apiBlob, apiGet, apiPost, apiText } from "@/lib/api";
+import { apiBlob, apiDelete, apiGet, apiPost, apiText } from "@/lib/api";
 
 /**
  * Data access for the product app.
@@ -118,6 +118,21 @@ export type Artifact = z.infer<typeof ArtifactSchema>;
 export type ArtifactDetail = z.infer<typeof ArtifactDetailSchema>;
 export type ArtifactVersion = z.infer<typeof ArtifactVersionSchema>;
 
+export const DocumentSchema = z.object({
+  id: z.string(),
+  title: z.string(),
+  mimeType: z.string().optional().default(""),
+  pages: z.number().optional().default(0),
+  chunks: z.number().optional().default(0),
+  status: z.enum(["screening", "indexing", "ready", "blocked"]),
+  blockedReason: z.string().optional().default(""),
+  createdAt: z.string().optional().default(""),
+});
+
+export const DocumentListSchema = z.object({ documents: z.array(DocumentSchema) });
+
+export type UserDocument = z.infer<typeof DocumentSchema>;
+
 export const api = {
   sessions: () => apiGet("/sessions", z.array(SessionSchema)),
   session: (id: string) =>
@@ -161,6 +176,22 @@ export const api = {
    * discovered by being refused.
    */
   usage: () => apiGet("/usage", UsageSchema),
+
+  /* --- Documents (v3 Phase B) -------------------------------------- */
+
+  documents: () => apiGet("/documents", DocumentListSchema),
+
+  /**
+   * Upload a document.
+   *
+   * Base64 rather than multipart: JSON is the transport for the rest of this
+   * API, and a second parsing path would be a second thing to keep correct.
+   */
+  uploadDocument: (title: string, content: string, mimeType: string) =>
+    apiPost("/documents", { title, content, mimeType }),
+
+  deleteDocument: (id: string) =>
+    apiDelete(`/documents/${encodeURIComponent(id)}`),
 
   /* --- Artifacts (v3 Phase A) ------------------------------------- */
 

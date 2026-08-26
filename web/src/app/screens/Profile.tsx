@@ -6,6 +6,7 @@ import { useAsync } from "@/app/use-async";
 import { api, type LearnedPreference } from "@/app/data";
 import { Connections } from "@/app/Connections";
 import { Usage } from "@/app/Usage";
+import { Documents } from "@/app/Documents";
 
 export default function Profile() {
   const { state, reload } = useAsync<LearnedPreference[]>(() =>
@@ -114,6 +115,8 @@ export default function Profile() {
           </ul>
         )}
       </Async>
+
+      <Documents />
 
       <Usage />
 
