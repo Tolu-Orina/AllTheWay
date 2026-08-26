@@ -1,0 +1,19 @@
+[project]
+name = "alltheway-scopetoken"
+version = "0.0.0"
+description = "Short-lived, signed proof of which user a request is for."
+requires-python = ">=3.11"
+dependencies = ["cryptography>=42"]
+
+[project.optional-dependencies]
+test = ["pytest>=8.0"]
+
+[tool.pytest.ini_options]
+pythonpath = ["src"]
+
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[tool.setuptools.packages.find]
+where = ["src"]

@@ -333,9 +333,29 @@ It is the input that makes the third explanation different from the first, and i
 - Firestore vector index on `documentChunks.embedding`, composite `(ownerUid, embedding)`
 - Deletion removes chunks and the blob, and reports what was removed
 
-### The screening order is the whole design
+### The screening order is the whole design — restated, because the first version was impossible
 
-Parse *after* screening, never before. A malicious PDF's payload is in its text, and a pipeline that extracts first has already handed the content to a parser and possibly a model. `librarian` gets `roles/modelarmor.user` and the Gemma layer from Phase C's §5A work — whichever lands first wires the other in.
+An earlier draft of this section said "parse after screening, never before". **That cannot be done.** A PDF's text does not exist until something extracts it, so there is nothing to screen until parsing has already happened. The instruction was unimplementable, and following it literally would have meant screening the raw bytes of a compressed container — which detects nothing.
+
+The invariant that actually matters is narrower and achievable:
+
+> **No model reads content that has not been screened.**
+
+Which gives a real order, with the boundary in the right place:
+
+```
+1. extract      mechanical, no model      pypdf / image decode
+2. screen       the extracted text        Model Armor + Gemma, fail-closed
+3. chunk        only if screening passed
+4. embed        only if screening passed  <- first contact with a model
+5. index
+```
+
+Mechanical extraction is safe from prompt injection because no model is involved — an instruction inside a PDF is just text to `pypdf`. Step 4 is the first moment a model sees anything, and nothing reaches it that has not passed step 2.
+
+**Extraction carries a different risk, and it is not screening's job.** A malicious PDF can attack the *parser* (a memory-safety bug in the extraction library), which no amount of content screening prevents. That is mitigated by keeping extraction in the librarian — a separate service with no credentials beyond its own, no connector access, and no ability to act — rather than by pretending screening covers it.
+
+`librarian` gets `roles/modelarmor.user` and the Gemma layer from Phase C's §5A work; whichever lands first wires the other in.
 
 ### Retrieval at turn time
 
