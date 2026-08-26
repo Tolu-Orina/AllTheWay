@@ -38,6 +38,9 @@ SERVERS: dict[str, str] = {
     "google_gmail": "gmail_server.py",
     "google_drive": "drive_server.py",
     "google_docs": "docs_server.py",
+    # Generation. Uses the service's own Vertex identity, so it is deliberately
+    # absent from NEEDS_OAUTH — nothing here touches a user's account.
+    "media": "media_server.py",
 }
 
 

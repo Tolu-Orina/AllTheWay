@@ -11,6 +11,7 @@ import { artifactRoutes } from "./routes/artifacts.js";
 import { documentRoutes } from "./routes/documents.js";
 import { getSession, listSessions } from "./repos/sessions.js";
 import { listPreferences, revertPreference } from "./repos/preferences.js";
+import { listVisualPreferences, revertVisualPreference } from "./repos/visual.js";
 import { listRuns, listWatchers, setWatcherRunning } from "./repos/watchers.js";
 import { runTurn, streamTurn } from "./orchestrator.js";
 import { listRecent, record } from "./repos/ledger.js";
@@ -286,6 +287,34 @@ api.post(
       return;
     }
     const ok = await revertPreference(req.uid!, body.data.id);
+    if (!ok) {
+      res.status(404).json({ code: "not_found", message: "That preference is not here." });
+      return;
+    }
+    res.status(204).end();
+  }),
+);
+
+// Brand memory. Served beside the learned preferences rather than under a
+// separate feature: to a user they are one thing — "what it has decided about
+// me" — and splitting them across two screens is how a preference becomes
+// something nobody knows how to find, let alone undo.
+api.get(
+  "/visual-preferences",
+  handle(async (req, res) => {
+    res.json(await listVisualPreferences(req.uid!));
+  }),
+);
+
+api.post(
+  "/visual-preferences/revert",
+  handle(async (req, res) => {
+    const body = RevertPreferenceSchema.safeParse(req.body);
+    if (!body.success) {
+      res.status(400).json({ code: "invalid_request", message: "Expected { id: string }." });
+      return;
+    }
+    const ok = await revertVisualPreference(req.uid!, body.data.id);
     if (!ok) {
       res.status(404).json({ code: "not_found", message: "That preference is not here." });
       return;

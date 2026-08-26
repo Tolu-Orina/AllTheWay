@@ -31,6 +31,12 @@ export const sessions = (uid: string) => userDoc(uid).collection("sessions");
 export const watchers = (uid: string) => userDoc(uid).collection("watchers");
 export const runs = (uid: string) => userDoc(uid).collection("runs");
 export const preferences = (uid: string) => userDoc(uid).collection("preferences");
+
+// Brand memory. Path-scoped under the user like everything else: a palette is
+// as much a fingerprint of a company's work as a document is, and a root-level
+// collection here would be the same cross-tenant hazard in a prettier form.
+export const visualPreferences = (uid: string) =>
+  userDoc(uid).collection("visualPreferences");
 /** The Feedback Ledger. One collection for spoken and typed turns alike —
  *  the manifest is explicit that there is no separate "voice memory". */
 export const ledger = (uid: string) => userDoc(uid).collection("ledger");

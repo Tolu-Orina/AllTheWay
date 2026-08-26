@@ -234,6 +234,13 @@ locals {
       # a real account can run, which is the correct closed default.
       GOOGLE_OAUTH_CLIENT_ID_SECRET     = var.google_oauth_secrets == null ? "" : var.google_oauth_secrets.client_id
       GOOGLE_OAUTH_CLIENT_SECRET_SECRET = var.google_oauth_secrets == null ? "" : var.google_oauth_secrets.client_secret
+
+      # Generation runs here, and only this service generates. Set explicitly
+      # rather than left to the connector's own default so that the region a
+      # revision actually used is readable from the revision itself — the
+      # default is invisible at exactly the moment someone is asking where a
+      # video was produced.
+      MEDIA_LOCATION = var.media_location
     }
     gateway = {
       # Where artifact bytes live. Empty would disable artifacts rather than

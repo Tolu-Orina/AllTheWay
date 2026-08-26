@@ -29,6 +29,11 @@ dependencies = [
   # Where a user's refresh token lives. Read here, written by the gateway's
   # consent callback.
   "google-cloud-firestore>=2.19",
+  # The media connector authenticates to Vertex with the service's own
+  # identity. Declared rather than inherited: today it arrives only as a
+  # transitive of google-cloud-firestore, and a package that is present because
+  # something else happens to want it is the `ws` outage all over again.
+  "google-auth>=2.35",
 ]
 
 [project.optional-dependencies]

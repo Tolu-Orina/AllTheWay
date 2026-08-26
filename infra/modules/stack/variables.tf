@@ -64,6 +64,25 @@ variable "gemini_model" {
   default     = "gemini-3.7-flash"
 }
 
+variable "media_location" {
+  description = <<-EOT
+    Where image and video generation runs.
+
+    Deliberately its own variable rather than reusing GOOGLE_CLOUD_LOCATION or
+    the Live location. Both of those already had to be split apart once for the
+    same reason: the models a location offers differ per model family, and one
+    variable standing for three answers is how voice went to `global` and got
+    "Publisher model was not found" on every session.
+
+    The image and Veo models are `global`-only today. That is worth stating
+    here because it is the open question for EU data residency: pinning this to
+    a European region is the lever, and it will fail until those models are
+    offered there.
+  EOT
+  type        = string
+  default     = "global"
+}
+
 variable "gemini_live_model" {
   description = <<-EOT
     Live API model id on Vertex. Pinned, never 'latest'.

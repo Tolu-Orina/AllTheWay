@@ -50,6 +50,22 @@ TOOL_ACTIONS: dict[str, dict[str, Action | None]] = {
         "create_file": Action.CREATE_TASK,
         "delete_file": Action.DELETE_DATA,
     },
+    # Generated media. No user account is touched, so no OAuth — but real
+    # money is spent, which is what the severities below are about.
+    "media": {
+        # Cheap enough to be conversational: ~$0.034 per thousand images.
+        "generate_image": Action.CREATE_TASK,
+        # ~$0.05/second. Confirmed, but not treated as irreversible.
+        "draft_video": Action.CREATE_TASK,
+        # ~$0.75/second — an 8-second render is about six dollars.
+        #
+        # MAKE_PAYMENT is not a metaphor here. It is the highest rung of the
+        # autonomy floor, so this can never be reached unattended at any
+        # ceiling and inherits the double confirmation the floor already
+        # applies to moving money. The most expensive action in the product is
+        # governed by the machinery built for the most dangerous one.
+        "render_video": Action.MAKE_PAYMENT,
+    },
     "google_docs": {
         "read_document": None,
         "create_document": Action.CREATE_TASK,
@@ -63,6 +79,29 @@ TOOL_ACTIONS: dict[str, dict[str, Action | None]] = {
 #: Kept beside the severity table because both are the same kind of fact: what
 #: the gateway must know about a connector that the connector must not be
 #: trusted to declare about itself.
+#: Which meter a tool spends from, and how much one call costs.
+#:
+#: Kept beside the severity table because both are the same kind of fact: what
+#: the gateway must know about a tool that the tool must not be trusted to
+#: declare about itself. A connector that reported its own cost could report
+#: zero.
+#:
+#: The value is the unit charged per call; for video the caller supplies
+#: seconds, so the charge is per second.
+TOOL_METERS: dict[str, dict[str, str]] = {
+    "media": {
+        "generate_image": "images",
+        "draft_video": "draft_video_seconds",
+        "render_video": "final_video_seconds",
+    },
+}
+
+
+def meter_for(connector: str, tool: str) -> str | None:
+    """Which meter this call spends from, or None if it is not metered."""
+    return TOOL_METERS.get(connector, {}).get(tool)
+
+
 NEEDS_OAUTH: frozenset[str] = frozenset(
     {"google_calendar", "google_gmail", "google_drive", "google_docs"}
 )

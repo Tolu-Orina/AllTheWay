@@ -38,6 +38,8 @@ from .oauth import FirestoreRefreshTokens, RefreshTokenStore
 from alltheway_metering import Meter
 
 from .org_policy import FirestorePolicies, PolicyStore
+from .registry import meter_for
+from .visual import VisualStore, default_visual_store
 from .subscription import SubscriptionStore, default_store
 from .usage import UsageStore
 
@@ -133,6 +135,7 @@ class ConnectorExecutor(AgentExecutor):
         token_store: "RefreshTokenStore | None" = None,
         policy_store: "PolicyStore | None" = None,
         subscriptions: "SubscriptionStore | None" = None,
+        visual: "VisualStore | None" = None,
     ) -> None:
         self._usage = usage or UsageStore()
         # Built lazily and only when a connector actually needs it, so neither
@@ -140,6 +143,7 @@ class ConnectorExecutor(AgentExecutor):
         self._token_store = token_store or _default_token_store()
         self._policy_store = policy_store or _default_policy_store()
         self._subscriptions = subscriptions or default_store()
+        self._visual = visual or default_visual_store()
 
     async def execute(self, context: RequestContext, event_queue: EventQueue) -> None:
         if context.current_task is None:
@@ -186,6 +190,10 @@ class ConnectorExecutor(AgentExecutor):
             grant=_grant_from(payload),
             usage=self._usage.usage(key),
             confirmed=bool(payload.get("confirmed", False)),
+            # A separate field from `confirmed`, and separate on the wire too.
+            # Deriving one from the other anywhere along this path would undo
+            # the distinction the two gates exist to make.
+            cost_acknowledged=bool(payload.get("costAcknowledged", False)),
             waiver=waiver,
             user=user,
             token_store=self._token_store,
@@ -195,6 +203,7 @@ class ConnectorExecutor(AgentExecutor):
             org=str(payload.get("org", "")).strip(),
             policy_store=self._policy_store,
             subscriptions=self._subscriptions,
+            visual=self._visual,
         )
 
         if outcome.ok:
@@ -206,6 +215,16 @@ class ConnectorExecutor(AgentExecutor):
             # exhaust its own allowance by being denied.
             if self._subscriptions is not None:
                 self._subscriptions.record(user, Meter.CONNECTOR_CALLS, 1)
+
+                # A tool with its own meter also charges that. Video charges
+                # per second, because a six-second draft and a six-second final
+                # differ by fifteen times in cost and the meter has to reflect
+                # what was actually spent.
+                specific = meter_for(connector, tool)
+                if specific is not None:
+                    seconds = int((payload.get("arguments") or {}).get("seconds", 1))
+                    amount = max(seconds, 1) if "video" in tool else 1
+                    self._subscriptions.record(user, Meter(specific), amount)
             await updater.add_artifact(
                 [_data_part({"data": outcome.data, "trace": outcome.trace})],
                 artifact_id=RESULT_ARTIFACT_ID,

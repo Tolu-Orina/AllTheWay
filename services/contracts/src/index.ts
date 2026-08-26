@@ -146,6 +146,35 @@ export const LearnedPreferenceSchema = z.object({
   revertedAt: z.string().datetime().nullable(),
 });
 
+/**
+ * A remembered visual preference — brand memory.
+ *
+ * Kept apart from LearnedPreference rather than folded into it, for a reason
+ * that shows up in the interface: these are the only preferences with a
+ * *visible* value. "Muted, not neon" is checkable at a glance from a swatch and
+ * unfalsifiable as prose, and a user who can see the six colours it thinks they
+ * like can correct it in a way they never could from a sentence.
+ *
+ * Reverting one is the same append-only story as the Feedback Ledger: the row
+ * stays, `revertedAt` is stamped, and it stops being applied.
+ */
+export const VisualPreferenceSchema = z.object({
+  id: z.string(),
+  /** What it governs: "palette", "density", "corners", "typography". */
+  aspect: z.string(),
+  /** How it is phrased into a generation prompt. */
+  value: z.string(),
+  /**
+   * Hex colours, when the aspect has any. Present for a palette, empty for
+   * density — the interface shows swatches only where there is something to
+   * show rather than inventing a colour to fill the space.
+   */
+  swatches: z.array(z.string()).default([]),
+  /** What the user did that taught it this. Never inferred prose. */
+  evidence: z.string(),
+  revertedAt: z.string().datetime().nullable(),
+});
+
 /** Errors carry a stable code the client can branch on, plus prose for a human. */
 export const ApiErrorSchema = z.object({
   code: z.enum([
@@ -166,6 +195,7 @@ export type Ceiling = z.infer<typeof CeilingSchema>;
 export type Watcher = z.infer<typeof WatcherSchema>;
 export type WatcherRun = z.infer<typeof WatcherRunSchema>;
 export type LearnedPreference = z.infer<typeof LearnedPreferenceSchema>;
+export type VisualPreference = z.infer<typeof VisualPreferenceSchema>;
 export type ApiError = z.infer<typeof ApiErrorSchema>;
 
 /** Human-facing labels live with the enum so both sides agree on wording. */

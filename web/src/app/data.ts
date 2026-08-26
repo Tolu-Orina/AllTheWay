@@ -1,5 +1,6 @@
 import {
   LearnedPreferenceSchema,
+  VisualPreferenceSchema,
   SessionDetailSchema,
   SessionSchema,
   WatcherRunSchema,
@@ -20,6 +21,7 @@ import { apiBlob, apiDelete, apiGet, apiPost, apiText } from "@/lib/api";
 
 export type {
   LearnedPreference,
+  VisualPreference,
   Session,
   SessionDetail,
   Watcher,
@@ -140,6 +142,8 @@ export const api = {
   watchers: () => apiGet("/watchers", z.array(WatcherSchema)),
   watcherRuns: () => apiGet("/watcher-runs", z.array(WatcherRunSchema)),
   preferences: () => apiGet("/preferences", z.array(LearnedPreferenceSchema)),
+  visualPreferences: () =>
+    apiGet("/visual-preferences", z.array(VisualPreferenceSchema)),
 
   /**
    * What the user confirmed or declined (FR-V5).
@@ -242,6 +246,8 @@ export const api = {
   setWatcherRunning: (id: string, running: boolean) =>
     apiPost(`/watchers/${encodeURIComponent(id)}/running`, { running }, WatcherSchema),
   revertPreference: (id: string) => apiPost("/preferences/revert", { id }),
+  revertVisualPreference: (id: string) =>
+    apiPost("/visual-preferences/revert", { id }),
 
   /** Home needs the in-progress session; the list is already sorted by recency. */
   homePlan: async (): Promise<SessionDetail | null> => {
