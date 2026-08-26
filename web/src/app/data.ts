@@ -1,6 +1,8 @@
 import {
   LearnedPreferenceSchema,
   VisualPreferenceSchema,
+  MeetingSchema,
+  CommitmentSchema,
   SessionDetailSchema,
   SessionSchema,
   WatcherRunSchema,
@@ -22,6 +24,8 @@ import { apiBlob, apiDelete, apiGet, apiPost, apiText } from "@/lib/api";
 export type {
   LearnedPreference,
   VisualPreference,
+  Meeting,
+  Commitment,
   Session,
   SessionDetail,
   Watcher,
@@ -144,6 +148,9 @@ export const api = {
   preferences: () => apiGet("/preferences", z.array(LearnedPreferenceSchema)),
   visualPreferences: () =>
     apiGet("/visual-preferences", z.array(VisualPreferenceSchema)),
+  meetings: () => apiGet("/meetings", z.array(MeetingSchema)),
+  commitments: (meetingId: string) =>
+    apiGet(`/meetings/${meetingId}/commitments`, z.array(CommitmentSchema)),
 
   /**
    * What the user confirmed or declined (FR-V5).
@@ -248,6 +255,10 @@ export const api = {
   revertPreference: (id: string) => apiPost("/preferences/revert", { id }),
   revertVisualPreference: (id: string) =>
     apiPost("/visual-preferences/revert", { id }),
+  // Confirming a commitment is what sends it through the autonomy floor.
+  // Until this is called, nothing has been done about it.
+  confirmCommitment: (meetingId: string, id: string) =>
+    apiPost(`/meetings/${meetingId}/commitments/confirm`, { id }),
 
   /** Home needs the in-progress session; the list is already sorted by recency. */
   homePlan: async (): Promise<SessionDetail | null> => {

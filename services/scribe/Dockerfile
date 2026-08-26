@@ -1,13 +1,13 @@
-# AllTheWay gateway — the only service that faces the internet.
+# AllTheWay scribe — meetings, whichever tier serves them.
 #
 #   deps  -> npm ci for the two workspaces this service needs
-#   build -> compile contracts and gateway to JavaScript
-#   test  -> typecheck against the same tree, inside the image
+#   build -> compile contracts and scribe to JavaScript
+#   test  -> typecheck and run the tier/commitment suites, inside the image
 #   final -> distroless nodejs22, non-root, no shell, no npm
 #
 # Build from the REPO ROOT, not this directory:
 #
-#     docker build -f services/gateway/Dockerfile -t gateway .
+#     docker build -f services/scribe/Dockerfile -t scribe .
 #
 # Why 3.11/node22, why the root context, and why test is a build stage:
 # docs/decisions/0003-service-images.md
@@ -15,9 +15,9 @@
 # ## Why the context has to be the repo root
 #
 # This service imports `@alltheway/contracts`, a sibling workspace. A build
-# context of services/gateway cannot see ../contracts at all — COPY refuses to
+# context of services/scribe cannot see ../contracts at all — COPY refuses to
 # leave the context. Every service therefore builds from the root, so the
-# gateway is not a special case that breaks the moment someone copies a
+# scribe is not a special case that breaks the moment someone copies a
 # Dockerfile.
 #
 # ## Why compiled JavaScript rather than tsx
@@ -35,7 +35,7 @@ WORKDIR /repo
 # reconcile against it — including web's, which is otherwise unused here.
 COPY package.json package-lock.json ./
 COPY services/contracts/package.json services/contracts/
-COPY services/gateway/package.json services/gateway/
+COPY services/scribe/package.json services/scribe/
 COPY web/package.json web/
 
 # Only the two workspaces this image needs. Installing the root workspace set
@@ -47,18 +47,18 @@ COPY web/package.json web/
 # once its source is actually present.
 RUN npm ci --ignore-scripts \
       --workspace @alltheway/contracts \
-      --workspace @alltheway/gateway \
+      --workspace @alltheway/scribe \
       --include-workspace-root
 
 # --------------------------------------------------------------------- build
 FROM deps AS build
 WORKDIR /repo
 COPY services/contracts services/contracts
-COPY services/gateway services/gateway
+COPY services/scribe services/scribe
 
-# contracts first: the gateway imports its emitted .d.ts and .js, not its source.
+# contracts first: scribe imports its emitted .d.ts and .js, not its source.
 RUN npm --workspace @alltheway/contracts run build \
- && npm --workspace @alltheway/gateway run build
+ && npm --workspace @alltheway/scribe run build
 
 # Drop devDependencies in place, so what ships is exactly what was built
 # against, minus the toolchain. `npm ci --omit=dev` in a fresh stage could
@@ -71,21 +71,22 @@ RUN npm prune --omit=dev
 # deliberately install only their own plus contracts — so calling it here would
 # fail on a workspace whose node_modules were never created. That is a build
 # breaking for a reason unrelated to the code being built.
-# Typecheck both workspaces, then run the gateway's voice-relay tests. Env
-# vars here exist only so env.ts can boot: the suite talks to a fake Live
-# backend and never reaches Firestore or Vertex.
+# The tier ladder and the commitment rules are pure functions over text, so
+# this suite needs no emulator and no credentials — which is why it can run in
+# the image with nothing set up. That is a property worth keeping: the two
+# things most worth testing here (a refused Tier 2 falls back with its reason
+# intact, and a commitment is never created confirmed) should never become
+# dependent on a service being reachable.
 FROM build AS test
 WORKDIR /repo
-ENV FIRESTORE_EMULATOR_HOST=127.0.0.1:8081
-ENV ALLOW_ANONYMOUS=true
 ENV GOOGLE_CLOUD_PROJECT=alltheway-local
 RUN npm ci --ignore-scripts \
       --workspace @alltheway/contracts \
-      --workspace @alltheway/gateway \
+      --workspace @alltheway/scribe \
       --include-workspace-root \
  && npm --workspace @alltheway/contracts run build \
- && npm --workspace @alltheway/gateway run typecheck \
- && npm --workspace @alltheway/gateway test
+ && npm --workspace @alltheway/scribe run typecheck \
+ && npm --workspace @alltheway/scribe test
 
 # --------------------------------------------------------------------- final
 FROM gcr.io/distroless/nodejs22-debian12:nonroot AS final
@@ -97,15 +98,15 @@ WORKDIR /repo
 COPY --from=build /repo/node_modules ./node_modules
 COPY --from=build /repo/services/contracts/package.json ./services/contracts/
 COPY --from=build /repo/services/contracts/dist ./services/contracts/dist
-COPY --from=build /repo/services/gateway/package.json ./services/gateway/
-COPY --from=build /repo/services/gateway/dist ./services/gateway/dist
+COPY --from=build /repo/services/scribe/package.json ./services/scribe/
+COPY --from=build /repo/services/scribe/dist ./services/scribe/dist
 
 # The workspace's OWN node_modules, which is not the same set as the root's.
 #
 # npm hoists what it can, but a package whose hoisted slot is already taken by
 # an incompatible version gets nested under the workspace instead. `ws` is the
 # first one here: the root slot holds ws@7, a dev dependency of firebase-tools,
-# so the gateway's ws@8 lands in services/gateway/node_modules. `npm prune
+# so the gateway's ws@8 landed in its own workspace directory. `npm prune
 # --omit=dev` then deletes the root ws@7 as dev, and without this line the
 # nested ws@8 never reaches the image — so `import "ws"` resolves to nothing
 # and the container exits(1) before it can listen.
@@ -113,7 +114,7 @@ COPY --from=build /repo/services/gateway/dist ./services/gateway/dist
 # Four packages are in that state today (ws, google-auth-library, gcp-metadata,
 # google-logging-utils), and which ones they are changes with any dependency
 # bump. Copying the directory is what makes that reshuffling harmless.
-COPY --from=build /repo/services/gateway/node_modules ./services/gateway/node_modules
+COPY --from=build /repo/services/scribe/node_modules ./services/scribe/node_modules
 
 ENV NODE_ENV=production
 
@@ -122,4 +123,4 @@ ENV NODE_ENV=production
 # a mismatch with the deploy is a deploy-time error rather than a revision that
 # starts and is never reachable.
 EXPOSE 8080
-CMD ["services/gateway/dist/index.js"]
+CMD ["services/scribe/dist/index.js"]

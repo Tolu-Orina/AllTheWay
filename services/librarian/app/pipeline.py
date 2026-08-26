@@ -59,12 +59,35 @@ class Blocked(RuntimeError):
         self.summary = summary
 
 
-def extract(body: bytes, mime_type: str) -> tuple[list[tuple[int, str]], int]:
-    """(page number, text) pairs, and a page count. Mechanical only.
+#: Photographs, which need transcription rather than parsing. Kept in step
+#: with `transcribe.SUPPORTED`: a type accepted here and refused there would
+#: reach the "everything else is text" branch and index replacement characters.
+IMAGE_TYPES = frozenset(
+    {"image/jpeg", "image/png", "image/webp", "image/heic", "image/heif"}
+)
 
-    No model is involved, which is what makes it safe to run before screening:
-    an instruction inside a PDF is just text to a parser.
+
+def extract(body: bytes, mime_type: str) -> tuple[list[tuple[int, str]], int]:
+    """(page number, text) pairs, and a page count.
+
+    Mechanical for every format but one. A parser cannot be talked into
+    anything, which is what makes extraction safe to run before screening: an
+    instruction inside a PDF is just text to `pypdf`.
+
+    Photographs are the exception, and a deliberate one — see `transcribe.py`
+    for what that costs and why it is contained. The containment is visible
+    right here in the caller: whatever comes back goes through screening with
+    everything else, so a subverted transcription is treated exactly like a
+    hostile PDF.
     """
+    if mime_type in IMAGE_TYPES:
+        from .transcribe import transcribe
+
+        # A photograph is one page by definition. Someone who photographs four
+        # pages sends four files, and pretending otherwise would invent page
+        # numbers that citations would then point at.
+        return [(1, transcribe(body, mime_type))], 1
+
     if mime_type == "application/pdf":
         from pypdf import PdfReader
 

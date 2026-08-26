@@ -43,7 +43,31 @@ COPY services/librarian/ ./
 # dependency into the same --target, which pip declines to overwrite.
 RUN pip install --no-cache-dir --target=/deps "pytest>=8.0"
 ENV PYTHONPATH=/deps
-RUN python -m pytest tests -q
+
+# The Firestore emulator, because the tenant-isolation tests are the ones that
+# must not be optional.
+#
+# They guard the single failure this product cannot have — one user's documents
+# reaching another — and they assert things only a real Firestore can answer:
+# that a path-scoped query cannot see a sibling subtree, and that layer 1 holds
+# with the redundant filter removed. A fake would assert the fake.
+#
+# Without this they skipped, silently, in every CI run: `pytest` reported them
+# as skips among passes and the build went green. Nine tests that never ran and
+# looked exactly like nine tests that did.
+#
+# Pinned, and pinned to the version they were last proven against rather than to
+# a moving "latest" that could change query semantics under them.
+ARG FIRESTORE_EMULATOR_VERSION=1.19.8
+RUN apt-get update     && apt-get install -y --no-install-recommends default-jre-headless curl     && rm -rf /var/lib/apt/lists/*     && curl -sSfL -o /opt/firestore-emulator.jar         "https://storage.googleapis.com/firebase-preview-drop/emulator/cloud-firestore-emulator-v${FIRESTORE_EMULATOR_VERSION}.jar"
+
+# One RUN, because a background process does not survive between layers.
+#
+# The emulator is waited for rather than slept at: a fixed sleep is either too
+# short on a slow builder or wasted on a fast one, and the too-short case turns
+# into a connection error that reads like a broken test.
+ENV FIRESTORE_EMULATOR_HOST=127.0.0.1:8081
+RUN java -jar /opt/firestore-emulator.jar --host=127.0.0.1 --port=8081 &     for i in $(seq 1 60); do       if curl -sf "http://127.0.0.1:8081/" >/dev/null 2>&1; then break; fi;       if [ "$i" = "60" ]; then echo "Firestore emulator never came up." >&2; exit 1; fi;       sleep 1;     done     && python -m pytest tests -q
 
 # --------------------------------------------------------------------- final
 FROM gcr.io/distroless/python3-debian12:nonroot AS final

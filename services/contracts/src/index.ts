@@ -175,6 +175,45 @@ export const VisualPreferenceSchema = z.object({
   revertedAt: z.string().datetime().nullable(),
 });
 
+/**
+ * A meeting, and which tier served it.
+ *
+ * `tier` and `explanation` are both stored rather than derived, because the
+ * question a user asks afterwards is "why were there no live notes" — and an
+ * explanation recomputed later against changed code would silently rewrite the
+ * history of a meeting that already happened.
+ */
+export const MeetingSchema = z.object({
+  id: z.string(),
+  spaceName: z.string(),
+  conferenceId: z.string(),
+  startedAt: z.string(),
+  endedAt: z.string().nullable(),
+  /** 2 = listened live, 1 = read the transcript after, 0 = neither. */
+  tier: z.union([z.literal(0), z.literal(1), z.literal(2)]),
+  /** Verbatim refusal from the preview programme. Never mapped to a code. */
+  tierReason: z.string(),
+  explanation: z.string(),
+  participants: z.array(z.string()),
+  status: z.enum(["listening", "processing", "ready", "blocked"]),
+});
+
+/**
+ * Something someone may have committed to.
+ *
+ * FR-C2: a proposal, never a record of something done. `confirmed` is the only
+ * thing that distinguishes "we think this was said" from "you agreed we should
+ * act", and nothing may act on the first.
+ */
+export const CommitmentSchema = z.object({
+  id: z.string(),
+  at: z.string(),
+  /** "Unattributed" when three audio streams could not separate the voices. */
+  speakerLabel: z.string(),
+  text: z.string(),
+  confirmed: z.boolean(),
+});
+
 /** Errors carry a stable code the client can branch on, plus prose for a human. */
 export const ApiErrorSchema = z.object({
   code: z.enum([
@@ -196,6 +235,8 @@ export type Watcher = z.infer<typeof WatcherSchema>;
 export type WatcherRun = z.infer<typeof WatcherRunSchema>;
 export type LearnedPreference = z.infer<typeof LearnedPreferenceSchema>;
 export type VisualPreference = z.infer<typeof VisualPreferenceSchema>;
+export type Meeting = z.infer<typeof MeetingSchema>;
+export type Commitment = z.infer<typeof CommitmentSchema>;
 export type ApiError = z.infer<typeof ApiErrorSchema>;
 
 /** Human-facing labels live with the enum so both sides agree on wording. */

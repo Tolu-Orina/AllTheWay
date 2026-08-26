@@ -1,0 +1,14 @@
+{
+  // Emit-only, exactly as the gateway does it and for the same reason:
+  // distroless has no TypeScript loader, so the image ships compiled
+  // JavaScript rather than sources plus tsx.
+  "extends": "./tsconfig.json",
+  "compilerOptions": {
+    "noEmit": false,
+    "outDir": "dist",
+    "rootDir": "src",
+    "sourceMap": true
+  },
+  "include": ["src"],
+  "exclude": ["src/**/*.test.ts"]
+}

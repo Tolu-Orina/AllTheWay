@@ -5,6 +5,7 @@
   "workspaces": [
     "services/contracts",
     "services/gateway",
+    "services/scribe",
     "web"
   ],
   "scripts": {
@@ -13,7 +14,7 @@
     "dev:web": "npm --workspace web run dev",
     "seed": "npm --workspace @alltheway/gateway run seed",
     "build": "npm --workspace @alltheway/contracts run build && npm --workspace @alltheway/gateway run build && npm --workspace web run build",
-    "typecheck": "npm --workspace @alltheway/contracts run typecheck && npm --workspace @alltheway/gateway run typecheck",
+    "typecheck": "npm --workspace @alltheway/contracts run typecheck && npm --workspace @alltheway/gateway run typecheck && npm --workspace @alltheway/scribe run typecheck",
     "dev:orchestrator": "cd services/orchestrator && python -m uvicorn app.main:app --port 8090",
     "dev:watchers": "cd services/watcher-runtime && python -m uvicorn app.main:app --port 8091",
     "dev:synth": "cd services/profile-synthesizer && python -m uvicorn app.main:app --port 8092",

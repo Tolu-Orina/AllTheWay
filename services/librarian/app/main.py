@@ -35,6 +35,7 @@ from pydantic import BaseModel, Field
 
 from . import embed, store
 from .pipeline import Blocked, ingest
+from .transcribe import TranscriptionFailed
 
 log = logging.getLogger(__name__)
 
@@ -102,6 +103,11 @@ def post_document(
         # 422, not 500. Screening refusing a document is the system working,
         # and the user can act on it — a 500 would say the opposite.
         raise HTTPException(status_code=422, detail=blocked.summary) from blocked
+    except TranscriptionFailed as failed:
+        # Also answerable, and by the person holding the camera: move closer,
+        # get more light, straighten the page. A 500 here would send someone to
+        # a status page over a photograph they could simply retake.
+        raise HTTPException(status_code=422, detail=str(failed)) from failed
 
 
 @app.get("/documents")

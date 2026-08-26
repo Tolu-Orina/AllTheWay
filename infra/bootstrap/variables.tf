@@ -48,6 +48,11 @@ variable "backend_services" {
     # Added in v3 Phase B. Same lesson as the two lines above: a service absent
     # here has no runtime identity and its first deploy fails.
     "librarian",
+    # Added in v3 Phase D. One service owns meetings whichever tier serves them:
+    # a WebRTC client for Tier 2 and a Workspace Events subscriber for Tier 1
+    # are two transports onto the same meeting record, and splitting them would
+    # put the fallback ladder across a network hop.
+    "scribe",
   ]
 }
 

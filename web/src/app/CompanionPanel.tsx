@@ -1,4 +1,4 @@
-import { useEffect, useId, useRef, useState } from "react";
+import { useCallback, useEffect, useId, useRef, useState } from "react";
 import {
   AlertTriangle,
   Loader2,
@@ -13,6 +13,7 @@ import { LogoMark } from "@/components/primitives/logo";
 import { Sheet, SheetContent } from "@/components/ui/sheet";
 import { CanvasPane } from "@/app/CanvasPane";
 import { useAuth } from "@/auth/useAuth";
+import { api } from "@/app/data";
 import { useTurn, type ProposedAction, type TurnPhase } from "@/app/use-turn";
 import { cn } from "@/lib/utils";
 import { VoiceCaptions, VoiceControl } from "@/app/VoiceControl";
@@ -59,6 +60,41 @@ function useCompanionThread() {
     },
   ]);
   const [draft, setDraft] = useState("");
+
+  // Dropping a document into the conversation.
+  //
+  // The library on the profile screen is where documents are *managed*. This is
+  // where they are *used* — and the moment someone wants a contract read is the
+  // moment they are talking about it, not a moment they want to navigate away
+  // from to find an upload button.
+  const [dropping, setDropping] = useState(false);
+  const [dropNote, setDropNote] = useState<string | null>(null);
+
+  const acceptDrop = useCallback(
+    async (files: FileList) => {
+      const file = Array.from(files)[0];
+      if (!file) return;
+
+      setDropNote(`Reading ${file.name}…`);
+      try {
+        const buffer = new Uint8Array(await file.arrayBuffer());
+        let binary = "";
+        for (let i = 0; i < buffer.length; i += 8192) {
+          binary += String.fromCharCode(...buffer.subarray(i, i + 8192));
+        }
+        await api.uploadDocument(file.name, btoa(binary), file.type || "text/plain");
+        // Said in the conversation rather than as a toast: the document is now
+        // part of what it can cite, and that belongs in the thread that will
+        // cite it.
+        setDropNote(`${file.name} is ready — ask me about it.`);
+      } catch (err) {
+        // Screening refusals and unreadable photos both arrive here with a real
+        // message. Showing it verbatim is the point.
+        setDropNote((err as { message?: string }).message || `${file.name} could not be added.`);
+      }
+    },
+    [],
+  );
   const settled = useRef<string>("");
 
   /**
@@ -250,9 +286,28 @@ function CompanionConversation({
 
       <VoiceCaptions />
 
+      {dropNote ? (
+        <p role="status" className="border-t px-3 py-2 text-[12.5px] text-muted-foreground">
+          {dropNote}
+        </p>
+      ) : null}
+
       <form
-        className="flex items-center gap-2 border-t p-3"
+        className={cn(
+          "flex items-center gap-2 border-t p-3 transition-colors",
+          dropping && "bg-primary/5 ring-1 ring-primary/40 ring-inset",
+        )}
         style={{ paddingBottom: "max(env(safe-area-inset-bottom), 0.75rem)" }}
+        onDragOver={(e) => {
+          e.preventDefault();
+          setDropping(true);
+        }}
+        onDragLeave={() => setDropping(false)}
+        onDrop={(e) => {
+          e.preventDefault();
+          setDropping(false);
+          if (e.dataTransfer.files.length) void acceptDrop(e.dataTransfer.files);
+        }}
         onSubmit={(e) => {
           e.preventDefault();
           send(draft);
@@ -267,7 +322,9 @@ function CompanionConversation({
           value={draft}
           onChange={(e) => setDraft(e.target.value)}
           disabled={working}
-          placeholder={working ? "Working…" : "Ask, or correct it…"}
+          placeholder={
+            dropping ? "Drop it here" : working ? "Working…" : "Ask, or correct it…"
+          }
           className="min-w-0 flex-1 rounded-full border bg-background px-3.5 py-2 text-[13.5px] outline-none placeholder:text-muted-foreground"
         />
         <button

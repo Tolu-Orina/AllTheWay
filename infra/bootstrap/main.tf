@@ -34,6 +34,23 @@ locals {
     # floor that catches known phrasings and will miss a paraphrase; this is
     # the layer that is meant to catch the rest.
     "modelarmor.googleapis.com",
+    # Meetings (Phase D). Two APIs, because the two tiers are genuinely
+    # different products:
+    #
+    #   meet             Tier 1's REST surface (conference records,
+    #                    transcripts) and Tier 2's Media API, which is a
+    #                    Developer Preview gated on enrolment of the project,
+    #                    the OAuth principal and every participant.
+    #   workspaceevents  the subscription that tells us a call ended, so Tier 1
+    #                    does not have to poll for something that happens twice
+    #                    a day.
+    #
+    # Enabling `meet` does not grant the preview. The fallback ladder in the
+    # scribe service is what makes that survivable: Tier 2 is attempted every
+    # time and its refusal is recorded verbatim, rather than the feature being
+    # blocked on a programme we do not control.
+    "meet.googleapis.com",
+    "workspaceevents.googleapis.com",
   ]
 
   # Every (service, env) pair gets its own runtime identity. This is what makes

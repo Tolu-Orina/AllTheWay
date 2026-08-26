@@ -1,5 +1,5 @@
 import { useCallback, useRef, useState } from "react";
-import { Loader2, ShieldAlert, Trash2, Upload } from "lucide-react";
+import { Camera, Loader2, ShieldAlert, Trash2, Upload } from "lucide-react";
 
 import { Async } from "@/app/async";
 import { useAsync } from "@/app/use-async";
@@ -28,7 +28,12 @@ import { cn } from "@/lib/utils";
  * can believe that happened is if the interface says so.
  */
 
-const ACCEPT = ".pdf,.txt,.md,.markdown,text/plain,text/markdown,application/pdf";
+const ACCEPT =
+  ".pdf,.txt,.md,.markdown,text/plain,text/markdown,application/pdf," +
+  // Photographs are transcribed rather than parsed. HEIC is here because it is
+  // what an iPhone produces by default, and omitting it would reject the single
+  // most likely file a phone user ever sends.
+  "image/jpeg,image/png,image/webp,image/heic,image/heif";
 
 //: Matched to the gateway's own ceiling so a rejection is immediate and legible
 //: rather than a 413 arriving after a long upload.
@@ -59,6 +64,7 @@ export function Documents() {
   const [error, setError] = useState<string | null>(null);
   const [dragging, setDragging] = useState(false);
   const input = useRef<HTMLInputElement>(null);
+  const camera = useRef<HTMLInputElement>(null);
 
   const upload = useCallback(
     async (files: FileList | File[]) => {
@@ -124,25 +130,58 @@ export function Documents() {
             choose a file
           </button>
         </p>
-        <p className="text-[12px] text-muted-foreground">PDF, text or Markdown</p>
+        <p className="text-[12px] text-muted-foreground">
+          PDF, text, Markdown — or a photo of a page
+        </p>
         <input
           ref={input}
           type="file"
           accept={ACCEPT}
           className="sr-only"
-          // Mobile browsers offer the camera for this automatically when the
-          // accept list allows images. Phase C widens that deliberately.
           onChange={(e) => {
             if (e.target.files) void upload(e.target.files);
             e.target.value = "";
           }}
         />
+
+        {/*
+          A second input, existing only to carry `capture`.
+
+          It cannot be a prop on the one above: `capture` makes a mobile browser
+          open the camera *directly*, skipping the file picker entirely. That is
+          right when someone means "photograph this page" and wrong when they
+          mean "attach the PDF I already have", and one input cannot be both.
+
+          Desktop browsers ignore `capture` and would show a file picker
+          labelled "Take a photo", so the button is hidden outside the coarse
+          pointers that actually have a camera in hand.
+        */}
+        <input
+          ref={camera}
+          type="file"
+          accept="image/*"
+          capture="environment"
+          className="sr-only"
+          onChange={(e) => {
+            if (e.target.files) void upload(e.target.files);
+            e.target.value = "";
+          }}
+        />
+
+        <button
+          type="button"
+          onClick={() => camera.current?.click()}
+          className="hidden items-center gap-1.5 rounded-brand border px-3 py-1.5 text-[12.5px] transition-colors hover:bg-muted [@media(pointer:coarse)]:inline-flex"
+        >
+          <Camera className="size-3.5" aria-hidden="true" />
+          Photograph a page
+        </button>
       </div>
 
       {busy ? (
         <p role="status" className="flex items-center gap-2 text-[12.5px] text-muted-foreground">
           <Loader2 className="size-3.5 animate-spin motion-reduce:animate-none" aria-hidden="true" />
-          Reading {busy}. A long document takes a minute.
+          Reading {busy}. A long document takes a minute; a photo is quicker.
         </p>
       ) : null}
 

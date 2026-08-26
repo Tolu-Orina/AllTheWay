@@ -36,6 +36,17 @@ locals {
     # is what keeps a malicious PDF attacking the extraction library from
     # reaching anything that can act.
     librarian = ["gateway", "orchestrator"]
+
+    # Meetings, whichever tier serves them. Called by the gateway, which is the
+    # only thing holding a user session; it calls the orchestrator, which owns
+    # screening and planning.
+    #
+    # It is deliberately NOT reachable by the watcher runtime. A watcher runs
+    # unattended, and joining a meeting is the least appropriate thing for an
+    # unattended process to decide to do — every participant sees a dialog when
+    # the agent connects, so an unwanted join is visible to the whole room and
+    # attributable to the user who did not ask for it.
+    scribe = ["gateway"]
   }
 
   runtime_sa = var.runtime_service_accounts
@@ -88,11 +99,19 @@ locals {
       # would turn a security check off rather than on.
       REGISTRY_URL  = local.service_url["registry"]
       LIBRARIAN_URL = local.service_url["librarian"]
+      SCRIBE_URL    = local.service_url["scribe"]
 
       WEB_ORIGINS = join(",", compact([
         var.custom_domain != "" ? "https://${var.custom_domain}" : "",
         "https://${var.hosting_site_id}.web.app",
       ]))
+    }
+    scribe = {
+      # Screening and planning live in the orchestrator. The scribe stores what
+      # was said and hands it on: two screeners in two languages would drift,
+      # and the drift would be silent until something got through the one that
+      # was not updated.
+      ORCHESTRATOR_URL = local.service_url["orchestrator"]
     }
     orchestrator = {
       RESEARCH_CELL_URL     = local.service_url["research-cell"]

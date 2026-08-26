@@ -1,0 +1,213 @@
+import { useState } from "react";
+import { Check, Circle, Ear, FileText, MicOff } from "lucide-react";
+
+import { Async } from "@/app/async";
+import { useAsync } from "@/app/use-async";
+import { api, type Commitment, type Meeting } from "@/app/data";
+import { cn } from "@/lib/utils";
+
+/**
+ * Meetings, and what the agent could and could not do in them.
+ *
+ * ## The tier is stated, always
+ *
+ * A meeting served by Tier 1 looks, to a user, exactly like one served by
+ * Tier 2 that produced few notes — unless the product says which happened. It
+ * says so on every meeting, with the refusal reason verbatim, because "there
+ * were no live notes and here is why" is answerable and "the notes seem thin"
+ * is not.
+ *
+ * ## It listens; it does not speak
+ *
+ * FR-C4. The Meet Media API is receive-only, and nothing here may suggest
+ * otherwise — a user who believes the agent can speak will eventually rely on
+ * it to say something in a room full of people. The wording is "listened",
+ * never "joined the conversation", and the indicator is explicitly passive.
+ *
+ * ## Commitments are proposals
+ *
+ * FR-C2. A detected commitment is an inference stacked on speech recognition
+ * and best-effort speaker attribution — each wrong sometimes. It renders as
+ * something to approve, never as something done, and approving it is what
+ * sends it through the autonomy floor.
+ */
+
+const TIER_LABEL: Record<Meeting["tier"], string> = {
+  2: "Listened live",
+  1: "Read the transcript afterwards",
+  0: "No notes",
+};
+
+export function Meetings() {
+  const { state, reload } = useAsync<Meeting[]>(() => api.meetings());
+
+  return (
+    <section className="flex flex-col gap-3">
+      <h2 className="text-[12px] font-semibold tracking-[0.08em] text-blue-deep uppercase dark:text-blue-bright">
+        Meetings
+      </h2>
+      <p className="text-[13.5px] leading-relaxed text-muted-foreground">
+        It listens and takes notes. It cannot speak in a meeting, and everyone
+        in the room is asked before it connects.
+      </p>
+
+      <Async
+        state={state}
+        reload={reload}
+        isEmpty={(rows) => rows.length === 0}
+        empty={
+          <p className="py-4 text-[12.5px] text-muted-foreground">
+            No meetings yet.
+          </p>
+        }
+      >
+        {(rows) => (
+          <ul className="flex flex-col gap-2">
+            {rows.map((meeting) => (
+              <MeetingRow key={meeting.id} meeting={meeting} />
+            ))}
+          </ul>
+        )}
+      </Async>
+    </section>
+  );
+}
+
+/**
+ * The persistent listening indicator (FR-C3).
+ *
+ * Ours, in addition to Meet's own participant dialog — a notice shown once when
+ * the agent joins is not a notice for the fifty minutes afterwards, and the
+ * person who joined late never saw it at all.
+ */
+export function ListeningIndicator({ meeting }: { meeting: Meeting }) {
+  if (meeting.status !== "listening") return null;
+
+  return (
+    <p
+      role="status"
+      className="flex items-center gap-2 rounded-brand border border-primary/40 bg-primary/5 px-3 py-2 text-[12.5px]"
+    >
+      <Circle
+        className="size-2 shrink-0 fill-current text-primary motion-safe:animate-pulse"
+        aria-hidden="true"
+      />
+      Listening to this meeting and taking notes. It cannot speak.
+    </p>
+  );
+}
+
+function MeetingRow({ meeting }: { meeting: Meeting }) {
+  const [open, setOpen] = useState(false);
+
+  return (
+    <li className="rounded-brand border bg-card px-3.5 py-3">
+      <div className="flex items-start justify-between gap-3">
+        <div className="min-w-0">
+          <p className="truncate text-[13.5px] font-medium">
+            {meeting.spaceName || "Meeting"}
+          </p>
+          <p className="mt-0.5 flex items-center gap-1.5 text-[12px] text-muted-foreground">
+            {meeting.tier === 2 ? (
+              <Ear className="size-3.5" aria-hidden="true" />
+            ) : meeting.tier === 1 ? (
+              <FileText className="size-3.5" aria-hidden="true" />
+            ) : (
+              <MicOff className="size-3.5" aria-hidden="true" />
+            )}
+            {TIER_LABEL[meeting.tier]}
+          </p>
+
+          {/*
+            The verbatim refusal, shown rather than summarised. It comes from a
+            preview programme whose refusal set we do not control, and a user
+            who can read "a participant is not enrolled" can do something about
+            it; one who reads "unavailable" cannot.
+          */}
+          {meeting.tier !== 2 && meeting.tierReason ? (
+            <button
+              type="button"
+              onClick={() => setOpen((v) => !v)}
+              className="mt-1 text-[12px] underline underline-offset-2 text-muted-foreground"
+            >
+              {open ? "Hide why" : "Why no live notes?"}
+            </button>
+          ) : null}
+
+          {open ? (
+            <p className="mt-1.5 text-[12px] leading-relaxed text-muted-foreground">
+              {meeting.tierReason}
+            </p>
+          ) : null}
+        </div>
+
+        <span
+          className={cn(
+            "shrink-0 rounded-full px-2 py-0.5 text-[11px]",
+            meeting.status === "listening" && "bg-primary/10 text-primary",
+            meeting.status === "blocked" && "bg-destructive/10 text-destructive",
+          )}
+        >
+          {meeting.status}
+        </span>
+      </div>
+
+      <ListeningIndicator meeting={meeting} />
+    </li>
+  );
+}
+
+/**
+ * A commitment, awaiting a person.
+ *
+ * Mobile matters here specifically: nobody edits a transcript on a phone, but
+ * approving four commitments on the walk back from a meeting is exactly the
+ * right thing to do on one (R2). So this is a full-width tap target with the
+ * text readable at a glance, not a row in a table.
+ */
+export function CommitmentCard({
+  commitment,
+  onConfirm,
+}: {
+  commitment: Commitment;
+  onConfirm: (id: string) => Promise<void>;
+}) {
+  const [busy, setBusy] = useState(false);
+
+  const who =
+    commitment.speakerLabel === "Unattributed" ? "Someone" : commitment.speakerLabel;
+
+  return (
+    <li className="flex flex-col gap-2 rounded-brand border bg-card px-3.5 py-3">
+      <p className="text-[13.5px] leading-relaxed">
+        {/*
+          Phrased as an inference, never as a fact. "Ada will send the contract"
+          reads as settled; "may have committed to" reads as what it is — a
+          guess from a transcript, waiting for a human.
+        */}
+        <span className="text-muted-foreground">{who} may have committed to:</span>{" "}
+        “{commitment.text}”
+      </p>
+      <p className="text-[12px] text-muted-foreground">
+        Nothing has been done about this.
+      </p>
+
+      <button
+        type="button"
+        disabled={busy || commitment.confirmed}
+        onClick={async () => {
+          setBusy(true);
+          try {
+            await onConfirm(commitment.id);
+          } finally {
+            setBusy(false);
+          }
+        }}
+        className="flex w-full items-center justify-center gap-1.5 rounded-brand border px-3 py-2 text-[13px] transition-colors hover:bg-muted disabled:opacity-50"
+      >
+        <Check className="size-4" aria-hidden="true" />
+        {commitment.confirmed ? "Confirmed" : "Yes, make this a task"}
+      </button>
+    </li>
+  );
+}

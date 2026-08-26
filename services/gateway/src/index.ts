@@ -9,6 +9,7 @@ import { connectorRoutes } from "./routes/connectors.js";
 import { registryRoutes } from "./routes/registry.js";
 import { artifactRoutes } from "./routes/artifacts.js";
 import { documentRoutes } from "./routes/documents.js";
+import { meetingRoutes } from "./routes/meetings.js";
 import { getSession, listSessions } from "./repos/sessions.js";
 import { listPreferences, revertPreference } from "./repos/preferences.js";
 import { listVisualPreferences, revertVisualPreference } from "./repos/visual.js";
@@ -299,6 +300,8 @@ api.post(
 // separate feature: to a user they are one thing — "what it has decided about
 // me" — and splitting them across two screens is how a preference becomes
 // something nobody knows how to find, let alone undo.
+api.use(meetingRoutes);
+
 api.get(
   "/visual-preferences",
   handle(async (req, res) => {

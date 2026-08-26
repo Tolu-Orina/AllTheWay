@@ -115,6 +115,10 @@ export const env = {
 
   /** The librarian. Internal-only; the browser reaches it through here. */
   librarianUrl: (process.env.LIBRARIAN_URL ?? "").replace(/\/$/, ""),
+  // Meetings. Empty disables the feature rather than failing at boot: a
+  // deployment without a scribe should serve everything else, and a meetings
+  // list that 503s is a better answer than a gateway that will not start.
+  scribeUrl: (process.env.SCRIBE_URL ?? "").replace(/\/$/, ""),
 
   resendApiKey: process.env.RESEND_API_KEY ?? "",
   mailFrom: process.env.MAIL_FROM ?? "",
