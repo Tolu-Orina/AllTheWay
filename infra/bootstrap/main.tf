@@ -30,6 +30,10 @@ locals {
     "firebasehosting.googleapis.com",
     "storage.googleapis.com",
     "compute.googleapis.com",
+    # Screening of untrusted content (Phase 6). The heuristic screener is a
+    # floor that catches known phrasings and will miss a paraphrase; this is
+    # the layer that is meant to catch the rest.
+    "modelarmor.googleapis.com",
   ]
 
   # Every (service, env) pair gets its own runtime identity. This is what makes

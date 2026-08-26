@@ -32,8 +32,6 @@ data "terraform_remote_state" "bootstrap" {
 module "stack" {
   source = "./modules/stack"
 
-  model_armor_template = var.model_armor_template
-
   # Secret *names*. The values are created by hand — an OAuth consent screen is
   # a console flow and a Resend key comes from a third party — so Terraform
   # references them and never carries them.

@@ -39,12 +39,6 @@ variable "common_env_vars" {
   default = {}
 }
 
-variable "model_armor_template" {
-  description = "Model Armor template resource name used to screen untrusted content. Empty falls back to the local screener, which is a development posture rather than a production one."
-  type        = string
-  default     = ""
-}
-
 variable "gemini_model" {
   description = <<-EOT
     Vertex model id. Pinned, never 'latest' — a silent swap changes agent

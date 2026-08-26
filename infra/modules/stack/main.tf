@@ -83,14 +83,25 @@ locals {
     watcher-runtime = {
       ORCHESTRATOR_URL      = local.service_url["orchestrator"]
       CONNECTOR_GATEWAY_URL = local.service_url["connector-gateway"]
+
+      # The service that reads what strangers wrote. It screens the trigger
+      # inbound and the plan outbound (runtime.py), and until now it did both
+      # with the heuristic screener because nothing set this.
+      MODEL_ARMOR_TEMPLATE = google_model_armor_template.screening.name
     }
     profile-synthesizer = {}
     research-cell       = {}
     # Screening is mandatory on untrusted external content, and it fails closed:
-    # without a template the connector gateway refuses rather than passing
-    # content through unscreened. See libs/screening.
+    # without a template these services refuse rather than passing content
+    # through unscreened. See libs/screening.
+    #
+    # Taken from the resource, not a variable. A variable defaulting to "" is
+    # how the watcher runtime came to run in production with no template at
+    # all — silently falling back to the heuristic screener, which is a floor
+    # and says so, on the exact content the manifest calls out as needing the
+    # real thing.
     connector-gateway = {
-      MODEL_ARMOR_TEMPLATE = var.model_armor_template
+      MODEL_ARMOR_TEMPLATE = google_model_armor_template.screening.name
       USE_SECRET_MANAGER   = "true"
     }
   }

@@ -43,12 +43,6 @@ variable "domain_verification_txt" {
   default     = ""
 }
 
-variable "model_armor_template" {
-  description = "Model Armor template resource name for screening untrusted content."
-  type        = string
-  default     = ""
-}
-
 variable "firestore_location" {
   description = <<-EOT
     Firestore location. CANNOT BE CHANGED after the database is created, so it
