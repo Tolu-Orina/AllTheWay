@@ -1,4 +1,4 @@
-import { Brain, House, LayoutGrid, Radar } from "lucide-react";
+import { Brain, House, LayoutGrid, Radar, ShieldCheck } from "lucide-react";
 
 /**
  * One nav definition, consumed by both the desktop sidebar and the mobile tab
@@ -25,6 +25,12 @@ export const NAV: NavItem[] = [
     label: "Watchers",
     icon: Radar,
     hint: "Running for you",
+  },
+  {
+    to: "/app/agents",
+    label: "Agents",
+    icon: ShieldCheck,
+    hint: "What can act, and who vouches for it",
   },
   {
     to: "/app/profile",

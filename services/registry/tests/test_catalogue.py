@@ -167,3 +167,35 @@ async def test_an_agent_with_no_url_is_reported_rather_than_hidden(keys, monkeyp
 
 async def test_an_unknown_agent_is_not_invented():
     assert await describe_one("does-not-exist") is None
+
+
+def test_the_registry_imports_without_protobuf():
+    """A verifier must not need the A2A SDK.
+
+    This service reads cards and checks signatures; it never serves one. Its
+    first build failed with `No module named google.protobuf` because
+    `alltheway_agentcards.a2a` imported protobuf at module scope for the
+    *signing* path — a dependency the registry has no reason to carry.
+
+    Simulated by hiding the module and re-importing, which is the only way to
+    catch this outside an image build.
+    """
+    import builtins
+    import importlib
+
+    real_import = builtins.__import__
+
+    def blocked(name, *args, **kwargs):
+        if name.startswith("google.protobuf"):
+            raise ModuleNotFoundError("No module named 'google.protobuf'")
+        return real_import(name, *args, **kwargs)
+
+    builtins.__import__ = blocked
+    try:
+        for module in ("alltheway_agentcards.a2a", "app.catalogue"):
+            importlib.reload(importlib.import_module(module))
+    finally:
+        builtins.__import__ = real_import
+        # Leave the modules as the rest of the suite expects them.
+        importlib.reload(importlib.import_module("alltheway_agentcards.a2a"))
+        importlib.reload(importlib.import_module("app.catalogue"))

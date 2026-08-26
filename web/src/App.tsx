@@ -13,6 +13,7 @@ import Home from "@/app/screens/Home";
 import Sessions from "@/app/screens/Sessions";
 import SessionDetail from "@/app/screens/SessionDetail";
 import Watchers from "@/app/screens/Watchers";
+import Agents from "@/app/screens/Agents";
 import Profile from "@/app/screens/Profile";
 
 export default function App() {
@@ -36,6 +37,7 @@ export default function App() {
         <Route path="/app" element={<AppLayout />}>
           <Route index element={<Home />} />
           <Route path="sessions" element={<Sessions />} />
+          <Route path="agents" element={<Agents />} />
           <Route path="sessions/:id" element={<SessionDetail />} />
           <Route path="watchers" element={<Watchers />} />
           <Route path="profile" element={<Profile />} />

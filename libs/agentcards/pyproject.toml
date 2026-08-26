@@ -10,7 +10,13 @@ dependencies = [
 ]
 
 [project.optional-dependencies]
-test = ["pytest>=8.0"]
+# Only a service that SIGNS a card needs protobuf, to serialise the card
+# exactly as its route serves it. A verifier is handed the JSON that arrived on
+# the wire, so it carries neither this nor the A2A SDK. Declared as an extra
+# rather than a dependency so that asymmetry is visible here rather than
+# discovered by a build failing.
+sign = ["protobuf>=5.0"]
+test = ["pytest>=8.0", "protobuf>=5.0"]
 
 [tool.pytest.ini_options]
 pythonpath = ["src"]

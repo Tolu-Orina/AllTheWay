@@ -41,6 +41,48 @@ export const ConnectorListSchema = z.object({
 
 export type Connector = z.infer<typeof ConnectorSchema>;
 
+export const MeterSchema = z.object({
+  meter: z.enum(["voice_minutes", "watcher_runs", "connector_calls"]),
+  used: z.number(),
+  limit: z.number().nullable(),
+  remaining: z.number().nullable(),
+  nearLimit: z.boolean(),
+});
+
+export const UsageSchema = z.object({
+  tier: z.enum(["free", "plus", "team"]),
+  label: z.string(),
+  pricePence: z.number(),
+  period: z.string(),
+  meters: z.array(MeterSchema),
+});
+
+export type Usage = z.infer<typeof UsageSchema>;
+export type MeterReading = z.infer<typeof MeterSchema>;
+
+export const AgentSchema = z.object({
+  id: z.string(),
+  owner: z.string(),
+  purpose: z.string(),
+  reachable: z.boolean(),
+  name: z.string(),
+  version: z.string(),
+  advertisedUrl: z.string(),
+  skills: z.array(z.object({ id: z.string(), name: z.string(), description: z.string() })),
+  signature: z
+    .object({ state: z.string(), kid: z.string(), summary: z.string(), trusted: z.boolean() })
+    .nullable(),
+  error: z.string(),
+});
+
+export const RegistrySchema = z.object({
+  agents: z.array(AgentSchema),
+  checkedAt: z.string(),
+  summary: z.object({ total: z.number(), reachable: z.number(), trusted: z.number() }),
+});
+
+export type Agent = z.infer<typeof AgentSchema>;
+
 export const api = {
   sessions: () => apiGet("/sessions", z.array(SessionSchema)),
   session: (id: string) =>
@@ -75,6 +117,18 @@ export const api = {
    * front end — "coming soon" is a fact about the backend.
    */
   connectors: () => apiGet("/connectors", ConnectorListSchema),
+
+  /**
+   * Where this account stands this month.
+   *
+   * Advisory. Entitlement is decided in the connector gateway beside the
+   * autonomy floor — this exists so a limit can be seen coming rather than
+   * discovered by being refused.
+   */
+  usage: () => apiGet("/usage", UsageSchema),
+
+  /** The agent registry, with each card's signature checked at read time. */
+  agents: () => apiGet("/registry/agents", RegistrySchema),
 
   /**
    * Begins consent. Returns the Google URL to send the browser to.

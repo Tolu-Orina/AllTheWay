@@ -22,8 +22,6 @@ from __future__ import annotations
 import os
 from typing import Any
 
-from google.protobuf.json_format import MessageToDict
-
 from . import Result, load_private_key, load_public_key, sign, verify
 
 #: Set from Secret Manager. Absent means this deployment does not sign, which
@@ -37,7 +35,18 @@ DEFAULT_KEY_ID = "alltheway"
 
 
 def card_payload(card: Any) -> dict:
-    """The card as the well-known endpoint serves it."""
+    """The card as the well-known endpoint serves it.
+
+    protobuf is imported here rather than at module scope, and that is not
+    tidiness. Only *signing* needs it — a verifier is handed the parsed JSON
+    that arrived on the wire and never touches a protobuf message. Importing it
+    at the top made this module unusable in any service that verifies without
+    also serving a card, which is precisely what the registry does: its build
+    failed with `No module named google.protobuf` because it has no reason to
+    depend on the A2A SDK at all.
+    """
+    from google.protobuf.json_format import MessageToDict
+
     return MessageToDict(card)
 
 

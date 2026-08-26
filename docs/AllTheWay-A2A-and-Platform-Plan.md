@@ -723,8 +723,23 @@ that can observe how long a session lasted — asking the browser would mean
 trusting a client to report its own consumption. Measured from the point the
 session became usable, so nobody pays for a Vertex session that never opened.
 
-**Exit:** met, except that no payment provider is wired — a tier is a Firestore
-value today, so nothing yet *sells* a plan.
+### The payment provider is deliberately not wired
+
+**Deferred 2026-08-26, pending product validation.** A tier is a Firestore value
+today: `subscriptions/{uid}.tier` is set by hand, and everything downstream —
+allowances, enforcement, the usage view — behaves exactly as it will when a
+provider writes that field instead.
+
+This is a deferral, not a gap, and the ordering is deliberate. Wiring Stripe
+before the plan shape is validated would mean building webhooks, a customer
+record, proration and dunning against limits that may still change — and every
+one of those is expensive to change *after* real money has moved through it.
+
+What it costs to defer: nothing can be sold. What it buys: the entitlement
+model can be revised on a product decision rather than a migration.
+
+**Exit:** met for metering and enforcement. Selling a plan waits on the
+provider above.
 
 ---
 
@@ -772,7 +787,8 @@ Phases 2 and 3 can run in parallel once A2A lands. Phase 5 and 6 are independent
 2. ~~**`@a2a-js/sdk` version line**~~ — **settled in Phase 1.** Both on 1.x: Python `a2a-sdk` 1.1.2, Node `@a2a-js/sdk` 1.0.1.
 3. ~~**Does Firebase Hosting buffer SSE?**~~ — **settled in Phase 2, and the answer changed the design.** Buffering is the lesser problem; Hosting's unconfigurable 60s rewrite timeout is disqualifying on its own. The stream is served from the gateway's own hostname. See [decisions/0001](decisions/0001-sse-not-behind-firebase-hosting.md).
 4. ~~**Plus tier price.**~~ — **settled 2026-08-26: £18/month.** It lives in `libs/metering` beside the allowances it buys, because a limit and its price must change in the same diff — splitting them is how a plan ends up costing more without offering more, with neither change looking wrong alone.
-5. **EU data residency.** Vertex is pinned to `global`, which has none — services run in europe-west1 but model calls do not. If residency is ever required, the endpoint moves and the model pins to a DRZ-supported one.
-6. ~~**Voice transport.**~~ — **settled 2026-08-26: gateway WebSocket relay, not LiveKit.** Vertex cannot mint ephemeral Live tokens; native audio is the language answer (no picker; Igbo unsupported). See [decisions/0006](decisions/0006-voice-through-the-gateway.md). Revisit only for PSTN or multi-party.
-7. ~~**`/healthz` on `*.run.app`.**~~ — **settled 2026-08-26: both spellings are registered** on all six services. Google's frontend swallows the exact path `/healthz`, while `/healthz/` gets through — and FastAPI would answer the latter with a 307 redirect to the path that never arrives, so the trailing-slash route is declared explicitly rather than left to `redirect_slashes`. Whoever writes the next probe cannot pick the wrong one.
-8. **Connector count.** The Production Roadmap's Phase 6 exit is *at least five* first-party connectors with least-privilege OAuth (Docs, Gmail, Calendar, Drive, GitHub, Notion named). The Implementation Plan scoped the submission to **one**, and recommended Google Docs. What exists is **Calendar** — one real connector plus its in-memory twin. Either the recommendation moves to Calendar or a Docs connector is added; today the two documents disagree.
+5. **Payment provider.** Deferred 2026-08-26 pending product validation of the plan shape. Metering and enforcement are complete and provider-agnostic; only the write to `subscriptions/{uid}.tier` is missing. Building webhooks and proration against limits that may still change is expensive to undo once real money has moved through it.
+6. **EU data residency.** Vertex is pinned to `global`, which has none — services run in europe-west1 but model calls do not. If residency is ever required, the endpoint moves and the model pins to a DRZ-supported one.
+7. ~~**Voice transport.**~~ — **settled 2026-08-26: gateway WebSocket relay, not LiveKit.** Vertex cannot mint ephemeral Live tokens; native audio is the language answer (no picker; Igbo unsupported). See [decisions/0006](decisions/0006-voice-through-the-gateway.md). Revisit only for PSTN or multi-party.
+8. ~~**`/healthz` on `*.run.app`.**~~ — **settled 2026-08-26: both spellings are registered** on all six services. Google's frontend swallows the exact path `/healthz`, while `/healthz/` gets through — and FastAPI would answer the latter with a 307 redirect to the path that never arrives, so the trailing-slash route is declared explicitly rather than left to `redirect_slashes`. Whoever writes the next probe cannot pick the wrong one.
+9. **Connector count.** The Production Roadmap's Phase 6 exit is *at least five* first-party connectors with least-privilege OAuth (Docs, Gmail, Calendar, Drive, GitHub, Notion named). The Implementation Plan scoped the submission to **one**, and recommended Google Docs. What exists is **Calendar** — one real connector plus its in-memory twin. Either the recommendation moves to Calendar or a Docs connector is added; today the two documents disagree.
