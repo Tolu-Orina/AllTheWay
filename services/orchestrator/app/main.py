@@ -18,8 +18,11 @@ from a2a.server.routes import (
 )
 from a2a.server.tasks import InMemoryTaskStore
 from fastapi import FastAPI
+from pydantic import BaseModel
+from typing import Literal
 
 from alltheway_agentcards.a2a import attach_signature
+from alltheway_screening import screen
 
 from .a2a_card import build_agent_card
 from .a2a_executor import OrchestratorExecutor
@@ -73,6 +76,37 @@ add_a2a_routes_to_fastapi(
 #
 # Registering both means whoever writes the next probe cannot pick the wrong
 # one. See open decision 7 in docs/AllTheWay-A2A-and-Platform-Plan.md.
+class ScreenRequest(BaseModel):
+    text: str
+    direction: Literal["inbound", "outbound"] = "inbound"
+
+
+@app.post("/screen")
+def screen_text(request: ScreenRequest) -> dict:
+    """Screen untrusted content on behalf of a service that cannot.
+
+    The screener is Python and composes three layers — heuristic, Model Armor
+    and Gemma — with the rule that any block blocks and any failure blocks.
+    Reimplementing that in TypeScript for the scribe would create a second copy
+    of the one control that must not drift, and the drift would be silent until
+    something got through the copy nobody updated.
+
+    So there is one screener, and services that are not Python ask it.
+
+    Internal-only, like everything else here: reachable by the invoker graph
+    alone, and it returns a verdict rather than the text, so nothing about a
+    meeting passes back out through this route.
+    """
+    verdict = screen(request.text, request.direction)
+    return {
+        "allowed": verdict.allowed,
+        "screener": verdict.screener,
+        # Categories only, never the matched text. A trace that repeats an
+        # injection hands the attack a second delivery route.
+        "findings": [f.category for f in verdict.findings],
+    }
+
+
 @app.get("/healthz")
 @app.get("/healthz/", include_in_schema=False)
 def healthz() -> dict:

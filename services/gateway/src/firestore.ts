@@ -54,5 +54,53 @@ export const ledger = (uid: string) => userDoc(uid).collection("ledger");
  * appearing in it. A scoped path constrains queries, not rules.
  */
 export const artifacts = (uid: string) => userDoc(uid).collection("artifacts");
+
+/**
+ * Who an artifact is shared with. A property of the artifact, so it lives under
+ * the artifact — `users/{ownerUid}/artifacts/{id}/shares/{granteeUid}`.
+ *
+ * This is the authoritative record: the one consulted to decide whether a read
+ * is permitted. See `sharedWithMe` for why there is a second copy, and why it
+ * is deliberately not the one that decides.
+ */
+export const shares = (ownerUid: string, artifactId: string) =>
+  artifacts(ownerUid).doc(artifactId).collection("shares");
+
+/**
+ * The grantee's index of what has been shared with them.
+ *
+ * ## Why this exists at all
+ *
+ * The authoritative share sits under the *owner's* path, and a grantee does not
+ * know who the owners are. Listing "what has been shared with me" from that
+ * record alone would need a query across every user's subtree — a collection
+ * group query, which is the one thing forbidden outright, because it spans
+ * every tenant by definition.
+ *
+ * So the fact is written twice: once where it belongs, and once where it can be
+ * found. Both writes happen in a single batch, so a share is never half-created.
+ *
+ * ## It points; it does not permit
+ *
+ * This index says *look here*. The share document under the owner says *you
+ * may*. Every read re-checks the authoritative record, so a stale or forged
+ * index entry grants nothing — it only produces a lookup that then refuses.
+ * Getting that backwards would make the cheap, denormalised copy the thing
+ * standing between two tenants.
+ */
+export const sharedWithMe = (granteeUid: string) =>
+  userDoc(granteeUid).collection("sharedWithMe");
+
+/**
+ * Comments on an artifact, anchored to a version.
+ *
+ * Under the artifact rather than under the author: a comment is part of the
+ * conversation about the thing, and everyone permitted to see the thing should
+ * see it. Storing them under each author would scatter one discussion across
+ * several users' subtrees and make it unreadable without the query that is
+ * forbidden.
+ */
+export const comments = (ownerUid: string, artifactId: string) =>
+  artifacts(ownerUid).doc(artifactId).collection("comments");
 export const artifactVersions = (uid: string, artifactId: string) =>
   artifacts(uid).doc(artifactId).collection("versions");

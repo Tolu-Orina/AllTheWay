@@ -3,6 +3,9 @@ import {
   VisualPreferenceSchema,
   MeetingSchema,
   CommitmentSchema,
+  ShareSchema,
+  CommentSchema,
+  SharedArtifactSchema,
   SessionDetailSchema,
   SessionSchema,
   WatcherRunSchema,
@@ -26,6 +29,9 @@ export type {
   VisualPreference,
   Meeting,
   Commitment,
+  Share,
+  Comment,
+  SharedArtifact,
   Session,
   SessionDetail,
   Watcher,
@@ -149,6 +155,14 @@ export const api = {
   visualPreferences: () =>
     apiGet("/visual-preferences", z.array(VisualPreferenceSchema)),
   meetings: () => apiGet("/meetings", z.array(MeetingSchema)),
+  shares: (artifactId: string) =>
+    apiGet(`/artifacts/${artifactId}/shares`, z.array(ShareSchema)),
+  sharedWithMe: () => apiGet("/shared-with-me", z.array(SharedArtifactSchema)),
+  comments: (artifactId: string, owner?: string) =>
+    apiGet(
+      `/artifacts/${artifactId}/comments${owner ? `?owner=${encodeURIComponent(owner)}` : ""}`,
+      z.array(CommentSchema),
+    ),
   commitments: (meetingId: string) =>
     apiGet(`/meetings/${meetingId}/commitments`, z.array(CommitmentSchema)),
 
@@ -259,6 +273,14 @@ export const api = {
   // Until this is called, nothing has been done about it.
   confirmCommitment: (meetingId: string, id: string) =>
     apiPost(`/meetings/${meetingId}/commitments/confirm`, { id }),
+  share: (artifactId: string, email: string, role: "viewer" | "commenter") =>
+    apiPost(`/artifacts/${artifactId}/shares`, { email, role }),
+  revokeShare: (artifactId: string, granteeUid: string) =>
+    apiDelete(`/artifacts/${artifactId}/shares/${granteeUid}`),
+  comment: (artifactId: string, versionAnchor: number, body: string, owner?: string) =>
+    apiPost(`/artifacts/${artifactId}/comments`, { versionAnchor, body, owner }),
+  resolveComment: (artifactId: string, commentId: string, owner?: string) =>
+    apiPost(`/artifacts/${artifactId}/comments/resolve`, { commentId, owner }),
   setMeetingNotes: (enabled: boolean) =>
     apiPost("/settings/meetings", { enabled }),
   optOutOfMeeting: (meetingId: string) =>

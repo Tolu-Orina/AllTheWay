@@ -250,11 +250,11 @@ def as_json() -> dict:
                 "tier": str(plan.tier),
                 "label": plan.label,
                 "pricePence": plan.price_pence,
-                "limits": {
-                    str(Meter.VOICE_MINUTES): plan.voice_minutes,
-                    str(Meter.WATCHER_RUNS): plan.watcher_runs,
-                    str(Meter.CONNECTOR_CALLS): plan.connector_calls,
-                },
+                # Every meter, derived rather than listed. The three media
+                # meters were added in Phase C and this function was not
+                # updated, so the plan table it produced was quietly missing a
+                # third of itself — and it is the table the interface shows.
+                "limits": {str(meter): plan.allowance(meter) for meter in Meter},
             }
             for plan in PLANS.values()
         ]

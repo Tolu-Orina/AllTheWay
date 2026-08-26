@@ -58,7 +58,29 @@ export const MeetEventSchema = z.object({
 export interface MeetEvent {
   /** The conference record id, or "" when the event did not name one. */
   conferenceId: string;
+  /**
+   * The Meet space this happened in, from the CloudEvents `ce-subject`
+   * attribute. This is the only field that leads back to a user — the payload
+   * describes a conference, and a conference belongs to a space, and a space is
+   * what someone connected.
+   */
+  spaceId: string;
   ended: boolean;
+}
+
+/**
+ * `//meet.googleapis.com/spaces/abc` -> `abc`, and `spaces/abc` -> `abc`.
+ *
+ * Both forms appear depending on whether the id arrives as a CloudEvents source
+ * or as a resource name. Normalising at the boundary means every lookup after
+ * this point compares like with like — a mismatch here would present as
+ * "nobody owns this meeting" rather than as a parsing bug.
+ */
+export function spaceIdFrom(value: string): string {
+  if (!value) return "";
+  const marker = "spaces/";
+  const at = value.lastIndexOf(marker);
+  return at === -1 ? value : value.slice(at + marker.length);
 }
 
 /**
@@ -94,8 +116,16 @@ export function readMeetEvent(body: unknown): MeetEvent | null {
     ? name.slice("conferenceRecords/".length)
     : name;
 
+  // The space arrives as a CloudEvents attribute rather than in the payload:
+  // the subscription is on a space, and that is what the delivery is about.
+  const attributes = envelope.data.message.attributes ?? {};
+  const spaceId = spaceIdFrom(
+    attributes["ce-subject"] ?? attributes["ce-source"] ?? attributes["space"] ?? "",
+  );
+
   return {
     conferenceId,
+    spaceId,
     // Only an ended conference can have a transcript. Other event types are
     // parsed successfully and then ignored, which is different from failing.
     ended: (event.data.eventType ?? "").endsWith("conference.v2.ended"),

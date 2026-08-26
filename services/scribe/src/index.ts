@@ -13,7 +13,11 @@ import {
 import { resolveTier, type Attempt } from "./tier.js";
 import { connectTier1, connectTier2 } from "./meet.js";
 import { mayJoin, setGlobal, setMeetingOptOut } from "./consent.js";
-import { readMeetEvent } from "./events.js";
+import { readMeetEvent, spaceIdFrom } from "./events.js";
+import { rememberSpace, ownerOfSpace } from "./registry.js";
+import { accessTokenFor } from "./credentials.js";
+import { isClean } from "./screening.js";
+import { subscribeToSpace, transcriptEntries } from "./meet.js";
 
 /**
  * The scribe: one service owns meetings, whichever tier serves them.
@@ -100,10 +104,44 @@ app.post("/meetings/start", (req, res) => {
     // ladder is what stops that becoming "Tier nothing by default" on the many
     // meetings the preview refuses.
     const tier2: Attempt = { connect: () => connectTier2(body.data) };
-    const tier1: Attempt = { connect: () => connectTier1(body.data) };
+    const tier1: Attempt = {
+      // The credential is fetched inside the attempt, so "Google is not
+      // connected" becomes a Tier 1 refusal the ladder records verbatim rather
+      // than an exception that loses the Tier 2 reason alongside it.
+      connect: async () => {
+        const token = await accessTokenFor(uid);
+        await connectTier1(body.data, token);
+      },
+    };
     const outcome = await resolveTier(tier2, tier1);
 
     await openMeeting(uid, { ...body.data, outcome });
+
+    // Recorded at the only moment it is known: here, authenticated as this
+    // user. A Workspace Events push later names a space and nothing else, and
+    // without this there is no way back to a person.
+    const spaceId = spaceIdFrom(body.data.spaceName);
+    await rememberSpace(uid, spaceId, body.data.meetingId);
+
+    // Ask Google to tell us when this call ends, so Tier 1 has a trigger rather
+    // than a poll. Failing here does not fail the join: Tier 2 may already be
+    // listening, and a meeting without a post-call transcript is still a
+    // meeting. The reason is logged rather than surfaced mid-call — nobody
+    // wants a subscription error while they are talking to a client.
+    const topic = process.env.MEET_EVENTS_TOPIC ?? "";
+    if (spaceId && topic) {
+      try {
+        await subscribeToSpace(spaceId, topic, await accessTokenFor(uid));
+      } catch (error) {
+        console.warn(
+          JSON.stringify({
+            message: "meet subscription failed",
+            spaceId,
+            error: error instanceof Error ? error.message : "unknown",
+          }),
+        );
+      }
+    }
 
     // 200 even when both tiers refused. The meeting is happening whatever we
     // managed to do about it, and a 5xx here would make the client retry a
@@ -278,14 +316,54 @@ app.post("/events/meet", (req, res) => {
       return;
     }
 
-    // The meeting record is keyed per user, and this envelope names a
-    // conference rather than a person. Resolving one to the other is what the
-    // Tier 1 subscription registry is for; until a user has connected Meet
-    // there is nothing to resolve, and acknowledging is correct.
-    console.log(
-      JSON.stringify({ message: "meet conference ended", conferenceId: event.conferenceId }),
-    );
-    res.status(204).end();
+    const owner = await ownerOfSpace(event.spaceId);
+    if (!owner) {
+      // Events arrive for spaces nobody connected, and for mappings that have
+      // aged out. No amount of redelivery produces a user who was never
+      // recorded, so this is acknowledged rather than retried.
+      res.status(204).end();
+      return;
+    }
+
+    try {
+      const token = await accessTokenFor(owner.uid);
+      const entries = await transcriptEntries(event.conferenceId, token);
+
+      if (entries.length === 0) {
+        await closeMeeting(owner.uid, owner.meetingId, "ready");
+        res.status(204).end();
+        return;
+      }
+
+      // Screened before anything reasons about it, and screened as one body
+      // rather than line by line: an instruction split across two utterances is
+      // invisible to a screener that only ever sees one of them.
+      const clean = await isClean(entries.map((e) => e.text).join("\n"));
+      if (!clean) {
+        // Blocked, and the notes are not written. A refused transcript that
+        // still produced notes would have defeated the point of refusing it.
+        await closeMeeting(owner.uid, owner.meetingId, "blocked");
+        res.status(204).end();
+        return;
+      }
+
+      await appendNotes(owner.uid, owner.meetingId, entries);
+      await closeMeeting(owner.uid, owner.meetingId, "ready");
+      res.status(204).end();
+    } catch (error) {
+      // Worth retrying: a token exchange or a Meet call can fail transiently,
+      // and Pub/Sub redelivery is the right answer for those. Distinguishing
+      // this from the unparseable case above is what keeps one from becoming
+      // an infinite loop and the other from being silently dropped.
+      console.error(
+        JSON.stringify({
+          message: "meet transcript fetch failed",
+          conferenceId: event.conferenceId,
+          error: error instanceof Error ? error.message : "unknown",
+        }),
+      );
+      res.status(500).end();
+    }
   })();
 });
 

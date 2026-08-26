@@ -29,6 +29,10 @@ COPY libs/agentauth ./libs/agentauth
 # Card signing. The image must carry it: an import that resolves on a dev
 # machine and not in the image is how a container exits before it listens.
 COPY libs/agentcards ./libs/agentcards
+# The three-layer screener. The orchestrator screens transcripts on behalf of
+# the scribe, which is TypeScript — one screener, asked over HTTP, rather than
+# a second implementation of the one control that must not drift.
+COPY libs/screening ./libs/screening
 COPY services/orchestrator/pyproject.toml ./
 
 # --target gives a flat, relocatable tree that can be copied into an image with

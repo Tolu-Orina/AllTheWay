@@ -10,6 +10,7 @@ dependencies = [
   # Identity for service-to-service A2A calls. Without it, every
   # internal call is rejected by Cloud Run in a deployed environment.
   "alltheway-agentauth",
+  "alltheway-screening",
   "fastapi>=0.115",
   "uvicorn[standard]>=0.34",
   "pydantic>=2.9",
@@ -35,4 +36,4 @@ vertex = ["google-genai>=1.0"]
 [tool.pytest.ini_options]
 # The shared autonomy floor. Installed properly in the image; on the path
 # here so the suite runs without an editable install step.
-pythonpath = [".", "../../libs/agentcards/src", "../../libs/policy/src", "../../libs/agentauth/src"]
+pythonpath = [".", "../../libs/agentcards/src", "../../libs/policy/src", "../../libs/agentauth/src", "../../libs/screening/src"]

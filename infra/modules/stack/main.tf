@@ -11,8 +11,12 @@ locals {
   # reachable exactly by the identities named here — this is the enforcement
   # point for the architecture doc's zero-trust service-to-service rule.
   invoker_graph = {
-    gateway             = []
-    orchestrator        = ["gateway", "registry"]
+    gateway = []
+    # `scribe` is here because it screens transcripts through the orchestrator
+    # before anything reasons about them. Giving it ORCHESTRATOR_URL without
+    # this is the exact failure the comment below warns about: a service that
+    # knows where another is and may not call it.
+    orchestrator        = ["gateway", "registry", "scribe"]
     research-cell       = ["orchestrator", "registry"]
     profile-synthesizer = ["orchestrator"]
     watcher-runtime     = ["orchestrator"]
@@ -112,6 +116,12 @@ locals {
       # and the drift would be silent until something got through the one that
       # was not updated.
       ORCHESTRATOR_URL = local.service_url["orchestrator"]
+
+      # Where Google should publish conference events. Google needs a topic
+      # name, not a subscription: the push subscription on our side already
+      # exists, and pointing Workspace Events at it directly would couple an
+      # external system to a resource we recreate.
+      MEET_EVENTS_TOPIC = google_pubsub_topic.events["meet-events"].id
     }
     orchestrator = {
       RESEARCH_CELL_URL     = local.service_url["research-cell"]

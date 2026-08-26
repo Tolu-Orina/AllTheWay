@@ -24,32 +24,82 @@ import { db } from "../firestore.js";
  * would mean trusting a client to report its own consumption.
  */
 
-export type Meter = "voice_minutes" | "watcher_runs" | "connector_calls";
-export type Tier = "free" | "plus" | "team";
+export type Meter =
+  | "voice_minutes"
+  | "watcher_runs"
+  | "connector_calls"
+  | "images"
+  | "draft_video_seconds"
+  | "final_video_seconds";
+export type Tier = "free" | "plus" | "team" | "max";
 
 type Limits = Record<Meter, number | null>;
 
-/** Mirrors libs/metering. Changed together, or the UI lies. */
+/**
+ * Mirrors libs/metering, and `scripts/check-plan-table.py` proves it still
+ * does. The comment that used to stand here said "changed together, or the
+ * UI lies" — and then Phase C added a tier and three meters to the Python
+ * side only, so the UI lied: a Max subscriber read as Free.
+ */
 const PLANS: Record<Tier, { label: string; pricePence: number; limits: Limits }> = {
   free: {
     label: "Free",
     pricePence: 0,
-    limits: { voice_minutes: 30, watcher_runs: 50, connector_calls: 200 },
+    limits: {
+      voice_minutes: 30,
+      watcher_runs: 50,
+      connector_calls: 200,
+      images: 20,
+      draft_video_seconds: 0,
+      final_video_seconds: 0,
+    },
   },
   plus: {
     label: "Plus",
-    // £18/month, as shipped. No longer a placeholder.
     pricePence: 1800,
-    limits: { voice_minutes: 600, watcher_runs: 1000, connector_calls: 5000 },
+    limits: {
+      voice_minutes: 600,
+      watcher_runs: 1000,
+      connector_calls: 5000,
+      images: 500,
+      draft_video_seconds: 20,
+      final_video_seconds: 0,
+    },
   },
   team: {
     label: "Team",
     pricePence: 3200,
-    limits: { voice_minutes: null, watcher_runs: null, connector_calls: null },
+    limits: {
+      voice_minutes: null,
+      watcher_runs: null,
+      connector_calls: null,
+      images: 2000,
+      draft_video_seconds: 60,
+      final_video_seconds: 10,
+    },
+  },
+  max: {
+    label: "Max",
+    pricePence: 6000,
+    limits: {
+      voice_minutes: null,
+      watcher_runs: null,
+      connector_calls: null,
+      images: null,
+      draft_video_seconds: 300,
+      final_video_seconds: 20,
+    },
   },
 };
 
-const METERS: Meter[] = ["voice_minutes", "watcher_runs", "connector_calls"];
+const METERS: Meter[] = [
+  "voice_minutes",
+  "watcher_runs",
+  "connector_calls",
+  "images",
+  "draft_video_seconds",
+  "final_video_seconds",
+];
 
 /**
  * UTC, so a counter cannot be reset by travelling and two services never
@@ -63,7 +113,7 @@ export function period(now = new Date()): string {
 function tierOf(raw: unknown): Tier {
   // An unrecognised tier resolves to free. A corrupted subscription record
   // must never become an upgrade.
-  return raw === "plus" || raw === "team" ? raw : "free";
+  return raw === "plus" || raw === "team" || raw === "max" ? raw : "free";
 }
 
 export async function readUsage(uid: string) {

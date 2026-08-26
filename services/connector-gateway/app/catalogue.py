@@ -70,6 +70,16 @@ class Connector:
     #: Tools that need a scope beyond the base set, and are therefore refused
     #: unless the user granted it. Keyed by tool.
     extra_scopes: dict[str, tuple[Scope, ...]] = field(default_factory=dict)
+    #: The service that uses this grant, when it is not this one.
+    #:
+    #: Almost every connector here is consented to *and* used through this
+    #: gateway's MCP servers. Meet is the exception: the user grants it here
+    #: because this is where consent lives, and the scribe consumes it because
+    #: that is where meetings live. Naming the consumer keeps that legible —
+    #: otherwise a connector with no MCP server looks like an oversight, and
+    #: the check that would have caught a real oversight has to be weakened to
+    #: let it pass.
+    served_by: str = ""
 
     @property
     def scope_urls(self) -> tuple[str, ...]:
@@ -105,9 +115,37 @@ DOCUMENTS = Scope(
     "Read and write document content. Paired with drive.file, this reaches "
     "only documents this app created.",
 )
+MEETINGS_READONLY = Scope(
+    "https://www.googleapis.com/auth/meetings.space.readonly",
+    Tier.SENSITIVE,
+    "Read the user's meeting spaces and conference records. Read-only by name "
+    "and by nature: it grants no ability to start, join or alter a meeting.",
+)
+MEETINGS_TRANSCRIPT = Scope(
+    "https://www.googleapis.com/auth/meetings.space.created",
+    Tier.SENSITIVE,
+    "Reach conference records and transcripts for meetings, which is what "
+    "Tier 1 reads after a call ends. Without it there is no transcript to "
+    "read and meetings fall through to having no notes at all.",
+)
 
 
 CONNECTORS: tuple[Connector, ...] = (
+    Connector(
+        id="google_meet",
+        label="Google Meet",
+        provider="google",
+        status=Status.AVAILABLE,
+        summary="Take notes in your meetings. It listens; it cannot speak.",
+        # Read-only, deliberately. Nothing here can start, join or alter a
+        # meeting — Tier 2's live participation is a separate Developer Preview
+        # programme with its own enrolment, not a scope we can request.
+        scopes=(MEETINGS_READONLY, MEETINGS_TRANSCRIPT),
+        # No MCP server. The scribe holds the meeting record and the tier
+        # ladder; routing a transcript read back through here would put the
+        # fallback across a network hop for no gain.
+        served_by="scribe",
+    ),
     Connector(
         id="google_calendar",
         label="Google Calendar",

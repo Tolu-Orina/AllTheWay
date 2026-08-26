@@ -46,6 +46,18 @@ USER_OWNED = (
     "watchers",
     "runs",
     "ledger",
+    # Added in v3 Phase C. A palette is as much a fingerprint of a company's
+    # work as a document is, and gets the same rule rather than a weaker one
+    # because it happens to be small.
+    "visualPreferences",
+    # Added in v3 Phase D. A meeting is the room, verbatim — among the most
+    # sensitive things this product holds. `notes` and `commitments` are
+    # subcollections of it, and are listed because a root-level `notes`
+    # collection would be the same leak wearing a different name.
+    "meetings",
+    "notes",
+    "commitments",
+    "meetingOptOuts",
 )
 
 #: Spans every user by definition. Permitted nowhere.
@@ -55,8 +67,13 @@ COLLECTION_GROUP = re.compile(r"\bcollection_?[Gg]roup\s*\(")
 #: `db.collection("documentChunks")`. What makes it a violation is the
 #: receiver, not the name: `user_doc(uid).collection("watchers")` is correct
 #: and common, and an earlier version of this check wrongly flagged it.
+#: The receiver may itself be a call. The scribe writes `db().collection(...)`
+#: because its client is lazily constructed, and an earlier version of this
+#: pattern required a bare name — so it matched nothing in that service at all
+#: and reported it clean. A guard that silently covers fewer files than it
+#: claims is worse than no guard, because it is trusted.
 ROOT_COLLECTION = re.compile(
-    r"""(?:db|client|firestore)\s*\.\s*collection\(\s*["']({})["']\s*\)""".format(
+    r"""(?:db|client|firestore)\s*(?:\(\s*\))?\s*\.\s*collection\(\s*["']({})["']\s*\)""".format(
         "|".join(USER_OWNED)
     )
 )

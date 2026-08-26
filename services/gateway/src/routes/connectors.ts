@@ -62,6 +62,10 @@ const STATE_TTL_MS = 10 * 60_000;
  * whole consent screen fail rather than just that scope.
  */
 const GOOGLE_SCOPES = [
+  // Meetings, read-only. Tier 1 reads a conference record and its transcript
+  // after the call; nothing here can start, join or alter a meeting.
+  "https://www.googleapis.com/auth/meetings.space.readonly",
+  "https://www.googleapis.com/auth/meetings.space.created",
   "https://www.googleapis.com/auth/calendar.events",
   "https://www.googleapis.com/auth/gmail.send",
   "https://www.googleapis.com/auth/drive.file",

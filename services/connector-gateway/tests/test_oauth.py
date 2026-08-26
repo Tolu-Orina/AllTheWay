@@ -261,7 +261,21 @@ def test_every_available_connector_declares_scopes_and_a_server():
 
     for connector in catalogue.available():
         assert connector.scopes, f"{connector.id} is available but asks for nothing"
-        assert connector.id in SERVERS, f"{connector.id} has no MCP server"
+
+        # Either this gateway serves it over MCP, or it names the service that
+        # does. What must never happen is a connector offered to a user with
+        # nothing behind it at all.
+        assert connector.id in SERVERS or connector.served_by, (
+            f"{connector.id} has no MCP server and names no service that uses it"
+        )
+
+        if connector.id not in SERVERS:
+            # Consented to here, used elsewhere. The severity table and the
+            # credential rule govern *calls this gateway makes*, and it makes
+            # none for this connector — asserting them would be asserting the
+            # absence of a thing rather than the presence of a guard.
+            continue
+
         assert connector.id in TOOL_ACTIONS, f"{connector.id} has no severity table"
         assert connector.id in NEEDS_OAUTH, f"{connector.id} would run without a credential"
 

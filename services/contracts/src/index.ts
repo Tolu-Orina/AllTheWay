@@ -214,6 +214,53 @@ export const CommitmentSchema = z.object({
   confirmed: z.boolean(),
 });
 
+/**
+ * A share: one person, one artifact, one role.
+ *
+ * There is no public link, deliberately. A URL that works for whoever holds it
+ * is a different security model from the rest of this product — it cannot be
+ * revoked from the person who forwarded it, and it cannot say who read it.
+ */
+export const ShareSchema = z.object({
+  granteeUid: z.string(),
+  granteeEmail: z.string(),
+  /** `viewer` can read; `commenter` can also comment. Neither can edit. */
+  role: z.enum(["viewer", "commenter"]),
+  grantedBy: z.string(),
+  grantedAt: z.string(),
+  /** Set when revoked. The row stays, so the history of access is intact. */
+  revokedAt: z.string().nullable(),
+});
+
+/**
+ * A comment, anchored to the version it was written about.
+ *
+ * `versionAnchor` is the whole point. A comment on v2 that silently reattached
+ * to v5 would appear to be about text nobody wrote — the reader sees a remark
+ * that does not match what is in front of them and concludes the commenter was
+ * careless, when in fact the document moved underneath them.
+ */
+export const CommentSchema = z.object({
+  id: z.string(),
+  authorUid: z.string(),
+  authorEmail: z.string(),
+  versionAnchor: z.number().int().positive(),
+  body: z.string(),
+  resolved: z.boolean(),
+  resolvedBy: z.string().nullable(),
+  at: z.string(),
+});
+
+/** An artifact someone else shared with this user. */
+export const SharedArtifactSchema = z.object({
+  artifactId: z.string(),
+  ownerUid: z.string(),
+  ownerEmail: z.string(),
+  title: z.string(),
+  role: z.enum(["viewer", "commenter"]),
+  sharedAt: z.string(),
+});
+
 /** Errors carry a stable code the client can branch on, plus prose for a human. */
 export const ApiErrorSchema = z.object({
   code: z.enum([
@@ -237,6 +284,9 @@ export type LearnedPreference = z.infer<typeof LearnedPreferenceSchema>;
 export type VisualPreference = z.infer<typeof VisualPreferenceSchema>;
 export type Meeting = z.infer<typeof MeetingSchema>;
 export type Commitment = z.infer<typeof CommitmentSchema>;
+export type Share = z.infer<typeof ShareSchema>;
+export type Comment = z.infer<typeof CommentSchema>;
+export type SharedArtifact = z.infer<typeof SharedArtifactSchema>;
 export type ApiError = z.infer<typeof ApiErrorSchema>;
 
 /** Human-facing labels live with the enum so both sides agree on wording. */
