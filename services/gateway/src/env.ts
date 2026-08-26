@@ -105,6 +105,17 @@ export const env = {
   googleOAuthClientId: process.env.GOOGLE_OAUTH_CLIENT_ID ?? "",
   googleOAuthClientSecret: process.env.GOOGLE_OAUTH_CLIENT_SECRET ?? "",
 
+  /**
+   * Signs the scope token that tells the librarian which user a request is
+   * for. Mounted from Secret Manager, and deliberately a different keypair
+   * from AgentCard signing — the gateway is excluded from minting cards, and
+   * a service that can mint scope tokens should not gain that.
+   */
+  scopeTokenSigningKey: process.env.SCOPE_TOKEN_SIGNING_KEY ?? "",
+
+  /** The librarian. Internal-only; the browser reaches it through here. */
+  librarianUrl: (process.env.LIBRARIAN_URL ?? "").replace(/\/$/, ""),
+
   resendApiKey: process.env.RESEND_API_KEY ?? "",
   mailFrom: process.env.MAIL_FROM ?? "",
 

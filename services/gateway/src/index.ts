@@ -8,6 +8,7 @@ import { authRoutes } from "./routes/auth.js";
 import { connectorRoutes } from "./routes/connectors.js";
 import { registryRoutes } from "./routes/registry.js";
 import { artifactRoutes } from "./routes/artifacts.js";
+import { documentRoutes } from "./routes/documents.js";
 import { getSession, listSessions } from "./repos/sessions.js";
 import { listPreferences, revertPreference } from "./repos/preferences.js";
 import { listRuns, listWatchers, setWatcherRunning } from "./repos/watchers.js";
@@ -282,6 +283,9 @@ api.post(
 // callback, because every route here requires a verified user — there is no
 // browser-redirect case to accommodate.
 api.use("/artifacts", artifactRoutes);
+
+// Documents, proxied to the librarian with a signed scope token.
+api.use("/documents", documentRoutes);
 
 app.use("/api", api);
 

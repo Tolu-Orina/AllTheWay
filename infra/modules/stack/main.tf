@@ -30,6 +30,12 @@ locals {
     # it found — so a path from the browser to the registry is not a path from
     # the browser to a connector.
     registry = ["gateway"]
+
+    # Holds the user's documents. Reachable by the two services that legitimately
+    # act on a user's behalf, and by nothing else. It calls nothing itself, which
+    # is what keeps a malicious PDF attacking the extraction library from
+    # reaching anything that can act.
+    librarian = ["gateway", "orchestrator"]
   }
 
   runtime_sa = var.runtime_service_accounts
@@ -80,7 +86,8 @@ locals {
       # Always non-empty, which also matters: the relay treats an empty
       # allow-list as development and accepts any origin, so an unset value
       # would turn a security check off rather than on.
-      REGISTRY_URL = local.service_url["registry"]
+      REGISTRY_URL  = local.service_url["registry"]
+      LIBRARIAN_URL = local.service_url["librarian"]
 
       WEB_ORIGINS = join(",", compact([
         var.custom_domain != "" ? "https://${var.custom_domain}" : "",
@@ -105,6 +112,20 @@ locals {
 
     # Derived here rather than listed in the registry's own code, so the
     # catalogue cannot disagree with what Cloud Run actually serves.
+    librarian = {
+      MODEL_ARMOR_TEMPLATE = google_model_armor_template.screening.name
+
+      # Deliberately NOT GOOGLE_CLOUD_LOCATION. That is `global`, where text
+      # generation runs. Every embedding model is available in europe-west1, so
+      # the user's corpus — the most sensitive data v3 introduces — never leaves
+      # the region. Collapsing two regions into one variable is what broke voice.
+      EMBEDDING_LOCATION = var.region
+
+      # 1536, not the model's 3072 default, because Firestore's vector index
+      # caps at 2048. The default fails at write time, on real documents.
+      EMBEDDING_DIMENSIONS = "1536"
+    }
+
     registry = {
       ORCHESTRATOR_URL      = local.service_url["orchestrator"]
       RESEARCH_CELL_URL     = local.service_url["research-cell"]
@@ -166,6 +187,11 @@ locals {
     research-cell       = ["roles/aiplatform.user"]
     profile-synthesizer = ["roles/datastore.user"]
     watcher-runtime     = ["roles/datastore.user"]
+    librarian = [
+      "roles/datastore.user",  # documents and chunks, under each user's path
+      "roles/aiplatform.user", # embeddings, in europe-west1
+      "roles/modelarmor.user", # screening, before any model reads a document
+    ]
     connector-gateway = [
       # Project-scoped for now because no connector secret exists yet. Once one
       # does, this should become a per-secret binding — a gateway that can read
@@ -247,6 +273,12 @@ locals {
       registry = {
         AGENT_CARD_PUBLIC_KEY = "agentcard_public_key"
       }
+
+      # Verifies scope tokens; cannot mint them. The librarian being unable
+      # to name its own user is the entire point of layer 4.
+      librarian = {
+        SCOPE_TOKEN_PUBLIC_KEY = "scopetoken_public_key"
+      }
     },
   )
 
@@ -261,6 +293,12 @@ locals {
       var.google_oauth_secrets == null ? {} : {
         GOOGLE_OAUTH_CLIENT_ID     = var.google_oauth_secrets.client_id
         GOOGLE_OAUTH_CLIENT_SECRET = var.google_oauth_secrets.client_secret
+      },
+      # Signs scope tokens. A different keypair from AgentCard signing on
+      # purpose: the gateway is excluded from minting cards, and gaining the
+      # ability to scope requests must not quietly grant that too.
+      {
+        SCOPE_TOKEN_SIGNING_KEY = "scopetoken_signing_key"
       },
     )
   })
@@ -359,6 +397,8 @@ module "service" {
   # denied on secret", having created the grant moments later in the same run.
   depends_on = [
     google_secret_manager_secret_iam_member.card_keys,
+    google_secret_manager_secret_iam_member.scope_token_signer,
+    google_secret_manager_secret_iam_member.scope_token_verifier,
     google_secret_manager_secret_iam_member.gateway_reads_oauth_client,
     google_secret_manager_secret_iam_member.gateway_reads_resend_key,
   ]

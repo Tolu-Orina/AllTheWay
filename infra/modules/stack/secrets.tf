@@ -93,3 +93,20 @@ resource "google_secret_manager_secret_iam_member" "card_keys" {
   role      = "roles/secretmanager.secretAccessor"
   member    = "serviceAccount:${local.runtime_sa["${each.value.service}-${var.env}"]}"
 }
+
+# Scope-token keys: the gateway signs, the librarian verifies, and neither can
+# do the other's job. A librarian that could mint would be a librarian that can
+# name its own user, which is precisely what layer 4 forbids.
+resource "google_secret_manager_secret_iam_member" "scope_token_signer" {
+  project   = var.project_id
+  secret_id = "scopetoken_signing_key"
+  role      = "roles/secretmanager.secretAccessor"
+  member    = "serviceAccount:${local.runtime_sa["gateway-${var.env}"]}"
+}
+
+resource "google_secret_manager_secret_iam_member" "scope_token_verifier" {
+  project   = var.project_id
+  secret_id = "scopetoken_public_key"
+  role      = "roles/secretmanager.secretAccessor"
+  member    = "serviceAccount:${local.runtime_sa["librarian-${var.env}"]}"
+}

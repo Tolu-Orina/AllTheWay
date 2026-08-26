@@ -45,6 +45,9 @@ variable "backend_services" {
     # no runtime identity, and its first deploy fails on a service account that
     # does not exist.
     "registry",
+    # Added in v3 Phase B. Same lesson as the two lines above: a service absent
+    # here has no runtime identity and its first deploy fails.
+    "librarian",
   ]
 }
 
