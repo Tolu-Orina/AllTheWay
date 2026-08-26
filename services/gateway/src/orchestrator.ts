@@ -56,6 +56,20 @@ export type TurnInput = {
   userId: string;
   message: string;
   knownPreferences: string[];
+  /**
+   * Passages retrieved for this turn, with their citation ids.
+   *
+   * Retrieved by the gateway rather than the orchestrator: only this service
+   * can mint a scope token, and the orchestrator is stateless by design. See
+   * repos/retrieval.ts.
+   */
+  passages?: {
+    chunkId: string;
+    documentId: string;
+    title: string;
+    page: number;
+    text: string;
+  }[];
 };
 
 /** Parts are a tagged union; pull out the structured `data` payloads. */
@@ -103,7 +117,13 @@ function buildMessage(input: TurnInput): Message {
     // Preferences travel as metadata, never appended to the user's text:
     // concatenating them makes context indistinguishable from something the
     // user said, which is the shape prompt injection takes.
-    metadata: { knownPreferences: input.knownPreferences },
+    metadata: {
+      knownPreferences: input.knownPreferences,
+      // Labelled as retrieved, untrusted context. The orchestrator must be
+      // able to tell the difference between what the user said and what a
+      // document said — they are not equally trustworthy.
+      passages: input.passages ?? [],
+    },
     extensions: [],
     referenceTaskIds: [],
   };

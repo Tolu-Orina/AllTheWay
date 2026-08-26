@@ -42,6 +42,40 @@ class TurnRequest(BaseModel):
     # orchestrator stays stateless and testable.
     known_preferences: list[str] = Field(default_factory=list)
 
+    #: Passages retrieved from the user's own documents, with citation ids.
+    #:
+    #: Retrieved by the gateway, not here: only that service can scope a
+    #: request to a user, and this one is stateless by design. Arrives the same
+    #: way `known_preferences` does, for the same reason.
+    #:
+    #: **Untrusted.** A passage is text a stranger wrote, screened but not
+    #: vouched for. It is labelled as such in the prompt so the model can tell
+    #: it apart from what the user actually said.
+    passages: list["Passage"] = Field(default_factory=list)
+
+
+class Passage(BaseModel):
+    """One retrieved chunk. `chunk_id` is what a citation points at."""
+
+    chunk_id: str = ""
+    document_id: str = ""
+    title: str = ""
+    page: int = 0
+    text: str = ""
+
+
+class Citation(BaseModel):
+    """Where a claim came from.
+
+    Returned as a *field*, never inferred from prose. A prompt instruction to
+    "always cite" is advisory; a field the code checks is not — and FR-D2 is
+    the trust anchor of the whole document feature.
+    """
+
+    chunk_id: str
+    title: str = ""
+    page: int = 0
+
 
 class TurnResponse(BaseModel):
     """A question, a plan, or a plan awaiting confirmation.
@@ -53,6 +87,10 @@ class TurnResponse(BaseModel):
     """
 
     decision: Literal["clarify", "plan", "confirm"]
+
+    #: What this answer was grounded in. Empty when nothing was retrieved,
+    #: which is a different statement from "grounded in nothing in particular".
+    citations: list[Citation] = Field(default_factory=list)
     clarify: ClarifyQuestion | None = None
     #: Set when the plan is ready but must not run until the user agrees
     #: (FR-V2). The plan is still populated -- the user is entitled to see

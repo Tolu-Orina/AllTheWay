@@ -357,9 +357,32 @@ Mechanical extraction is safe from prompt injection because no model is involved
 
 `librarian` gets `roles/modelarmor.user` and the Gemma layer from Phase C's §5A work; whichever lands first wires the other in.
 
-### Retrieval at turn time
+### Retrieval at turn time — the gateway retrieves, not the orchestrator
 
-The orchestrator calls the librarian over A2A. Retrieved passages enter the prompt **labelled as retrieved, untrusted context**, and every claim built on them carries a citation id resolvable to a passage.
+**Changed during implementation.** The plan said the orchestrator calls the
+librarian. Three facts in the deployed system say otherwise, and together they
+are decisive:
+
+1. **The orchestrator cannot mint a scope token.** Only the gateway holds the
+   signing key — that is layer 4, and it is enforced by IAM. Giving the
+   orchestrator the key, or relaying a token through it, would put it inside
+   the isolation boundary: exactly what layer 4 exists to prevent.
+2. **The orchestrator is stateless by design.** Firestore access was withheld
+   from it deliberately, because "granting them data access would quietly make
+   that untrue".
+3. **The pattern already exists.** The gateway reads `knownPreferences` and
+   passes them in, precisely so the orchestrator stays stateless. Retrieved
+   passages are the same kind of thing arriving the same way.
+
+So the gateway retrieves and passes passages as turn metadata, beside the
+preferences that already travel that way.
+
+**What this costs:** retrieval happens on the user's message rather than on
+something the model has reasoned about first. That is ordinary RAG and it is
+sufficient for the cases in §2. If a later phase needs retrieval *mid-turn*,
+the answer is a second gateway round-trip, not a credential in the orchestrator.
+
+The orchestrator still calls the librarian over A2A. Retrieved passages enter the prompt **labelled as retrieved, untrusted context**, and every claim built on them carries a citation id resolvable to a passage.
 
 **Grounded or silent (FR-D2)** is enforced structurally, not by prompt: the planner returns citations as a *field*, and a document-derived answer with an empty citation list is rejected by the same validation pass that corrects action labels. Prompt instructions are advisory; a field the code checks is not.
 

@@ -15,6 +15,7 @@ import { listRuns, listWatchers, setWatcherRunning } from "./repos/watchers.js";
 import { runTurn, streamTurn } from "./orchestrator.js";
 import { listRecent, record } from "./repos/ledger.js";
 import { readUsage } from "./repos/usage.js";
+import { retrieve } from "./repos/retrieval.js";
 import { attachVoice } from "./voice/relay.js";
 import { applyCors, openStream } from "./sse.js";
 import { TOPICS, publish } from "./events.js";
@@ -186,7 +187,13 @@ api.get(
       return;
     }
 
-    const prefs = await listPreferences(req.uid!);
+    // Preferences and passages are both context the orchestrator cannot fetch
+    // for itself — it is stateless, and only this service can scope a request
+    // to a user. Fetched together so a turn makes one round of reads.
+    const [prefs, passages] = await Promise.all([
+      listPreferences(req.uid!),
+      retrieve(req.uid!, message),
+    ]);
     const stream = openStream(req, res);
 
     try {
@@ -195,6 +202,7 @@ api.get(
         userId: req.uid!,
         message,
         knownPreferences: prefs.map((p) => p.now),
+          passages,
       })) {
         // The reader left. Stop pulling from the agent rather than finishing a
         // turn nobody is waiting for.
@@ -224,13 +232,20 @@ api.post(
 
     // The profile is read here, not inside the orchestrator, so that service
     // stays stateless and can be tested without a database.
-    const prefs = await listPreferences(req.uid!);
+    // Preferences and passages are both context the orchestrator cannot fetch
+    // for itself — it is stateless, and only this service can scope a request
+    // to a user. Fetched together so a turn makes one round of reads.
+    const [prefs, passages] = await Promise.all([
+      listPreferences(req.uid!),
+      retrieve(req.uid!, body.data.message),
+    ]);
 
     const result = await runTurn({
       sessionId: param(req, "id"),
       userId: req.uid!,
       message: body.data.message,
       knownPreferences: prefs.map((p) => p.now),
+        passages,
     });
 
     res.json(result);
