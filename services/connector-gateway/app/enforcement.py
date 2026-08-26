@@ -43,6 +43,7 @@ class Refusal(StrEnum):
     RATE_LIMITED = "rate_limited"         # too many calls, too fast
     QUOTA_EXHAUSTED = "quota_exhausted"   # too many calls today
     UNKNOWN_TOOL = "unknown_tool"         # the connector does not offer this
+    NEEDS_CONSENT = "needs_consent"       # real account, and the user has not connected it
 
 
 @dataclass(frozen=True)

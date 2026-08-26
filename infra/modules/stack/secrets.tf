@@ -43,6 +43,20 @@ data "google_secret_manager_secret_version" "google_oauth_client_secret" {
 # note taken seriously for the one binding being added today: the gateway can
 # read the mail key and nothing else, so a future secret is not automatically
 # readable by a service that has no business with it.
+# The gateway exchanges the authorization code itself, so it needs the OAuth
+# client. Per-secret, like the mail key: it can read these two and nothing else.
+resource "google_secret_manager_secret_iam_member" "gateway_reads_oauth_client" {
+  for_each = var.google_oauth_secrets == null ? toset([]) : toset([
+    var.google_oauth_secrets.client_id,
+    var.google_oauth_secrets.client_secret,
+  ])
+
+  project   = var.project_id
+  secret_id = each.value
+  role      = "roles/secretmanager.secretAccessor"
+  member    = "serviceAccount:${local.runtime_sa["gateway-${var.env}"]}"
+}
+
 resource "google_secret_manager_secret_iam_member" "gateway_reads_resend_key" {
   count = var.resend_api_key_secret == "" ? 0 : 1
 

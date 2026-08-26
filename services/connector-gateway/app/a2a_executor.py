@@ -34,13 +34,35 @@ from alltheway_policy import Ceiling, Waiver
 
 from .enforcement import Grant, Refusal, Usage
 from .service import invoke
+from .oauth import FirestoreRefreshTokens, RefreshTokenStore
 from .usage import UsageStore
+
+
+def _default_token_store() -> RefreshTokenStore | None:
+    """Firestore in a deployed service, nothing locally.
+
+    Returning None rather than an in-memory stand-in is deliberate: a store
+    that answers from memory would let a connector look connected when no
+    grant exists, which is the one thing this must never do.
+    """
+    import os
+
+    if not os.environ.get("GOOGLE_CLOUD_PROJECT"):
+        return None
+    try:
+        return FirestoreRefreshTokens()
+    except Exception:  # pragma: no cover - absent client or credentials
+        return None
 
 RESULT_ARTIFACT_ID = "result"
 REFUSAL_ARTIFACT_ID = "refusal"
 
 #: Refusals a user could clear by saying yes. Everything else is terminal.
-_ANSWERABLE = {Refusal.NOT_CONFIRMED}
+#: Refusals a human can resolve. NEEDS_CONSENT joins NOT_CONFIRMED because
+#: "connect your calendar" is an answerable request, not a dead end — the spec
+#: has TASK_STATE_AUTH_REQUIRED for exactly this, and mapping it to REJECTED
+#: would tell the caller to give up on something one click fixes.
+_ANSWERABLE = {Refusal.NOT_CONFIRMED, Refusal.NEEDS_CONSENT}
 
 
 def _data_part(payload: dict) -> Part:
@@ -84,8 +106,15 @@ def _grant_from(payload: dict) -> Grant | None:
 
 
 class ConnectorExecutor(AgentExecutor):
-    def __init__(self, usage: UsageStore | None = None) -> None:
+    def __init__(
+        self,
+        usage: UsageStore | None = None,
+        token_store: "RefreshTokenStore | None" = None,
+    ) -> None:
         self._usage = usage or UsageStore()
+        # Built lazily and only when a connector actually needs it, so neither
+        # the tests nor the in-memory connector path require Firestore.
+        self._token_store = token_store or _default_token_store()
 
     async def execute(self, context: RequestContext, event_queue: EventQueue) -> None:
         if context.current_task is None:
@@ -133,6 +162,8 @@ class ConnectorExecutor(AgentExecutor):
             usage=self._usage.usage(key),
             confirmed=bool(payload.get("confirmed", False)),
             waiver=waiver,
+            user=user,
+            token_store=self._token_store,
         )
 
         if outcome.ok:

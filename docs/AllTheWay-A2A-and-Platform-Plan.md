@@ -12,16 +12,16 @@ Bootstrap and the prod stack are applied. Both Terraform roots plan clean.
 
 | Live in `alltheway-rinegan` | Still to do |
 |---|---|
-| 6 Cloud Run services, Firestore `(default)` in europe-west1 | Model Armor REST call (Phase 6) |
+| 6 Cloud Run services on real images, Firestore `(default)` in europe-west1 | **A real turn in production — the orchestrator has never served a request** |
 | Artifact Registry, GCS state bucket, 14 Cloud Build triggers | Model Armor REST call (Phase 6) |
-| Firebase Hosting + `alltheway.rinegansolutions.com` (CNAME, TLS) | Hosting content — the `web` trigger has not fired |
+| Firebase Hosting serving `alltheway.rinegansolutions.com`; real Firebase Auth, Google and email sign-in | A consenting user for the Google Calendar connector |
+| Email delivery via Resend, from a verified domain | Server-side plan validation — action labelling is unreliable, see Phase 0 |
+| Voice relay: Vertex Live over a gateway WebSocket, `europe-west1` | Companion panel still answers from local stubs |
 | Least-privilege IAM per runtime identity | Agent Registry, monetization, multi-region (7–9) |
-| `USE_VERTEX=true`, `gemini-3.7-flash` pinned and measured against the live API | Action labelling is unreliable — see Phase 0 |
+| `USE_VERTEX=true`, `gemini-3.7-flash` pinned and measured against the live API | |
 
-**Deployed from CI:** `gateway`, `watcher-runtime`, `connector-gateway` (commit
-`741b571`). The other three still run the placeholder image because their
-directories were unchanged — the path filters working as intended, not a
-failure.
+**Deployed from CI:** all six services now run images built from `main`. The
+placeholder image is gone.
 
 **The critical deviation is closed.** Every internal call is A2A, and as of
 Phase 1 item 1.4 every one carries a Google-signed identity token.
@@ -686,4 +686,5 @@ Phases 2 and 3 can run in parallel once A2A lands. Phase 5 and 6 are independent
 4. **Plus tier price.** Currently a placeholder in shipped UI.
 5. **EU data residency.** Vertex is pinned to `global`, which has none — services run in europe-west1 but model calls do not. If residency is ever required, the endpoint moves and the model pins to a DRZ-supported one.
 6. ~~**Voice transport.**~~ — **settled 2026-08-26: gateway WebSocket relay, not LiveKit.** Vertex cannot mint ephemeral Live tokens; native audio is the language answer (no picker; Igbo unsupported). See [decisions/0006](decisions/0006-voice-through-the-gateway.md). Revisit only for PSTN or multi-party.
-7. **`/healthz` on `*.run.app`.** Google's frontend swallows the exact path; `/healthz/` works. Either move the health route or standardise on the trailing slash — the current state is a trap for whoever writes the next probe.
+7. ~~**`/healthz` on `*.run.app`.**~~ — **settled 2026-08-26: both spellings are registered** on all six services. Google's frontend swallows the exact path `/healthz`, while `/healthz/` gets through — and FastAPI would answer the latter with a 307 redirect to the path that never arrives, so the trailing-slash route is declared explicitly rather than left to `redirect_slashes`. Whoever writes the next probe cannot pick the wrong one.
+8. **Connector count.** The Production Roadmap's Phase 6 exit is *at least five* first-party connectors with least-privilege OAuth (Docs, Gmail, Calendar, Drive, GitHub, Notion named). The Implementation Plan scoped the submission to **one**, and recommended Google Docs. What exists is **Calendar** — one real connector plus its in-memory twin. Either the recommendation moves to Calendar or a Docs connector is added; today the two documents disagree.

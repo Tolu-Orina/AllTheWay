@@ -141,6 +141,12 @@ locals {
       # does, this should become a per-secret binding — a gateway that can read
       # every secret in the project is more than it needs.
       "roles/secretmanager.secretAccessor",
+
+      # Reads connectorGrants: one document per (user, connector) holding the
+      # refresh token for a connected account. It reads only — the grant is
+      # written by the gateway's consent callback, which is the only service
+      # the browser talks to.
+      "roles/datastore.user",
     ]
 
     # Firestore is deliberately absent from orchestrator and research-cell: both
@@ -154,6 +160,14 @@ locals {
   # anything. Put in the common merge it would appear on all six, which reads
   # as "any of these might send mail" to whoever looks at a revision next.
   extra_env_vars = {
+    connector-gateway = {
+      # Secret *names*, not values. The connector gateway exchanges a user's
+      # refresh token for a short-lived access token at the moment of use, and
+      # needs the OAuth client to do it. Empty means no connector that reaches
+      # a real account can run, which is the correct closed default.
+      GOOGLE_OAUTH_CLIENT_ID_SECRET     = var.google_oauth_secrets == null ? "" : var.google_oauth_secrets.client_id
+      GOOGLE_OAUTH_CLIENT_SECRET_SECRET = var.google_oauth_secrets == null ? "" : var.google_oauth_secrets.client_secret
+    }
     gateway = {
       MAIL_FROM         = var.mail_from
       GEMINI_LIVE_MODEL = var.gemini_live_model
@@ -177,10 +191,19 @@ locals {
   # Conditional because an unconfigured mailer is a supported state — the
   # gateway boots and serves every non-email route, and the email routes throw
   # a clear error instead of logging codes to stdout.
-  secret_env_vars = var.resend_api_key_secret == "" ? {} : {
-    gateway = {
-      RESEND_API_KEY = var.resend_api_key_secret
-    }
+  secret_env_vars = {
+    gateway = merge(
+      var.resend_api_key_secret == "" ? {} : {
+        RESEND_API_KEY = var.resend_api_key_secret
+      },
+      # The OAuth client the browser consent flow uses. Mounted rather than
+      # passed, so the value never reaches Terraform state or the revision
+      # spec — and a rotation is a new secret version, not a deploy.
+      var.google_oauth_secrets == null ? {} : {
+        GOOGLE_OAUTH_CLIENT_ID     = var.google_oauth_secrets.client_id
+        GOOGLE_OAUTH_CLIENT_SECRET = var.google_oauth_secrets.client_secret
+      },
+    )
   }
 
   runtime_role_bindings = merge([
@@ -295,6 +318,22 @@ module "hosting" {
 # the ten-minute window itself, because TTL deletion is best-effort and can lag
 # by hours. Without it, expired credential hashes accumulate forever.
 # ---------------------------------------------------------------------------
+
+# Consent states expire themselves.
+#
+# Each holds a uid against a random value, and is what authenticates Google's
+# callback. The route deletes it on use; this is what removes the ones nobody
+# ever came back for, so abandoned consent attempts do not accumulate as a
+# growing list of (state -> user) pairs.
+resource "google_firestore_field" "connector_states_ttl" {
+  project    = var.project_id
+  database   = google_firestore_database.this.name
+  collection = "connectorStates"
+  field      = "expiresAt"
+
+  ttl_config {}
+  index_config {}
+}
 
 resource "google_firestore_field" "auth_codes_ttl" {
   project    = var.project_id

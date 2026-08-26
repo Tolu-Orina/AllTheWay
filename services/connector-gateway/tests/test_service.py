@@ -123,7 +123,7 @@ async def test_an_injected_tool_response_is_dropped(monkeypatch):
         def json(self):
             return {}
 
-    async def fake_call(connector, tool, arguments):
+    async def fake_call(connector, tool, arguments, credentials=None):
         return Injected()
 
     monkeypatch.setattr(service, "call_tool", fake_call)
@@ -145,7 +145,7 @@ async def test_the_dropped_payload_is_not_echoed_in_the_trace(monkeypatch):
         def json(self):
             return {}
 
-    async def fake_call(connector, tool, arguments):
+    async def fake_call(connector, tool, arguments, credentials=None):
         return Injected()
 
     monkeypatch.setattr(service, "call_tool", fake_call)

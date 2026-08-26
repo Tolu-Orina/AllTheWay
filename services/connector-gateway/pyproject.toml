@@ -20,6 +20,13 @@ dependencies = [
   # The local environment resolved 1.26 and the image resolved 2.1.0 —
   # same manifest, different code, and only the image build noticed.
   "mcp>=1.26,<2",
+  # The Google Calendar connector and the OAuth refresh exchange. One form POST
+  # and a handful of REST calls; an SDK that brings its own HTTP client, retry
+  # policy and telemetry is a larger surface than what it replaces.
+  "httpx>=0.27",
+  # Where a user's refresh token lives. Read here, written by the gateway's
+  # consent callback.
+  "google-cloud-firestore>=2.19",
 ]
 
 [project.optional-dependencies]

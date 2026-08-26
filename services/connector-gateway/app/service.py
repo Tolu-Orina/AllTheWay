@@ -27,7 +27,8 @@ from alltheway_screening import screen
 
 from .enforcement import Call, Grant, Refusal, Usage, authorise
 from .mcp_client import ConnectorUnavailable, call_tool, list_tools
-from .registry import UnregisteredTool, action_for
+from .oauth import ConsentRequired, RefreshTokenStore, access_token_for
+from .registry import NEEDS_OAUTH, UnregisteredTool, action_for
 
 
 @dataclass(frozen=True)
@@ -49,6 +50,8 @@ async def invoke(
     usage: Usage,
     confirmed: bool = False,
     waiver: Waiver | None = None,
+    user: str = "",
+    token_store: RefreshTokenStore | None = None,
 ) -> Outcome:
     trace: list[str] = []
 
@@ -83,8 +86,37 @@ async def invoke(
     if not decision.allowed:
         return Outcome(False, reason=decision.reason, refusal=decision.refusal, trace=trace)
 
+    # Credentials are resolved only after the call has been authorised.
+    #
+    # Order matters: a refused call must not mint a token, both because it is
+    # wasted work and because minting is itself observable — a user whose
+    # calendar is untouched should not see access to it exchanged.
+    credentials: dict[str, str] | None = None
+    if connector in NEEDS_OAUTH:
+        if token_store is None:
+            return Outcome(
+                False,
+                reason=f"{connector} needs a connected account and none is configured.",
+                refusal=Refusal.NEEDS_CONSENT,
+                trace=trace,
+            )
+        try:
+            token = await access_token_for(
+                user, connector, store=token_store, tool=tool
+            )
+        except ConsentRequired as exc:
+            # Answerable, so it is reported as such: the caller turns this into
+            # AUTH_REQUIRED and the user is asked to connect their account,
+            # rather than being told the connector is broken.
+            trace.append(f"{connector} is not connected for this user")
+            return Outcome(
+                False, reason=str(exc), refusal=Refusal.NEEDS_CONSENT, trace=trace
+            )
+        credentials = {"GOOGLE_OAUTH_ACCESS_TOKEN": token}
+        trace.append(f"Resolved a short-lived credential for {connector}")
+
     try:
-        result = await call_tool(connector, tool, arguments)
+        result = await call_tool(connector, tool, arguments, credentials)
     except ConnectorUnavailable as exc:
         return Outcome(False, reason=str(exc), trace=trace)
 

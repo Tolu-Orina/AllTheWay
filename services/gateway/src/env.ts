@@ -87,6 +87,16 @@ export const env = {
    * The key is mounted from Secret Manager by Cloud Run, so it exists in the
    * process and nowhere else — not in the revision spec, not in Terraform.
    */
+  /**
+   * The OAuth client used to connect a user's Google account.
+   *
+   * Mounted from Secret Manager by Cloud Run, like the mail key. Empty means
+   * connecting an account is unavailable — reported as such, rather than
+   * producing a consent URL that fails at Google with an opaque error.
+   */
+  googleOAuthClientId: process.env.GOOGLE_OAUTH_CLIENT_ID ?? "",
+  googleOAuthClientSecret: process.env.GOOGLE_OAUTH_CLIENT_SECRET ?? "",
+
   resendApiKey: process.env.RESEND_API_KEY ?? "",
   mailFrom: process.env.MAIL_FROM ?? "",
 

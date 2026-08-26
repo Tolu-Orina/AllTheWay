@@ -44,7 +44,19 @@ add_a2a_routes_to_fastapi(
 )
 
 
+# Both spellings, deliberately.
+#
+# Google's frontend on *.run.app swallows the exact path `/healthz` — it
+# returns Google's own 404 and the request never reaches the container (proven
+# by its absence from the logs, while /api/... from the same probe appears).
+# `/healthz/` gets through. FastAPI would answer that with a 307 redirect to
+# the path that does not arrive, so the trailing-slash route is declared
+# explicitly rather than left to redirect_slashes.
+#
+# Registering both means whoever writes the next probe cannot pick the wrong
+# one. See open decision 7 in docs/AllTheWay-A2A-and-Platform-Plan.md.
 @app.get("/healthz")
+@app.get("/healthz/", include_in_schema=False)
 def healthz() -> dict:
     return {
         "ok": True,

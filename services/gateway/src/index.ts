@@ -5,6 +5,7 @@ import { RevertPreferenceSchema, ToggleWatcherSchema } from "@alltheway/contract
 import { env } from "./env.js";
 import { requireUser } from "./auth.js";
 import { authRoutes } from "./routes/auth.js";
+import { connectorRoutes } from "./routes/connectors.js";
 import { getSession, listSessions } from "./repos/sessions.js";
 import { listPreferences, revertPreference } from "./repos/preferences.js";
 import { listRuns, listWatchers, setWatcherRunning } from "./repos/watchers.js";
@@ -19,7 +20,14 @@ const app = express();
 app.use(express.json({ limit: "1mb" }));
 
 /** Unauthenticated: Cloud Run needs this to consider the revision healthy. */
-app.get("/healthz", (_req, res) => res.json({ ok: true }));
+// Both spellings, deliberately. Google's frontend on *.run.app swallows the
+// exact path `/healthz` — it answers with its own 404 and the request never
+// reaches this process, proven by its absence from the logs while /api/...
+// from the same probe appears. `/healthz/` gets through. Registering both
+// means whoever writes the next probe cannot pick the wrong one.
+for (const path of ["/healthz", "/healthz/"]) {
+  app.get(path, (_req, res) => res.json({ ok: true }));
+}
 
 // Auth routes mount before the blanket requireUser: password reset is
 // necessarily unauthenticated, and each route opts in individually.
@@ -32,6 +40,12 @@ app.options(/.*/, (req, res) => {
 });
 
 app.use("/api/auth", authRoutes);
+
+// Also before the blanket requireUser: Google's OAuth callback arrives as a
+// plain browser redirect with no Authorization header. The `state` parameter
+// is what authenticates it, and the routes that *can* require a user do so
+// individually.
+app.use("/api/connectors", connectorRoutes);
 
 const api = express.Router();
 api.use(requireUser);

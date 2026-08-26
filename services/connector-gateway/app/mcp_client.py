@@ -30,7 +30,14 @@ CONNECTORS_DIR = Path(__file__).resolve().parent.parent / "connectors"
 #: because someone dropped a file in a directory is how a supply chain problem
 #: starts.
 SERVERS: dict[str, str] = {
+    # In-memory. Local runs and tests; reaches no account.
     "calendar": "calendar_server.py",
+    # Real Google accounts. Each is a separate process, launched per call, so
+    # one connector's bug cannot read another's credential.
+    "google_calendar": "google_calendar_server.py",
+    "google_gmail": "gmail_server.py",
+    "google_drive": "drive_server.py",
+    "google_docs": "docs_server.py",
 }
 
 
@@ -57,14 +64,20 @@ class ToolResult:
 _PASSED_THROUGH = ("PATH", "PYTHONPATH", "PYTHONHOME", "SYSTEMROOT", "TEMP", "TMP")
 
 
-def _connector_env() -> dict[str, str]:
+def _connector_env(credentials: dict[str, str] | None = None) -> dict[str, str]:
     env = {name: os.environ[name] for name in _PASSED_THROUGH if name in os.environ}
     env["PYTHONUNBUFFERED"] = "1"
+
+    # Credentials are added per call, by the gateway, for this one invocation.
+    # They are never read from the gateway's own environment: that is what
+    # keeps "the connector needs a token" from becoming "the connector can see
+    # every token this process holds".
+    env.update(credentials or {})
     return env
 
 
 @asynccontextmanager
-async def _connect(connector: str):
+async def _connect(connector: str, credentials: dict[str, str] | None = None):
     script = SERVERS.get(connector)
     if script is None:
         raise ConnectorUnavailable(f"{connector} is not a registered connector.")
@@ -86,7 +99,7 @@ async def _connect(connector: str):
         # connector cannot import `mcp` and dies on connect. That failed only
         # in the image — locally the packages are in site-packages and no path
         # is needed, so the stripped environment looked fine.
-        env=_connector_env(),
+        env=_connector_env(credentials),
     )
 
     async with stdio_client(params) as (read, write):
@@ -107,8 +120,13 @@ async def list_tools(connector: str) -> frozenset[str]:
         return frozenset(tool.name for tool in listed.tools)
 
 
-async def call_tool(connector: str, tool: str, arguments: dict) -> ToolResult:
-    async with _connect(connector) as session:
+async def call_tool(
+    connector: str,
+    tool: str,
+    arguments: dict,
+    credentials: dict[str, str] | None = None,
+) -> ToolResult:
+    async with _connect(connector, credentials) as session:
         result = await session.call_tool(tool, arguments)
 
         if getattr(result, "isError", False):
