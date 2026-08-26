@@ -129,6 +129,15 @@ resource "google_cloudbuild_trigger" "web" {
 
   substitutions = {
     _SITE_ID = "alltheway-${each.value}"
+
+    # The build resolves the gateway's own hostname and bakes it into the
+    # bundle as VITE_STREAM_ORIGIN. Both the SSE turn stream and the voice
+    # socket must bypass Firebase Hosting — it applies an unconfigurable 60s
+    # timeout to rewrites (ADR 0001) and cannot carry a WebSocket upgrade at
+    # all, which was verified: wss:// through the Hosting domain answers 401,
+    # while the same request direct to Cloud Run upgrades.
+    _ENV    = each.value
+    _REGION = var.region
   }
 
   # A trigger running as a non-default service account must not write build

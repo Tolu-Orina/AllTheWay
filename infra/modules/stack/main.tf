@@ -62,7 +62,19 @@ locals {
       # Phase 2: the turn stream cannot go through the Firebase Hosting rewrite
       # (60s timeout), so it is served from this service's own hostname and is
       # therefore cross-origin. See docs/decisions/0001.
-      WEB_ORIGINS = var.custom_domain != "" ? "https://${var.custom_domain}" : ""
+      #
+      # Both live hostnames, not just the custom one: the Firebase default
+      # domain is serving and is an authorized sign-in domain, so a user can
+      # arrive there, sign in successfully, and then have the stream and the
+      # voice socket refused by an origin check they never see.
+      #
+      # Always non-empty, which also matters: the relay treats an empty
+      # allow-list as development and accepts any origin, so an unset value
+      # would turn a security check off rather than on.
+      WEB_ORIGINS = join(",", compact([
+        var.custom_domain != "" ? "https://${var.custom_domain}" : "",
+        "https://${var.hosting_site_id}.web.app",
+      ]))
     }
     orchestrator = {
       RESEARCH_CELL_URL     = local.service_url["research-cell"]

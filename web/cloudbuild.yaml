@@ -39,6 +39,8 @@
 
 substitutions:
   _SITE_ID: alltheway-dev
+  _ENV: dev
+  _REGION: europe-west1
 
 options:
   logging: CLOUD_LOGGING_ONLY
@@ -91,7 +93,22 @@ steps:
           echo "VITE_FIREBASE_PROJECT_ID=${PROJECT_ID}"
         } > web/.env.production
 
-        echo "firebase config written for ${PROJECT_ID} (authDomain $$AUTH_DOMAIN)"
+        # Where the browser opens the SSE turn stream and the voice WebSocket.
+        #
+        # NOT the Hosting domain. Hosting applies an unconfigurable 60-second
+        # timeout to rewrites, which severs a turn stream (ADR 0001), and it
+        # cannot carry a WebSocket upgrade at all — verified against the live
+        # site: wss://<hosting-domain>/api/voice/live answers 401 and never
+        # upgrades, while the identical request to the Cloud Run hostname
+        # upgrades and is answered by the relay.
+        #
+        # Resolved from the deployed service rather than passed in, so it
+        # cannot drift from the URL Cloud Run actually serves.
+        STREAM_ORIGIN=$$(gcloud run services describe "gateway-${_ENV}"           --region "${_REGION}" --project "${PROJECT_ID}" --format='value(status.url)')
+        test -n "$$STREAM_ORIGIN"
+        echo "VITE_STREAM_ORIGIN=$$STREAM_ORIGIN" >> web/.env.production
+
+        echo "firebase config written for ${PROJECT_ID} (authDomain $$AUTH_DOMAIN, stream $$STREAM_ORIGIN)"
   - id: build
     name: node:22-slim
     entrypoint: bash
