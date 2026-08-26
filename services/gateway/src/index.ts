@@ -7,6 +7,7 @@ import { requireUser } from "./auth.js";
 import { authRoutes } from "./routes/auth.js";
 import { connectorRoutes } from "./routes/connectors.js";
 import { registryRoutes } from "./routes/registry.js";
+import { artifactRoutes } from "./routes/artifacts.js";
 import { getSession, listSessions } from "./repos/sessions.js";
 import { listPreferences, revertPreference } from "./repos/preferences.js";
 import { listRuns, listWatchers, setWatcherRunning } from "./repos/watchers.js";
@@ -276,6 +277,11 @@ api.post(
     res.status(204).end();
   }),
 );
+
+// Artifacts. On the authenticated router rather than beside the connector
+// callback, because every route here requires a verified user — there is no
+// browser-redirect case to accommodate.
+api.use("/artifacts", artifactRoutes);
 
 app.use("/api", api);
 

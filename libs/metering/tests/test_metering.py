@@ -93,5 +93,39 @@ def test_every_plan_declares_every_meter():
         for meter in Meter:
             value = plan.allowance(meter)
             assert value is None or isinstance(value, int)
-        if plan.tier is not Tier.TEAM:
-            assert all(plan.allowance(m) is not None for m in Meter), plan.tier
+
+
+def test_no_plan_leaves_video_unmetered():
+    # The invariant that actually matters. Voice and images cost fractions of a
+    # penny, so "unmetered" is a pricing choice there. A final Veo render is
+    # ~$0.75 a second — an unmetered video allowance on any plan is an unbounded
+    # bill, not a generous tier.
+    for plan in PLANS.values():
+        assert plan.allowance(Meter.DRAFT_VIDEO_SECONDS) is not None, plan.tier
+        assert plan.allowance(Meter.FINAL_VIDEO_SECONDS) is not None, plan.tier
+
+
+def test_free_cannot_spend_money_on_video():
+    for meter in (Meter.DRAFT_VIDEO_SECONDS, Meter.FINAL_VIDEO_SECONDS):
+        assert not check(tier=Tier.FREE, meter=meter, used=0).allowed
+
+
+def test_only_the_top_tiers_can_render_a_final():
+    # One 8-second final render is about $6. Inside £18 that is a third of the
+    # subscription, spent in a click.
+    assert not check(tier=Tier.PLUS, meter=Meter.FINAL_VIDEO_SECONDS, used=0).allowed
+    assert check(tier=Tier.TEAM, meter=Meter.FINAL_VIDEO_SECONDS, used=0).allowed
+    assert check(tier=Tier.MAX, meter=Meter.FINAL_VIDEO_SECONDS, used=0).allowed
+
+
+def test_max_costs_sixty_pounds():
+    assert PLANS[Tier.MAX].price_pence == 6000
+
+
+def test_the_draft_allowance_is_always_larger_than_the_final_one():
+    # The ladder only works if drafting is the cheap, plentiful step. A plan
+    # where finals outnumber drafts would push people to render first.
+    for plan in PLANS.values():
+        draft = plan.allowance(Meter.DRAFT_VIDEO_SECONDS) or 0
+        final = plan.allowance(Meter.FINAL_VIDEO_SECONDS) or 0
+        assert draft >= final, plan.tier

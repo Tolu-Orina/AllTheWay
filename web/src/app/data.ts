@@ -8,7 +8,7 @@ import {
 } from "@alltheway/contracts";
 import { z } from "zod";
 
-import { apiGet, apiPost } from "@/lib/api";
+import { apiBlob, apiGet, apiPost, apiText } from "@/lib/api";
 
 /**
  * Data access for the product app.
@@ -83,6 +83,41 @@ export const RegistrySchema = z.object({
 
 export type Agent = z.infer<typeof AgentSchema>;
 
+export const ArtifactVersionSchema = z.object({
+  n: z.number(),
+  mimeType: z.string(),
+  bytes: z.number(),
+  createdAt: z.string(),
+  producedBy: z.enum(["user", "agent"]),
+  prompt: z.string(),
+  correction: z.string(),
+  supersedes: z.number().nullable(),
+});
+
+export const ArtifactSchema = z.object({
+  id: z.string(),
+  kind: z.enum(["doc", "image", "video", "summary", "checklist"]),
+  title: z.string(),
+  sessionId: z.string(),
+  currentVersion: z.number(),
+  createdAt: z.string(),
+  updatedAt: z.string(),
+  provenance: z.object({
+    agentId: z.string(),
+    cardVersion: z.string(),
+    model: z.string(),
+    sources: z.array(z.string()),
+  }),
+});
+
+export const ArtifactDetailSchema = ArtifactSchema.extend({
+  versions: z.array(ArtifactVersionSchema),
+});
+
+export type Artifact = z.infer<typeof ArtifactSchema>;
+export type ArtifactDetail = z.infer<typeof ArtifactDetailSchema>;
+export type ArtifactVersion = z.infer<typeof ArtifactVersionSchema>;
+
 export const api = {
   sessions: () => apiGet("/sessions", z.array(SessionSchema)),
   session: (id: string) =>
@@ -126,6 +161,39 @@ export const api = {
    * discovered by being refused.
    */
   usage: () => apiGet("/usage", UsageSchema),
+
+  /* --- Artifacts (v3 Phase A) ------------------------------------- */
+
+  artifacts: () => apiGet("/artifacts", z.array(ArtifactSchema)),
+
+  artifact: (id: string) =>
+    apiGet(`/artifacts/${encodeURIComponent(id)}`, ArtifactDetailSchema),
+
+  /**
+   * A correction, which is the point of the whole feature.
+   *
+   * `correction` is what the user said was wrong with the previous version —
+   * kept because it is the learning signal, not because it is metadata.
+   */
+  editArtifact: (id: string, content: string, correction: string, mimeType = "text/markdown") =>
+    apiPost(
+      `/artifacts/${encodeURIComponent(id)}/versions`,
+      { content: btoa(unescape(encodeURIComponent(content))), correction, mimeType, producedBy: "user" },
+      z.object({ n: z.number() }),
+    ),
+
+  /**
+   * The bytes of one version, authenticated.
+   *
+   * Not a URL handed to <img> or <iframe>: those cannot send the bearer token
+   * and would render a 401 as a broken image. The caller makes a blob URL and
+   * is responsible for revoking it.
+   */
+  artifactBytes: (id: string, version: number) =>
+    apiBlob(`/artifacts/${encodeURIComponent(id)}/export?version=${version}`),
+
+  artifactText: (id: string, version: number) =>
+    apiText(`/artifacts/${encodeURIComponent(id)}/export?version=${version}`),
 
   /** The agent registry, with each card's signature checked at read time. */
   agents: () => apiGet("/registry/agents", RegistrySchema),

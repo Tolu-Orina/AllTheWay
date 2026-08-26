@@ -11,6 +11,7 @@ import { motion, useReducedMotion } from "motion/react";
 
 import { LogoMark } from "@/components/primitives/logo";
 import { Sheet, SheetContent } from "@/components/ui/sheet";
+import { CanvasPane } from "@/app/CanvasPane";
 import { useAuth } from "@/auth/useAuth";
 import { useTurn, type ProposedAction, type TurnPhase } from "@/app/use-turn";
 import { cn } from "@/lib/utils";
@@ -309,6 +310,10 @@ export function CompanionPanel({
 }) {
   const thread = useCompanionThread();
   const [sheetOpen, setSheetOpen] = useState(false);
+  // Which noun the panel is currently showing. One piece of state for
+  // both presentations, so switching on desktop and reopening the sheet
+  // on mobile do not disagree.
+  const [mode, setMode] = useState<"chat" | "work">("chat");
 
   // Growing past the breakpoint hands the conversation back to the docked
   // column. Without this the sheet stays mounted and invisible, holding its
@@ -331,7 +336,7 @@ export function CompanionPanel({
           className="hidden w-[340px] shrink-0 flex-col border-l bg-card/60 xl:sticky xl:top-0 xl:flex xl:h-dvh"
         >
           <div className="flex items-center justify-between border-b px-4 py-3">
-            <h2 className="text-[14px] font-semibold">Companion</h2>
+            <PanelSwitch mode={mode} onMode={setMode} />
             <button
               type="button"
               onClick={() => onOpenChange(false)}
@@ -343,7 +348,11 @@ export function CompanionPanel({
             </button>
           </div>
 
-          <CompanionConversation {...thread} />
+          {mode === "chat" ? (
+            <CompanionConversation {...thread} />
+          ) : (
+            <CanvasPane />
+          )}
         </aside>
       ) : (
         <div className="hidden shrink-0 border-l bg-card/60 p-2 xl:sticky xl:top-0 xl:block xl:h-dvh">
@@ -385,7 +394,7 @@ export function CompanionPanel({
           overlayClassName="bg-black/40 supports-backdrop-filter:backdrop-blur-sm"
         >
           <div className="flex items-center justify-between border-b px-4 py-3">
-            <h2 className="text-[14px] font-semibold">Companion</h2>
+            <PanelSwitch mode={mode} onMode={setMode} />
             <button
               type="button"
               onClick={() => setSheetOpen(false)}
@@ -396,9 +405,52 @@ export function CompanionPanel({
             </button>
           </div>
 
-          <CompanionConversation {...thread} />
+          {mode === "chat" ? (
+            <CompanionConversation {...thread} />
+          ) : (
+            <CanvasPane />
+          )}
         </SheetContent>
       </Sheet>
     </>
+  );
+}
+
+
+/**
+ * The panel's two nouns.
+ *
+ * Deliberately not navigation. The third column has always been here; what
+ * changes is whether it is showing the conversation or the thing the
+ * conversation is about. A tab bar would imply two places; this implies one
+ * place with two views, which is what it is.
+ */
+function PanelSwitch({
+  mode,
+  onMode,
+}: {
+  mode: "chat" | "work";
+  onMode: (mode: "chat" | "work") => void;
+}) {
+  return (
+    <div role="tablist" aria-label="Panel view" className="flex items-center gap-0.5 rounded-full border p-0.5">
+      {(["chat", "work"] as const).map((value) => (
+        <button
+          key={value}
+          type="button"
+          role="tab"
+          aria-selected={mode === value}
+          onClick={() => onMode(value)}
+          className={cn(
+            "rounded-full px-2.5 py-1 text-[12px] transition-colors",
+            mode === value
+              ? "bg-muted font-medium text-foreground"
+              : "text-muted-foreground hover:text-foreground",
+          )}
+        >
+          {value === "chat" ? "Chat" : "Work"}
+        </button>
+      ))}
+    </div>
   );
 }

@@ -1,0 +1,218 @@
+import {
+  ArtifactDetailSchema,
+  ArtifactSchema,
+  type Artifact,
+  type ArtifactDetail,
+  type ArtifactKind,
+  type Provenance,
+} from "@alltheway/contracts";
+import { FieldValue, Timestamp } from "firebase-admin/firestore";
+
+import { artifacts, artifactVersions, db } from "../firestore.js";
+import { gcsStore, type ByteStore } from "../storage.js";
+
+/**
+ * Artifacts: the durable, versioned things the agent produced.
+ *
+ * ## Versions are append-only, enforced in a transaction
+ *
+ * An artifact's history is evidence of how the work actually happened — that
+ * is the whole reason the Feedback Ledger is valuable, and an artifact whose
+ * history can be rewritten is worth less than no history at all.
+ *
+ * "Append-only" is not a convention here; it is a transaction. Reading
+ * `currentVersion` and then writing `currentVersion + 1` outside one would let
+ * two concurrent corrections both become version 3 — one silently overwriting
+ * the other, which is precisely the loss this is meant to prevent.
+ *
+ * ## Bytes before index
+ *
+ * See `storage.ts`. An orphaned blob is garbage; an index row pointing at
+ * bytes that were never written is a broken artifact the user meets.
+ */
+
+const iso = (value: unknown): string =>
+  value instanceof Timestamp ? value.toDate().toISOString() : new Date(0).toISOString();
+
+function toArtifact(id: string, data: FirebaseFirestore.DocumentData): Artifact {
+  return ArtifactSchema.parse({
+    id,
+    kind: data.kind,
+    title: data.title,
+    sessionId: data.sessionId ?? "",
+    currentVersion: data.currentVersion ?? 0,
+    createdAt: iso(data.createdAt),
+    updatedAt: iso(data.updatedAt),
+    provenance: {
+      agentId: data.provenance?.agentId ?? "",
+      cardVersion: data.provenance?.cardVersion ?? "",
+      model: data.provenance?.model ?? "",
+      sources: data.provenance?.sources ?? [],
+    },
+  });
+}
+
+export async function listArtifacts(uid: string, limit = 50): Promise<Artifact[]> {
+  const snap = await artifacts(uid).orderBy("updatedAt", "desc").limit(limit).get();
+  return snap.docs.map((d) => toArtifact(d.id, d.data()));
+}
+
+export async function getArtifact(
+  uid: string,
+  artifactId: string,
+): Promise<ArtifactDetail | null> {
+  const doc = await artifacts(uid).doc(artifactId).get();
+  if (!doc.exists) return null;
+
+  // Ordered by id, which is the version number — so no index is needed and the
+  // ordering cannot disagree with the numbering.
+  const versions = await artifactVersions(uid, artifactId).orderBy("n", "asc").get();
+
+  return ArtifactDetailSchema.parse({
+    ...toArtifact(doc.id, doc.data()!),
+    versions: versions.docs.map((v) => ({
+      n: v.get("n"),
+      mimeType: v.get("mimeType"),
+      bytes: v.get("bytes"),
+      createdAt: iso(v.get("createdAt")),
+      producedBy: v.get("producedBy"),
+      prompt: v.get("prompt") ?? "",
+      correction: v.get("correction") ?? "",
+      supersedes: v.get("supersedes") ?? null,
+    })),
+  });
+}
+
+export type NewArtifact = {
+  kind: ArtifactKind;
+  title: string;
+  sessionId?: string;
+  provenance: Provenance;
+  body: Buffer;
+  mimeType: string;
+  prompt?: string;
+};
+
+/**
+ * Create an artifact with its first version.
+ *
+ * The artifact row is written first with `currentVersion: 0`, which is a state
+ * meaning "exists, has nothing in it yet". `addVersion` then does the same
+ * transactional append every later correction does — one code path for the
+ * first version and the tenth, rather than a special case that drifts.
+ */
+export async function createArtifact(
+  uid: string,
+  input: NewArtifact,
+  store: ByteStore = gcsStore,
+): Promise<ArtifactDetail> {
+  const ref = artifacts(uid).doc();
+
+  await ref.set({
+    // Redundant with the path, on purpose: layer 3 of the isolation defence.
+    ownerUid: uid,
+    kind: input.kind,
+    title: input.title,
+    sessionId: input.sessionId ?? "",
+    currentVersion: 0,
+    provenance: input.provenance,
+    createdAt: FieldValue.serverTimestamp(),
+    updatedAt: FieldValue.serverTimestamp(),
+  });
+
+  await addVersion(uid, ref.id, {
+    body: input.body,
+    mimeType: input.mimeType,
+    producedBy: "agent",
+    prompt: input.prompt ?? "",
+    correction: "",
+  }, store);
+
+  const created = await getArtifact(uid, ref.id);
+  if (!created) throw new Error("artifact vanished immediately after creation");
+  return created;
+}
+
+export type NewVersion = {
+  body: Buffer;
+  mimeType: string;
+  producedBy: "user" | "agent";
+  prompt?: string;
+  /** What the user said was wrong with the previous version. */
+  correction?: string;
+};
+
+export async function addVersion(
+  uid: string,
+  artifactId: string,
+  input: NewVersion,
+  store: ByteStore = gcsStore,
+): Promise<number> {
+  const artifactRef = artifacts(uid).doc(artifactId);
+
+  // Reserve the number transactionally, before writing any bytes. Two
+  // concurrent corrections must not both become version 3.
+  const n = await db.runTransaction(async (tx) => {
+    const doc = await tx.get(artifactRef);
+    if (!doc.exists) throw new NotFound(artifactId);
+
+    const next = (doc.get("currentVersion") ?? 0) + 1;
+    tx.update(artifactRef, {
+      currentVersion: next,
+      updatedAt: FieldValue.serverTimestamp(),
+    });
+    return next;
+  });
+
+  // Bytes first. A failure here leaves currentVersion pointing at a version
+  // whose row does not exist yet — visible as a gap, not as a broken read,
+  // because getArtifact lists the versions that actually exist.
+  const storagePath = await store.put(uid, artifactId, n, input.body, input.mimeType);
+
+  await artifactVersions(uid, artifactId).doc(String(n)).set({
+    n,
+    storagePath,
+    mimeType: input.mimeType,
+    bytes: input.body.byteLength,
+    producedBy: input.producedBy,
+    prompt: input.prompt ?? "",
+    correction: input.correction ?? "",
+    supersedes: n > 1 ? n - 1 : null,
+    createdAt: FieldValue.serverTimestamp(),
+  });
+
+  return n;
+}
+
+export class NotFound extends Error {
+  constructor(id: string) {
+    super(`No artifact ${id}`);
+  }
+}
+
+/**
+ * Delete an artifact and every version's bytes.
+ *
+ * Index first here, deliberately reversing the create order. On create, an
+ * orphaned blob is the safe failure; on delete, a *reachable* artifact whose
+ * bytes are gone is the unsafe one. Both orders are chosen so the surviving
+ * state is the harmless one.
+ */
+export async function deleteArtifact(
+  uid: string,
+  artifactId: string,
+  store: ByteStore = gcsStore,
+): Promise<boolean> {
+  const ref = artifacts(uid).doc(artifactId);
+  const doc = await ref.get();
+  if (!doc.exists) return false;
+
+  const versions = await artifactVersions(uid, artifactId).get();
+  const batch = db.batch();
+  versions.docs.forEach((v) => batch.delete(v.ref));
+  batch.delete(ref);
+  await batch.commit();
+
+  await store.deleteAll(uid, artifactId);
+  return true;
+}

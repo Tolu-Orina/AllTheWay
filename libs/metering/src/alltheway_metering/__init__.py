@@ -43,6 +43,11 @@ class Tier(StrEnum):
     FREE = "free"
     PLUS = "plus"
     TEAM = "team"
+    #: Exists for one reason: a final Veo render is ~$0.75/second, so a single
+    #: 8-second video costs about $6 — a third of a Plus subscription, spent in
+    #: one click. That cannot be absorbed into a lower tier, and metering it
+    #: there would produce a limit so small it would read as broken.
+    MAX = "max"
 
 
 class Meter(StrEnum):
@@ -54,6 +59,17 @@ class Meter(StrEnum):
     #: someone else's API, and an unbounded one is an abuse surface even when
     #: it is cheap.
     CONNECTOR_CALLS = "connector_calls"
+
+    #: Images, via Nano Banana 2 Lite. Cheap enough to be conversational
+    #: ($0.034/1K), so the limit is about abuse rather than cost.
+    IMAGES = "images"
+
+    #: Video, split in two because the two ends of the Veo ladder differ by
+    #: fifteen times. Draft is ~$0.05/s (veo-3.1-lite); final is ~$0.75/s
+    #: (veo-3.1). One meter would price the cheap case as if it were the
+    #: expensive one, or the expensive one as if it were free.
+    DRAFT_VIDEO_SECONDS = "draft_video_seconds"
+    FINAL_VIDEO_SECONDS = "final_video_seconds"
 
 
 #: Monthly allowances. `None` means unmetered on that dimension.
@@ -71,12 +87,18 @@ class Plan:
     voice_minutes: int | None
     watcher_runs: int | None
     connector_calls: int | None
+    images: int | None = 0
+    draft_video_seconds: int | None = 0
+    final_video_seconds: int | None = 0
 
     def allowance(self, meter: Meter) -> int | None:
         return {
             Meter.VOICE_MINUTES: self.voice_minutes,
             Meter.WATCHER_RUNS: self.watcher_runs,
             Meter.CONNECTOR_CALLS: self.connector_calls,
+            Meter.IMAGES: self.images,
+            Meter.DRAFT_VIDEO_SECONDS: self.draft_video_seconds,
+            Meter.FINAL_VIDEO_SECONDS: self.final_video_seconds,
         }[meter]
 
 
@@ -91,6 +113,11 @@ PLANS: dict[Tier, Plan] = {
         voice_minutes=30,
         watcher_runs=50,
         connector_calls=200,
+        images=20,
+        # Zero, not a small number. A free tier that can spend real money on
+        # video is a free tier someone will spend real money with.
+        draft_video_seconds=0,
+        final_video_seconds=0,
     ),
     Tier.PLUS: Plan(
         tier=Tier.PLUS,
@@ -102,6 +129,10 @@ PLANS: dict[Tier, Plan] = {
         voice_minutes=600,
         watcher_runs=1000,
         connector_calls=5000,
+        images=500,
+        draft_video_seconds=20,
+        # Plus cannot render a final. One 8-second render is $6 against £18.
+        final_video_seconds=0,
     ),
     Tier.TEAM: Plan(
         tier=Tier.TEAM,
@@ -112,6 +143,24 @@ PLANS: dict[Tier, Plan] = {
         voice_minutes=None,
         watcher_runs=None,
         connector_calls=None,
+        images=2000,
+        draft_video_seconds=60,
+        final_video_seconds=10,
+    ),
+    Tier.MAX: Plan(
+        tier=Tier.MAX,
+        label="Max",
+        # £60. Priced against the ladder rather than against the competition:
+        # 300s of draft at $0.05 plus 20s of final at $0.75 is $30 of cost
+        # inside roughly $76 of revenue. Thin on purpose — video is sold at a
+        # modest margin, not as a profit centre.
+        price_pence=6000,
+        voice_minutes=None,
+        watcher_runs=None,
+        connector_calls=None,
+        images=None,
+        draft_video_seconds=300,
+        final_video_seconds=20,
     ),
 }
 

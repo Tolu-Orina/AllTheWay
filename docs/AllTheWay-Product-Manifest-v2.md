@@ -1,7 +1,7 @@
 # AllTheWay — Product Manifest v2
 ### Your collaborative companion — now unifying all three hackathon tracks
 
-*Supersedes the original Product Manifest. Scope is intentionally expanded past the original Collaborative Partner-only framing, per direction: build the full-value product, not a track-constrained one.*
+*Superseded by [Product Manifest v3](AllTheWay-Product-Manifest-v3.md), which keeps these three pillars and adds documents, multimodality, meetings and co-work. Supersedes the original Product Manifest. Scope is intentionally expanded past the original Collaborative Partner-only framing, per direction: build the full-value product, not a track-constrained one.*
 
 ---
 

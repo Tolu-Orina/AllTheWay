@@ -9,13 +9,14 @@
     "build": "tsc -p tsconfig.build.json",
     "seed": "tsx src/seed.ts",
     "typecheck": "tsc -p tsconfig.json --noEmit",
-    "test": "node --import tsx --test src/voice.test.ts",
+    "test": "node --import tsx --test src/voice.test.ts src/artifacts.test.ts",
     "start:tsx": "tsx src/index.ts"
   },
   "dependencies": {
     "@a2a-js/sdk": "^1.0.1",
     "@alltheway/contracts": "*",
     "@google-cloud/pubsub": "^5.3.1",
+    "@google-cloud/storage": "^7.14.0",
     "express": "^5.1.0",
     "firebase-admin": "^13.6.0",
     "google-auth-library": "^9.15.1",

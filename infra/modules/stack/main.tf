@@ -199,6 +199,11 @@ locals {
       GOOGLE_OAUTH_CLIENT_SECRET_SECRET = var.google_oauth_secrets == null ? "" : var.google_oauth_secrets.client_secret
     }
     gateway = {
+      # Where artifact bytes live. Empty would disable artifacts rather than
+      # fail at import, but it is never empty here — the bucket is created
+      # alongside the service.
+      ARTIFACTS_BUCKET = google_storage_bucket.artifacts.name
+
       MAIL_FROM         = var.mail_from
       GEMINI_LIVE_MODEL = var.gemini_live_model
 

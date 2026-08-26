@@ -185,3 +185,81 @@ export const RUN_STATE_LABELS: Record<WatcherRun["state"], string> = {
 /** Request bodies. */
 export const ToggleWatcherSchema = z.object({ running: z.boolean() });
 export const RevertPreferenceSchema = z.object({ id: z.string() });
+
+/* ------------------------------------------------------------------ *
+ * Artifacts (v3 Phase A)
+ *
+ * The durable, versioned thing the agent produced — a document, a
+ * wireframe, a summary. The noun the product was missing: plans and
+ * traces describe work, but they are not deliverables, and nothing
+ * before this could be corrected and kept.
+ *
+ * Shared here because the gateway writes these and the web app renders
+ * them, and a field renamed on one side must not quietly keep working
+ * on the other.
+ * ------------------------------------------------------------------ */
+
+export const ArtifactKindSchema = z.enum([
+  "doc",
+  "image",
+  "video",
+  "summary",
+  "checklist",
+]);
+
+/** Who made a version. `agent` and `user` are not interchangeable: the
+ *  Feedback Ledger's value is knowing which corrections were human. */
+export const ProducedBySchema = z.enum(["user", "agent"]);
+
+/**
+ * Where an artifact came from, carried per artifact rather than per
+ * version because it identifies the *contract* that produced it.
+ *
+ * `cardVersion` is the AgentCard version, not the build SHA — the card
+ * is the published contract a caller relied on, which is what Phase 7's
+ * attribution requirement actually asks for.
+ */
+export const ProvenanceSchema = z.object({
+  agentId: z.string(),
+  cardVersion: z.string(),
+  model: z.string().default(""),
+  sources: z.array(z.string()).default([]),
+});
+
+export const ArtifactVersionSchema = z.object({
+  /** Monotonic from 1. Also the document id, so ordering needs no index. */
+  n: z.number().int().positive(),
+  mimeType: z.string(),
+  bytes: z.number().int().nonnegative(),
+  createdAt: z.string().datetime(),
+  producedBy: ProducedBySchema,
+  /** What was asked for. Empty for a direct user edit. */
+  prompt: z.string().default(""),
+  /** What the user said was wrong with n-1. This is the learning signal. */
+  correction: z.string().default(""),
+  /** null only for n = 1. */
+  supersedes: z.number().int().positive().nullable(),
+});
+
+export const ArtifactSchema = z.object({
+  id: z.string(),
+  kind: ArtifactKindSchema,
+  title: z.string(),
+  /** The session it was made in, so the canvas can be reopened in context. */
+  sessionId: z.string().default(""),
+  currentVersion: z.number().int().nonnegative(),
+  createdAt: z.string().datetime(),
+  updatedAt: z.string().datetime(),
+  provenance: ProvenanceSchema,
+});
+
+/** An artifact with its history, for the canvas. */
+export const ArtifactDetailSchema = ArtifactSchema.extend({
+  versions: z.array(ArtifactVersionSchema),
+});
+
+export type ArtifactKind = z.infer<typeof ArtifactKindSchema>;
+export type Provenance = z.infer<typeof ProvenanceSchema>;
+export type ArtifactVersion = z.infer<typeof ArtifactVersionSchema>;
+export type Artifact = z.infer<typeof ArtifactSchema>;
+export type ArtifactDetail = z.infer<typeof ArtifactDetailSchema>;

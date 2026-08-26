@@ -34,3 +34,19 @@ export const preferences = (uid: string) => userDoc(uid).collection("preferences
 /** The Feedback Ledger. One collection for spoken and typed turns alike —
  *  the manifest is explicit that there is no separate "voice memory". */
 export const ledger = (uid: string) => userDoc(uid).collection("ledger");
+
+/**
+ * Artifacts, and their append-only version history.
+ *
+ * Under the user's path like everything else here, not in a flat collection
+ * with an owner field. That is the difference between a scope a query cannot
+ * escape and a filter someone has to remember — and it is why
+ * `scripts/check-tenant-isolation.py` forbids `db.collection("artifacts")`.
+ *
+ * Sharing (v3 Phase E) still works across this path: a security rule can grant
+ * a non-owner read on `users/{owner}/artifacts/{id}` without the reader's uid
+ * appearing in it. A scoped path constrains queries, not rules.
+ */
+export const artifacts = (uid: string) => userDoc(uid).collection("artifacts");
+export const artifactVersions = (uid: string, artifactId: string) =>
+  artifacts(uid).doc(artifactId).collection("versions");

@@ -71,6 +71,25 @@ async function request(path: string, init?: RequestInit): Promise<Response> {
   return res;
 }
 
+/**
+ * Raw bytes, authenticated.
+ *
+ * An `<img src>` or `<iframe src>` cannot carry an Authorization header, so
+ * pointing one at an authenticated endpoint produces a 401 the browser
+ * reports as a broken image. Anything binary is fetched here and turned into
+ * a blob URL by the caller — which also means the caller owns revoking it.
+ */
+export async function apiBlob(path: string): Promise<Blob> {
+  const res = await request(path);
+  return res.blob();
+}
+
+/** The same, as text. For a document whose content is edited in place. */
+export async function apiText(path: string): Promise<string> {
+  const res = await request(path);
+  return res.text();
+}
+
 export async function apiGet<S extends z.ZodTypeAny>(path: string, schema: S): Promise<z.infer<S>> {
   const res = await request(path);
   return schema.parse(await res.json());
