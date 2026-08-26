@@ -26,6 +26,21 @@ export type {
   WatcherRun,
 } from "@alltheway/contracts";
 
+export const ConnectorSchema = z.object({
+  id: z.string(),
+  label: z.string(),
+  provider: z.string(),
+  status: z.enum(["available", "coming_soon"]),
+  connected: z.boolean(),
+});
+
+export const ConnectorListSchema = z.object({
+  connectors: z.array(ConnectorSchema),
+  grantedScopes: z.array(z.string()),
+});
+
+export type Connector = z.infer<typeof ConnectorSchema>;
+
 export const api = {
   sessions: () => apiGet("/sessions", z.array(SessionSchema)),
   session: (id: string) =>
@@ -51,6 +66,25 @@ export const api = {
       confidence?: number;
     },
   ) => apiPost(`/sessions/${encodeURIComponent(sessionId)}/decision`, body),
+
+  /**
+   * Connected accounts.
+   *
+   * The catalogue is served by the gateway rather than held here, so a
+   * connector that is not ready cannot be made to look ready by editing the
+   * front end — "coming soon" is a fact about the backend.
+   */
+  connectors: () => apiGet("/connectors", ConnectorListSchema),
+
+  /**
+   * Begins consent. Returns the Google URL to send the browser to.
+   *
+   * The URL is built server-side because it carries `state`, which must be
+   * minted and stored against this user. A client-built consent URL is a
+   * client-chosen state, which is the whole CSRF hole.
+   */
+  connectGoogle: (options: { drafts?: boolean } = {}) =>
+    apiPost("/connectors/google/connect", options, z.object({ url: z.string().url() })),
 
   setWatcherRunning: (id: string, running: boolean) =>
     apiPost(`/watchers/${encodeURIComponent(id)}/running`, { running }, WatcherSchema),

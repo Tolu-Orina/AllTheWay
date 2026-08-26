@@ -68,6 +68,21 @@ const GOOGLE_SCOPES = [
   "https://www.googleapis.com/auth/documents",
 ] as const;
 
+/**
+ * Restricted, and therefore requested only when the user explicitly asks.
+ *
+ * `gmail.compose` is what `users.drafts.create` needs — there is no narrower
+ * scope for drafting, which is awkward given a draft is the *safest* thing this
+ * connector does and is exactly what a DRAFT_ONLY ceiling wants.
+ *
+ * It is usable today: an app in Testing mode may request restricted scopes for
+ * its listed test users with no verification. The bill arrives at publication,
+ * as verification plus an annual CASA assessment. Keeping it opt-in means that
+ * bill is a decision rather than a surprise, and that users who only want
+ * sending are never shown a scarier consent screen than they need.
+ */
+const GMAIL_DRAFTS_SCOPE = "https://www.googleapis.com/auth/gmail.compose";
+
 const AUTH_ENDPOINT = "https://accounts.google.com/o/oauth2/v2/auth";
 const TOKEN_ENDPOINT = "https://oauth2.googleapis.com/token";
 
@@ -138,6 +153,8 @@ connectorRoutes.post("/google/connect", requireUser, async (req, res) => {
   // callback belongs to this user's session.
   const state = randomBytes(32).toString("base64url");
   const connector = typeof req.body?.connector === "string" ? req.body.connector : "";
+  const wantsDrafts = req.body?.drafts === true;
+  const scopes = wantsDrafts ? [...GOOGLE_SCOPES, GMAIL_DRAFTS_SCOPE] : [...GOOGLE_SCOPES];
 
   await states().doc(state).set({
     uid: req.uid,
@@ -150,7 +167,7 @@ connectorRoutes.post("/google/connect", requireUser, async (req, res) => {
   url.searchParams.set("client_id", clientId);
   url.searchParams.set("redirect_uri", redirectUri());
   url.searchParams.set("response_type", "code");
-  url.searchParams.set("scope", GOOGLE_SCOPES.join(" "));
+  url.searchParams.set("scope", scopes.join(" "));
   url.searchParams.set("state", state);
   // Both are required to get a refresh token at all: Google returns one only
   // on the first consent unless prompted, and an access-token-only grant would

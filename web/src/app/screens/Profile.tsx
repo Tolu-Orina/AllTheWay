@@ -4,6 +4,7 @@ import { Check, Undo2 } from "lucide-react";
 import { Async, EmptyState } from "@/app/async";
 import { useAsync } from "@/app/use-async";
 import { api, type LearnedPreference } from "@/app/data";
+import { Connections } from "@/app/Connections";
 
 export default function Profile() {
   const { state, reload } = useAsync<LearnedPreference[]>(() =>
@@ -112,6 +113,9 @@ export default function Profile() {
           </ul>
         )}
       </Async>
+
+      <Connections />
     </div>
+
   );
 }
