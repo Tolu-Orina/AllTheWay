@@ -9,7 +9,7 @@
     "build": "tsc -p tsconfig.build.json",
     "seed": "tsx src/seed.ts",
     "typecheck": "tsc -p tsconfig.json --noEmit",
-    "test": "node --import tsx --test src/voice.test.ts src/artifacts.test.ts src/shares.test.ts",
+    "test": "node --import tsx --test src/voice.test.ts src/artifacts.test.ts src/shares.test.ts src/digest.test.ts",
     "start:tsx": "tsx src/index.ts"
   },
   "dependencies": {

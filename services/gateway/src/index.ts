@@ -18,6 +18,7 @@ import { listRuns, listWatchers, setWatcherRunning } from "./repos/watchers.js";
 import { runTurn, streamTurn } from "./orchestrator.js";
 import { listRecent, record } from "./repos/ledger.js";
 import { readUsage } from "./repos/usage.js";
+import { buildDigest } from "./repos/digest.js";
 import { retrieve } from "./repos/retrieval.js";
 import { attachVoice } from "./voice/relay.js";
 import { applyCors, openStream } from "./sse.js";
@@ -301,6 +302,15 @@ api.post(
 // separate feature: to a user they are one thing — "what it has decided about
 // me" — and splitting them across two screens is how a preference becomes
 // something nobody knows how to find, let alone undo.
+// The morning digest. Built from the ledger and the runs on every request,
+// never from a stored snapshot — see repos/digest.ts for why.
+api.get(
+  "/digest",
+  handle(async (req, res) => {
+    res.json(await buildDigest(req.uid!));
+  }),
+);
+
 api.use(meetingRoutes);
 api.use(shareRoutes);
 

@@ -561,6 +561,11 @@ locals {
     # ends, which is the moment a transcript can exist — polling for something
     # that happens twice a day would be both wasteful and late.
     "meet-events" = { service = "scribe", path = "/events/meet" }
+    # The morning digest. The watcher runtime consumes it because it already
+    # owns the per-user push path and the run records the digest reports on —
+    # a separate service would need both, and would be a second thing to keep
+    # alive for one message a day.
+    "digest-due" = { service = "watcher-runtime", path = "/events/digest" }
   }
 }
 
@@ -624,4 +629,39 @@ resource "google_pubsub_subscription" "push" {
     google_service_account_iam_member.pubsub_mints_consumer_token,
     google_cloud_run_v2_service_iam_member.push_invoker,
   ]
+}
+
+
+# ---------------------------------------------------------------------------
+# The daily digest
+#
+# One job, one message. The handler fans out to users itself rather than the
+# scheduler holding a list of them: a schedule that has to be edited whenever
+# somebody signs up is a schedule that will be wrong.
+#
+# Time zone is explicit. "07:00" with no zone means UTC, which is 08:00 in
+# British summer and 07:00 in winter — a digest that arrives at a different
+# time depending on the season looks broken rather than scheduled.
+# ---------------------------------------------------------------------------
+
+resource "google_cloud_scheduler_job" "digest" {
+  project  = var.project_id
+  region   = var.region
+  name     = "digest-${var.env}"
+  schedule = "0 7 * * *"
+
+  # Europe/London rather than UTC: this is a *morning* digest, and morning is a
+  # local idea. See var.digest_time_zone for the single-tenant caveat.
+  time_zone = var.digest_time_zone
+
+  description = "Publishes the daily digest trigger. The watcher runtime fans it out per user."
+
+  pubsub_target {
+    topic_name = google_pubsub_topic.events["digest-due"].id
+    # An empty sweep message. A userId here would mean the scheduler knew the
+    # user list, which is exactly what it must not need to know.
+    data = base64encode(jsonencode({ sweep = true }))
+  }
+
+  depends_on = [google_pubsub_topic.events]
 }

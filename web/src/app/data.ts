@@ -6,6 +6,7 @@ import {
   ShareSchema,
   CommentSchema,
   SharedArtifactSchema,
+  DigestSchema,
   SessionDetailSchema,
   SessionSchema,
   WatcherRunSchema,
@@ -32,6 +33,7 @@ export type {
   Share,
   Comment,
   SharedArtifact,
+  Digest,
   Session,
   SessionDetail,
   Watcher,
@@ -158,6 +160,7 @@ export const api = {
   shares: (artifactId: string) =>
     apiGet(`/artifacts/${artifactId}/shares`, z.array(ShareSchema)),
   sharedWithMe: () => apiGet("/shared-with-me", z.array(SharedArtifactSchema)),
+  digest: () => apiGet("/digest", DigestSchema),
   comments: (artifactId: string, owner?: string) =>
     apiGet(
       `/artifacts/${artifactId}/comments${owner ? `?owner=${encodeURIComponent(owner)}` : ""}`,

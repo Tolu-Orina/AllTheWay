@@ -11,6 +11,7 @@ import { timeOfDay } from "@/lib/format";
 import { useAuth } from "@/auth/useAuth";
 import { cn } from "@/lib/utils";
 import { VoiceControl } from "@/app/VoiceControl";
+import { Digest } from "@/app/Digest";
 
 const TRACE = [
   "Clarify gate asked about scope before drafting",
@@ -59,8 +60,15 @@ export default function Home() {
             {greeting}
             {firstName ? `, ${firstName}` : ""}
           </h1>
+          {/*
+            This line used to read "Two watchers ran overnight. One is waiting
+            on you." — hardcoded, and shown to every user whatever had actually
+            happened. A front page that states a specific false fact is worse
+            than one that states nothing, and it is the exact failure the digest
+            below exists to fix: real counts, from the ledger, or silence.
+          */}
           <p className="mt-2 text-[15px] leading-relaxed text-muted-foreground">
-            Two watchers ran overnight. One is waiting on you.
+            Here is where things stand.
           </p>
         </div>
 
@@ -70,6 +78,11 @@ export default function Home() {
             primary action on a screen, and Continue already holds it. */}
         <VoiceControl />
       </header>
+
+      {/* Above the fold and above everything else on the screen: the two
+          things that need a person come first, because on a phone at 07:40
+          nothing below them will be read. */}
+      <Digest />
 
       <Async state={state} reload={reload} skeleton={<HomeSkeleton />}>
         {({ plan, runs }) => (

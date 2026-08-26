@@ -2,6 +2,8 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import { Check, Download, FileText, History, Loader2 } from "lucide-react";
 
 import { api, type ArtifactDetail, type ArtifactVersion } from "@/app/data";
+import { Comments } from "@/app/Comments";
+import { ShareControls } from "@/app/Share";
 import { cn } from "@/lib/utils";
 
 /**
@@ -146,6 +148,19 @@ export function Canvas({ artifactId }: { artifactId: string }) {
             setSaving(false);
           }
         }}
+      />
+
+      {/* Sharing and discussion live with the artifact, under it, in the column
+          that already holds its history. A separate screen would put the
+          conversation about a thing somewhere other than the thing. */}
+      <ShareControls artifactId={artifact.id} />
+
+      <Comments
+        artifactId={artifact.id}
+        // The version on screen, never `latest`: a comment must belong to what
+        // the person was actually looking at when they wrote it.
+        viewingVersion={shown?.n ?? 1}
+        canComment
       />
     </div>
   );

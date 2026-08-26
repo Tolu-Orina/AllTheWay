@@ -8,6 +8,7 @@ from fastapi import FastAPI, Response
 from google.cloud import firestore
 
 from .events import PushEnvelope
+from .digest import sweep
 from .firestore import preferences, runs, watchers
 from .firestore import record_run
 from .runtime import execute_run, now_iso
@@ -30,6 +31,18 @@ app = FastAPI(title="AllTheWay watcher runtime")
 @app.get("/healthz/", include_in_schema=False)
 def healthz() -> dict:
     return {"ok": True}
+
+
+@app.post("/events/digest")
+def handle_digest() -> dict:
+    """The daily digest sweep.
+
+    Always 200. A sweep that fails for one user has already recorded that in
+    its counts, and asking Pub/Sub to redeliver would re-notify everyone the
+    first pass succeeded for — turning one person's failure into everybody's
+    duplicate.
+    """
+    return {"status": "swept", **sweep()}
 
 
 @app.post("/events")

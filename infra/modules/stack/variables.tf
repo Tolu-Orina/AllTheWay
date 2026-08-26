@@ -64,6 +64,21 @@ variable "gemini_model" {
   default     = "gemini-3.7-flash"
 }
 
+variable "digest_time_zone" {
+  description = <<-EOT
+    Time zone the daily digest fires in.
+
+    A morning digest is a local idea, and one zone for everyone is a known
+    simplification rather than an oversight: it is right for a single-region
+    team and wrong the moment there is a user in Lagos and one in Vancouver.
+    Fixing it properly means a per-user send time, which is a scheduling
+    problem rather than a configuration one — recorded here so the limitation
+    is visible instead of implied.
+  EOT
+  type        = string
+  default     = "Europe/London"
+}
+
 variable "media_location" {
   description = <<-EOT
     Where image and video generation runs.

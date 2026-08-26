@@ -261,6 +261,27 @@ export const SharedArtifactSchema = z.object({
   sharedAt: z.string(),
 });
 
+/**
+ * The morning digest: what happened while you were away.
+ *
+ * Computed on read rather than stored, so its counts cannot disagree with the
+ * ledger — a digest that disagrees with the record is worse than none.
+ */
+export const DigestSchema = z.object({
+  date: z.string(),
+  ranWatchers: z.array(
+    z.object({ watcherId: z.string(), at: z.string(), summary: z.string() }),
+  ),
+  /** The actionable half: things still waiting for a person. */
+  awaitingDecision: z.array(
+    z.object({ id: z.string(), summary: z.string(), at: z.string() }),
+  ),
+  artifactsChanged: z.array(
+    z.object({ id: z.string(), title: z.string(), at: z.string() }),
+  ),
+  sentAt: z.string().nullable(),
+});
+
 /** Errors carry a stable code the client can branch on, plus prose for a human. */
 export const ApiErrorSchema = z.object({
   code: z.enum([
@@ -287,6 +308,7 @@ export type Commitment = z.infer<typeof CommitmentSchema>;
 export type Share = z.infer<typeof ShareSchema>;
 export type Comment = z.infer<typeof CommentSchema>;
 export type SharedArtifact = z.infer<typeof SharedArtifactSchema>;
+export type Digest = z.infer<typeof DigestSchema>;
 export type ApiError = z.infer<typeof ApiErrorSchema>;
 
 /** Human-facing labels live with the enum so both sides agree on wording. */

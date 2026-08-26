@@ -51,6 +51,11 @@ locals {
     # blocked on a programme we do not control.
     "meet.googleapis.com",
     "workspaceevents.googleapis.com",
+    # The daily digest (Phase E). One job, publishing to a topic the watcher
+    # runtime already consumes from — the notification is scheduled work, and
+    # scheduled work belongs to a scheduler rather than to a service polling a
+    # clock it does not own.
+    "cloudscheduler.googleapis.com",
   ]
 
   # Every (service, env) pair gets its own runtime identity. This is what makes
