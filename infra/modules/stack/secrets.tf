@@ -74,7 +74,12 @@ resource "google_secret_manager_secret_iam_member" "card_keys" {
   for_each = merge(
     {
       for pair in setproduct(
-        ["orchestrator", "research-cell", "connector-gateway"],
+        # Derived from the same list the env vars come from. Hardcoded, it
+        # drifted the moment librarian and scribe joined that list: the
+        # revision mounted a secret its own identity could not read, and the
+        # apply failed with "Permission denied on secret" — which reads as a
+        # missing grant rather than as two lists disagreeing.
+        local.card_signing_services,
         ["agentcard_signing_key", "agentcard_public_key"],
       ) : "${pair[0]}:${pair[1]}" => { service = pair[0], secret = pair[1] }
     },

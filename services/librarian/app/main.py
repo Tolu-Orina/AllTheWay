@@ -34,6 +34,7 @@ from fastapi import FastAPI, Header, HTTPException
 from pydantic import BaseModel, Field
 
 from . import embed, store
+from .a2a_card import build_card
 from .pipeline import Blocked, ingest
 from .transcribe import TranscriptionFailed
 
@@ -108,6 +109,32 @@ def post_document(
         # get more light, straighten the page. A 500 here would send someone to
         # a status page over a photograph they could simply retake.
         raise HTTPException(status_code=422, detail=str(failed)) from failed
+
+
+@app.get("/.well-known/agent-card.json")
+def agent_card() -> dict:
+    """The signed card, served where a registry looks for it.
+
+    Signed on every request rather than once at import. The key arrives from
+    Secret Manager as an environment variable, and a card signed at import time
+    on a revision that started before the secret was bound would serve an
+    unsigned card until the next deploy — which reads as a broken key rather
+    than a startup ordering problem.
+
+    Unsigned is a supported state: the registry reports it as unverified, which
+    is the truth, rather than the service failing to start.
+    """
+    from alltheway_agentcards import load_private_key, sign
+    from alltheway_agentcards.a2a import DEFAULT_KEY_ID, KEY_ID_ENV, SIGNING_KEY_ENV
+
+    card = build_card()
+
+    pem = os.environ.get(SIGNING_KEY_ENV, "").strip()
+    if not pem:
+        return card
+
+    kid = os.environ.get(KEY_ID_ENV, "").strip() or DEFAULT_KEY_ID
+    return sign(card, private_key=load_private_key(pem), kid=kid)
 
 
 @app.get("/documents")

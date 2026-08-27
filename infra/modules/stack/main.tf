@@ -39,7 +39,7 @@ locals {
     # act on a user's behalf, and by nothing else. It calls nothing itself, which
     # is what keeps a malicious PDF attacking the extraction library from
     # reaching anything that can act.
-    librarian = ["gateway", "orchestrator"]
+    librarian = ["gateway", "orchestrator", "registry"]
 
     # Meetings, whichever tier serves them. Called by the gateway, which is the
     # only thing holding a user session; it calls the orchestrator, which owns
@@ -50,7 +50,7 @@ locals {
     # unattended process to decide to do — every participant sees a dialog when
     # the agent connects, so an unwanted join is visible to the whole room and
     # attributable to the user who did not ask for it.
-    scribe = ["gateway"]
+    scribe = ["gateway", "registry"]
   }
 
   runtime_sa = var.runtime_service_accounts
@@ -168,6 +168,8 @@ locals {
       ORCHESTRATOR_URL      = local.service_url["orchestrator"]
       RESEARCH_CELL_URL     = local.service_url["research-cell"]
       CONNECTOR_GATEWAY_URL = local.service_url["connector-gateway"]
+      LIBRARIAN_URL         = local.service_url["librarian"]
+      SCRIBE_URL            = local.service_url["scribe"]
     }
     # Screening is mandatory on untrusted external content, and it fails closed:
     # without a template these services refuse rather than passing content
@@ -314,30 +316,47 @@ locals {
   #: The private key signs; the public key verifies. Both are mounted rather
   #: than passed, so neither reaches Terraform state — and a rotation is a new
   #: secret version rather than a deploy.
-  card_signing_services = ["orchestrator", "research-cell", "connector-gateway"]
+  # Every service that publishes a card signs it. librarian and scribe joined in
+  # v3: until they did, the Specialists view had to show two of its four
+  # capabilities as "Internal", which was honest but not what the plan intended.
+  card_signing_services = [
+    "orchestrator",
+    "research-cell",
+    "connector-gateway",
+    "librarian",
+    "scribe",
+  ]
 
-  card_secret_env = merge(
-    {
-      for service in local.card_signing_services : service => {
+  # Built per service rather than by merging two maps.
+  #
+  # `merge()` is shallow: a service appearing in both maps takes the second
+  # entry WHOLE, discarding the first. librarian appears twice — it signs a card
+  # and it verifies scope tokens — so a shallow merge silently dropped its
+  # signing key and it would have served an unsigned card while looking entirely
+  # configured. The registry would have reported it unverified, and the cause
+  # would have looked like a key problem rather than a Terraform one.
+  card_secret_env = {
+    for service in distinct(concat(local.card_signing_services, ["registry", "librarian"])) :
+    service => merge(
+      contains(local.card_signing_services, service) ? {
         AGENT_CARD_SIGNING_KEY = "agentcard_signing_key"
         AGENT_CARD_PUBLIC_KEY  = "agentcard_public_key"
-      }
-    },
-    {
-      # Verifies, never signs. Deliberately given the public key only: a
-      # registry that could sign could manufacture a trusted entry for an agent
-      # nobody deployed, which is precisely what it exists to detect.
-      registry = {
-        AGENT_CARD_PUBLIC_KEY = "agentcard_public_key"
-      }
+      } : {},
 
-      # Verifies scope tokens; cannot mint them. The librarian being unable
-      # to name its own user is the entire point of layer 4.
-      librarian = {
+      # Verifies, never signs. Deliberately given the public key only: a registry
+      # that could sign could manufacture a trusted entry for an agent nobody
+      # deployed, which is precisely what it exists to detect.
+      service == "registry" ? {
+        AGENT_CARD_PUBLIC_KEY = "agentcard_public_key"
+      } : {},
+
+      # Verifies scope tokens; cannot mint them. The librarian being unable to
+      # name its own user is the entire point of layer 4.
+      service == "librarian" ? {
         SCOPE_TOKEN_PUBLIC_KEY = "scopetoken_public_key"
-      }
-    },
-  )
+      } : {},
+    )
+  }
 
   secret_env_vars = merge(local.card_secret_env, {
     gateway = merge(

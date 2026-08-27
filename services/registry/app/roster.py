@@ -62,6 +62,18 @@ AGENTS: tuple[Entry, ...] = (
         url_env="RESEARCH_CELL_URL",
     ),
     Entry(
+        id="librarian",
+        owner="core",
+        purpose="Holds the user's documents and answers from them with citations.",
+        url_env="LIBRARIAN_URL",
+    ),
+    Entry(
+        id="scribe",
+        owner="core",
+        purpose="Takes notes in a meeting. It listens; it cannot speak.",
+        url_env="SCRIBE_URL",
+    ),
+    Entry(
         id="connector-gateway",
         owner="core",
         purpose="The single enforcement point in front of every connector.",

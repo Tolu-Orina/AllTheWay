@@ -21,6 +21,7 @@ import { resolveTier, type Attempt } from "./tier.js";
 import { connectTier1, connectTier2 } from "./meet.js";
 import { mayJoin, setGlobal, setMeetingOptOut } from "./consent.js";
 import { readMeetEvent, spaceIdFrom } from "./events.js";
+import { servedCard } from "./a2a-card.js";
 import { rememberSpace, ownerOfSpace } from "./registry.js";
 import { accessTokenFor } from "./credentials.js";
 import { isClean } from "./screening.js";
@@ -50,6 +51,16 @@ app.use(express.json({ limit: "4mb" }));
 // `/healthz` and answers with its own 404, so the request never reaches this
 // process; `/healthz/` gets through. Registering both means whoever writes the
 // next probe cannot pick the wrong one.
+// The signed card, where a registry looks for it.
+//
+// Built and signed per request rather than at import: the key arrives from
+// Secret Manager as an environment variable, and a card signed before that was
+// bound would serve unsigned until the next deploy — which reads as a broken
+// key rather than a startup ordering problem.
+app.get("/.well-known/agent-card.json", (_req, res) => {
+  res.json(servedCard());
+});
+
 for (const path of ["/healthz", "/healthz/"]) {
   app.get(path, (_req, res) => {
     res.json({ ok: true });

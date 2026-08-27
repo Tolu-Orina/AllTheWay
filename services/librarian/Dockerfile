@@ -26,12 +26,14 @@ WORKDIR /src
 # both must be in the image — an import that resolves on a laptop and not
 # here is how a container exits before it listens.
 COPY libs/screening ./libs/screening
+# Signs the AgentCard the registry verifies.
+COPY libs/agentcards ./libs/agentcards
 COPY libs/scopetoken ./libs/scopetoken
 COPY services/librarian/pyproject.toml ./
 
 # --target gives a flat, relocatable tree that can be copied into an image with
 # no pip -- which is exactly what distroless is.
-RUN pip install --no-cache-dir --upgrade pip && pip wheel --no-cache-dir --wheel-dir=/wheels ./libs/screening ./libs/scopetoken && pip install --no-cache-dir --target=/deps --find-links=/wheels .
+RUN pip install --no-cache-dir --upgrade pip && pip wheel --no-cache-dir --wheel-dir=/wheels ./libs/screening ./libs/scopetoken ./libs/agentcards && pip install --no-cache-dir --target=/deps --find-links=/wheels .
 
 # ---------------------------------------------------------------------- test
 # A real build stage, not a convenience: `docker build --target test` exits

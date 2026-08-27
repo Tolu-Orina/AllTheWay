@@ -41,15 +41,12 @@ interface Specialist {
   /** The id in the registry, when this capability is a published A2A agent. */
   agentId: string;
   /**
-   * True when the capability is delivered by an internal service that publishes
-   * no card.
+   * True when the capability is delivered by a service that publishes no card.
    *
-   * This distinction is load-bearing. Two of the four below are not A2A agents:
-   * they are internal services that nothing outside the product may call, and
-   * they have no card to sign because they are not offering themselves to
-   * anyone. Showing them as "unverified" would raise an alarm about a control
-   * that does not apply to them; showing them as verified would be a lie. So
-   * they say what they are.
+   * Nothing sets this now — librarian and scribe gained signed cards in v3, so
+   * all four specialists are verifiable. It stays because the distinction is
+   * real and will be needed again: a service with no card is not "unverified",
+   * and conflating the two either raises a false alarm or hides a true one.
    */
   internal?: boolean;
 }
@@ -62,10 +59,6 @@ const SPECIALISTS: Specialist[] = [
     label: "Document guide",
     description: "Reads what you have added and answers with citations you can check.",
     agentId: "librarian",
-    // Internal-only by design: it holds your documents, has no connector access
-    // and can act on nothing. It publishes no card because it offers itself to
-    // no one — see services/librarian/Dockerfile for why that isolation matters.
-    internal: true,
   },
   {
     label: "Design partner",
@@ -76,10 +69,6 @@ const SPECIALISTS: Specialist[] = [
     label: "Meeting scribe",
     description: "Takes notes in meetings. It listens and cannot speak.",
     agentId: "scribe",
-    // Also internal. It is reachable by the gateway alone, and deliberately not
-    // by the watcher runtime — an unattended process must not decide to join a
-    // meeting.
-    internal: true,
   },
   {
     label: "Researcher",
@@ -97,9 +86,9 @@ export function Specialists() {
         What it can do
       </h2>
       <p className="text-[13.5px] leading-relaxed text-muted-foreground">
-        Each of these is a separate service. Where one publishes an agent card,
-        the version and signature below are read from that card rather than
-        written here.
+        Each of these is a separate agent with its own published card. The
+        version and signature below are read from that card, not from this
+        page — so a capability that stops verifying says so here.
       </p>
 
       <Async state={state} reload={reload}>
