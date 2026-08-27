@@ -110,7 +110,7 @@ RUN java -jar /opt/firestore-emulator.jar --host=127.0.0.1 --port=8081 & \
       if [ "$i" = "60" ]; then echo "Firestore emulator never came up." >&2; exit 1; fi; \
       sleep 1; \
     done \
- && npm --workspace @alltheway/contracts test
+ && npm --workspace @alltheway/contracts test \
  && npm --workspace @alltheway/gateway test
 
 # --------------------------------------------------------------------- final

@@ -126,6 +126,29 @@ def third_party_roots(text: str) -> set[str]:
     return roots
 
 
+def dockerfile_continuations(text: str) -> list[str]:
+    """Lines that continue a shell command without anything continuing into them.
+
+    Docker joins a RUN across newlines only where the previous line ends in a
+    backslash. A line beginning `&&` or `||` after one that does not is not a
+    continuation — it is a new instruction, and Docker reports
+    `unknown instruction: &&`.
+
+    This is the second time that broke a build here, and it cannot be caught by
+    any amount of reading: `docker build` is the only thing that parses a
+    Dockerfile, and there is no daemon on the machine where these are edited.
+    Twelve lines of check are cheaper than a deploy cycle to discover it.
+    """
+    problems: list[str] = []
+    previous = ""
+    for number, line in enumerate(text.splitlines(), start=1):
+        stripped = line.strip()
+        if stripped.startswith(("&&", "||")) and not previous.rstrip().endswith(chr(92)):
+            problems.append(f"line {number}: {stripped[:60]}")
+        previous = line
+    return problems
+
+
 def python_services() -> list[str]:
     return sorted(
         p.parent.name
@@ -153,6 +176,15 @@ def main() -> int:
             failures.append(f"{service}: imports {missing} but the image does not COPY them")
         print(f"  {service:20} {sorted(imported) or '-'}  {'OK' if not missing else 'MISSING'}")
 
+
+    for path in sorted(ROOT.glob("services/*/Dockerfile")):
+        broken = dockerfile_continuations(io.open(path, encoding="utf-8").read())
+        if broken:
+            failures.append(
+                f"{path.parent.name}: shell continuation missing before {broken} - "
+                "Docker reads this as a new instruction and the build will not parse"
+            )
+        print(f"  {path.parent.name:20} dockerfile syntax    {'OK' if not broken else 'BROKEN'}")
 
     print()
     for service in python_services():
