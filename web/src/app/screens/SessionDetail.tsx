@@ -9,6 +9,7 @@ import { useAsync } from "@/app/use-async";
 import { useTurn } from "@/app/use-turn";
 import { api, type SessionDetail as Detail } from "@/app/data";
 import { cn } from "@/lib/utils";
+import { SessionTranscript } from "@/app/VoiceTranscripts";
 
 function DetailSkeleton() {
   return (
@@ -400,6 +401,12 @@ export default function SessionDetailScreen() {
           );
         }}
       </Async>
+
+      {/* The spoken record, next to what was decided rather than on a
+          screen of its own — a transcript is evidence for a particular
+          decision, and a list of recordings invites reading them as a
+          corpus instead. Renders nothing when there is none. */}
+      <SessionTranscript sessionId={id} />
     </div>
   );
 }

@@ -1,0 +1,41 @@
+{
+  "manifest_version": 3,
+  "name": "AllTheWay meeting notes",
+  "version": "0.1.0",
+  "description": "Takes notes in the meeting you are already in. It listens on your own machine; nothing joins the call.",
+  "minimum_chrome_version": "116",
+  "permissions": [
+    "activeTab",
+    "offscreen",
+    "sidePanel",
+    "storage",
+    "tabCapture"
+  ],
+  "host_permissions": [
+    "https://*.run.app/*",
+    "https://alltheway.rinegansolutions.com/*"
+  ],
+  "background": {
+    "service_worker": "background.js",
+    "type": "module"
+  },
+  "action": {
+    "default_popup": "popup.html",
+    "default_title": "AllTheWay meeting notes"
+  },
+  "content_scripts": [
+    {
+      "matches": [
+        "https://alltheway.rinegansolutions.com/*",
+        "https://alltheway-prod.web.app/*"
+      ],
+      "js": [
+        "bridge.js"
+      ],
+      "run_at": "document_idle"
+    }
+  ],
+  "side_panel": {
+    "default_path": "panel.html"
+  }
+}

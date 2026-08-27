@@ -165,6 +165,27 @@ meetingRoutes.get("/meetings/:id/health", (req, res) => {
   })();
 });
 
+meetingRoutes.get("/meetings/:id/insights", (req, res) => {
+  void (async () => {
+    if (unavailable(res)) return;
+    try {
+      const upstream = await callScribe(
+        req.uid!,
+        `/meetings/${encodeURIComponent(req.params.id)}/insights`,
+      );
+      const body = await upstream.text();
+      if (!upstream.ok) {
+        res.status(502).json({ code: "upstream_error", message: "Those could not be loaded." });
+        return;
+      }
+      const parsed = JSON.parse(body || "{}") as { insights?: unknown };
+      res.json(parsed.insights ?? []);
+    } catch {
+      res.status(502).json({ code: "upstream_error", message: "Those could not be loaded." });
+    }
+  })();
+});
+
 meetingRoutes.post("/meetings/:id/extend", (req, res) => {
   void (async () => {
     if (unavailable(res)) return;

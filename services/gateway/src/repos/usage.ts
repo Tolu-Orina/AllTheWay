@@ -30,7 +30,8 @@ export type Meter =
   | "connector_calls"
   | "images"
   | "draft_video_seconds"
-  | "final_video_seconds";
+  | "final_video_seconds"
+  | "meeting_insights";
 export type Tier = "free" | "plus" | "team" | "max";
 
 type Limits = Record<Meter, number | null>;
@@ -49,6 +50,7 @@ const PLANS: Record<Tier, { label: string; pricePence: number; limits: Limits }>
       voice_minutes: 30,
       watcher_runs: 50,
       connector_calls: 200,
+      meeting_insights: 0,
       images: 20,
       draft_video_seconds: 0,
       final_video_seconds: 0,
@@ -61,6 +63,7 @@ const PLANS: Record<Tier, { label: string; pricePence: number; limits: Limits }>
       voice_minutes: 600,
       watcher_runs: 1000,
       connector_calls: 5000,
+      meeting_insights: 0,
       images: 500,
       draft_video_seconds: 20,
       final_video_seconds: 0,
@@ -73,6 +76,7 @@ const PLANS: Record<Tier, { label: string; pricePence: number; limits: Limits }>
       voice_minutes: null,
       watcher_runs: null,
       connector_calls: null,
+      meeting_insights: 300,
       images: 2000,
       draft_video_seconds: 60,
       final_video_seconds: 10,
@@ -85,6 +89,7 @@ const PLANS: Record<Tier, { label: string; pricePence: number; limits: Limits }>
       voice_minutes: null,
       watcher_runs: null,
       connector_calls: null,
+      meeting_insights: null,
       images: null,
       draft_video_seconds: 300,
       final_video_seconds: 20,
@@ -96,6 +101,7 @@ const METERS: Meter[] = [
   "voice_minutes",
   "watcher_runs",
   "connector_calls",
+  "meeting_insights",
   "images",
   "draft_video_seconds",
   "final_video_seconds",

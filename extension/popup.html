@@ -1,0 +1,85 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>AllTheWay meeting notes</title>
+    <style>
+      :root {
+        color-scheme: light dark;
+        --fg: #111827;
+        --muted: #6b7280;
+        --line: #e5e7eb;
+        --bg: #ffffff;
+        --accent: #1d4ed8;
+        --danger: #b91c1c;
+      }
+      @media (prefers-color-scheme: dark) {
+        :root {
+          --fg: #f3f4f6;
+          --muted: #9ca3af;
+          --line: #374151;
+          --bg: #111827;
+          --accent: #60a5fa;
+        }
+      }
+      body {
+        width: 320px;
+        margin: 0;
+        padding: 14px;
+        font: 13px/1.5 system-ui, -apple-system, "Segoe UI", sans-serif;
+        color: var(--fg);
+        background: var(--bg);
+      }
+      h1 { font-size: 14px; margin: 0 0 2px; }
+      p { margin: 0 0 10px; color: var(--muted); font-size: 12px; }
+      /* The disclosure block is visually the heaviest thing here, deliberately.
+         It is the one decision that cannot be undone after the meeting. */
+      .disclose {
+        display: flex;
+        gap: 8px;
+        align-items: flex-start;
+        border: 1px solid var(--line);
+        border-radius: 8px;
+        padding: 10px;
+        margin-bottom: 10px;
+      }
+      .disclose label { font-size: 12.5px; }
+      button {
+        width: 100%;
+        padding: 9px;
+        font: inherit;
+        border-radius: 8px;
+        border: 1px solid transparent;
+        background: var(--accent);
+        color: #fff;
+        cursor: pointer;
+      }
+      button:disabled { opacity: 0.45; cursor: not-allowed; }
+      button.stop { background: var(--danger); }
+      .note { font-size: 11.5px; color: var(--muted); margin-top: 10px; }
+      .error { color: var(--danger); font-size: 12px; margin-top: 8px; }
+      .recording { color: var(--danger); font-weight: 600; }
+    </style>
+  </head>
+  <body>
+    <h1>Meeting notes</h1>
+    <p>
+      It listens on this machine and takes notes. Nothing joins the call, and it
+      cannot speak.
+    </p>
+
+    <div class="disclose">
+      <input type="checkbox" id="disclosed" />
+      <label for="disclosed">
+        I have told everyone in this meeting that it is being transcribed.
+      </label>
+    </div>
+
+    <button id="toggle" disabled>Start taking notes</button>
+
+    <p class="note" id="status"></p>
+    <p class="error" id="error" hidden></p>
+
+    <script src="popup.js"></script>
+  </body>
+</html>

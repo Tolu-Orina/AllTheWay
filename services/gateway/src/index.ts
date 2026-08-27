@@ -20,10 +20,20 @@ import { listRecent, record } from "./repos/ledger.js";
 import { readUsage } from "./repos/usage.js";
 import { buildDigest } from "./repos/digest.js";
 import { registerToken, removeToken } from "./repos/push.js";
+import {
+  forgetTranscript,
+  keepsTranscripts,
+  readTranscript,
+  setKeepTranscripts,
+} from "./repos/transcripts.js";
 import { recordOffered, recordTaken } from "./repos/recoveries.js";
 import { FailureKindSchema } from "@alltheway/contracts";
 import { retrieve } from "./repos/retrieval.js";
 import { attachVoice } from "./voice/relay.js";
+import { attachCapture } from "./meetings/capture.js";
+import { openLiveTranscriber } from "./meetings/live-transcriber.js";
+import { captureToScribe } from "./meetings/capture-sink.js";
+import { runInsightPass } from "./meetings/insight-runner.js";
 import { applyCors, openStream } from "./sse.js";
 import { TOPICS, publish } from "./events.js";
 import { z } from "zod";
@@ -386,6 +396,45 @@ api.post(
   }),
 );
 
+// Voice transcripts. Off unless switched on — see repos/transcripts.ts for why
+// this is a decision rather than a default.
+api.get(
+  "/settings/voice",
+  handle(async (req, res) => {
+    res.json({ keepTranscripts: await keepsTranscripts(req.uid!) });
+  }),
+);
+
+api.post(
+  "/settings/voice",
+  handle(async (req, res) => {
+    const keep = z.boolean().safeParse(req.body?.keepTranscripts);
+    if (!keep.success) {
+      res.status(400).json({ code: "invalid_request", message: "Expected { keepTranscripts: boolean }." });
+      return;
+    }
+    await setKeepTranscripts(req.uid!, keep.data);
+    res.status(204).end();
+  }),
+);
+
+api.get(
+  "/sessions/:id/transcript",
+  handle(async (req, res) => {
+    res.json(await readTranscript(req.uid!, String(req.params.id)));
+  }),
+);
+
+api.delete(
+  "/sessions/:id/transcript",
+  handle(async (req, res) => {
+    // Switching recording off stops new lines; it does not remove what is
+    // already there, and that is the next thing anyone asks.
+    const removed = await forgetTranscript(req.uid!, String(req.params.id));
+    res.json({ removed });
+  }),
+);
+
 api.use(meetingRoutes);
 api.use(shareRoutes);
 
@@ -425,6 +474,22 @@ app.use("/api", api);
 
 const server = createServer(app);
 attachVoice(server);
+
+// Tier 1.5: the meeting the user is already in, captured by the extension on
+// their own machine. Shares the server's upgrade handling with voice through
+// the router — see ws-router.ts for why that had to be shared rather than
+// stacked.
+attachCapture(server, {
+  openTranscriber: openLiveTranscriber,
+  // Screened, metered, and cited — see insight-runner.ts. Passing it here
+  // rather than importing it inside capture.ts keeps the capture relay
+  // testable without a model behind it.
+  runInsights: runInsightPass,
+  ...(() => {
+    const sink = captureToScribe();
+    return { ...sink, onInsights: sink.storeInsights };
+  })(),
+});
 
 server.listen(env.port, () => {
   console.log(`[gateway] listening on :${env.port}`);

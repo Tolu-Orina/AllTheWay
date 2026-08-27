@@ -60,6 +60,15 @@ class Meter(StrEnum):
     #: it is cheap.
     CONNECTOR_CALLS = "connector_calls"
 
+    #: Live meeting insight passes. Each is a grounded reasoning call with web
+    #: search over a growing transcript window, so it costs meaningfully more
+    #: than a connector call and meaningfully less than a video second.
+    #:
+    #: The backing-off schedule already holds a ninety-minute meeting to about
+    #: ten passes. This bounds the other direction: someone pressing "check now"
+    #: repeatedly, which the schedule cannot see.
+    MEETING_INSIGHTS = "meeting_insights"
+
     #: Images, via Nano Banana 2 Lite. Cheap enough to be conversational
     #: ($0.034/1K), so the limit is about abuse rather than cost.
     IMAGES = "images"
@@ -90,6 +99,10 @@ class Plan:
     images: int | None = 0
     draft_video_seconds: int | None = 0
     final_video_seconds: int | None = 0
+    #: Live meeting insight passes. Zero on the tiers where meetings are not
+    #: the point — the feature is for people running client calls, and
+    #: offering a taste of it on Free would be a taste of the expensive half.
+    meeting_insights: int | None = 0
 
     def allowance(self, meter: Meter) -> int | None:
         return {
@@ -99,6 +112,7 @@ class Plan:
             Meter.IMAGES: self.images,
             Meter.DRAFT_VIDEO_SECONDS: self.draft_video_seconds,
             Meter.FINAL_VIDEO_SECONDS: self.final_video_seconds,
+            Meter.MEETING_INSIGHTS: self.meeting_insights,
         }[meter]
 
 
@@ -118,6 +132,7 @@ PLANS: dict[Tier, Plan] = {
         # video is a free tier someone will spend real money with.
         draft_video_seconds=0,
         final_video_seconds=0,
+        meeting_insights=0,
     ),
     Tier.PLUS: Plan(
         tier=Tier.PLUS,
@@ -133,6 +148,7 @@ PLANS: dict[Tier, Plan] = {
         draft_video_seconds=20,
         # Plus cannot render a final. One 8-second render is $6 against £18.
         final_video_seconds=0,
+        meeting_insights=0,
     ),
     Tier.TEAM: Plan(
         tier=Tier.TEAM,
@@ -146,6 +162,7 @@ PLANS: dict[Tier, Plan] = {
         images=2000,
         draft_video_seconds=60,
         final_video_seconds=10,
+        meeting_insights=300,
     ),
     Tier.MAX: Plan(
         tier=Tier.MAX,
@@ -161,6 +178,7 @@ PLANS: dict[Tier, Plan] = {
         images=None,
         draft_video_seconds=300,
         final_video_seconds=20,
+        meeting_insights=None,
     ),
 }
 

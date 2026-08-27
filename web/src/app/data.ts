@@ -2,6 +2,7 @@ import {
   LearnedPreferenceSchema,
   VisualPreferenceSchema,
   MeetingSchema,
+  InsightSchema,
   CommitmentSchema,
   ShareSchema,
   CommentSchema,
@@ -29,6 +30,7 @@ export type {
   LearnedPreference,
   VisualPreference,
   Meeting,
+  Insight,
   Commitment,
   Share,
   Comment,
@@ -157,6 +159,8 @@ export const api = {
   visualPreferences: () =>
     apiGet("/visual-preferences", z.array(VisualPreferenceSchema)),
   meetings: () => apiGet("/meetings", z.array(MeetingSchema)),
+  meetingInsights: (meetingId: string) =>
+    apiGet(`/meetings/${meetingId}/insights`, z.array(InsightSchema)),
   shares: (artifactId: string) =>
     apiGet(`/artifacts/${artifactId}/shares`, z.array(ShareSchema)),
   sharedWithMe: () => apiGet("/shared-with-me", z.array(SharedArtifactSchema)),
@@ -292,6 +296,16 @@ export const api = {
     apiPost("/recoveries/taken", { id, routeId }),
   registerPushToken: (token: string) => apiPost("/push/tokens", { token }),
   unregisterPushToken: (token: string) => apiPost("/push/tokens/remove", { token }),
+  keepsTranscripts: () =>
+    apiGet("/settings/voice", z.object({ keepTranscripts: z.boolean() })),
+  setKeepTranscripts: (keepTranscripts: boolean) =>
+    apiPost("/settings/voice", { keepTranscripts }),
+  transcript: (sessionId: string) =>
+    apiGet(
+      `/sessions/${sessionId}/transcript`,
+      z.array(z.object({ side: z.enum(["user", "model"]), text: z.string(), at: z.string() })),
+    ),
+  forgetTranscript: (sessionId: string) => apiDelete(`/sessions/${sessionId}/transcript`),
   setMeetingNotes: (enabled: boolean) =>
     apiPost("/settings/meetings", { enabled }),
   extendMeeting: (meetingId: string, minutes = 30) =>

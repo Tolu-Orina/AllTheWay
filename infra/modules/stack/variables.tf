@@ -79,6 +79,23 @@ variable "digest_time_zone" {
   default     = "Europe/London"
 }
 
+variable "meeting_transcribe_model" {
+  description = <<-EOT
+    Live transcription model for meetings captured by the browser extension.
+
+    Pinned, never 'latest'. Verified against the live endpoint on 2026-08-27:
+    the Live setup is answered with setupComplete at `global`.
+
+    Served only at `global`, which is the opposite of the voice Live model and
+    the reason meeting transcription does not share GOOGLE_CLOUD_LIVE_LOCATION.
+
+    Accepts ten minutes of audio per session, so the gateway rotates sessions
+    underneath a long meeting rather than letting one hit the limit.
+  EOT
+  type        = string
+  default     = "gemini-3.5-transcribe-live-preview"
+}
+
 variable "media_location" {
   description = <<-EOT
     Where image and video generation runs.

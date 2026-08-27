@@ -63,6 +63,8 @@ export interface MeetingRecord {
   participants: string[];
   status: MeetingStatus;
   health: HealthSample | null;
+  /** Tier 1.5: captured by the extension on the user's own machine. */
+  capturedLocally: boolean;
 }
 
 const db = () => getFirestore();
@@ -77,6 +79,7 @@ export async function openMeeting(
     conferenceId: string;
     participants: string[];
     outcome: Outcome;
+    capturedLocally?: boolean;
   },
 ): Promise<void> {
   await meetings(uid).doc(input.meetingId).set(
@@ -89,11 +92,17 @@ export async function openMeeting(
       // Stored rather than derived at read time: the wording is what the user
       // is owed after the fact, and recomputing it later against changed code
       // would silently rewrite the history of a meeting.
-      explanation: tierExplanation(input.outcome),
+      capturedLocally: input.capturedLocally === true,
+      explanation: input.capturedLocally
+        ? "Listened on your own device while you were in the meeting. Nothing joined the call."
+        : tierExplanation(input.outcome),
       // Only a live Tier 2 connection is "listening". Tier 1 has nothing to
       // listen to, and showing a listening indicator for it would be a lie
       // about what is happening in the room.
-      status: input.outcome.tier === 2 ? "listening" : "processing",
+      // Local capture is live, so it is listening — the indicator has to be
+      // true of what is actually happening, not of which tier served it.
+      status:
+        input.outcome.tier === 2 || input.capturedLocally ? "listening" : "processing",
       startedAt: FieldValue.serverTimestamp(),
       endedAt: null,
     },
@@ -182,6 +191,7 @@ export async function listMeetings(uid: string): Promise<MeetingRecord[]> {
       // showing a quality indicator for a transcript read afterwards would
       // describe something that never happened.
       health: (d.get("health") as MeetingRecord["health"]) ?? null,
+      capturedLocally: Boolean(d.get("capturedLocally")),
     };
   });
 }
@@ -370,4 +380,65 @@ export async function extendMeeting(
     .doc(meetingId)
     .set({ extendedUntil: until, extendedAt: FieldValue.serverTimestamp() }, { merge: true });
   return until;
+}
+
+
+// ------------------------------------------------------------- insights
+
+export interface StoredInsight {
+  id: string;
+  at: string;
+  kind: string;
+  text: string;
+  sources: Array<{ kind: string; title: string; locator: string }>;
+}
+
+/**
+ * Live insights, kept rather than only streamed.
+ *
+ * They were originally delivered over the capture socket and nowhere else,
+ * which meant only the extension could ever show them — the same "gone the
+ * moment it ends" failure voice captions had.
+ *
+ * Storing them fixes two things at once. Any signed-in device can read them,
+ * which matters more than it first appears: while screen-sharing, the side
+ * panel is visible to everyone in the meeting and a phone is the only private
+ * surface. And they survive the call, so the question "what did it flag while
+ * we were talking" has an answer afterwards.
+ */
+export async function recordInsights(
+  uid: string,
+  meetingId: string,
+  insights: StoredInsight[],
+): Promise<number> {
+  if (insights.length === 0) return 0;
+
+  const batch = db().batch();
+  const collection = meetings(uid).doc(meetingId).collection("insights");
+
+  for (const insight of insights) {
+    // Keyed by the id the pass generated, so a redelivered batch cannot double
+    // the panel's contents.
+    batch.set(collection.doc(insight.id), insight, { merge: true });
+  }
+
+  await batch.commit();
+  return insights.length;
+}
+
+export async function readInsights(uid: string, meetingId: string): Promise<StoredInsight[]> {
+  const snap = await meetings(uid)
+    .doc(meetingId)
+    .collection("insights")
+    .orderBy("at", "desc")
+    .limit(100)
+    .get();
+
+  return snap.docs.map((d) => ({
+    id: d.id,
+    at: d.get("at") ?? "",
+    kind: d.get("kind") ?? "context",
+    text: d.get("text") ?? "",
+    sources: d.get("sources") ?? [],
+  }));
 }

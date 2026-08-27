@@ -62,6 +62,9 @@ USER_OWNED = (
     # is joined to a person — a root-level `health` collection would say who was
     # in a call and when their connection dropped.
     "health",
+    # Live meeting insights. Derived from what was said in a room, and as
+    # personal as the transcript they came from.
+    "insights",
     # Added in v3 Phase E. A share is a property of the artifact and lives under
     # it; the grantee's index lives under the grantee. Neither belongs at the
     # root, where it would enumerate who can see whose work.

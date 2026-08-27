@@ -11,6 +11,7 @@ import { TabBar } from "@/app/TabBar";
 import { CompanionPanel } from "@/app/CompanionPanel";
 import { VoiceProvider } from "@/app/use-voice";
 import { registerAppServiceWorker } from "@/app/pwa";
+import { serveExtensionToken } from "@/app/extension-bridge";
 import { cn } from "@/lib/utils";
 
 /**
@@ -29,6 +30,10 @@ export function AppLayout() {
 
   useEffect(() => {
     registerAppServiceWorker();
+    // Answers the meeting-notes extension when it asks who is signed in. The
+    // cleanup matters: two listeners would answer one request twice, and the
+    // second reply would race the first.
+    return serveExtensionToken();
   }, []);
 
   return (

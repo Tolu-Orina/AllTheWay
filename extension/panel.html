@@ -1,0 +1,49 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>AllTheWay</title>
+    <style>
+      :root {
+        color-scheme: light dark;
+        --fg: #111827; --muted: #6b7280; --line: #e5e7eb; --bg: #fff; --accent: #1d4ed8;
+      }
+      @media (prefers-color-scheme: dark) {
+        :root { --fg: #f3f4f6; --muted: #9ca3af; --line: #374151; --bg: #111827; --accent: #60a5fa; }
+      }
+      body {
+        margin: 0; padding: 14px; background: var(--bg); color: var(--fg);
+        font: 13px/1.55 system-ui, -apple-system, "Segoe UI", sans-serif;
+      }
+      h1 { font-size: 13px; margin: 0 0 2px; }
+      .sub { color: var(--muted); font-size: 12px; margin: 0 0 12px; }
+      /* Quiet by construction: no colour, no motion, nothing that pulls the eye
+         away from the meeting unless it has something to say. */
+      .insight { border: 1px solid var(--line); border-left-width: 3px; border-radius: 8px;
+                 padding: 9px 10px; margin-bottom: 8px; }
+      .insight.contradiction { border-left-color: #b45309; }
+      .insight.context { border-left-color: var(--accent); }
+      .insight.unanswered { border-left-color: #6b7280; }
+      .kind { font-size: 11px; text-transform: uppercase; letter-spacing: .06em; color: var(--muted); }
+      .text { margin: 3px 0 5px; }
+      .src { font-size: 11.5px; color: var(--muted); }
+      .src a { color: inherit; }
+      button { width: 100%; padding: 8px; font: inherit; border-radius: 8px;
+               border: 1px solid var(--line); background: transparent; color: inherit; cursor: pointer; }
+      .empty { color: var(--muted); font-size: 12px; }
+    </style>
+  </head>
+  <body>
+    <h1>While you are in this meeting</h1>
+    <p class="sub">
+      Only things you could not already know from being in the room. Silence is
+      normal.
+    </p>
+
+    <div id="insights"><p class="empty">Nothing yet.</p></div>
+
+    <button id="now">Check now</button>
+
+    <script src="panel.js"></script>
+  </body>
+</html>

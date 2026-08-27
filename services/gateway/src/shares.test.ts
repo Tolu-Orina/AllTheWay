@@ -1,3 +1,4 @@
+import "./test-env.js";
 import { ok, strictEqual } from "node:assert/strict";
 import { test } from "node:test";
 

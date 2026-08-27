@@ -10,6 +10,7 @@ import { Documents } from "@/app/Documents";
 import { VisualPreferences } from "@/app/VisualPreferences";
 import { Meetings } from "@/app/Meetings";
 import { SharedWithMe } from "@/app/SharedWithMe";
+import { VoiceTranscripts } from "@/app/VoiceTranscripts";
 
 export default function Profile() {
   const { state, reload } = useAsync<LearnedPreference[]>(() =>
@@ -120,6 +121,8 @@ export default function Profile() {
       </Async>
 
       <VisualPreferences />
+
+      <VoiceTranscripts />
 
       <SharedWithMe />
 

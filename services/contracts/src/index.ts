@@ -1,3 +1,4 @@
+export * from "./insights.js";
 export * from "./recovery.js";
 import { z } from "zod";
 
@@ -204,6 +205,15 @@ export const MeetingSchema = z.object({
    * showing a connection indicator for a transcript read afterwards would be
    * describing something that never happened.
    */
+  /**
+   * Tier 1.5: captured by the browser extension on the user's own machine.
+   *
+   * Distinct from the tier ladder rather than folded into it. Tier 0 means
+   * "nothing could serve this"; local capture means "the user served it
+   * themselves", and showing the first for the second would report a failure
+   * where none happened.
+   */
+  capturedLocally: z.boolean().default(false),
   health: z
     .object({
       at: z.string(),

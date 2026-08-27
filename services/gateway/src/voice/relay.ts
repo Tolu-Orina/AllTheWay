@@ -3,9 +3,11 @@ import { WebSocket, WebSocketServer } from "ws";
 
 import { uidFromToken } from "../auth.js";
 import { env } from "../env.js";
+import { routeUpgrade } from "../ws-router.js";
 import { runTurn } from "../orchestrator.js";
 import { listPreferences } from "../repos/preferences.js";
 import { recordUsage } from "../repos/usage.js";
+import { recordLine } from "../repos/transcripts.js";
 import { createLiveOpener, type LiveOpener } from "./backend.js";
 import {
   AUTH_TIMEOUT_MS,
@@ -22,6 +24,27 @@ function originAllowed(origin: string | undefined): boolean {
   // same-origin, or the Origin header is the Vite origin talking to :8080.
   if (env.webOrigins.length === 0) return true;
   return typeof origin === "string" && env.webOrigins.includes(origin);
+}
+
+/**
+ * Store one line, if this user keeps transcripts.
+ *
+ * Failure is swallowed on purpose. Voice was ephemeral before this existed, so
+ * a conversation that cannot be recorded should still be a conversation —
+ * dropping the call because a write failed would make the optional feature the
+ * fragile one.
+ */
+async function keep(
+  uid: string,
+  sessionId: string,
+  side: "user" | "model",
+  text: string,
+): Promise<void> {
+  try {
+    await recordLine(uid, sessionId, { side, text, at: new Date().toISOString() });
+  } catch {
+    // Deliberately silent. See above.
+  }
 }
 
 function send(ws: WebSocket, message: RelayMessage): void {
@@ -66,15 +89,10 @@ async function firstMessage(ws: WebSocket, timeoutMs: number): Promise<unknown> 
 export function attachVoice(server: Server, opener: LiveOpener = createLiveOpener()): WebSocketServer {
   const wss = new WebSocketServer({ noServer: true });
 
-  server.on("upgrade", (req: IncomingMessage, socket, head) => {
-    const host = req.headers.host ?? "localhost";
-    const url = new URL(req.url ?? "/", `http://${host}`);
-    if (url.pathname !== VOICE_PATH) {
-      socket.write("HTTP/1.1 404 Not Found\r\nConnection: close\r\n\r\n");
-      socket.destroy();
-      return;
-    }
-
+  // Path matching moved to the shared router. This listener used to destroy
+  // any socket whose path it did not recognise, which would have torn down
+  // the meeting-capture endpoint before its own handler ever ran.
+  routeUpgrade(server, VOICE_PATH, (req: IncomingMessage, socket, head) => {
     if (!originAllowed(req.headers.origin)) {
       socket.write("HTTP/1.1 403 Forbidden\r\nConnection: close\r\n\r\n");
       socket.destroy();
@@ -158,9 +176,18 @@ async function handleConnection(ws: WebSocket, opener: LiveOpener): Promise<void
         },
         onUserTranscript(text, finished) {
           send(ws, { transcript: { side: "user", text, finished } });
+          // Only the finished line. The Live API refines a transcript as it
+          // goes — "I'll send", "I'll send the", "I'll send the contract" — and
+          // keeping every revision would store one sentence three times, twice
+          // of them wrong.
+          //
+          // Never awaited: a slow write must not delay the caption a person is
+          // reading while they speak.
+          if (finished) void keep(uid, sessionId, "user", text);
         },
         onModelTranscript(text, finished) {
           send(ws, { transcript: { side: "model", text, finished } });
+          if (finished) void keep(uid, sessionId, "model", text);
         },
         onToolCall(call) {
           if (cancelled.has(call.id) || !slot.live) return;

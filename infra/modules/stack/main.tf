@@ -280,6 +280,16 @@ locals {
       MAIL_FROM         = var.mail_from
       GEMINI_LIVE_MODEL = var.gemini_live_model
 
+      # Meeting transcription (Tier 1.5). Its own model and its own location,
+      # deliberately not the two above.
+      #
+      # GOOGLE_CLOUD_LIVE_LOCATION is regional *because the conversation model
+      # does not exist at `global`*. This model is the exact reverse: `global`
+      # is the only location that serves it. One variable for both would be
+      # wrong for one of them by construction.
+      MEETING_TRANSCRIBE_MODEL    = var.meeting_transcribe_model
+      MEETING_TRANSCRIBE_LOCATION = "global"
+
       # Where the Live session opens, and deliberately NOT
       # GOOGLE_CLOUD_LOCATION. That is `global`, which has no Live model at
       # all: the setup message comes back "Publisher model ... was not found"

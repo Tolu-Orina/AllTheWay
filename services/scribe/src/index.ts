@@ -7,7 +7,9 @@ import {
   durationState,
   extendMeeting,
   readHealth,
+  readInsights,
   recordGaps,
+  recordInsights,
   recordHealth,
   closeMeeting,
   confirmCommitment,
@@ -71,6 +73,14 @@ const StartSchema = z.object({
   spaceName: z.string().min(1).max(200),
   conferenceId: z.string().min(1).max(200),
   participants: z.array(z.string().max(200)).max(500).default([]),
+  /**
+   * Tier 1.5: the user is capturing this meeting on their own machine.
+   *
+   * When true the tier ladder is skipped entirely. Attempting Meet Media for a
+   * meeting somebody is already recording themselves would put a join request
+   * in front of the room for no reason — and it would be refused anyway.
+   */
+  capturedLocally: z.boolean().default(false),
 });
 
 app.post("/meetings/start", (req, res) => {
@@ -102,6 +112,20 @@ app.post("/meetings/start", (req, res) => {
         outcome: { tier: 0, reason: consent.reason },
       });
       res.json({ tier: 0, reason: consent.reason });
+      return;
+    }
+
+    if (body.data.capturedLocally) {
+      // Nothing is attempted and nothing was refused: the audio is what the
+      // user is already hearing, captured by the extension on their machine.
+      // Recorded as its own thing rather than as a failed Tier 2, so the
+      // meeting says how it was actually heard.
+      await openMeeting(uid, {
+        ...body.data,
+        outcome: { tier: 0, reason: "" },
+        capturedLocally: true,
+      });
+      res.json({ tier: 0, capturedLocally: true, reason: "" });
       return;
     }
 
@@ -475,6 +499,60 @@ app.post("/meetings/:id/extend", (req, res) => {
     // would defeat the whole point of having one.
     const until = await extendMeeting(uid, req.params.id, body.data.minutes);
     res.json({ extendedUntil: until });
+  })();
+});
+
+const InsightsSchema = z.object({
+  meetingId: z.string().min(1).max(200),
+  insights: z
+    .array(
+      z.object({
+        id: z.string().min(1).max(100),
+        at: z.string().max(40),
+        kind: z.string().max(40),
+        text: z.string().max(1000),
+        sources: z
+          .array(
+            z.object({
+              kind: z.string().max(20),
+              title: z.string().max(300),
+              locator: z.string().max(2000),
+            }),
+          )
+          .max(10)
+          .default([]),
+      }),
+    )
+    .max(20),
+});
+
+app.post("/meetings/insights", (req, res) => {
+  void (async () => {
+    const uid = userOf(req);
+    if (!uid) {
+      res.status(401).json({ code: "unauthenticated", message: "No user on this request." });
+      return;
+    }
+
+    const body = InsightsSchema.safeParse(req.body);
+    if (!body.success) {
+      res.status(400).json({ code: "invalid_request", message: "Expected insights." });
+      return;
+    }
+
+    const stored = await recordInsights(uid, body.data.meetingId, body.data.insights);
+    res.json({ stored });
+  })();
+});
+
+app.get("/meetings/:id/insights", (req, res) => {
+  void (async () => {
+    const uid = userOf(req);
+    if (!uid) {
+      res.status(401).json({ code: "unauthenticated", message: "No user on this request." });
+      return;
+    }
+    res.json({ insights: await readInsights(uid, req.params.id) });
   })();
 });
 

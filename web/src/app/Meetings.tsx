@@ -6,6 +6,7 @@ import { useAsync } from "@/app/use-async";
 import { api, type Commitment, type Meeting } from "@/app/data";
 import { cn } from "@/lib/utils";
 import { ConnectionQuality } from "@/app/MeetingHealth";
+import { MeetingInsights } from "@/app/MeetingInsights";
 
 /**
  * Meetings, and what the agent could and could not do in them.
@@ -38,6 +39,17 @@ const TIER_LABEL: Record<Meeting["tier"], string> = {
   1: "Read the transcript afterwards",
   0: "No notes",
 };
+
+/**
+ * Local capture is not a tier failure and must not read as one.
+ *
+ * Tier 0 means nothing could serve the meeting. Capturing it yourself means you
+ * served it — showing "No notes" for that would report a failure that did not
+ * happen, on a meeting that has a full record.
+ */
+function describeTier(meeting: Meeting): string {
+  return meeting.capturedLocally ? "Listened on your device" : TIER_LABEL[meeting.tier];
+}
 
 /**
  * The global off switch (FR-C3).
@@ -170,7 +182,7 @@ function MeetingRow({ meeting }: { meeting: Meeting }) {
             ) : (
               <MicOff className="size-3.5" aria-hidden="true" />
             )}
-            {TIER_LABEL[meeting.tier]}
+            {describeTier(meeting)}
           </p>
 
           {/*
@@ -179,7 +191,7 @@ function MeetingRow({ meeting }: { meeting: Meeting }) {
             who can read "a participant is not enrolled" can do something about
             it; one who reads "unavailable" cannot.
           */}
-          {meeting.tier !== 2 && meeting.tierReason ? (
+          {meeting.tier !== 2 && !meeting.capturedLocally && meeting.tierReason ? (
             <button
               type="button"
               onClick={() => setOpen((v) => !v)}
@@ -208,6 +220,26 @@ function MeetingRow({ meeting }: { meeting: Meeting }) {
       </div>
 
       <ListeningIndicator meeting={meeting} />
+
+      {/*
+        Insights, on whichever device this is.
+
+        While screen-sharing, the extension's side panel is visible to everyone
+        in the meeting — a phone is the only private surface. Expanded by
+        default while the meeting is live, because during it the whole value is
+        being glanceable; collapsed afterwards, when it is a record.
+      */}
+      <details className="mt-2" open={meeting.status === "listening"}>
+        <summary className="cursor-pointer text-[12.5px] text-muted-foreground">
+          What it noticed
+        </summary>
+        <div className="mt-2">
+          <MeetingInsights
+            meetingId={meeting.id}
+            live={meeting.status === "listening"}
+          />
+        </div>
+      </details>
 
       {/* Quality while it is happening, not a verdict afterwards. "It says
           patchy, I'll take my own notes for this bit" is a recovery that no
