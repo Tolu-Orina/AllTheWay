@@ -5,6 +5,7 @@ import { Camera, Loader2, ShieldAlert, Trash2, Upload } from "lucide-react";
 import { Async } from "@/app/async";
 import { useAsync } from "@/app/use-async";
 import { api, type UserDocument } from "@/app/data";
+import { useCompanionThread } from "@/app/companion-thread";
 import { cn } from "@/lib/utils";
 
 /**
@@ -35,10 +36,20 @@ const ACCEPT =
   // what an iPhone produces by default, and omitting it would reject the single
   // most likely file a phone user ever sends.
   "image/jpeg,image/png,image/webp,image/heic,image/heif";
+export const DOCUMENT_ACCEPT = ACCEPT;
 
 //: Matched to the gateway's own ceiling so a rejection is immediate and legible
 //: rather than a 413 arriving after a long upload.
 const MAX_BYTES = 25 * 1024 * 1024;
+export const DOCUMENT_MAX_BYTES = MAX_BYTES;
+
+/**
+ * After a successful upload, one turn. This is a user message, not chrome —
+ * the planner reads it — so it stays English on purpose.
+ */
+export function askAboutAdded(name: string): string {
+  return `I've added ${name}. Start with the densest or most consequential part and cite it.`;
+}
 
 const STATUS: Record<UserDocument["status"], { label: string; tone: string }> = {
   screening: { label: "Screening", tone: "text-muted-foreground" },
@@ -59,7 +70,7 @@ async function toBase64(file: File): Promise<string> {
   return btoa(binary);
 }
 
-export function DocumentPickup({ onUploaded }: { onUploaded?: () => void }) {
+export function DocumentPickup({ onUploaded }: { onUploaded?: (name: string) => void }) {
   const t = useT();
   const [busy, setBusy] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
@@ -81,7 +92,7 @@ export function DocumentPickup({ onUploaded }: { onUploaded?: () => void }) {
       setBusy(file.name);
       try {
         await api.uploadDocument(file.name, await toBase64(file), file.type || "text/plain");
-        onUploaded?.();
+        onUploaded?.(file.name);
       } catch (err) {
         const message = (err as { message?: string }).message;
         setError(message || "That document could not be added.");
@@ -215,8 +226,11 @@ function DocumentRow({
   onDeleted: () => void;
 }) {
   const [deleting, setDeleting] = useState(false);
+  const { send, working } = useCompanionThread();
+  const t = useT();
   const status = STATUS[document.status];
   const blocked = document.status === "blocked";
+  const ready = document.status === "ready";
 
   return (
     <li
@@ -242,27 +256,39 @@ function DocumentRow({
         ) : null}
       </div>
 
-      <button
-        type="button"
-        disabled={deleting}
-        aria-label={`Delete ${document.title}`}
-        onClick={async () => {
-          setDeleting(true);
-          try {
-            await api.deleteDocument(document.id);
-            onDeleted();
-          } finally {
-            setDeleting(false);
-          }
-        }}
-        className="grid size-8 shrink-0 place-items-center rounded-brand text-muted-foreground transition-colors hover:bg-muted hover:text-foreground disabled:opacity-50"
-      >
-        {deleting ? (
-          <Loader2 className="size-4 animate-spin motion-reduce:animate-none" aria-hidden="true" />
-        ) : (
-          <Trash2 className="size-4" aria-hidden="true" />
-        )}
-      </button>
+      <div className="flex shrink-0 items-center gap-1">
+        {ready ? (
+          <button
+            type="button"
+            disabled={working}
+            onClick={() => send(askAboutAdded(document.title))}
+            className="rounded-brand px-2 py-1 text-[12.5px] text-muted-foreground transition-colors hover:bg-muted hover:text-foreground disabled:opacity-50"
+          >
+            {t("documents.askAboutThis")}
+          </button>
+        ) : null}
+        <button
+          type="button"
+          disabled={deleting}
+          aria-label={`Delete ${document.title}`}
+          onClick={async () => {
+            setDeleting(true);
+            try {
+              await api.deleteDocument(document.id);
+              onDeleted();
+            } finally {
+              setDeleting(false);
+            }
+          }}
+          className="grid size-8 shrink-0 place-items-center rounded-brand text-muted-foreground transition-colors hover:bg-muted hover:text-foreground disabled:opacity-50"
+        >
+          {deleting ? (
+            <Loader2 className="size-4 animate-spin motion-reduce:animate-none" aria-hidden="true" />
+          ) : (
+            <Trash2 className="size-4" aria-hidden="true" />
+          )}
+        </button>
+      </div>
     </li>
   );
 }

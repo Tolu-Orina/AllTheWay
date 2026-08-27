@@ -31,11 +31,15 @@ from google.protobuf import json_format, struct_pb2
 
 from .aio import iter_in_thread
 from .graph import run_turn_stream
-from .models import TurnRequest
+from .models import Citation, Passage, TurnRequest
 from .providers import ModelProvider
 
 #: Key under which the caller passes what the profile already knows.
 PREFERENCES_KEY = "knownPreferences"
+#: Retrieved passages, same channel as preferences, same reason: they are
+#: context, not something the user said, and must not be concatenated into
+#: the message text.
+PASSAGES_KEY = "passages"
 
 #: Stable ids, so appended chunks land on one artifact rather than becoming
 #: N single-part artifacts. TaskUpdater mints a fresh uuid when not told one.
@@ -73,6 +77,60 @@ def _preferences_from(context: RequestContext) -> list[str]:
     return [str(item) for item in raw if str(item).strip()]
 
 
+def _passages_from(context: RequestContext) -> list[Passage]:
+    """Read retrieved passages from message metadata, never from the text.
+
+    The gateway retrieved them under the caller's identity. This service is
+    stateless and does not re-query — so the passage text that lands here is
+    the passage text that was in the prompt (FR-D2). No uid is accepted from
+    the payload; path-scoping already happened upstream.
+    """
+    message = getattr(context, "message", None)
+    metadata = getattr(message, "metadata", None)
+    if metadata is None:
+        return []
+    try:
+        raw = json_format.MessageToDict(metadata).get(PASSAGES_KEY, [])
+    except Exception:
+        return []
+    if not isinstance(raw, list):
+        return []
+
+    passages: list[Passage] = []
+    for item in raw:
+        if not isinstance(item, dict):
+            continue
+        text = item.get("text")
+        if not isinstance(text, str):
+            continue
+        chunk = item.get("chunkId", item.get("chunk_id", ""))
+        document = item.get("documentId", item.get("document_id", ""))
+        title = item.get("title") if isinstance(item.get("title"), str) else ""
+        page = item.get("page")
+        page_n = int(page) if isinstance(page, (int, float)) and not isinstance(page, bool) else 0
+        passages.append(
+            Passage(
+                chunk_id=str(chunk) if chunk else "",
+                document_id=str(document) if document else "",
+                title=title,
+                page=page_n,
+                text=text,
+            )
+        )
+    return passages
+
+
+def _citation_wire(citation: Citation) -> dict:
+    """CamelCase payload the gateway maps to SSE. No uid."""
+    return {
+        "documentId": citation.document_id,
+        "chunkId": citation.chunk_id,
+        "page": citation.page,
+        "title": citation.title,
+        "text": citation.text,
+    }
+
+
 class OrchestratorExecutor(AgentExecutor):
     def __init__(self, provider: ModelProvider) -> None:
         self._provider = provider
@@ -98,6 +156,7 @@ class OrchestratorExecutor(AgentExecutor):
             user_id=context.tenant or "user",
             message=context.get_user_input() or "",
             known_preferences=_preferences_from(context),
+            passages=_passages_from(context),
         )
 
         trace: list[str] = []
@@ -105,6 +164,7 @@ class OrchestratorExecutor(AgentExecutor):
         clarify = None
         confirm: dict | None = None
         note = ""
+        citations: list[dict] = []
 
         try:
             # On a worker thread: the graph and the model SDK both block
@@ -152,8 +212,10 @@ class OrchestratorExecutor(AgentExecutor):
                     clarify = event.clarify
                 elif event.kind == "confirm":
                     confirm = event.confirm
+                    citations = [_citation_wire(c) for c in event.citations]
                 elif event.kind == "note":
                     note = event.text
+                    citations = [_citation_wire(c) for c in event.citations]
         except Exception as exc:  # noqa: BLE001 — surfaced as a task state, not a 500
             await updater.failed(
                 updater.new_agent_message([Part(text=f"The planner failed: {exc}")])
@@ -174,6 +236,8 @@ class OrchestratorExecutor(AgentExecutor):
                             "actions": list(confirm.get("actions") or []),
                             "note": note,
                             "trace": trace,
+                            "citations": citations,
+                            "grounded": bool(citations),
                         }
                     )
                 ],
@@ -213,7 +277,7 @@ class OrchestratorExecutor(AgentExecutor):
             return
 
         await updater.add_artifact(
-            [_data_part({"note": note, "trace": trace})],
+            [_data_part({"note": note, "trace": trace, "citations": citations, "grounded": bool(citations)})],
             artifact_id=PLAN_ARTIFACT_ID,
             name="plan",
             append=steps > 0,

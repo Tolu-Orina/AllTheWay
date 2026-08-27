@@ -60,7 +60,13 @@
     "types": "PDF、文本、Markdown — 或页面照片",
     "photograph": "拍摄页面照片",
     "none": "暂无文档。添加合同、规范或政策文件以开始提问。",
-    "reading": "正在阅读 {{name}}。长文档需要约一分钟；照片会更快。"
+    "reading": "正在阅读 {{name}}。长文档需要约一分钟；照片会更快。",
+    "askAboutThis": "询问这份文档"
+  },
+  "citations": {
+    "passage": "原文",
+    "page": "第 {{page}} 页",
+    "open": "打开 {{title}} 的引文"
   },
   "voice": {
     "heading": "语音对话",

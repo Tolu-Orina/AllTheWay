@@ -275,8 +275,8 @@ def _finish(
     # claim about its sources is a claim, not a fact. A citation naming a
     # passage that was not retrieved is a footnote that looks like evidence.
     citations, grounding_notes = check_grounding(_claimed_citations(document or {}), request.passages)
-    for note in grounding_notes:
-        yield TurnEvent(kind="trace", text=note)
+    for line in grounding_notes:
+        yield TurnEvent(kind="trace", text=line)
 
     planned, corrections = validate(planned)
     for correction in corrections:
@@ -290,7 +290,7 @@ def _finish(
     )
 
     if confirmation is None:
-        yield TurnEvent(kind="note", text=note)
+        yield TurnEvent(kind="note", text=note, citations=citations)
         return
 
     # FR-V2. The same protocol state as the Clarify Gate, reached for a
@@ -312,6 +312,7 @@ def _finish(
                 for a in confirmation.actions
             ],
         },
+        citations=citations,
     )
 
 
@@ -481,6 +482,7 @@ def run_turn(request: TurnRequest, provider: ModelProvider) -> TurnResponse:
     clarify: ClarifyQuestion | None = None
     confirm: dict | None = None
     note = ""
+    citations: list[Citation] = []
 
     for event in run_turn_stream(request, provider):
         if event.kind == "trace":
@@ -491,17 +493,23 @@ def run_turn(request: TurnRequest, provider: ModelProvider) -> TurnResponse:
             clarify = event.clarify
         elif event.kind == "confirm":
             confirm = event.confirm
+            citations = list(event.citations)
         elif event.kind == "note":
             note = event.text
+            citations = list(event.citations)
 
     if confirm is not None:
         # The plan travels with it: a user cannot agree to something they were
         # not shown. What they cannot do is have it run without agreeing.
-        return TurnResponse(decision="confirm", confirm=confirm, plan=plan, trace=trace)
+        return TurnResponse(
+            decision="confirm", confirm=confirm, plan=plan, trace=trace, citations=citations
+        )
 
     if clarify is not None:
         # The gate's guarantee, restated in the type: a question and a plan
         # never travel together.
         return TurnResponse(decision="clarify", clarify=clarify, trace=trace)
 
-    return TurnResponse(decision="plan", plan=plan, note=note, trace=trace)
+    return TurnResponse(
+        decision="plan", plan=plan, note=note, trace=trace, citations=citations
+    )

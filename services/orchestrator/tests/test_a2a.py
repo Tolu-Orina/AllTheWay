@@ -11,7 +11,7 @@ from a2a.types import Message, Part, Role, TaskState
 from google.protobuf import json_format, struct_pb2
 
 from app.a2a_card import BEARER_SCHEME, build_agent_card
-from app.a2a_executor import PREFERENCES_KEY, OrchestratorExecutor
+from app.a2a_executor import PASSAGES_KEY, PREFERENCES_KEY, OrchestratorExecutor
 from app.providers import FakeProvider
 
 
@@ -78,7 +78,12 @@ class RecordingQueue:
 class Ctx:
     """Minimal RequestContext stand-in — only what the executor reads."""
 
-    def __init__(self, text: str, preferences: list[str] | None = None) -> None:
+    def __init__(
+        self,
+        text: str,
+        preferences: list[str] | None = None,
+        passages: list[dict] | None = None,
+    ) -> None:
         self.task_id = "task-1"
         self.context_id = "ctx-1"
         self.tenant = "user-1"
@@ -87,19 +92,28 @@ class Ctx:
         self.message = Message(
             message_id="m1", role=Role.ROLE_USER, parts=[Part(text=text)]
         )
+        meta: dict = {}
         if preferences is not None:
+            meta[PREFERENCES_KEY] = preferences
+        if passages is not None:
+            meta[PASSAGES_KEY] = passages
+        if meta:
             metadata = struct_pb2.Struct()
-            json_format.ParseDict({PREFERENCES_KEY: preferences}, metadata)
+            json_format.ParseDict(meta, metadata)
             self.message.metadata.CopyFrom(metadata)
 
     def get_user_input(self) -> str:
         return self._text
 
 
-def run(text: str, preferences: list[str] | None = None) -> RecordingQueue:
+def run(
+    text: str,
+    preferences: list[str] | None = None,
+    passages: list[dict] | None = None,
+) -> RecordingQueue:
     queue = RecordingQueue()
     executor = OrchestratorExecutor(FakeProvider())
-    asyncio.run(executor.execute(Ctx(text, preferences), queue))
+    asyncio.run(executor.execute(Ctx(text, preferences, passages), queue))
     return queue
 
 
@@ -165,6 +179,38 @@ def test_preferences_arrive_by_metadata_and_never_reach_the_plan_text():
     # Preferences are context, not something the user said. Leaking them into
     # the echoed request is the shape prompt injection takes.
     assert all("Collapse navigation" not in label for label in labels)
+
+
+def test_citations_on_the_closing_artifact_carry_the_retrieved_passage():
+    # The chip opens this text. Re-querying by uid would be a second path, and
+    # a path that can open another user's chunk.
+    passage = {
+        "chunkId": "c1",
+        "documentId": "d1",
+        "title": "Supply agreement",
+        "page": 12,
+        "text": "The indemnity is capped at two million pounds.",
+    }
+    queue = run(
+        "What does the supply agreement say about indemnity caps",
+        passages=[passage],
+    )
+    payloads = [
+        json_format.MessageToDict(p.data)
+        for e in queue.events
+        if hasattr(e, "artifact")
+        for p in e.artifact.parts
+        if p.WhichOneof("content") == "data"
+    ]
+    closing = next(p for p in payloads if "note" in p)
+    citations = closing["citations"]
+    assert len(citations) == 1
+    assert citations[0]["chunkId"] == "c1"
+    assert citations[0]["documentId"] == "d1"
+    assert citations[0]["text"] == passage["text"]
+    assert "uid" not in citations[0]
+    assert "userId" not in citations[0]
+    assert closing["grounded"] is True
 
 
 def test_provider_failure_becomes_a_failed_task_not_an_exception():

@@ -60,7 +60,14 @@ def valid_citations(claimed: list[Citation], retrieved: list[Passage]) -> list[C
         # title and page. Those are display fields, and a wrong page number in
         # a citation is a small lie that destroys trust in the large ones.
         kept.append(
-            Citation(chunk_id=passage.chunk_id, title=passage.title, page=passage.page)
+            Citation(
+                chunk_id=passage.chunk_id,
+                document_id=passage.document_id,
+                title=passage.title,
+                page=passage.page,
+                # The passage that was in the prompt, not a later fetch.
+                text=passage.text,
+            )
         )
 
     return kept

@@ -1,7 +1,7 @@
 """The gate is the product's core promise, so it is what gets tested."""
 
 from app.graph import run_turn
-from app.models import TurnRequest
+from app.models import Passage, TurnRequest
 from app.providers import FakeProvider
 
 provider = FakeProvider()
@@ -52,3 +52,30 @@ def test_empty_plan_falls_back_to_a_question():
     )
     # An empty checklist is worse than a question.
     assert r.decision == "clarify"
+
+
+def test_a_document_turn_returns_citations_with_the_retrieved_passage():
+    # FR-D2: the citation is the passage that was in the prompt, not a later
+    # fetch, and it does not carry a uid.
+    passage = Passage(
+        chunk_id="c1",
+        document_id="d1",
+        title="Supply agreement",
+        page=12,
+        text="The indemnity is capped at two million pounds.",
+    )
+    r = run_turn(
+        TurnRequest(
+            session_id="s1",
+            user_id="u1",
+            message="What does the supply agreement say about indemnity caps",
+            passages=[passage],
+        ),
+        provider,
+    )
+    assert r.decision == "plan"
+    assert len(r.citations) == 1
+    assert r.citations[0].chunk_id == "c1"
+    assert r.citations[0].document_id == "d1"
+    assert r.citations[0].text == passage.text
+

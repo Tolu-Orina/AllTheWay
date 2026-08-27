@@ -1,5 +1,5 @@
 import { Role, TaskState, type Message, type Part, type Task } from "@a2a-js/sdk";
-import { type TurnEvent } from "@alltheway/contracts";
+import { CitationSchema, type Citation, type TurnEvent } from "@alltheway/contracts";
 import { z } from "zod";
 
 import { orchestratorClient } from "./a2a.js";
@@ -47,6 +47,7 @@ export const TurnResponseSchema = z.object({
   plan: z.array(PlanStepSchema).default([]),
   note: z.string().default(""),
   trace: z.array(z.string()).default([]),
+  citations: z.array(CitationSchema).default([]),
 });
 
 export type TurnResponse = z.infer<typeof TurnResponseSchema>;
@@ -98,6 +99,25 @@ function stepsOf(payloads: Record<string, unknown>[]) {
       (s): s is { label: string; done: boolean; action?: string } =>
         !!s && typeof s === "object",
     );
+}
+
+/**
+ * Citations the orchestrator already checked. Drop malformed ones rather than
+ * failing the turn — an unusable footnote is not a reason to lose the plan.
+ *
+ * `text` is required: the chip opens the passage that was in the prompt
+ * (FR-D2). A citation that is only an id would force a second fetch, which is
+ * how another user's chunk gets opened.
+ */
+function citationsOf(payloads: Record<string, unknown>[]): Citation[] {
+  const part = payloads.find((p) => Array.isArray(p.citations));
+  if (!part) return [];
+  const out: Citation[] = [];
+  for (const item of part.citations as unknown[]) {
+    const parsed = CitationSchema.safeParse(item);
+    if (parsed.success) out.push(parsed.data);
+  }
+  return out;
 }
 
 function buildMessage(input: TurnInput): Message {
@@ -193,6 +213,7 @@ export async function runTurn(input: TurnInput): Promise<TurnResponse> {
         // The plan travels with it: nobody can agree to something unseen.
         plan: stepsOf(payloads),
         trace,
+        citations: citationsOf(payloads),
       });
     }
 
@@ -218,6 +239,7 @@ export async function runTurn(input: TurnInput): Promise<TurnResponse> {
       plan: stepsOf(payloads),
       note: (closing?.note as string) ?? "",
       trace,
+      citations: citationsOf(payloads),
     });
   }
 
@@ -251,6 +273,7 @@ export async function* streamTurn(input: TurnInput): AsyncGenerator<TurnEvent> {
     | { summary: string; options: string[]; actions: unknown[] }
     | undefined;
   let note = "";
+  let citations: Citation[] = [];
   let settled = false;
 
   for await (const response of client.sendMessageStream({
@@ -295,6 +318,9 @@ export async function* streamTurn(input: TurnInput): AsyncGenerator<TurnEvent> {
           };
         }
         if (typeof part.note === "string") note = part.note;
+        if (Array.isArray(part.citations)) {
+          citations = citationsOf([part]);
+        }
       }
       continue;
     }
@@ -314,6 +340,9 @@ export async function* streamTurn(input: TurnInput): AsyncGenerator<TurnEvent> {
         // Confirmation first: a turn that produced a plan is never also asking
         // a question about what was meant.
         if (pendingConfirm) {
+          for (const c of citations) {
+            yield { kind: "citation", ...c };
+          }
           yield {
             kind: "confirm",
             summary: pendingConfirm.summary || spoken || "Should I go ahead?",
@@ -331,7 +360,10 @@ export async function* streamTurn(input: TurnInput): AsyncGenerator<TurnEvent> {
         break;
       }
       case TaskState.TASK_STATE_COMPLETED: {
-        yield { kind: "done", note };
+        for (const c of citations) {
+          yield { kind: "citation", ...c };
+        }
+        yield { kind: "done", note, citations };
         settled = true;
         break;
       }

@@ -14,7 +14,7 @@ import { useT } from "@/app/i18n";
 import { useAsync } from "@/app/use-async";
 import { useTurn, type ProposedAction, type TurnPhase } from "@/app/use-turn";
 import { COMPANION_SESSION_ID } from "@/app/work-id";
-import type { OnboardingJob } from "@alltheway/contracts";
+import type { Citation, OnboardingJob } from "@alltheway/contracts";
 
 export type CompanionMessage = {
   id: number;
@@ -24,6 +24,7 @@ export type CompanionMessage = {
   phase?: TurnPhase;
   options?: string[];
   actions?: ProposedAction[];
+  citations?: Citation[];
 };
 
 type CompanionThread = {
@@ -116,6 +117,7 @@ export function CompanionThreadProvider({ children }: { children: React.ReactNod
         phase: turn.phase,
         options: turn.options,
         actions: turn.actions,
+        citations: turn.citations,
       },
     ]);
   }, [turn]);

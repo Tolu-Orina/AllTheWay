@@ -11,6 +11,7 @@ import { useTurn } from "@/app/use-turn";
 import { api, type SessionDetail as Detail } from "@/app/data";
 import { cn } from "@/lib/utils";
 import { SessionTranscript } from "@/app/VoiceTranscripts";
+import { CitationChip } from "@/app/CitationChip";
 
 function DetailSkeleton() {
   return (
@@ -265,9 +266,16 @@ export default function SessionDetailScreen() {
                 </ul>
 
                 {turn.phase === "done" && turn.note ? (
-                  <p className="mt-4 rounded-brand border bg-background px-3.5 py-2.5 text-[13px] text-muted-foreground">
-                    {turn.note}
-                  </p>
+                  <div className="mt-4 rounded-brand border bg-background px-3.5 py-2.5">
+                    <p className="text-[13px] text-muted-foreground">{turn.note}</p>
+                    {turn.citations.length ? (
+                      <div className="mt-2 flex flex-wrap gap-1.5">
+                        {turn.citations.map((c) => (
+                          <CitationChip key={c.chunkId} citation={c} />
+                        ))}
+                      </div>
+                    ) : null}
+                  </div>
                 ) : null}
 
                 {session.correction ? (

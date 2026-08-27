@@ -63,7 +63,13 @@
     "types": "PDF, text, Markdown — or a photo of a page",
     "photograph": "Photograph a page",
     "none": "No documents yet. Add a contract, a spec or a policy and ask about it.",
-    "reading": "Reading {{name}}. A long document takes a minute; a photo is quicker."
+    "reading": "Reading {{name}}. A long document takes a minute; a photo is quicker.",
+    "askAboutThis": "Ask about this"
+  },
+  "citations": {
+    "passage": "Passage",
+    "page": "Page {{page}}",
+    "open": "Open citation from {{title}}"
   },
   "voice": {
     "heading": "Spoken conversations",

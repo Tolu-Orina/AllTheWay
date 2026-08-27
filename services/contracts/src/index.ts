@@ -32,6 +32,37 @@ export const ProposedActionSchema = z.object({
 });
 
 /**
+ * Where a claim came from, as a field, never inferred from prose.
+ *
+ * `text` is the passage that was in the prompt (FR-D2). The chip opens this
+ * string — it does not re-query, and it does not carry a uid. Path-scoped
+ * retrieval already happened on the gateway.
+ */
+export const CitationSchema = z.object({
+  documentId: z.string(),
+  chunkId: z.string(),
+  page: z.number().int(),
+  title: z.string(),
+  text: z.string(),
+});
+
+export type Citation = z.infer<typeof CitationSchema>;
+
+/**
+ * A document-derived answer that claims to be grounded must cite.
+ *
+ * The live `done` event allows empty citations — an ordinary chat turn is not
+ * grounded, and must not fail the schema. This fixture is the control: a
+ * turn that says it is grounded and cites nothing is not a valid contract.
+ */
+export const GroundedDoneSchema = z.object({
+  kind: z.literal("done"),
+  note: z.string(),
+  grounded: z.literal(true),
+  citations: z.array(CitationSchema).min(1),
+});
+
+/**
  * One thing becoming known during a turn.
  *
  * The orchestrator streams these as it works, and the gateway relays them to
@@ -48,6 +79,11 @@ export const TurnEventSchema = z.discriminatedUnion("kind", [
   z.object({ kind: z.literal("trace"), text: z.string() }),
   /** One plan step, complete. */
   z.object({ kind: z.literal("step"), step: PlanStepSchema }),
+  /**
+   * A retrieved passage this turn actually used. The chip opens `text`;
+   * nothing is fetched from another user.
+   */
+  CitationSchema.extend({ kind: z.literal("citation") }),
   /** The Clarify Gate stopped the turn. No plan follows this. */
   z.object({
     kind: z.literal("clarify"),
@@ -70,7 +106,11 @@ export const TurnEventSchema = z.discriminatedUnion("kind", [
     actions: z.array(ProposedActionSchema).default([]),
   }),
   /** The plan is finished. */
-  z.object({ kind: z.literal("done"), note: z.string().default("") }),
+  z.object({
+    kind: z.literal("done"),
+    note: z.string().default(""),
+    citations: z.array(CitationSchema).default([]),
+  }),
   /**
    * The turn failed. Carried in-band rather than as an HTTP status, because by
    * the time it happens the response has already begun with a 200.

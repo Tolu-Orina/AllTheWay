@@ -33,7 +33,7 @@ import { Digest, digestIsQuiet } from "@/app/Digest";
 import { LanguageOffer } from "@/app/LanguageChoice";
 import { CompanionConversation } from "@/app/CompanionPanel";
 import { useCompanionThread } from "@/app/companion-thread";
-import { DocumentPickup } from "@/app/Documents";
+import { DocumentPickup, askAboutAdded } from "@/app/Documents";
 import { BillingReturnBanner } from "@/app/Usage";
 
 type HomeData = {
@@ -180,6 +180,7 @@ function HomeToday({
 }) {
   const t = useT();
   const { user } = useAuth();
+  const { send } = useCompanionThread();
   const { state, reload } = useAsync<HomeData>(async () => {
     const [plan, runs, digest, docs] = await Promise.all([
       api.homePlan(),
@@ -320,7 +321,13 @@ function HomeToday({
             <SheetTitle>{t("today.addAFile")}</SheetTitle>
             <SheetDescription>{t("today.addAFileHint")}</SheetDescription>
           </SheetHeader>
-          <DocumentPickup onUploaded={reload} />
+          <DocumentPickup
+            onUploaded={(name) => {
+              reload();
+              send(askAboutAdded(name));
+              setDocsOpen(false);
+            }}
+          />
         </SheetContent>
       </Sheet>
     </div>

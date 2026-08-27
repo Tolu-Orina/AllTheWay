@@ -36,6 +36,9 @@ def test_title_and_page_come_from_the_passage_not_the_model():
     )
     assert kept[0].title == "Supply agreement"
     assert kept[0].page == 13
+    # FR-D2: the chip opens this text, so it must be the retrieved passage.
+    assert kept[0].text == RETRIEVED[1].text
+    assert kept[0].document_id == "d1"
 
 
 def test_retrieving_documents_and_citing_none_is_said_out_loud():

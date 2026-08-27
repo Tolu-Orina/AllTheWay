@@ -3,11 +3,13 @@ import { useLocation } from "react-router";
 import { useT } from "@/app/i18n";
 import {
   AlertTriangle,
+  Camera,
   Loader2,
   MessageCircle,
   PanelRightClose,
   PanelRightOpen,
   Send,
+  Upload,
 } from "lucide-react";
 import { motion, useReducedMotion } from "motion/react";
 
@@ -16,6 +18,8 @@ import { Sheet, SheetContent } from "@/components/ui/sheet";
 import { CanvasPane } from "@/app/CanvasPane";
 import { useAsync } from "@/app/use-async";
 import { api } from "@/app/data";
+import { askAboutAdded, DOCUMENT_ACCEPT, DOCUMENT_MAX_BYTES } from "@/app/Documents";
+import { CitationChip } from "@/app/CitationChip";
 import { useCompanionThread } from "@/app/companion-thread";
 import { cn } from "@/lib/utils";
 import { VoiceCaptions, VoiceControl } from "@/app/VoiceControl";
@@ -95,6 +99,14 @@ export function CompanionConversation({ autoFocus = false }: { autoFocus?: boole
                   ))}
                 </ul>
               ) : null}
+
+              {m.citations?.length ? (
+                <div className="mt-1.5 flex flex-wrap gap-1.5">
+                  {m.citations.map((c) => (
+                    <CitationChip key={c.chunkId} citation={c} />
+                  ))}
+                </div>
+              ) : null}
             </div>
           </motion.div>
         ))}
@@ -146,6 +158,8 @@ export function CompanionComposer({ autoFocus = false }: { autoFocus?: boolean }
   const { draft, setDraft, send, working } = useCompanionThread();
   const inputId = useId();
   const inputRef = useRef<HTMLInputElement>(null);
+  const fileRef = useRef<HTMLInputElement>(null);
+  const cameraRef = useRef<HTMLInputElement>(null);
   const [dropping, setDropping] = useState(false);
   const [dropNote, setDropNote] = useState<string | null>(null);
 
@@ -153,23 +167,34 @@ export function CompanionComposer({ autoFocus = false }: { autoFocus?: boolean }
     if (autoFocus) inputRef.current?.focus();
   }, [autoFocus]);
 
-  const acceptDrop = useCallback(async (files: FileList) => {
-    const file = Array.from(files)[0];
-    if (!file) return;
+  const acceptDrop = useCallback(
+    async (files: FileList) => {
+      const file = Array.from(files)[0];
+      if (!file || working) return;
 
-    setDropNote(`Reading ${file.name}…`);
-    try {
-      const buffer = new Uint8Array(await file.arrayBuffer());
-      let binary = "";
-      for (let i = 0; i < buffer.length; i += 8192) {
-        binary += String.fromCharCode(...buffer.subarray(i, i + 8192));
+      if (file.size > DOCUMENT_MAX_BYTES) {
+        setDropNote(
+          `${file.name} is larger than ${Math.round(DOCUMENT_MAX_BYTES / 1024 / 1024)}MB.`,
+        );
+        return;
       }
-      await api.uploadDocument(file.name, btoa(binary), file.type || "text/plain");
-      setDropNote(`${file.name} is ready — ask me about it.`);
-    } catch (err) {
-      setDropNote((err as { message?: string }).message || `${file.name} could not be added.`);
-    }
-  }, []);
+
+      setDropNote(t("documents.reading", { name: file.name }));
+      try {
+        const buffer = new Uint8Array(await file.arrayBuffer());
+        let binary = "";
+        for (let i = 0; i < buffer.length; i += 8192) {
+          binary += String.fromCharCode(...buffer.subarray(i, i + 8192));
+        }
+        await api.uploadDocument(file.name, btoa(binary), file.type || "text/plain");
+        setDropNote(null);
+        send(askAboutAdded(file.name));
+      } catch (err) {
+        setDropNote((err as { message?: string }).message || `${file.name} could not be added.`);
+      }
+    },
+    [send, t, working],
+  );
 
   return (
     <>
@@ -204,6 +229,47 @@ export function CompanionComposer({ autoFocus = false }: { autoFocus?: boolean }
           {t("common.messageTheCompanion")}
         </label>
         <VoiceControl size="sm" />
+        <input
+          ref={fileRef}
+          type="file"
+          accept={DOCUMENT_ACCEPT}
+          className="sr-only"
+          disabled={working}
+          onChange={(e) => {
+            if (e.target.files) void acceptDrop(e.target.files);
+            e.target.value = "";
+          }}
+        />
+        <input
+          ref={cameraRef}
+          type="file"
+          accept="image/*"
+          capture="environment"
+          className="sr-only"
+          disabled={working}
+          onChange={(e) => {
+            if (e.target.files) void acceptDrop(e.target.files);
+            e.target.value = "";
+          }}
+        />
+        <button
+          type="button"
+          aria-label={t("documents.choose")}
+          disabled={working}
+          onClick={() => fileRef.current?.click()}
+          className="grid size-9 shrink-0 place-items-center rounded-full text-muted-foreground transition-colors hover:bg-muted hover:text-foreground disabled:opacity-40"
+        >
+          <Upload className="size-4" aria-hidden="true" />
+        </button>
+        <button
+          type="button"
+          aria-label={t("documents.photograph")}
+          disabled={working}
+          onClick={() => cameraRef.current?.click()}
+          className="hidden size-9 shrink-0 place-items-center rounded-full text-muted-foreground transition-colors hover:bg-muted hover:text-foreground disabled:opacity-40 [@media(pointer:coarse)]:grid"
+        >
+          <Camera className="size-4" aria-hidden="true" />
+        </button>
         <input
           ref={inputRef}
           id={inputId}

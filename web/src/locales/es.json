@@ -66,7 +66,13 @@
     "types": "PDF, texto, Markdown o la foto de una página",
     "photograph": "Fotografiar una página",
     "none": "Aún no hay documentos. Añade un contrato, una memoria o una normativa para hacer preguntas.",
-    "reading": "Leyendo {{name}}. Un documento largo tarda un minuto; una foto es más rápida."
+    "reading": "Leyendo {{name}}. Un documento largo tarda un minuto; una foto es más rápida.",
+    "askAboutThis": "Preguntar por esto"
+  },
+  "citations": {
+    "passage": "Pasaje",
+    "page": "Página {{page}}",
+    "open": "Abrir la cita de {{title}}"
   },
   "voice": {
     "heading": "Conversaciones de voz",

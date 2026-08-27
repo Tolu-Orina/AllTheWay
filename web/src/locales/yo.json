@@ -60,7 +60,13 @@
     "types": "PDF, ọ̀rọ̀, Markdown — tàbí fọ́tò ojú-ìwé kan",
     "photograph": "Ya àwòrán ojú-ìwé kan",
     "none": "Kò tíì sí àkọsílẹ̀ kankan. Fi àdéhùn, àlàyé tàbí ìlànà kún un kí o sì béèrè nípa rẹ̀.",
-    "reading": "Ó ń ka {{name}}. Àkọsílẹ̀ gígùn máa ń gba ìṣẹ́jú kan; àwòrán fọ́tò yára jù."
+    "reading": "Ó ń ka {{name}}. Àkọsílẹ̀ gígùn máa ń gba ìṣẹ́jú kan; àwòrán fọ́tò yára jù.",
+    "askAboutThis": "Béèrè nípa èyí"
+  },
+  "citations": {
+    "passage": "Àyọkà",
+    "page": "Ojú-ìwé {{page}}",
+    "open": "Ṣí ìtọ́kasí láti {{title}}"
   },
   "voice": {
     "heading": "Àwọn ìjíròrò ohùn",

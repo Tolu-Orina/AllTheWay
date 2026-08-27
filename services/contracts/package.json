@@ -14,7 +14,7 @@
   "scripts": {
     "build": "tsc -p tsconfig.build.json",
     "typecheck": "tsc -p tsconfig.json --noEmit",
-    "test": "node --import tsx --test src/recovery.test.ts src/insights.test.ts src/i18n.test.ts"
+    "test": "node --import tsx --test src/recovery.test.ts src/insights.test.ts src/i18n.test.ts src/citations.test.ts"
   },
   "dependencies": {
     "zod": "^3.25.0"

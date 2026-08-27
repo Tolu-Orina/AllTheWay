@@ -75,7 +75,13 @@
     "types": "PDF, testun, Markdown — neu lun o dudalen",
     "photograph": "Tynnu llun o dudalen",
     "none": "Dim dogfennau eto. Ychwanegwch gontract, manyleb neu bolisi a gofyn amdano.",
-    "reading": "Wrthi'n darllen {{name}}. Mae dogfen hir yn cymryd munud; mae llun yn gynt."
+    "reading": "Wrthi'n darllen {{name}}. Mae dogfen hir yn cymryd munud; mae llun yn gynt.",
+    "askAboutThis": "Gofyn am hwn"
+  },
+  "citations": {
+    "passage": "Darn",
+    "page": "Tudalen {{page}}",
+    "open": "Agor y dyfyniad o {{title}}"
   },
   "voice": {
     "heading": "Sgyrsiau llafar",

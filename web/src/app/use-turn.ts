@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useRef, useState } from "react";
-import type { PlanStep } from "@alltheway/contracts";
+import type { Citation, PlanStep } from "@alltheway/contracts";
 
 import { streamTurn } from "@/lib/stream";
 
@@ -31,6 +31,7 @@ export type TurnState = {
   actions: ProposedAction[];
   note: string;
   error: string;
+  citations: Citation[];
 };
 
 const EMPTY: TurnState = {
@@ -44,6 +45,7 @@ const EMPTY: TurnState = {
   actions: [],
   note: "",
   error: "",
+  citations: [],
 };
 
 export function useTurn(sessionId: string) {
@@ -88,8 +90,27 @@ export function useTurn(sessionId: string) {
                   options: event.options,
                   actions: event.actions,
                 };
+              case "citation":
+                return {
+                  ...prev,
+                  citations: [
+                    ...prev.citations,
+                    {
+                      documentId: event.documentId,
+                      chunkId: event.chunkId,
+                      page: event.page,
+                      title: event.title,
+                      text: event.text,
+                    },
+                  ],
+                };
               case "done":
-                return { ...prev, phase: "done", note: event.note };
+                return {
+                  ...prev,
+                  phase: "done",
+                  note: event.note,
+                  citations: event.citations.length ? event.citations : prev.citations,
+                };
               case "error":
                 return { ...prev, phase: "error", error: event.message };
               default:

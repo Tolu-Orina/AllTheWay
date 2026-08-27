@@ -140,12 +140,24 @@ class FakeProvider:
             else {"label": "Review together", "action": ""}
         )
 
+        # Cite the first retrieved chunk so the closing payload can be asserted
+        # without Vertex. The real model chooses; grounding still checks.
+        citations = []
+        if "Passages retrieved from the user's own documents" in system:
+            for line in system.splitlines():
+                if line.startswith("[") and "]" in line:
+                    chunk_id = line[1 : line.index("]")]
+                    if chunk_id:
+                        citations.append({"chunkId": chunk_id})
+                    break
+
         return {
             "decision": "plan",
             "needsResearch": researchy,
             "topic": user.strip() if researchy else "",
             "steps": steps,
             "note": "I will stop before anything leaves your account.",
+            "citations": citations,
         }
 
 

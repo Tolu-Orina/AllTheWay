@@ -70,11 +70,16 @@ class Citation(BaseModel):
     Returned as a *field*, never inferred from prose. A prompt instruction to
     "always cite" is advisory; a field the code checks is not — and FR-D2 is
     the trust anchor of the whole document feature.
+
+    `text` is the retrieved passage, the same string that was in the prompt.
+    The chip opens this; it does not re-query another user.
     """
 
     chunk_id: str
+    document_id: str = ""
     title: str = ""
     page: int = 0
+    text: str = ""
 
 
 class TurnResponse(BaseModel):
@@ -121,3 +126,6 @@ class TurnEvent(BaseModel):
     #: The spoken summary and the steps it covers, when the turn stops for
     #: confirmation (FR-V2). Terminal for the turn, like `clarify`.
     confirm: dict | None = None
+    #: Citations that survived grounding, carried on `note` / `confirm` so the
+    #: gateway can emit them as typed events rather than parsing the trace.
+    citations: list[Citation] = Field(default_factory=list)
