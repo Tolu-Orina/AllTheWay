@@ -225,7 +225,9 @@ export function Usage({ heading }: { heading?: string }) {
             <p className="text-[12.5px] text-muted-foreground">{t("usage.sharingIsTeam")}</p>
 
             <ul className="flex flex-col gap-2">
-              {usage.meters.map((meter) => (
+              {usage.meters
+                .filter((meter) => !(meter.meter === "meeting_insights" && meter.limit === 0))
+                .map((meter) => (
                 <MeterRow
                   key={meter.meter}
                   reading={meter}
@@ -234,6 +236,14 @@ export function Usage({ heading }: { heading?: string }) {
                 />
               ))}
             </ul>
+            {usage.meters.some((m) => m.meter === "meeting_insights" && m.limit === 0) ? (
+              <p className="text-[12.5px] text-muted-foreground">
+                {t("usage.meetingsAreTeam")}{" "}
+                <Link href="/contact" className="underline underline-offset-2">
+                  {t("usage.talkToUs")}
+                </Link>
+              </p>
+            ) : null}
           </>
         )}
       </Async>

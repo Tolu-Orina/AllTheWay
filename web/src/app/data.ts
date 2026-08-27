@@ -330,6 +330,8 @@ export const api = {
       z.array(z.object({ side: z.enum(["user", "model"]), text: z.string(), at: z.string() })),
     ),
   forgetTranscript: (sessionId: string) => apiDelete(`/sessions/${sessionId}/transcript`),
+  meetingSettings: () =>
+    apiGet("/settings/meetings", z.object({ enabled: z.boolean() })),
   setMeetingNotes: (enabled: boolean) =>
     apiPost("/settings/meetings", { enabled }),
   extendMeeting: (meetingId: string, minutes = 30) =>

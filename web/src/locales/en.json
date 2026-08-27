@@ -25,7 +25,7 @@
   "meetings": {
     "heading": "Meetings",
     "intro": "It listens and takes notes. It cannot speak in a meeting, and everyone in the room is asked before it connects.",
-    "none": "No meetings yet.",
+    "none": "It listens on calls you host, or reads the transcript after. It cannot speak. No bot in the participant list unless you opted into live listen.",
     "listenedLive": "Listened live",
     "readTranscript": "Read the transcript afterwards",
     "noNotes": "No notes",
@@ -41,7 +41,19 @@
     "enable": "Let it join and take notes in my meetings",
     "enableHint": "Off unless you turn it on. Everyone in a meeting is asked before it connects, and it can never speak.",
     "meetingsAreCappedSoACall": "Meetings are capped so a call nobody closed cannot keep recording all day. Another 30 minutes uses about 30 more minutes of your meeting allowance.",
-    "nothingHasBeenDoneAboutThis": "Nothing has been done about this."
+    "nothingHasBeenDoneAboutThis": "Nothing has been done about this.",
+    "capStopped": "Note-taking stopped at the 90-minute limit. Nothing after that was recorded.",
+    "capWarn": "Note-taking stops in {{count}} minutes.",
+    "extendAgain": "Start again for 30 minutes",
+    "extendKeep": "Keep going for 30 more minutes",
+    "stayedOut": "stayed out",
+    "confirmSummary": "Record this as something you agreed we may act on.",
+    "confirmAction": "Record approval",
+    "confirmReason": "Nothing is sent, and nothing is put on a calendar, until a later action you confirm.",
+    "confirm": "Yes, record this",
+    "confirming": "Recording…",
+    "notThis": "Not this",
+    "confirmed": "Confirmed"
   },
   "documents": {
     "heading": "Your documents",

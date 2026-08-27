@@ -28,7 +28,7 @@
   "meetings": {
     "heading": "Reuniones",
     "intro": "Escucha y toma notas. No puede hablar y pide permiso a los asistentes antes de conectarse.",
-    "none": "Aún no hay reuniones.",
+    "none": "Escucha en las llamadas que organizas, o lee la transcripción después. No puede hablar. No hay ningún bot en la lista de participantes salvo que hayas activado la escucha en directo.",
     "listenedLive": "Escuchado en directo",
     "readTranscript": "Transcripción leída después",
     "noNotes": "Sin notas",
@@ -44,7 +44,19 @@
     "enable": "Permitir que se una y tome notas en mis reuniones",
     "enableHint": "Desactivado por defecto. Pide permiso a los asistentes antes de conectarse y nunca puede hablar.",
     "meetingsAreCappedSoACall": "Las reuniones tienen un límite para evitar grabaciones infinitas si nadie cuelga. 30 min más consumirán unos 30 min de tu cuota.",
-    "nothingHasBeenDoneAboutThis": "No se ha hecho nada al respecto."
+    "nothingHasBeenDoneAboutThis": "No se ha hecho nada al respecto.",
+    "capStopped": "Las notas se detuvieron a los 90 minutos. Nada posterior quedó registrado.",
+    "capWarn": "Las notas se detienen en {{count}} minutos.",
+    "extendAgain": "Reanudar 30 minutos más",
+    "extendKeep": "Seguir 30 minutos más",
+    "stayedOut": "fuera",
+    "confirmSummary": "Registrar que aceptas que actuemos sobre esto.",
+    "confirmAction": "Registrar aprobación",
+    "confirmReason": "No se envía nada ni se crea un evento de calendario hasta una acción posterior que tú confirmes.",
+    "confirm": "Sí, registrar esto",
+    "confirming": "Registrando…",
+    "notThis": "Esto no",
+    "confirmed": "Confirmado"
   },
   "documents": {
     "heading": "Tus documentos",

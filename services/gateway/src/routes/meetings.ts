@@ -114,6 +114,19 @@ meetingRoutes.get("/meetings/:id/commitments", (req, res) => {
   })();
 });
 
+meetingRoutes.get("/settings/meetings", (req, res) => {
+  void (async () => {
+    if (unavailable(res)) return;
+    try {
+      const upstream = await callScribe(req.uid!, "/settings/meetings");
+      await relay(res, upstream);
+    } catch (err) {
+      console.warn(`[meetings] could not reach scribe: ${(err as Error).message}`);
+      res.status(502).json({ code: "upstream_error", message: "That could not be loaded." });
+    }
+  })();
+});
+
 meetingRoutes.post("/settings/meetings", (req, res) => {
   void (async () => {
     if (unavailable(res)) return;

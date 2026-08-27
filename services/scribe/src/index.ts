@@ -15,11 +15,12 @@ import {
   confirmCommitment,
   listCommitments,
   listMeetings,
+  markMeetingOptedOut,
   openMeeting,
 } from "./meetings.js";
 import { resolveTier, type Attempt } from "./tier.js";
 import { connectTier1, connectTier2 } from "./meet.js";
-import { mayJoin, setGlobal, setMeetingOptOut } from "./consent.js";
+import { getGlobal, mayJoin, setGlobal, setMeetingOptOut } from "./consent.js";
 import { readMeetEvent, spaceIdFrom } from "./events.js";
 import { servedCard } from "./a2a-card.js";
 import { rememberSpace, ownerOfSpace } from "./registry.js";
@@ -291,6 +292,17 @@ app.post("/meetings/:id/commitments/confirm", (req, res) => {
   })();
 });
 
+app.get("/settings/meetings", (req, res) => {
+  void (async () => {
+    const uid = userOf(req);
+    if (!uid) {
+      res.status(401).json({ code: "unauthenticated", message: "No user on this request." });
+      return;
+    }
+    res.json({ enabled: await getGlobal(uid) });
+  })();
+});
+
 app.post("/settings/meetings", (req, res) => {
   void (async () => {
     const uid = userOf(req);
@@ -325,6 +337,7 @@ app.post("/meetings/:id/opt-out", (req, res) => {
     }
 
     await setMeetingOptOut(uid, req.params.id, optedOut.data);
+    await markMeetingOptedOut(uid, req.params.id, optedOut.data);
     res.status(204).end();
   })();
 });

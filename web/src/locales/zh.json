@@ -22,7 +22,7 @@
   "meetings": {
     "heading": "会议",
     "intro": "它可以旁听并记录笔记。它无法在会议中发言，且接入前会征求全员同意。",
-    "none": "暂无会议。",
+    "none": "暂无会议。它旁听你主持的通话，或事后阅读速记。它不会发言。除非你开启了实时旁听，否则参会者名单里不会出现机器人。",
     "listenedLive": "实时旁听",
     "readTranscript": "事后阅读速记",
     "noNotes": "无笔记",
@@ -38,7 +38,19 @@
     "enable": "允许其加入会议并记录笔记",
     "enableHint": "默认关闭。接入前会征求会议全员同意，且它绝不会发言。",
     "meetingsAreCappedSoACall": "会议设有上限，避免未挂断的通话全天录制。延长 30 分钟将消耗约 30 分钟的会议额度。",
-    "nothingHasBeenDoneAboutThis": "尚未对此采取任何行动。"
+    "nothingHasBeenDoneAboutThis": "尚未对此采取任何行动。",
+    "capStopped": "笔记已在 90 分钟上限处停止。之后的内容未被记录。",
+    "capWarn": "笔记将在 {{count}} 分钟后停止。",
+    "extendAgain": "再开始 30 分钟",
+    "extendKeep": "再继续 30 分钟",
+    "stayedOut": "已退出",
+    "confirmSummary": "记录你同意我们可以据此采取行动。",
+    "confirmAction": "记录批准",
+    "confirmReason": "在你确认后续操作之前，不会发送任何内容，也不会写入日历。",
+    "confirm": "是，记录此项",
+    "confirming": "正在记录…",
+    "notThis": "不是这项",
+    "confirmed": "已确认"
   },
   "documents": {
     "heading": "您的文档",

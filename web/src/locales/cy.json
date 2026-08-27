@@ -37,7 +37,7 @@
   "meetings": {
     "heading": "Cyfarfodydd",
     "intro": "Mae'n gwrando ac yn cymryd nodiadau. Ni all siarad mewn cyfarfod, a gofynnir i bawb yn yr ystafell cyn iddo gysylltu.",
-    "none": "Dim cyfarfodydd eto.",
+    "none": "Mae'n gwrando ar alwadau rydych chi'n eu cynnal, neu'n darllen y trawsgrifiad wedyn. Ni all siarad. Dim bot yn rhestr y cyfranogwyr oni bai eich bod wedi dewis gwrando'n fyw.",
     "listenedLive": "Wedi gwrando'n fyw",
     "readTranscript": "Darllen y trawsgrifiad wedyn",
     "noNotes": "Dim nodiadau",
@@ -53,7 +53,19 @@
     "enable": "Caniatáu iddo ymuno a chymryd nodiadau yn fy nghyfarfodydd",
     "enableHint": "Wedi'i ddiffodd nes i chi ei alluogi. Gofynnir i bawb mewn cyfarfod cyn iddo gysylltu, ac ni all byth siarad.",
     "meetingsAreCappedSoACall": "Mae cyfyngiad ar gyfarfodydd fel na all galwad y mae pawb wedi'i gadael barhau i recordio trwy'r dydd. Mae 30 munud arall yn defnyddio tua 30 munud o'ch lwfans cyfarfodydd.",
-    "nothingHasBeenDoneAboutThis": "Nid oes dim wedi'i wneud ynglŷn â hyn."
+    "nothingHasBeenDoneAboutThis": "Nid oes dim wedi'i wneud ynglŷn â hyn.",
+    "capStopped": "Stopiodd y nodiadau ar y terfyn 90 munud. Ni chafodd dim ar ôl hynny ei recordio.",
+    "capWarn": "Mae'r nodiadau'n stopio ymhen {{count}} munud.",
+    "extendAgain": "Dechrau eto am 30 munud",
+    "extendKeep": "Parhau am 30 munud arall",
+    "stayedOut": "allan",
+    "confirmSummary": "Cofnodi eich bod yn cytuno y gallwn weithredu ar hyn.",
+    "confirmAction": "Cofnodi cymeradwyaeth",
+    "confirmReason": "Ni anfonir dim, ac ni osodir dim ar y calendr, nes gweithred ddiweddarach a gadarnhewch chi.",
+    "confirm": "Ie, cofnodi hyn",
+    "confirming": "Yn cofnodi…",
+    "notThis": "Nid hwn",
+    "confirmed": "Wedi'i gadarnhau"
   },
   "documents": {
     "heading": "Eich dogfennau",

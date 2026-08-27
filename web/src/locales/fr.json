@@ -28,7 +28,7 @@
   "meetings": {
     "heading": "Réunions",
     "intro": "Il écoute et prend des notes. Il ne peut pas intervenir et l'accord de chacun est demandé avant la connexion.",
-    "none": "Aucune réunion pour l'instant.",
+    "none": "Il écoute les appels que vous organisez, ou lit la transcription ensuite. Il ne prend pas la parole. Aucun bot dans la liste des participants sauf si vous avez activé l'écoute en direct.",
     "listenedLive": "Écouté en direct",
     "readTranscript": "A lu la transcription après coup",
     "noNotes": "Aucune note",
@@ -44,7 +44,19 @@
     "enable": "L'autoriser à rejoindre et noter mes réunions",
     "enableHint": "Désactivé par défaut. L'accord des participants est demandé avant la connexion, et il ne prend jamais la parole.",
     "meetingsAreCappedSoACall": "La durée est plafonnée pour éviter d'enregistrer indéfiniment un appel oublié. 30 minutes de plus utilisent environ 30 minutes de votre forfait.",
-    "nothingHasBeenDoneAboutThis": "Rien n'a été fait à ce sujet pour l'instant."
+    "nothingHasBeenDoneAboutThis": "Rien n'a été fait à ce sujet pour l'instant.",
+    "capStopped": "La prise de notes s'est arrêtée à 90 minutes. Rien après n'a été enregistré.",
+    "capWarn": "La prise de notes s'arrête dans {{count}} minutes.",
+    "extendAgain": "Reprendre pour 30 minutes",
+    "extendKeep": "Continuer 30 minutes de plus",
+    "stayedOut": "exclu",
+    "confirmSummary": "Enregistrer que vous acceptez que nous agissions là-dessus.",
+    "confirmAction": "Enregistrer l'accord",
+    "confirmReason": "Rien n'est envoyé, et rien n'est mis au calendrier, avant une action ultérieure que vous confirmerez.",
+    "confirm": "Oui, enregistrer ceci",
+    "confirming": "Enregistrement…",
+    "notThis": "Pas celui-ci",
+    "confirmed": "Confirmé"
   },
   "documents": {
     "heading": "Vos documents",

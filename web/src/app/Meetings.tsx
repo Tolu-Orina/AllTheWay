@@ -6,7 +6,8 @@ import { Async } from "@/app/async";
 import { useAsync } from "@/app/use-async";
 import { api, type Commitment, type Meeting } from "@/app/data";
 import { cn } from "@/lib/utils";
-import { ConnectionQuality } from "@/app/MeetingHealth";
+import { ConfirmGate } from "@/app/ConfirmGate";
+import { ConnectionQuality, DurationNotice } from "@/app/MeetingHealth";
 import { MeetingInsights } from "@/app/MeetingInsights";
 
 /**
@@ -65,12 +66,21 @@ function describeTier(meeting: Meeting, t: (key: string) => string): string {
  * It is also the honest default: off until switched on. This component says so
  * rather than showing an unchecked box and letting the user infer it.
  */
-function GlobalSwitch({ enabled, onChange }: { enabled: boolean; onChange: (v: boolean) => void }) {
+function GlobalSwitch({
+  enabled,
+  onChange,
+  disabled,
+}: {
+  enabled: boolean;
+  onChange: (v: boolean) => void;
+  disabled?: boolean;
+}) {
   const t = useT();
   return (
     <label className="flex items-start gap-2.5 rounded-brand border bg-card px-3.5 py-3">
       <input
         type="checkbox"
+        disabled={disabled}
         checked={enabled}
         onChange={(e) => onChange(e.target.checked)}
         className="mt-0.5 size-4 shrink-0"
@@ -88,14 +98,18 @@ function GlobalSwitch({ enabled, onChange }: { enabled: boolean; onChange: (v: b
 export function Meetings() {
   const t = useT();
   const { state, reload } = useAsync<Meeting[]>(() => api.meetings());
-  const [enabled, setEnabled] = useState(false);
+  const { state: settings, reload: reloadSettings } = useAsync(() => api.meetingSettings());
+  const [enabled, setEnabled] = useState<boolean | null>(null);
   const [failure, setFailure] = useState<string | null>(null);
+
+  const on = enabled ?? (settings.status === "ready" ? settings.data.enabled : false);
 
   async function toggle(next: boolean) {
     setFailure(null);
     setEnabled(next);
     try {
       await api.setMeetingNotes(next);
+      reloadSettings();
     } catch {
       // Put back. A consent switch that looks changed but was not saved is the
       // worst possible failure for this particular control.
@@ -113,7 +127,20 @@ export function Meetings() {
         {t("meetings.intro")}
       </p>
 
-      <GlobalSwitch enabled={enabled} onChange={toggle} />
+      <GlobalSwitch
+        enabled={on}
+        onChange={toggle}
+        disabled={settings.status === "loading" && enabled === null}
+      />
+
+      {settings.status === "error" ? (
+        <p role="alert" className="text-[12.5px] text-destructive">
+          {settings.message}{" "}
+          <button type="button" className="underline underline-offset-2" onClick={reloadSettings}>
+            {t("common.retry")}
+          </button>
+        </p>
+      ) : null}
 
       {failure ? (
         <p role="alert" className="text-[12.5px] text-destructive">
@@ -134,7 +161,7 @@ export function Meetings() {
         {(rows) => (
           <ul className="flex flex-col gap-2">
             {rows.map((meeting) => (
-              <MeetingRow key={meeting.id} meeting={meeting} />
+              <MeetingRow key={meeting.id} meeting={meeting} onChanged={reload} />
             ))}
           </ul>
         )}
@@ -168,9 +195,38 @@ export function ListeningIndicator({ meeting }: { meeting: Meeting }) {
   );
 }
 
-function MeetingRow({ meeting }: { meeting: Meeting }) {
+function MeetingRow({
+  meeting,
+  onChanged,
+}: {
+  meeting: Meeting;
+  onChanged: () => void;
+}) {
   const t = useT();
   const [open, setOpen] = useState(false);
+  const [rowError, setRowError] = useState<string | null>(null);
+  const live = meeting.status === "listening" && !meeting.optedOut;
+  const duration = meeting.duration;
+
+  async function stayOut() {
+    setRowError(null);
+    try {
+      await api.optOutOfMeeting(meeting.id);
+      onChanged();
+    } catch {
+      setRowError(t("common.saveFailed"));
+    }
+  }
+
+  async function extend(minutes: number) {
+    setRowError(null);
+    try {
+      await api.extendMeeting(meeting.id, minutes);
+      onChanged();
+    } catch {
+      setRowError(t("common.saveFailed"));
+    }
+  }
 
   return (
     <li className="rounded-brand border bg-card px-3.5 py-3">
@@ -216,15 +272,27 @@ function MeetingRow({ meeting }: { meeting: Meeting }) {
         <span
           className={cn(
             "shrink-0 rounded-full px-2 py-0.5 text-[11px]",
-            meeting.status === "listening" && "bg-primary/10 text-primary",
-            meeting.status === "blocked" && "bg-destructive/10 text-destructive",
+            live && "bg-primary/10 text-primary",
+            (meeting.status === "blocked" || meeting.optedOut) &&
+              "bg-destructive/10 text-destructive",
           )}
         >
-          {meeting.status}
+          {meeting.optedOut ? t("meetings.stayedOut") : meeting.status}
         </span>
       </div>
 
-      <ListeningIndicator meeting={meeting} />
+      {live ? <ListeningIndicator meeting={meeting} /> : null}
+
+      {live && duration && (duration.warn || duration.stop) ? (
+        <div className="mt-2">
+          <DurationNotice
+            minutesRemaining={duration.minutesRemaining}
+            warn={duration.warn}
+            stopped={duration.stop}
+            onExtend={(minutes) => void extend(minutes)}
+          />
+        </div>
+      ) : null}
 
       {/*
         Insights, on whichever device this is.
@@ -234,22 +302,21 @@ function MeetingRow({ meeting }: { meeting: Meeting }) {
         default while the meeting is live, because during it the whole value is
         being glanceable; collapsed afterwards, when it is a record.
       */}
-      <details className="mt-2" open={meeting.status === "listening"}>
+      <details className="mt-2" open={live}>
         <summary className="cursor-pointer text-[12.5px] text-muted-foreground">
           {t("meetings.noticed")}
         </summary>
         <div className="mt-2">
-          <MeetingInsights
-            meetingId={meeting.id}
-            live={meeting.status === "listening"}
-          />
+          <MeetingInsights meetingId={meeting.id} live={live} />
         </div>
       </details>
+
+      <MeetingCommitments meetingId={meeting.id} />
 
       {/* Quality while it is happening, not a verdict afterwards. "It says
           patchy, I'll take my own notes for this bit" is a recovery that no
           amount of post-hoc labelling can offer. */}
-      {meeting.status === "listening" ? (
+      {live ? (
         <ConnectionQuality
           sample={
             meeting.health
@@ -268,17 +335,59 @@ function MeetingRow({ meeting }: { meeting: Meeting }) {
         one" — the standup is fine, the difficult conversation is not — and
         forcing that choice to be all-or-nothing means people choose nothing.
       */}
-      {meeting.status === "listening" ? (
+      {live ? (
         <button
           type="button"
-          onClick={() => void api.optOutOfMeeting(meeting.id)}
+          onClick={() => void stayOut()}
           className="mt-2 flex items-center gap-1.5 text-[12.5px] underline underline-offset-2 text-muted-foreground"
         >
           <Slash className="size-3.5" aria-hidden="true" />
           {t("meetings.stayOut")}
         </button>
       ) : null}
+
+      {rowError ? (
+        <p role="alert" className="mt-2 text-[12.5px] text-destructive">
+          {rowError}
+        </p>
+      ) : null}
     </li>
+  );
+}
+
+function MeetingCommitments({ meetingId }: { meetingId: string }) {
+  const t = useT();
+  const { state, reload } = useAsync(() => api.commitments(meetingId), [meetingId]);
+  const [dismissed, setDismissed] = useState<string[]>([]);
+
+  if (state.status === "loading") return null;
+  if (state.status === "error") {
+    return (
+      <p className="mt-2 text-[12.5px] text-muted-foreground">
+        {state.message}{" "}
+        <button type="button" className="underline underline-offset-2" onClick={reload}>
+          {t("common.retry")}
+        </button>
+      </p>
+    );
+  }
+
+  const visible = state.data.filter((c) => !dismissed.includes(c.id));
+  if (visible.length === 0) return null;
+  return (
+    <ul className="mt-2 flex flex-col gap-2">
+      {visible.map((commitment) => (
+        <CommitmentCard
+          key={commitment.id}
+          commitment={commitment}
+          onConfirm={async (id) => {
+            await api.confirmCommitment(meetingId, id);
+            reload();
+          }}
+          onDecline={() => setDismissed((prev) => [...prev, commitment.id])}
+        />
+      ))}
+    </ul>
   );
 }
 
@@ -289,16 +398,23 @@ function MeetingRow({ meeting }: { meeting: Meeting }) {
  * approving four commitments on the walk back from a meeting is exactly the
  * right thing to do on one (R2). So this is a full-width tap target with the
  * text readable at a glance, not a row in a table.
+ *
+ * Confirm goes through ConfirmGate, the same stop as Watchers and session Yes.
+ * It records approval. It does not send mail or create a calendar event —
+ * carrying that out is a later action through the same floor.
  */
 export function CommitmentCard({
   commitment,
   onConfirm,
+  onDecline,
 }: {
   commitment: Commitment;
   onConfirm: (id: string) => Promise<void>;
+  onDecline?: () => void;
 }) {
   const t = useT();
   const [busy, setBusy] = useState(false);
+  const [status, setStatus] = useState<string | null>(null);
 
   const who =
     commitment.speakerLabel === "Unattributed" ? "Someone" : commitment.speakerLabel;
@@ -318,22 +434,36 @@ export function CommitmentCard({
         {t("meetings.nothingHasBeenDoneAboutThis")}
       </p>
 
-      <button
-        type="button"
-        disabled={busy || commitment.confirmed}
-        onClick={async () => {
-          setBusy(true);
-          try {
-            await onConfirm(commitment.id);
-          } finally {
-            setBusy(false);
-          }
-        }}
-        className="flex w-full items-center justify-center gap-1.5 rounded-brand border px-3 py-2 text-[13px] transition-colors hover:bg-muted disabled:opacity-50"
-      >
-        <Check className="size-4" aria-hidden="true" />
-        {commitment.confirmed ? "Confirmed" : "Yes, make this a task"}
-      </button>
+      {commitment.confirmed ? (
+        <p className="flex items-center gap-1.5 text-[13px]">
+          <Check className="size-4" aria-hidden="true" />
+          {t("meetings.confirmed")}
+        </p>
+      ) : (
+        <ConfirmGate
+          summary={t("meetings.confirmSummary")}
+          actions={[
+            {
+              label: t("meetings.confirmAction"),
+              reason: t("meetings.confirmReason"),
+            },
+          ]}
+          confirmLabel={busy ? t("meetings.confirming") : t("meetings.confirm")}
+          declineLabel={t("meetings.notThis")}
+          busy={busy}
+          status={status}
+          onConfirm={() => {
+            setBusy(true);
+            setStatus(null);
+            void onConfirm(commitment.id)
+              .catch((err: unknown) => {
+                setStatus(err instanceof Error ? err.message : t("common.saveFailed"));
+              })
+              .finally(() => setBusy(false));
+          }}
+          onDecline={() => onDecline?.()}
+        />
+      )}
     </li>
   );
 }

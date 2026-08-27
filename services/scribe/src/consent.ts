@@ -81,6 +81,17 @@ export async function mayJoin(uid: string, meetingId: string): Promise<ConsentDe
   );
 }
 
+export async function getGlobal(uid: string): Promise<boolean> {
+  const settings = await db()
+    .collection("users")
+    .doc(uid)
+    .collection("settings")
+    .doc("meetings")
+    .get();
+  // Same rule as decide(): missing is off, not on.
+  return settings.get("enabled") === true;
+}
+
 export async function setGlobal(uid: string, enabled: boolean): Promise<void> {
   await db()
     .collection("users")

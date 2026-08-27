@@ -22,7 +22,7 @@
   "meetings": {
     "heading": "Àwọn ìpàdé",
     "intro": "Ó ń tẹ́tí sílẹ̀, ó sì ń kọ àkọsílẹ̀. Kò lè sọ̀rọ̀ nínú ìpàdé, a sì gbọ́dọ̀ béèrè lọ́wọ́ gbogbo ènìyàn kó tó dara pọ̀.",
-    "none": "Kò tíì sí ìpàdé kankan.",
+    "none": "Ó ń tẹ́tí sí ìpè tí ìwọ ló ṣètò, tàbí kí ó ka àkọsílẹ̀ ọ̀rọ̀ lẹ́yìn. Kò lè sọ̀rọ̀. Kò sí bot nínú àtòkọ àwọn olùkópa àyàfi tí o bá ti tàn ìgbọ́ tààrà.",
     "listenedLive": "Gbọ́ ní tààrà",
     "readTranscript": "Ka àkọsílẹ̀ ọ̀rọ̀ náà lẹ́yìn náà",
     "noNotes": "Kò sí àkọsílẹ̀",
@@ -38,7 +38,19 @@
     "enable": "Jẹ́ kí ó dara pọ̀ kí ó sì kọ àkọsílẹ̀ nínú àwọn ìpàdé mi",
     "enableHint": "Wà ní pípa àyàfi tí o bá tàn án. A máa ń béèrè lọ́wọ́ gbogbo ènìyàn kó tó dara pọ̀, kò sì ní lè sọ̀rọ̀ láé.",
     "meetingsAreCappedSoACall": "Ìpàdé ní ààlà àkókò kí ìpè tí kò sí ẹnì kankan má bàa tẹ̀síwájú láti gba ohùn sílẹ̀ gbogbo ọjọ́. Ìṣẹ́jú 30 mìíràn yóò lo nǹkan bí ìṣẹ́jú 30 nínú àkókò ìpàdé rẹ.",
-    "nothingHasBeenDoneAboutThis": "A kò tíì ṣe ohunkóhun nípa èyí."
+    "nothingHasBeenDoneAboutThis": "A kò tíì ṣe ohunkóhun nípa èyí.",
+    "capStopped": "Ìkọsílẹ̀ dúró ní ìpèméjì 90. Ohun tí ó tẹ̀lé kò wà nínú àkọsílẹ̀.",
+    "capWarn": "Ìkọsílẹ̀ yóò dúró ní ìṣẹ́jú {{count}}.",
+    "extendAgain": "Bẹ̀rẹ̀ lẹ́ẹ̀kan sí i fún ìṣẹ́jú 30",
+    "extendKeep": "Tẹ̀síwájú fún ìṣẹ́jú 30 sí i",
+    "stayedOut": "kò dara pọ̀",
+    "confirmSummary": "Kọ sílẹ̀ pé o gbà kí a ṣe nǹkan nípa èyí.",
+    "confirmAction": "Kọ ìfọwọ́sí sílẹ̀",
+    "confirmReason": "A kò fi ohunkóhun ránṣẹ́, a kò sì fi nǹkan sí kalẹ́ndà, títí tí o ó fi fọwọ́sí ìgbésẹ̀ mìíràn.",
+    "confirm": "Bẹ́ẹ̀ni, kọ èyí sílẹ̀",
+    "confirming": "Ó ń kọ sílẹ̀…",
+    "notThis": "Kì í ṣe èyí",
+    "confirmed": "A ti fọwọ́sí"
   },
   "documents": {
     "heading": "Àwọn àkọsílẹ̀ rẹ",

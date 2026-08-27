@@ -65,6 +65,8 @@ export interface MeetingRecord {
   health: HealthSample | null;
   /** Tier 1.5: captured by the extension on the user's own machine. */
   capturedLocally: boolean;
+  optedOut: boolean;
+  duration: { minutesRemaining: number; warn: boolean; stop: boolean };
 }
 
 const db = () => getFirestore();
@@ -192,8 +194,25 @@ export async function listMeetings(uid: string): Promise<MeetingRecord[]> {
       // describe something that never happened.
       health: (d.get("health") as MeetingRecord["health"]) ?? null,
       capturedLocally: Boolean(d.get("capturedLocally")),
+      optedOut: Boolean(d.get("optedOut")),
+      duration: capState(
+        at(d.get("startedAt")) ?? "",
+        new Date(),
+        typeof d.get("extendedUntil") === "string"
+          ? d.get("extendedUntil")
+          : at(d.get("extendedUntil")),
+      ),
     };
   });
+}
+
+/** Stamp the meeting row so a reload can show the opt-out without a second query. */
+export async function markMeetingOptedOut(
+  uid: string,
+  meetingId: string,
+  optedOut: boolean,
+): Promise<void> {
+  await meetings(uid).doc(meetingId).set({ optedOut }, { merge: true });
 }
 
 

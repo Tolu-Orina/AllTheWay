@@ -93,10 +93,8 @@ export function DurationNotice({
           <Clock className="mt-0.5 size-4 shrink-0" aria-hidden="true" />
         )}
         {stopped
-          ? "Note-taking stopped at the 90-minute limit. Nothing after that was recorded."
-          : `Note-taking stops in ${minutesRemaining} ${
-              minutesRemaining === 1 ? "minute" : "minutes"
-            }.`}
+          ? t("meetings.capStopped")
+          : t("meetings.capWarn", { count: minutesRemaining })}
       </p>
 
       <p className="text-[12px] leading-relaxed text-muted-foreground">
@@ -108,7 +106,7 @@ export function DurationNotice({
         onClick={() => onExtend(30)}
         className="self-start rounded-brand border px-3 py-1.5 text-[13px] transition-colors hover:bg-muted"
       >
-        {stopped ? "Start again for 30 minutes" : "Keep going for 30 more minutes"}
+        {stopped ? t("meetings.extendAgain") : t("meetings.extendKeep")}
       </button>
     </div>
   );

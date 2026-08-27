@@ -26,6 +26,7 @@ import {
 import { timeOfDay } from "@/lib/format";
 import { ApiError } from "@/lib/api";
 import { useAuth } from "@/auth/useAuth";
+import { Meetings } from "@/app/Meetings";
 import { cn } from "@/lib/utils";
 import { VoiceControl } from "@/app/VoiceControl";
 import { Digest, digestIsQuiet } from "@/app/Digest";
@@ -275,7 +276,12 @@ function HomeToday({
 
               {plan && quiet ? <ContinueCard plan={plan} /> : null}
 
-              {showMeetings ? <MeetingsJobCard /> : null}
+              {showMeetings ? (
+                <>
+                  <MeetingsJobCard />
+                  <Meetings />
+                </>
+              ) : null}
 
               {job === "document" ? (
                 <section className="rounded-brand-lg border bg-card p-5 shadow-e1">

@@ -28,7 +28,7 @@
   "meetings": {
     "heading": "Reuniões",
     "intro": "Ele ouve e faz anotações. Não fala na reunião e todos são avisados antes de ele entrar.",
-    "none": "Nenhuma reunião ainda.",
+    "none": "Ele escuta nas chamadas que você organiza, ou lê a transcrição depois. Não fala. Nenhum bot na lista de participantes, a menos que você tenha ativado a escuta ao vivo.",
     "listenedLive": "Acompanhado ao vivo",
     "readTranscript": "Transcrição lida depois",
     "noNotes": "Sem anotações",
@@ -44,7 +44,19 @@
     "enable": "Permitir entrada e anotações nas minhas reuniões",
     "enableHint": "Desativado por padrão. Todos são avisados antes da conexão e ele nunca fala.",
     "meetingsAreCappedSoACall": "As reuniões têm limite para evitar gravações acidentais o dia todo. Mais 30 minutos consomem cerca de 30 minutos da sua cota.",
-    "nothingHasBeenDoneAboutThis": "Nenhuma ação foi tomada sobre isso."
+    "nothingHasBeenDoneAboutThis": "Nenhuma ação foi tomada sobre isso.",
+    "capStopped": "As anotações pararam no limite de 90 minutos. Nada depois disso foi gravado.",
+    "capWarn": "As anotações param em {{count}} minutos.",
+    "extendAgain": "Recomeçar por 30 minutos",
+    "extendKeep": "Continuar por mais 30 minutos",
+    "stayedOut": "fora",
+    "confirmSummary": "Registrar que você aceita que ajamos sobre isso.",
+    "confirmAction": "Registrar aprovação",
+    "confirmReason": "Nada é enviado e nada entra no calendário até uma ação posterior que você confirmar.",
+    "confirm": "Sim, registrar isto",
+    "confirming": "Registrando…",
+    "notThis": "Não isto",
+    "confirmed": "Confirmado"
   },
   "documents": {
     "heading": "Seus documentos",

@@ -259,6 +259,19 @@ export const MeetingSchema = z.object({
    * where none happened.
    */
   capturedLocally: z.boolean().default(false),
+  optedOut: z.boolean().default(false),
+  /**
+   * Snapshot of the duration cap at list time. Shown so a long call can be
+   * extended while there is still time, not after recording has already stopped.
+   */
+  duration: z
+    .object({
+      minutesRemaining: z.number(),
+      warn: z.boolean(),
+      stop: z.boolean(),
+    })
+    .nullable()
+    .default(null),
   health: z
     .object({
       at: z.string(),
