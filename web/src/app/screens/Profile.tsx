@@ -1,6 +1,7 @@
 import { useState } from "react";
+import { Link, useNavigate } from "react-router";
 import { useT } from "@/app/i18n";
-import { Check, Undo2 } from "lucide-react";
+import { Check, LogOut, Undo2 } from "lucide-react";
 
 import { Async, EmptyState } from "@/app/async";
 import { useAsync } from "@/app/use-async";
@@ -13,9 +14,19 @@ import { Meetings } from "@/app/Meetings";
 import { SharedWithMe } from "@/app/SharedWithMe";
 import { VoiceTranscripts } from "@/app/VoiceTranscripts";
 import { LanguageChoice, LanguageOffer } from "@/app/LanguageChoice";
+import { useAuth } from "@/auth/useAuth";
 
+/**
+ * You — account, memory, and what is running. Not the product.
+ *
+ * Section order is the design: plan first, learned memory, language, accounts,
+ * libraries, registry collapsed, then sign out. Upgrade stays hidden until
+ * billing exists so the button cannot 404.
+ */
 export default function Profile() {
   const t = useT();
+  const navigate = useNavigate();
+  const { adapter } = useAuth();
   const { state, reload } = useAsync<LearnedPreference[]>(() =>
     api.preferences(),
   );
@@ -40,6 +51,11 @@ export default function Profile() {
     }
   }
 
+  async function signOut() {
+    await adapter.signOut();
+    navigate("/login", { replace: true });
+  }
+
   const visible = (rows: LearnedPreference[]) =>
     rows.filter((r) => !revertedIds.includes(r.id));
 
@@ -47,97 +63,136 @@ export default function Profile() {
     <div className="flex flex-col gap-5">
       <header>
         <h1 className="text-[26px] leading-tight font-bold tracking-[-0.02em]">
-          {t("common.cognitiveProfile")}
+          {t("nav.you")}
         </h1>
         <p className="mt-1 max-w-prose text-[14px] leading-relaxed text-muted-foreground">
-          {t("common.builtFromWhatYouActuallyDid")}
+          {t("you.tagline")}
         </p>
       </header>
 
-      {reverted ? (
-        <p
-          role="status"
-          className="flex items-center gap-2 rounded-brand border bg-accent px-4 py-3 text-[13px] text-accent-foreground"
-        >
-          <Check className="size-4 shrink-0" aria-hidden="true" />
-          {reverted} reverted — the companion will ask you about it next time
-          instead of assuming.
+      <Usage heading={t("you.plan")} />
+
+      <section className="flex flex-col gap-3">
+        <h2 className="text-[12px] font-semibold tracking-[0.08em] text-blue-deep uppercase dark:text-blue-bright">
+          {t("you.learned")}
+        </h2>
+        <p className="text-[13.5px] leading-relaxed text-muted-foreground">
+          {t("common.builtFromWhatYouActuallyDid")}
         </p>
-      ) : null}
 
-      {failure ? (
-        <p
-          role="alert"
-          className="rounded-brand border border-destructive/30 bg-destructive/5 px-4 py-3 text-[13px] text-destructive"
+        {reverted ? (
+          <p
+            role="status"
+            className="flex items-center gap-2 rounded-brand border bg-accent px-4 py-3 text-[13px] text-accent-foreground"
+          >
+            <Check className="size-4 shrink-0" aria-hidden="true" />
+            {reverted} reverted — the companion will ask you about it next time
+            instead of assuming.
+          </p>
+        ) : null}
+
+        {failure ? (
+          <p
+            role="alert"
+            className="rounded-brand border border-destructive/30 bg-destructive/5 px-4 py-3 text-[13px] text-destructive"
+          >
+            {failure}
+          </p>
+        ) : null}
+
+        <Async
+          state={state}
+          reload={reload}
+          isEmpty={(rows) => visible(rows).length === 0}
+          empty={
+            <EmptyState
+              title="Nothing learned yet"
+              body="As you correct the companion, what it infers will appear here — each entry with the evidence behind it."
+            />
+          }
         >
-          {failure}
-        </p>
-      ) : null}
+          {(rows) => (
+            <ul className="flex flex-col gap-3">
+              {visible(rows).map((item) => (
+                <li
+                  key={item.id}
+                  className="rounded-brand-lg border bg-card p-4 shadow-e1 sm:p-5"
+                >
+                  <div className="flex items-start justify-between gap-4">
+                    <h3 className="text-[12px] font-semibold tracking-[0.08em] text-blue-deep uppercase dark:text-blue-bright">
+                      {item.area}
+                    </h3>
+                    <button
+                      type="button"
+                      onClick={() => revert(item)}
+                      className="inline-flex shrink-0 items-center gap-1.5 rounded-full border px-2.5 py-1 text-[12px] text-muted-foreground transition-colors hover:text-foreground"
+                    >
+                      <Undo2 className="size-3.5" aria-hidden="true" />
+                      Revert
+                    </button>
+                  </div>
 
-      <Async
-        state={state}
-        reload={reload}
-        isEmpty={(rows) => visible(rows).length === 0}
-        empty={
-          <EmptyState
-            title="Nothing learned yet"
-            body="As you correct the companion, what it infers will appear here — each entry with the evidence behind it."
-          />
-        }
-      >
-        {(rows) => (
-          <ul className="flex flex-col gap-3">
-            {visible(rows).map((item) => (
-              <li
-                key={item.id}
-                className="rounded-brand-lg border bg-card p-4 shadow-e1 sm:p-5"
-              >
-                <div className="flex items-start justify-between gap-4">
-                  <h2 className="text-[12px] font-semibold tracking-[0.08em] text-blue-deep uppercase dark:text-blue-bright">
-                    {item.area}
-                  </h2>
-                  <button
-                    type="button"
-                    onClick={() => revert(item)}
-                    className="inline-flex shrink-0 items-center gap-1.5 rounded-full border px-2.5 py-1 text-[12px] text-muted-foreground transition-colors hover:text-foreground"
-                  >
-                    <Undo2 className="size-3.5" aria-hidden="true" />
-                    Revert
-                  </button>
-                </div>
+                  <p className="mt-3 text-[14px] text-muted-foreground line-through decoration-destructive/60">
+                    {item.was}
+                  </p>
+                  <p className="mt-1.5 rounded-[6px] bg-accent px-2.5 py-1.5 text-[14px] font-medium text-accent-foreground">
+                    {item.now}
+                  </p>
+                  <p className="mt-3 text-[13px] text-muted-foreground">
+                    {item.evidence}
+                  </p>
+                </li>
+              ))}
+            </ul>
+          )}
+        </Async>
 
-                <p className="mt-3 text-[14px] text-muted-foreground line-through decoration-destructive/60">
-                  {item.was}
-                </p>
-                <p className="mt-1.5 rounded-[6px] bg-accent px-2.5 py-1.5 text-[14px] font-medium text-accent-foreground">
-                  {item.now}
-                </p>
-                <p className="mt-3 text-[13px] text-muted-foreground">
-                  {item.evidence}
-                </p>
-              </li>
-            ))}
-          </ul>
-        )}
-      </Async>
+        <VisualPreferences />
+      </section>
 
-      <VisualPreferences />
-
-      <LanguageOffer />
-      <LanguageChoice />
-
-      <VoiceTranscripts />
-
-      <SharedWithMe />
-
-      <Meetings />
-
-      <Documents />
-
-      <Usage />
+      <section className="flex flex-col gap-3">
+        <h2 className="text-[12px] font-semibold tracking-[0.08em] text-blue-deep uppercase dark:text-blue-bright">
+          {t("you.languageVoice")}
+        </h2>
+        <LanguageOffer />
+        <LanguageChoice />
+        <VoiceTranscripts />
+      </section>
 
       <Connections />
-    </div>
 
+      <section id="documents" className="flex scroll-mt-24 flex-col gap-3">
+        <h2 className="text-[12px] font-semibold tracking-[0.08em] text-blue-deep uppercase dark:text-blue-bright">
+          {t("you.libraries")}
+        </h2>
+        <SharedWithMe />
+        <Meetings />
+        <Documents />
+      </section>
+
+      <details className="rounded-brand-lg border bg-card p-4 shadow-e1">
+        <summary className="cursor-pointer text-[16px] font-semibold tracking-[-0.01em]">
+          {t("you.whatsRunning")}
+        </summary>
+        <p className="mt-2 text-[14px] leading-relaxed text-muted-foreground">
+          {t("you.whatsRunningHint")}
+        </p>
+        <Link
+          to="/app/you/running"
+          className="mt-3 inline-block text-[13px] text-muted-foreground underline-offset-2 hover:underline"
+        >
+          {t("you.seeRunning")}
+        </Link>
+      </details>
+
+      <button
+        type="button"
+        onClick={() => void signOut()}
+        className="inline-flex items-center gap-2 self-start text-[13px] text-muted-foreground transition-colors hover:text-foreground"
+      >
+        <LogOut className="size-4" aria-hidden="true" />
+        {t("account.signOut")}
+      </button>
+    </div>
   );
 }

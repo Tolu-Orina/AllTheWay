@@ -1,4 +1,5 @@
-import { AlertTriangle, ShieldCheck, ShieldX } from "lucide-react";
+import { AlertTriangle, ArrowLeft, ShieldCheck, ShieldX } from "lucide-react";
+import { Link } from "react-router";
 import { useT } from "@/app/i18n";
 
 import { Async } from "@/app/async";
@@ -34,8 +35,15 @@ export default function Agents() {
   return (
     <div className="flex flex-col gap-5">
       <header>
-        <h1 className="text-[26px] leading-tight font-bold tracking-[-0.02em]">
-          {t("nav.agents")}
+        <Link
+          to="/app/you"
+          className="inline-flex items-center gap-1.5 text-[13px] text-muted-foreground transition-colors hover:text-foreground"
+        >
+          <ArrowLeft className="size-4" aria-hidden="true" />
+          {t("nav.you")}
+        </Link>
+        <h1 className="mt-3 text-[26px] leading-tight font-bold tracking-[-0.02em]">
+          {t("you.whatsRunning")}
         </h1>
         <p className="mt-1 max-w-prose text-[14px] leading-relaxed text-muted-foreground">
           {t("common.everyAgentThisSystemWillTalk")}

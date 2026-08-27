@@ -1,8 +1,11 @@
-import { Brain, House, LayoutGrid, Radar, ShieldCheck } from "lucide-react";
+import { House, LayoutGrid, Radar, User } from "lucide-react";
 
 /**
  * One nav definition, consumed by both the desktop sidebar and the mobile tab
  * bar. Two lists would drift the moment a route is added.
+ *
+ * Four destinations. Agents and Profile are not the product — they live under
+ * You. TabBar treats `/app` as exact so Work does not light Today.
  */
 export type NavItem = {
   to: string;
@@ -15,9 +18,8 @@ export type NavItem = {
 };
 
 export const NAV: NavItem[] = [
-  { to: "/app", labelKey: "nav.home", icon: House },
-  { to: "/app/sessions", labelKey: "nav.sessions", icon: LayoutGrid },
+  { to: "/app", labelKey: "nav.today", icon: House },
+  { to: "/app/work", labelKey: "nav.work", icon: LayoutGrid },
   { to: "/app/watchers", labelKey: "nav.watchers", icon: Radar },
-  { to: "/app/agents", labelKey: "nav.agents", icon: ShieldCheck },
-  { to: "/app/profile", labelKey: "nav.profile", icon: Brain },
+  { to: "/app/you", labelKey: "nav.you", icon: User },
 ];

@@ -361,7 +361,7 @@ function ContinueCard({ plan }: { plan: SessionDetail }) {
       </ul>
 
       <Button
-        render={<Link to={`/app/sessions/${plan.id}`} />}
+        render={<Link to={`/app/work/${plan.id}`} />}
         variant="brand"
         size="lg"
         className="mt-5"
@@ -407,7 +407,7 @@ function StarterChips({
       ))}
       {plan ? (
         <Link
-          to={`/app/sessions/${plan.id}`}
+          to={`/app/work/${plan.id}`}
           className="rounded-full border border-primary bg-primary/10 px-3.5 py-2 text-[13px]"
         >
           {t("common.continue")}

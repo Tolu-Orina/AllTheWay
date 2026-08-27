@@ -5,7 +5,10 @@
     "watchers": "Observadores",
     "agents": "Agentes",
     "profile": "Perfil",
-    "recents": "Recientes"
+    "recents": "Recientes",
+    "today": "Hoy",
+    "work": "Trabajo",
+    "you": "Tú"
   },
   "digest": {
     "heading": "Desde ayer",
@@ -220,5 +223,29 @@
     "goToSignIn": "Ir a iniciar sesión",
     "useADifferentEmail": "Usar otro correo electrónico",
     "sendANewCode": "Enviar un código nuevo"
+  },
+  "you": {
+    "tagline": "Plan, lo que ha aprendido, idioma y las cuentas que puede usar.",
+    "plan": "Plan y uso",
+    "learned": "Lo que ha aprendido",
+    "languageVoice": "Idioma y voz",
+    "libraries": "Documentos y reuniones",
+    "whatsRunning": "Qué está en marcha",
+    "whatsRunningHint": "Los agentes y especialistas que usa este producto, cada uno con una tarjeta publicada.",
+    "seeRunning": "Ver agentes y especialistas"
+  },
+  "work": {
+    "listHint": "Hilos que tú y el compañero estáis trabajando.",
+    "bringAFile": "Traer un archivo",
+    "emptyTitle": "Aún no hay trabajo",
+    "emptyBody": "Empieza uno describiendo lo que quieres terminar. El compañero preguntará antes de asumir nada.",
+    "startFirst": "Empieza tu primer trabajo"
+  },
+  "search": {
+    "placeholder": "Buscar trabajo, observadores, documentos…",
+    "noResults": "Nada coincide.",
+    "work": "Trabajo",
+    "watchers": "Observadores",
+    "documents": "Documentos"
   }
 }

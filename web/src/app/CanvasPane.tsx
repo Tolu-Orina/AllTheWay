@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useT } from "@/app/i18n";
 import { ArrowLeft, FileText, Image as ImageIcon, ListChecks } from "lucide-react";
 
@@ -14,6 +14,9 @@ import { api, type Artifact } from "@/app/data";
  * artifact is the *subject* of the conversation happening beside it — sending
  * someone to another screen to look at it would break the pairing the canvas
  * exists to create.
+ *
+ * When this is a session's canvas, the first artifact opens itself. Discovering
+ * a tab named Work inside a panel named companion is not a product.
  */
 
 const ICONS = {
@@ -24,10 +27,19 @@ const ICONS = {
   video: ImageIcon,
 } as const;
 
-export function CanvasPane() {
+export function CanvasPane({ sessionId }: { sessionId?: string }) {
   const t = useT();
   const [openId, setOpenId] = useState<string | null>(null);
-  const { state, reload } = useAsync(() => api.artifacts());
+  const { state, reload } = useAsync(() => api.artifacts(sessionId), [sessionId ?? ""]);
+
+  useEffect(() => {
+    setOpenId(null);
+  }, [sessionId]);
+
+  useEffect(() => {
+    if (!sessionId || state.status !== "ready" || state.data.length === 0) return;
+    setOpenId((current) => current ?? state.data[0]!.id);
+  }, [sessionId, state]);
 
   if (openId) {
     return (

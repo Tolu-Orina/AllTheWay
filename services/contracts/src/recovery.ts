@@ -84,13 +84,13 @@ export const ROUTES: Record<FailureKind, Route[]> = {
     route("later", "Come back to this later", "change"),
   ],
   connector_not_connected: [
-    route("connect", "Connect the account", "navigate", "/app/profile"),
+    route("connect", "Connect the account", "navigate", "/app/you"),
     route("manual", "I'll do this one myself", "change"),
     route("skip", "Skip this step", "change"),
   ],
   plan_limit: [
-    route("remaining", "See what's left this month", "navigate", "/app/profile"),
-    route("upgrade", "Upgrade the plan", "navigate", "/app/profile"),
+    route("remaining", "See what's left this month", "navigate", "/app/you"),
+    route("upgrade", "Upgrade the plan", "navigate", "/app/you"),
     route("wait", "Wait for the monthly reset", "change"),
   ],
   screening_blocked: [
@@ -101,12 +101,12 @@ export const ROUTES: Record<FailureKind, Route[]> = {
   ],
   meet_refused: [
     route("which", "Which tier took the notes, and why", "explain"),
-    route("transcript", "Read the transcript instead", "navigate", "/app/profile"),
+    route("transcript", "Read the transcript instead", "navigate", "/app/you"),
   ],
   retrieval_empty: [
     route("say", "Answer without documents", "change"),
     route("rephrase", "Search differently", "change"),
-    route("add", "Add a document", "navigate", "/app/profile"),
+    route("add", "Add a document", "navigate", "/app/you"),
   ],
   not_confirmed: [
     route("confirm", "Yes, do it", "retry"),
@@ -114,7 +114,7 @@ export const ROUTES: Record<FailureKind, Route[]> = {
     route("cancel", "Leave it", "change"),
   ],
   above_ceiling: [
-    route("ceiling", "Raise what it may do on its own", "navigate", "/app/profile"),
+    route("ceiling", "Raise what it may do on its own", "navigate", "/app/you"),
     route("once", "Approve just this once", "retry"),
     route("cancel", "Leave it", "change"),
   ],
@@ -128,7 +128,7 @@ export const ROUTES: Record<FailureKind, Route[]> = {
     route("later", "Come back to this later", "change"),
   ],
   out_of_scope: [
-    route("grant", "Allow this too", "navigate", "/app/profile"),
+    route("grant", "Allow this too", "navigate", "/app/you"),
     route("manual", "I'll do this one myself", "change"),
   ],
   upstream_error: [

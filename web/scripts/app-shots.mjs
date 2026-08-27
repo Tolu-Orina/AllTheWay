@@ -7,11 +7,11 @@ const issues = [];
 
 const shots = [
   { name: "app-desktop-home", url: "/app", w: 1440, h: 900 },
-  { name: "app-desktop-session", url: "/app/sessions/nav", w: 1440, h: 900 },
-  { name: "app-desktop-error", url: "/app/sessions?fail=sessions", w: 1440, h: 900 },
+  { name: "app-desktop-session", url: "/app/work/nav", w: 1440, h: 900 },
+  { name: "app-desktop-error", url: "/app/work?fail=sessions", w: 1440, h: 900 },
   { name: "app-desktop-dark", url: "/app", w: 1440, h: 900, dark: true },
   { name: "app-mobile-home", url: "/app", w: 390, h: 844 },
-  { name: "app-mobile-profile", url: "/app/profile", w: 390, h: 844 },
+  { name: "app-mobile-profile", url: "/app/you", w: 390, h: 844 },
 ];
 
 for (const s of shots) {

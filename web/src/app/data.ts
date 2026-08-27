@@ -236,7 +236,13 @@ export const api = {
 
   /* --- Artifacts (v3 Phase A) ------------------------------------- */
 
-  artifacts: () => apiGet("/artifacts", z.array(ArtifactSchema)),
+  artifacts: (sessionId?: string) =>
+    apiGet(
+      sessionId
+        ? `/artifacts?sessionId=${encodeURIComponent(sessionId)}`
+        : "/artifacts",
+      z.array(ArtifactSchema),
+    ),
 
   artifact: (id: string) =>
     apiGet(`/artifacts/${encodeURIComponent(id)}`, ArtifactDetailSchema),

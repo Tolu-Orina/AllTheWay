@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useRef, useState } from "react";
+import { useParams } from "react-router";
 import { useT } from "@/app/i18n";
 import { Check, Download, FileText, History, Loader2 } from "lucide-react";
 
@@ -422,3 +423,18 @@ function Correction({ note }: { note: string }) {
     </p>
   );
 }
+
+/**
+ * Shared-with-me and bookmarks open an artifact as a page. The pane still
+ * owns the in-work view; this is the same object without the companion chrome.
+ */
+export function ArtifactScreen() {
+  const { id = "" } = useParams();
+  if (!id) return null;
+  return (
+    <div className="min-h-[28rem] overflow-hidden rounded-brand-lg border bg-card">
+      <Canvas artifactId={id} />
+    </div>
+  );
+}
+

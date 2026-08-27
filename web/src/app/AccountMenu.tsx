@@ -90,12 +90,12 @@ export function AccountMenu({ className }: { className?: string }) {
             role="menuitem"
             onClick={() => {
               setOpen(false);
-              navigate("/app/profile");
+              navigate("/app/you");
             }}
             className="flex w-full items-center gap-2.5 px-3.5 py-2.5 text-left text-[13.5px] transition-colors hover:bg-muted"
           >
             <User className="size-4 shrink-0 text-muted-foreground" aria-hidden="true" />
-            {t("nav.profile")}
+            {t("nav.you")}
           </button>
 
           <button

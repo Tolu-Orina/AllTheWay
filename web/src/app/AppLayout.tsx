@@ -1,10 +1,9 @@
 import { useEffect, useState } from "react";
 import { Outlet } from "react-router";
-import { Bell } from "lucide-react";
 
 import { Ambient } from "@/components/blocks/ambient";
 import { Logo } from "@/components/primitives/logo";
-import { Avatar } from "@/app/Avatar";
+import { AccountMenu } from "@/app/AccountMenu";
 import { AppTopBar } from "@/app/AppTopBar";
 import { Sidebar } from "@/app/Sidebar";
 import { TabBar } from "@/app/TabBar";
@@ -52,16 +51,7 @@ export function AppLayout() {
           style={{ paddingTop: "max(env(safe-area-inset-top), 0.75rem)" }}
         >
           <Logo />
-          <div className="flex items-center gap-2">
-            <button
-              type="button"
-              aria-label="Notifications"
-              className="grid size-10 place-items-center rounded-full text-muted-foreground transition-colors hover:text-foreground"
-            >
-              <Bell className="size-5" aria-hidden="true" />
-            </button>
-            <Avatar />
-          </div>
+          <AccountMenu />
         </header>
 
         {/* pb-28 clears the floating tab bar; dropped once the sidebar takes over. */}

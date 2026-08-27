@@ -5,7 +5,10 @@
     "watchers": "Watchers",
     "agents": "Agents",
     "profile": "Profil",
-    "recents": "Récents"
+    "recents": "Récents",
+    "today": "Aujourd’hui",
+    "work": "Travail",
+    "you": "Vous"
   },
   "digest": {
     "heading": "Depuis hier",
@@ -220,5 +223,29 @@
     "goToSignIn": "Aller à la connexion",
     "useADifferentEmail": "Utiliser un autre e-mail",
     "sendANewCode": "Renvoyer un code"
+  },
+  "you": {
+    "tagline": "Forfait, ce qu’il a appris, langue, et les comptes qu’il peut utiliser.",
+    "plan": "Forfait et usage",
+    "learned": "Ce qu’il a appris",
+    "languageVoice": "Langue et voix",
+    "libraries": "Documents et réunions",
+    "whatsRunning": "Ce qui tourne",
+    "whatsRunningHint": "Les agents et spécialistes que ce produit utilise, chacun avec une carte publiée.",
+    "seeRunning": "Voir les agents et spécialistes"
+  },
+  "work": {
+    "listHint": "Les fils que vous et le compagnon êtes en train de traiter.",
+    "bringAFile": "Apporter un fichier",
+    "emptyTitle": "Pas encore de travail",
+    "emptyBody": "Commencez-en un en décrivant ce que vous voulez terminer. Le compagnon demandera avant de supposer quoi que ce soit.",
+    "startFirst": "Commencer votre premier travail"
+  },
+  "search": {
+    "placeholder": "Rechercher travail, watchers, documents…",
+    "noResults": "Aucun résultat.",
+    "work": "Travail",
+    "watchers": "Watchers",
+    "documents": "Documents"
   }
 }

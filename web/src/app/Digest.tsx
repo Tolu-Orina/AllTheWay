@@ -61,7 +61,7 @@ export function Digest({ digest }: { digest: DigestData }) {
                 {digest.awaitingDecision.map((d) => (
                   <li key={d.id}>
                     <Link
-                      to={d.sessionId ? `/app/sessions/${d.sessionId}` : "/app/sessions"}
+                      to={d.sessionId ? `/app/work/${d.sessionId}` : "/app/work"}
                       className="flex items-start justify-between gap-2 text-[13px] leading-relaxed underline-offset-2 hover:underline"
                     >
                       <span className="min-w-0">{d.summary}</span>

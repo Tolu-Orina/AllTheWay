@@ -43,8 +43,8 @@ async function ask(text) {
   await composer().locator(":scope:not([disabled])").waitFor({ timeout: 20000 });
 }
 
-await page.goto(`${BASE}/app/sessions`, { waitUntil: "networkidle" });
-await main().locator("a[href*='/app/sessions/']").first().click();
+await page.goto(`${BASE}/app/work`, { waitUntil: "networkidle" });
+await main().locator("a[href*='/app/work/']").first().click();
 await composer().waitFor();
 
 // --- a harmless plan must not be gated ------------------------------------

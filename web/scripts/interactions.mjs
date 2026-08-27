@@ -19,7 +19,7 @@ await page.waitForTimeout(200);
 check("resume -> Running", (await firstCard.innerText()).includes("Running"));
 
 // --- profile revert ---
-await page.goto("http://localhost:4173/app/profile", { waitUntil: "networkidle" });
+await page.goto("http://localhost:4173/app/you", { waitUntil: "networkidle" });
 await page.waitForSelector("text=Navigation");
 const before = await page.locator("main li").count();
 await page.getByRole("button", { name: "Revert" }).first().click();
@@ -42,7 +42,7 @@ await page.waitForTimeout(200);
 check("panel reopens", (await page.locator('aside[aria-label="Companion"]').count()) === 1);
 
 // --- error retry ---
-await page.goto("http://localhost:4173/app/sessions?fail=sessions", { waitUntil: "networkidle" });
+await page.goto("http://localhost:4173/app/work?fail=sessions", { waitUntil: "networkidle" });
 await page.waitForSelector('[role="alert"]');
 check("error state renders", await page.locator('[role="alert"]').isVisible());
 check("retry button present", await page.getByRole("button", { name: "Try again" }).isVisible());

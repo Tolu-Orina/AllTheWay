@@ -31,7 +31,7 @@ await page.waitForSelector("text=Nav wireframe", { timeout: 15000 });
 check("Home renders the seeded session from Firestore", true);
 check("requests carried a Bearer ID token", sawAuthHeader);
 
-await page.goto(`${BASE}/app/sessions`, { waitUntil: "networkidle" });
+await page.goto(`${BASE}/app/work`, { waitUntil: "networkidle" });
 await page.waitForSelector("main >> text=Grant application draft", { timeout: 15000 });
 const rows = await page.locator("main li").count();
 check(`Sessions lists all 3 seeded rows (got ${rows})`, rows === 3);
@@ -53,7 +53,7 @@ const after = (await page.locator("li", { hasText: "Client inquiries" }).first()
 check(`watcher toggle persisted across reload (${before} -> ${after})`, before !== after);
 
 // Preference revert writes to the ledger.
-await page.goto(`${BASE}/app/profile`, { waitUntil: "networkidle" });
+await page.goto(`${BASE}/app/you`, { waitUntil: "networkidle" });
 await page.waitForSelector("text=Navigation", { timeout: 15000 });
 const prefsBefore = await page.locator("main li").count();
 await page.getByRole("button", { name: "Revert" }).first().click();

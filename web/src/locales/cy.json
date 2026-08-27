@@ -5,7 +5,10 @@
     "watchers": "Gwylwyr",
     "agents": "Asiantau",
     "profile": "Proffil",
-    "recents": "Diweddar"
+    "recents": "Diweddar",
+    "today": "Heddiw",
+    "work": "Gwaith",
+    "you": "Chi"
   },
   "digest": {
     "heading": "Ers ddoe",
@@ -229,5 +232,29 @@
     "goToSignIn": "Mynd i fewngofnodi",
     "useADifferentEmail": "Defnyddio e-bost gwahanol",
     "sendANewCode": "Anfon cod newydd"
+  },
+  "you": {
+    "tagline": "Cynllun, beth mae wedi’i ddysgu, iaith, a’r cyfrifon y caiff eu defnyddio.",
+    "plan": "Cynllun a defnydd",
+    "learned": "Beth mae wedi’i ddysgu",
+    "languageVoice": "Iaith a llais",
+    "libraries": "Dogfennau a chyfarfodydd",
+    "whatsRunning": "Beth sy’n rhedeg",
+    "whatsRunningHint": "Yr asiantau a’r arbenigwyr y mae’r cynnyrch hwn yn eu defnyddio, pob un â cherdyn cyhoeddedig.",
+    "seeRunning": "Gweld asiantau ac arbenigwyr"
+  },
+  "work": {
+    "listHint": "Edau rydych chi a’r cydymaith yn gweithio drwyddynt.",
+    "bringAFile": "Dewch â ffeil",
+    "emptyTitle": "Dim gwaith eto",
+    "emptyBody": "Dechreuwch un drwy ddisgrifio beth rydych chi’n ceisio’i orffen. Bydd y cydymaith yn gofyn cyn cymryd dim yn ganiataol.",
+    "startFirst": "Dechrau eich gwaith cyntaf"
+  },
+  "search": {
+    "placeholder": "Chwilio gwaith, gwylwyr, dogfennau…",
+    "noResults": "Dim byd yn cyfateb.",
+    "work": "Gwaith",
+    "watchers": "Gwylwyr",
+    "documents": "Dogfennau"
   }
 }

@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import { useT } from "@/app/i18n";
-import { Link, useNavigate, useParams } from "react-router";
+import { Link, useLocation, useNavigate, useParams } from "react-router";
 import { motion, useReducedMotion } from "motion/react";
 import { AlertCircle, ArrowLeft, Check, Send, ShieldAlert } from "lucide-react";
 
@@ -109,6 +109,8 @@ export default function SessionDetailScreen() {
   const { id = "" } = useParams();
   const { state, reload } = useAsync<Detail | null>(() => api.session(id), [id]);
   const { turn, send } = useTurn(id);
+  const location = useLocation();
+  const seedState = location.state as { seed?: string; promptOnly?: boolean } | null;
   const [draft, setDraft] = useState("");
   const hadTurn = useRef(false);
   const ended = useRef(false);
@@ -122,6 +124,19 @@ export default function SessionDetailScreen() {
       void api.endSession(sessionId).catch(() => {});
     };
   }, [id]);
+
+  useEffect(() => {
+    const seed = seedState?.seed?.trim();
+    if (!id || !seed) return;
+    const promptOnly = seedState?.promptOnly === true;
+    navigate(".", { replace: true, state: null });
+    if (promptOnly) {
+      setDraft(seed);
+      return;
+    }
+    hadTurn.current = true;
+    void send(seed);
+  }, [id, seedState?.seed, seedState?.promptOnly, send, navigate]);
 
   const working = turn.phase === "working";
   // Once a turn has produced steps they are the plan on screen. Before that the
@@ -170,18 +185,18 @@ export default function SessionDetailScreen() {
   const doneForNow = () => {
     ended.current = true;
     void api.endSession(id).catch(() => {});
-    navigate("/app/sessions");
+    navigate("/app/work");
   };
 
   return (
     <div className="flex flex-col gap-5">
       <div className="flex items-center justify-between gap-3">
         <Link
-          to="/app/sessions"
+          to="/app/work"
           className="inline-flex items-center gap-1.5 text-[13px] text-muted-foreground transition-colors hover:text-foreground"
         >
           <ArrowLeft className="size-4" aria-hidden="true" />
-          {t("nav.sessions")}
+          {t("nav.work")}
         </Link>
         <button
           type="button"

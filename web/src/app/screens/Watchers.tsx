@@ -332,7 +332,7 @@ export default function Watchers() {
 
                       {sessionByWatcher[w.id] ? (
                         <Link
-                          to={`/app/sessions/${sessionByWatcher[w.id]}`}
+                          to={`/app/work/${sessionByWatcher[w.id]}`}
                           className="text-foreground underline-offset-2 hover:underline"
                         >
                           {t("watchers.openLastRun")}

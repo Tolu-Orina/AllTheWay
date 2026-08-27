@@ -93,7 +93,9 @@ function unavailable(res: express.Response): boolean {
 }
 
 artifactRoutes.get("/", requireUser, async (req, res) => {
-  res.json(await listArtifacts(req.uid!));
+  const raw = req.query.sessionId;
+  const sessionId = typeof raw === "string" && raw.length > 0 ? raw : undefined;
+  res.json(await listArtifacts(req.uid!, 50, sessionId));
 });
 
 artifactRoutes.get("/:id", requireUser, async (req, res) => {

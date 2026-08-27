@@ -5,21 +5,21 @@ import { Logo } from "@/components/primitives/logo";
 import { Avatar } from "@/app/Avatar";
 import { NAV } from "@/app/nav";
 import { useT } from "@/app/i18n";
+import { useAsync } from "@/app/use-async";
+import { api } from "@/app/data";
 import { nameFor, useAppUser } from "@/app/user";
 import { useAuth } from "@/auth/useAuth";
 import { cn } from "@/lib/utils";
-
-const RECENTS = [
-  { id: "grant", label: "Grant application draft" },
-  { id: "contract", label: "Contract law, chapter 4" },
-  { id: "nav", label: "Nav wireframe" },
-];
 
 /**
  * Desktop navigation. Hidden below lg, where the tab bar takes over.
  *
  * Search and New live in the main column, not here — this is only about where
  * you are, never about what you are doing.
+ *
+ * Recents are the last five work items from the API. Placeholders used to live
+ * here and linked to sessions that did not exist; the heading is omitted until
+ * there is something real to list.
  */
 export function Sidebar() {
   const t = useT();
@@ -27,6 +27,8 @@ export function Sidebar() {
   const name = nameFor(user);
   const { adapter } = useAuth();
   const navigate = useNavigate();
+  const { state } = useAsync(() => api.sessions());
+  const recents = state.status === "ready" ? state.data.slice(0, 5) : [];
 
   async function signOut() {
     await adapter.signOut();
@@ -69,23 +71,25 @@ export function Sidebar() {
           ))}
         </nav>
 
-        <div>
-          <h2 className="px-3 pb-2 text-[11px] font-semibold tracking-[0.1em] text-muted-foreground uppercase">
-            {t("nav.recents")}
-          </h2>
-          <ul className="flex flex-col gap-0.5">
-            {RECENTS.map((r) => (
-              <li key={r.id}>
-                <NavLink
-                  to={`/app/sessions/${r.id}`}
-                  className="block truncate rounded-brand px-3 py-2 text-[13px] text-muted-foreground transition-colors hover:bg-muted hover:text-foreground"
-                >
-                  {r.label}
-                </NavLink>
-              </li>
-            ))}
-          </ul>
-        </div>
+        {recents.length > 0 ? (
+          <div>
+            <h2 className="px-3 pb-2 text-[11px] font-semibold tracking-[0.1em] text-muted-foreground uppercase">
+              {t("nav.recents")}
+            </h2>
+            <ul className="flex flex-col gap-0.5">
+              {recents.map((r) => (
+                <li key={r.id}>
+                  <NavLink
+                    to={`/app/work/${r.id}`}
+                    className="block truncate rounded-brand px-3 py-2 text-[13px] text-muted-foreground transition-colors hover:bg-muted hover:text-foreground"
+                  >
+                    {r.title}
+                  </NavLink>
+                </li>
+              ))}
+            </ul>
+          </div>
+        ) : null}
       </div>
 
       {/* Account. Pinned to the bottom so it never competes with navigation. */}

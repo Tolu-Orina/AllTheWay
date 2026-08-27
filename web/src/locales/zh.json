@@ -5,7 +5,10 @@
     "watchers": "监控器",
     "agents": "智能体",
     "profile": "个人资料",
-    "recents": "最近"
+    "recents": "最近",
+    "today": "今天",
+    "work": "工作",
+    "you": "我的"
   },
   "digest": {
     "heading": "昨日至今",
@@ -214,5 +217,29 @@
     "goToSignIn": "前往登录",
     "useADifferentEmail": "使用其他邮箱",
     "sendANewCode": "重新发送验证码"
+  },
+  "you": {
+    "tagline": "方案、它学到的内容、语言，以及它可以使用的账户。",
+    "plan": "方案与用量",
+    "learned": "它学到了什么",
+    "languageVoice": "语言与语音",
+    "libraries": "文档与会议",
+    "whatsRunning": "正在运行",
+    "whatsRunningHint": "本产品使用的智能体与专家，各自带有已发布的卡片。",
+    "seeRunning": "查看智能体与专家"
+  },
+  "work": {
+    "listHint": "你和同伴正在处理的线索。",
+    "bringAFile": "带上一个文件",
+    "emptyTitle": "还没有工作",
+    "emptyBody": "先说清你想完成什么。同伴会在假设之前先问你。",
+    "startFirst": "开始第一份工作"
+  },
+  "search": {
+    "placeholder": "搜索工作、监控器、文档…",
+    "noResults": "没有匹配项。",
+    "work": "工作",
+    "watchers": "监控器",
+    "documents": "文档"
   }
 }

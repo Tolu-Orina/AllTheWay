@@ -2,6 +2,7 @@ import { BadgeCheck, Lock, ShieldAlert } from "lucide-react";
 import { useT } from "@/app/i18n";
 
 import type { Agent } from "@/app/data";
+import { useStartWork } from "@/app/use-start-work";
 import { cn } from "@/lib/utils";
 
 /**
@@ -39,6 +40,10 @@ interface Specialist {
   description: string;
   /** The id in the registry, when this capability is a published A2A agent. */
   agentId: string;
+  /** First message once a work item exists. */
+  seed: string;
+  /** Leave the seed in the composer instead of sending it. */
+  promptOnly?: boolean;
   /**
    * True when the capability is delivered by a service that publishes no card.
    *
@@ -58,21 +63,26 @@ const SPECIALISTS: Specialist[] = [
     label: "Document guide",
     description: "Reads what you have added and answers with citations you can check.",
     agentId: "librarian",
+    seed: "Help me read a document I will upload",
   },
   {
     label: "Design partner",
     description: "Drafts and redrafts the thing you are making, and keeps every version.",
     agentId: "orchestrator",
+    seed: "Draft a layout",
   },
   {
     label: "Meeting scribe",
     description: "Takes notes in meetings. It listens and cannot speak.",
     agentId: "scribe",
+    seed: "Note my next meeting",
   },
   {
     label: "Researcher",
     description: "Goes and finds out, and says where each answer came from.",
     agentId: "research-cell",
+    seed: "Find out about …",
+    promptOnly: true,
   },
 ];
 
@@ -85,8 +95,8 @@ const SPECIALISTS: Specialist[] = [
  * new information.
  */
 export function Specialists({ agents }: { agents: Agent[] }) {
-
-const t = useT();
+  const t = useT();
+  const { startWork, starting } = useStartWork();
 
   return (
     <section className="flex flex-col gap-3">
@@ -103,6 +113,13 @@ const t = useT();
             key={specialist.agentId}
             specialist={specialist}
             agent={agents.find((a) => a.id === specialist.agentId)}
+            starting={starting}
+            onStart={() =>
+              void startWork({
+                seed: specialist.seed,
+                promptOnly: specialist.promptOnly,
+              })
+            }
           />
         ))}
       </ul>
@@ -113,9 +130,13 @@ const t = useT();
 function SpecialistRow({
   specialist,
   agent,
+  starting,
+  onStart,
 }: {
   specialist: Specialist;
   agent: Agent | undefined;
+  starting: boolean;
+  onStart: () => void;
 }) {
   const t = useT();
   const trusted = agent?.signature?.trusted ?? false;
@@ -126,12 +147,16 @@ function SpecialistRow({
   const suspect = !specialist.internal && Boolean(agent?.reachable) && !trusted;
 
   return (
-    <li
-      className={cn(
-        "rounded-brand border bg-card px-3.5 py-3",
-        suspect && "border-destructive/40",
-      )}
-    >
+    <li>
+      <button
+        type="button"
+        onClick={onStart}
+        disabled={starting}
+        className={cn(
+          "w-full rounded-brand border bg-card px-3.5 py-3 text-left transition-colors hover:border-primary/40 disabled:opacity-60",
+          suspect && "border-destructive/40",
+        )}
+      >
       <div className="flex items-start justify-between gap-3">
         <div className="min-w-0">
           <p className="text-[13.5px] font-medium">{specialist.label}</p>
@@ -184,6 +209,7 @@ function SpecialistRow({
           {t("specialists.notRegisteredInThisDeploymentThis")}
         </p>
       )}
+      </button>
     </li>
   );
 }

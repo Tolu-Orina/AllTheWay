@@ -14,6 +14,7 @@ import { motion, useReducedMotion } from "motion/react";
 import { LogoMark } from "@/components/primitives/logo";
 import { Sheet, SheetContent } from "@/components/ui/sheet";
 import { CanvasPane } from "@/app/CanvasPane";
+import { useAsync } from "@/app/use-async";
 import { api } from "@/app/data";
 import { useCompanionThread } from "@/app/companion-thread";
 import { cn } from "@/lib/utils";
@@ -250,8 +251,23 @@ export function CompanionPanel({
 }) {
   const { pathname } = useLocation();
   const onHome = pathname === "/app";
+  const sessionId = pathname.match(/^\/app\/work\/([^/]+)$/)?.[1];
+  const artifacts = useAsync(
+    () => (sessionId ? api.artifacts(sessionId) : Promise.resolve([])),
+    [sessionId ?? ""],
+  );
   const [sheetOpen, setSheetOpen] = useState(false);
   const [mode, setMode] = useState<"chat" | "work">("chat");
+
+  useEffect(() => {
+    if (!sessionId) {
+      setMode("chat");
+      return;
+    }
+    if (artifacts.state.status === "ready") {
+      setMode(artifacts.state.data.length > 0 ? "work" : "chat");
+    }
+  }, [sessionId, artifacts.state]);
 
   useEffect(() => {
     const mq = window.matchMedia(DOCKED_FROM);
@@ -283,7 +299,7 @@ export function CompanionPanel({
             </button>
           </div>
 
-          {mode === "chat" ? <CompanionConversation /> : <CanvasPane />}
+          {mode === "chat" ? <CompanionConversation /> : <CanvasPane key={sessionId ?? "all"} sessionId={sessionId} />}
         </aside>
       ) : (
         <div className="hidden shrink-0 border-l bg-card/60 p-2 xl:sticky xl:top-0 xl:block xl:h-dvh">
@@ -333,7 +349,7 @@ export function CompanionPanel({
             </button>
           </div>
 
-          {mode === "chat" ? <CompanionConversation /> : <CanvasPane />}
+          {mode === "chat" ? <CompanionConversation /> : <CanvasPane key={sessionId ?? "all"} sessionId={sessionId} />}
         </SheetContent>
       </Sheet>
     </>

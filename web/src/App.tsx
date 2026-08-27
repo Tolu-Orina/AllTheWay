@@ -1,5 +1,5 @@
 import { Suspense, lazy } from "react";
-import { Route, Routes } from "react-router";
+import { Navigate, Route, Routes, useParams, useSearchParams } from "react-router";
 
 import { RequireAuth } from "@/auth/RequireAuth";
 import { RouteFallback } from "@/app/RouteFallback";
@@ -40,6 +40,9 @@ const SessionDetail = lazy(() => import("@/app/screens/SessionDetail"));
 const Watchers = lazy(() => import("@/app/screens/Watchers"));
 const Agents = lazy(() => import("@/app/screens/Agents"));
 const Profile = lazy(() => import("@/app/screens/Profile"));
+const ArtifactScreen = lazy(() =>
+  import("@/app/Canvas").then((m) => ({ default: m.ArtifactScreen })),
+);
 
 /**
  * Auth guard and the signed-in shell share one catalogue. RequireAuth calls
@@ -52,6 +55,21 @@ function Authenticated() {
       <RequireAuth />
     </I18nProvider>
   );
+}
+
+/**
+ * Old bookmarks keep working. Query strings travel with them — `?fail=` in
+ * tests and `?connected=` after Google both used to live on the retired paths.
+ */
+function RedirectKeepQuery({ to }: { to: string }) {
+  const [params] = useSearchParams();
+  const q = params.toString();
+  return <Navigate to={q ? `${to}?${q}` : to} replace />;
+}
+
+function RedirectSessionToWork() {
+  const { id = "" } = useParams();
+  return <RedirectKeepQuery to={`/app/work/${id}`} />;
 }
 
 export default function App() {
@@ -70,11 +88,17 @@ export default function App() {
         <Route element={<Authenticated />}>
           <Route path="/app" element={<AppLayout />}>
             <Route index element={<Home />} />
-            <Route path="sessions" element={<Sessions />} />
-            <Route path="sessions/:id" element={<SessionDetail />} />
+            <Route path="work" element={<Sessions />} />
+            <Route path="work/:id" element={<SessionDetail />} />
             <Route path="watchers" element={<Watchers />} />
-            <Route path="agents" element={<Agents />} />
-            <Route path="profile" element={<Profile />} />
+            <Route path="you" element={<Profile />} />
+            <Route path="you/running" element={<Agents />} />
+            <Route path="artifacts/:id" element={<ArtifactScreen />} />
+
+            <Route path="sessions" element={<RedirectKeepQuery to="/app/work" />} />
+            <Route path="sessions/:id" element={<RedirectSessionToWork />} />
+            <Route path="profile" element={<RedirectKeepQuery to="/app/you" />} />
+            <Route path="agents" element={<RedirectKeepQuery to="/app/you/running" />} />
           </Route>
         </Route>
       </Routes>

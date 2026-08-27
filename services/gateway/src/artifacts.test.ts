@@ -51,12 +51,13 @@ if (!live) {
 
 const emulated = { skip: !live };
 
-async function seed(uid: string, title = "Onboarding wireframe") {
+async function seed(uid: string, title = "Onboarding wireframe", sessionId?: string) {
   return createArtifact(
     uid,
     {
       kind: "doc",
       title,
+      sessionId,
       provenance: { agentId: "gateway", cardVersion: "1.0.0", model: "", sources: [] },
       body: body("# v1"),
       mimeType: "text/markdown",
@@ -147,6 +148,15 @@ test("one user's list never contains another user's artifact", emulated, async (
   const bobs = await listArtifacts(BOB);
   assert.ok(!bobs.some((a) => a.id === alices.id));
   assert.ok(bobs.every((a) => a.title !== "Alice only"));
+});
+
+test("list can be filtered to one session", emulated, async () => {
+  const a = await seed(ALICE, "Session A doc", "sess-a");
+  await seed(ALICE, "Session B doc", "sess-b");
+
+  const listed = await listArtifacts(ALICE, 50, "sess-a");
+  assert.equal(listed.length, 1);
+  assert.equal(listed[0]!.id, a.id);
 });
 
 test("one user cannot append a version to another user's artifact", emulated, async () => {

@@ -52,7 +52,19 @@ function toArtifact(id: string, data: FirebaseFirestore.DocumentData): Artifact 
   });
 }
 
-export async function listArtifacts(uid: string, limit = 50): Promise<Artifact[]> {
+export async function listArtifacts(
+  uid: string,
+  limit = 50,
+  sessionId?: string,
+): Promise<Artifact[]> {
+  if (sessionId) {
+    // Equality only — no orderBy — so this does not wait on a composite index.
+    const snap = await artifacts(uid).where("sessionId", "==", sessionId).get();
+    return snap.docs
+      .map((d) => toArtifact(d.id, d.data()))
+      .sort((a, b) => (a.updatedAt < b.updatedAt ? 1 : -1))
+      .slice(0, limit);
+  }
   const snap = await artifacts(uid).orderBy("updatedAt", "desc").limit(limit).get();
   return snap.docs.map((d) => toArtifact(d.id, d.data()));
 }

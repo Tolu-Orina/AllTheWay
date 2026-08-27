@@ -1,10 +1,13 @@
 {
   "nav": {
     "home": "Home",
+    "today": "Today",
     "sessions": "Sessions",
+    "work": "Work",
     "watchers": "Watchers",
     "agents": "Agents",
     "profile": "Profile",
+    "you": "You",
     "recents": "Recents"
   },
   "digest": {
@@ -217,5 +220,29 @@
     "goToSignIn": "Go to sign in",
     "useADifferentEmail": "Use a different email",
     "sendANewCode": "Send a new code"
+  },
+  "you": {
+    "tagline": "Plan, what it has learned, language, and the accounts it may use.",
+    "plan": "Plan & usage",
+    "learned": "What it has learned",
+    "languageVoice": "Language & voice",
+    "libraries": "Documents & meetings",
+    "whatsRunning": "What's running",
+    "whatsRunningHint": "The agents and specialists this product uses, each with a published card.",
+    "seeRunning": "See agents and specialists"
+  },
+  "work": {
+    "listHint": "Threads you and the companion are working through.",
+    "bringAFile": "Bring a file",
+    "emptyTitle": "No work yet",
+    "emptyBody": "Start one by describing what you are trying to get done. The companion will ask before it assumes anything.",
+    "startFirst": "Start your first work"
+  },
+  "search": {
+    "placeholder": "Search work, watchers, documents…",
+    "noResults": "Nothing matches.",
+    "work": "Work",
+    "watchers": "Watchers",
+    "documents": "Documents"
   }
 }

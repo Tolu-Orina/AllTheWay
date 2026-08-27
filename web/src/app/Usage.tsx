@@ -56,14 +56,14 @@ function price(pence: number): string {
   return pence === 0 ? "Free" : `£${(pence / 100).toFixed(0)}/mo`;
 }
 
-export function Usage() {
+export function Usage({ heading }: { heading?: string }) {
   const t = useT();
   const { state, reload } = useAsync(() => api.usage());
 
   return (
     <section className="flex flex-col gap-3">
       <h2 className="text-[12px] font-semibold tracking-[0.08em] text-blue-deep uppercase dark:text-blue-bright">
-        {t("usage.thisMonth")}
+        {heading ?? t("usage.thisMonth")}
       </h2>
 
       <Async state={state} reload={reload}>

@@ -3,6 +3,13 @@ import { useCallback, useRef, useState } from "react";
 
 import { api } from "@/app/data";
 
+export type StartWorkOptions = {
+  /** First message, sent once the work item exists. */
+  seed?: string;
+  /** Put `seed` in the composer instead of sending it. Researcher stays a prompt. */
+  promptOnly?: boolean;
+};
+
 /**
  * New work: allocate a row, then go there. First message retitles it.
  *
@@ -14,18 +21,26 @@ export function useStartWork() {
   const [starting, setStarting] = useState(false);
   const inflight = useRef(false);
 
-  const startWork = useCallback(async () => {
-    if (inflight.current) return;
-    inflight.current = true;
-    setStarting(true);
-    try {
-      const { id } = await api.createSession();
-      navigate(`/app/sessions/${id}`);
-    } finally {
-      inflight.current = false;
-      setStarting(false);
-    }
-  }, [navigate]);
+  const startWork = useCallback(
+    async (opts?: StartWorkOptions) => {
+      if (inflight.current) return;
+      inflight.current = true;
+      setStarting(true);
+      try {
+        const { id } = await api.createSession();
+        navigate(`/app/work/${id}`, {
+          state:
+            opts?.seed != null
+              ? { seed: opts.seed, promptOnly: opts.promptOnly === true }
+              : undefined,
+        });
+      } finally {
+        inflight.current = false;
+        setStarting(false);
+      }
+    },
+    [navigate],
+  );
 
   return { startWork, starting };
 }

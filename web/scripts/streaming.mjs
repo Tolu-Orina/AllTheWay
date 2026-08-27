@@ -39,8 +39,8 @@ const main = () => page.locator("#app-main");
 const errs = [];
 page.on("pageerror", (e) => errs.push(e.message));
 
-await page.goto(`${BASE}/app/sessions`, { waitUntil: "networkidle" });
-await main().locator("a[href*='/app/sessions/']").first().click();
+await page.goto(`${BASE}/app/work`, { waitUntil: "networkidle" });
+await main().locator("a[href*='/app/work/']").first().click();
 await main().locator("#composer").waitFor();
 
 // Only rows this turn produced. The session already ships with a four-step

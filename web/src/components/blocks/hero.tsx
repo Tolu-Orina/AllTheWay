@@ -40,8 +40,8 @@ export function Hero() {
             {...rise(0.08)}
             className="mt-6 text-[18px] leading-relaxed text-muted-foreground sm:text-[19px]"
           >
-            Voice, autonomous watchers, and a memory that is yours to inspect —
-            one companion that shows you its plan before it acts on anything.
+            Talk it through, bring the document, keep the meeting. It shows
+            the plan before it acts — and you can see what it has learned.
           </motion.p>
 
           <motion.div

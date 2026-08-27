@@ -5,7 +5,10 @@
     "watchers": "Àwọn olùṣọ́",
     "agents": "Àwọn aṣojú",
     "profile": "Prófáìlì",
-    "recents": "Àwọn àìpẹ́"
+    "recents": "Àwọn àìpẹ́",
+    "today": "Òní",
+    "work": "Iṣẹ́",
+    "you": "Ìwọ"
   },
   "digest": {
     "heading": "Láti àná",
@@ -214,5 +217,29 @@
     "goToSignIn": "Lọ sí ìwọlé",
     "useADifferentEmail": "Lo ímeèlì mìíràn",
     "sendANewCode": "Fi kóòdù tuntun ránṣẹ́"
+  },
+  "you": {
+    "tagline": "Ètò, ohun tí ó ti kọ́, èdè, àti àwọn àkáùnù tí ó lè lò.",
+    "plan": "Ètò àti ìlò",
+    "learned": "Ohun tí ó ti kọ́",
+    "languageVoice": "Èdè àti ohùn",
+    "libraries": "Àwọn ìwé àti ìpàdé",
+    "whatsRunning": "Ohun tó ń ṣiṣẹ́",
+    "whatsRunningHint": "Àwọn aṣojú àti àwọn onímọ̀-ìjìnlẹ̀ tí ọjà yìí ń lò, ọ̀kọ̀ọ̀kan pẹ̀lú káàdì tí a tẹ̀jáde.",
+    "seeRunning": "Wo àwọn aṣojú àti onímọ̀-ìjìnlẹ̀"
+  },
+  "work": {
+    "listHint": "Àwọn okùn tí ìwọ àti ẹlẹgbẹ́ ń ṣiṣẹ́ lórí.",
+    "bringAFile": "Mú fáìlì wá",
+    "emptyTitle": "Kò sí iṣẹ́ síbẹ̀",
+    "emptyBody": "Bẹ̀rẹ̀ ọ̀kan nípa ṣíṣàpèjúwe ohun tí o fẹ́ parí. Ẹlẹgbẹ́ yóò béèrè kí ó tó ro nǹkan.",
+    "startFirst": "Bẹ̀rẹ̀ iṣẹ́ àkọ́kọ́ rẹ"
+  },
+  "search": {
+    "placeholder": "Wá iṣẹ́, olùṣọ́, ìwé…",
+    "noResults": "Kò sí ohun tó bá a mu.",
+    "work": "Iṣẹ́",
+    "watchers": "Àwọn olùṣọ́",
+    "documents": "Àwọn ìwé"
   }
 }

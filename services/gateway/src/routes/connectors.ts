@@ -192,7 +192,7 @@ connectorRoutes.post("/google/connect", requireUser, async (req, res) => {
 
 connectorRoutes.get("/google/callback", async (req, res) => {
   const done = (status: string) =>
-    res.redirect(`${env.webOrigins[0] ?? ""}/app/profile?connected=${status}`);
+    res.redirect(`${env.webOrigins[0] ?? ""}/app/you?connected=${status}`);
 
   const state = typeof req.query.state === "string" ? req.query.state : "";
   const code = typeof req.query.code === "string" ? req.query.code : "";

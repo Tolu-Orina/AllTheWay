@@ -23,7 +23,7 @@ export default function Sessions() {
     void (async () => {
       try {
         const { id } = await api.createSession();
-        if (!cancelled) navigate(`/app/sessions/${id}`, { replace: true });
+        if (!cancelled) navigate(`/app/work/${id}`, { replace: true });
       } catch {
         if (!cancelled) setSearchParams({}, { replace: true });
       }
@@ -38,10 +38,18 @@ export default function Sessions() {
       <header className="flex items-end justify-between gap-4">
         <div>
           <h1 className="text-[26px] leading-tight font-bold tracking-[-0.02em]">
-            {t("nav.sessions")}
+            {t("nav.work")}
           </h1>
           <p className="mt-1 text-[14px] text-muted-foreground">
-            {t("common.everythingYouAndTheCompanionAre")}
+            {t("work.listHint")}
+          </p>
+          <p className="mt-1">
+            <Link
+              to="/app/you#documents"
+              className="text-[13px] text-muted-foreground underline-offset-2 hover:underline"
+            >
+              {t("work.bringAFile")}
+            </Link>
           </p>
         </div>
         <Button
@@ -62,8 +70,8 @@ export default function Sessions() {
         isEmpty={(rows) => rows.length === 0}
         empty={
           <EmptyState
-            title="No sessions yet"
-            body="Start one by describing what you are trying to get done. The companion will ask before it assumes anything."
+            title={t("work.emptyTitle")}
+            body={t("work.emptyBody")}
             action={
               <Button
                 variant="brand"
@@ -72,7 +80,7 @@ export default function Sessions() {
                 onClick={() => void startWork()}
               >
                 <Plus />
-                {t("common.startYourFirstSession")}
+                {t("work.startFirst")}
               </Button>
             }
           />
@@ -83,7 +91,7 @@ export default function Sessions() {
             {rows.map((s) => (
               <li key={s.id}>
                 <Link
-                  to={`/app/sessions/${s.id}`}
+                  to={`/app/work/${s.id}`}
                   className="flex items-center gap-4 p-4 transition-colors hover:bg-muted/60"
                 >
                   <span className="min-w-0 flex-1">
