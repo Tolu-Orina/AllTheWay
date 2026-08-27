@@ -197,6 +197,24 @@ export const MeetingSchema = z.object({
   explanation: z.string(),
   participants: z.array(z.string()),
   status: z.enum(["listening", "processing", "ready", "blocked"]),
+  /**
+   * The most recent health sample, when one exists.
+   *
+   * Optional because a Tier 1 meeting has no live connection to measure — and
+   * showing a connection indicator for a transcript read afterwards would be
+   * describing something that never happened.
+   */
+  health: z
+    .object({
+      at: z.string(),
+      rtt: z.number(),
+      jitter: z.number(),
+      packetLoss: z.number(),
+      reconnects: z.number(),
+      streamGaps: z.number(),
+    })
+    .nullable()
+    .default(null),
 });
 
 /**

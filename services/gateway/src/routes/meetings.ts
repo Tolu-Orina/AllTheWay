@@ -144,6 +144,52 @@ meetingRoutes.post("/meetings/:id/opt-out", (req, res) => {
   })();
 });
 
+meetingRoutes.get("/meetings/:id/health", (req, res) => {
+  void (async () => {
+    if (unavailable(res)) return;
+    try {
+      const upstream = await callScribe(
+        req.uid!,
+        `/meetings/${encodeURIComponent(req.params.id)}/health`,
+      );
+      const body = await upstream.text();
+      if (!upstream.ok) {
+        res.status(502).json({ code: "upstream_error", message: "That could not be loaded." });
+        return;
+      }
+      const parsed = JSON.parse(body || "{}") as { samples?: unknown };
+      res.json(parsed.samples ?? []);
+    } catch {
+      res.status(502).json({ code: "upstream_error", message: "That could not be loaded." });
+    }
+  })();
+});
+
+meetingRoutes.post("/meetings/:id/extend", (req, res) => {
+  void (async () => {
+    if (unavailable(res)) return;
+
+    const minutes = z.number().int().min(5).max(120).default(30).safeParse(req.body?.minutes ?? 30);
+    if (!minutes.success) {
+      res.status(400).json({ code: "invalid_request", message: "Expected minutes." });
+      return;
+    }
+
+    try {
+      // Extending is always a person's decision. Nothing in this path may
+      // extend a meeting on its own — that is the whole reason the cap exists.
+      const upstream = await callScribe(
+        req.uid!,
+        `/meetings/${encodeURIComponent(req.params.id)}/extend`,
+        { method: "POST", body: JSON.stringify({ minutes: minutes.data }) },
+      );
+      await relay(res, upstream);
+    } catch {
+      res.status(502).json({ code: "upstream_error", message: "That could not be extended." });
+    }
+  })();
+});
+
 const ConfirmSchema = z.object({ id: z.string().min(1).max(200) });
 
 meetingRoutes.post("/meetings/:id/commitments/confirm", (req, res) => {

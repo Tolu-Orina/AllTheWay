@@ -2,6 +2,7 @@ import { FieldValue, getFirestore } from "firebase-admin/firestore";
 
 import { proposals, toNotes, type Note, type Utterance } from "./notes.js";
 import { tierExplanation, type Outcome } from "./tier.js";
+import { capState, describeGap, reportableGaps, utteranceId, type Gap } from "./session.js";
 
 /**
  * The meeting record.
@@ -38,6 +39,15 @@ import { tierExplanation, type Outcome } from "./tier.js";
  * transitions rather than inferred from a heartbeat.
  */
 
+export interface HealthSample {
+  at: string;
+  rtt: number;
+  jitter: number;
+  packetLoss: number;
+  reconnects: number;
+  streamGaps: number;
+}
+
 export type MeetingStatus = "listening" | "processing" | "ready" | "blocked";
 
 export interface MeetingRecord {
@@ -52,6 +62,7 @@ export interface MeetingRecord {
   explanation: string;
   participants: string[];
   status: MeetingStatus;
+  health: HealthSample | null;
 }
 
 const db = () => getFirestore();
@@ -101,7 +112,14 @@ export async function appendNotes(
   const batch = db().batch();
   const collection = meetings(uid).doc(meetingId).collection("notes");
   for (const note of notes) {
-    batch.set(collection.doc(), { ...note, at: note.at });
+    // Keyed by content, not by a generated id.
+    //
+    // After a reconnection Meet replays entries it already delivered. With an
+    // auto-id every replay became a second copy of the same sentence — and the
+    // longer the meeting, the more reconnections, the more duplicates. `set`
+    // on a derived id makes redelivery a no-op instead.
+    const id = utteranceId(note.at, note.speakerLabel, note.text);
+    batch.set(collection.doc(id), { ...note, at: note.at }, { merge: true });
   }
 
   // Commitments are stored separately and unconfirmed. Keeping them apart from
@@ -110,7 +128,20 @@ export async function appendNotes(
   // different authority.
   const pending = meetings(uid).doc(meetingId).collection("commitments");
   for (const proposal of proposals(notes)) {
-    batch.set(pending.doc(), { ...proposal, confirmed: false, at: proposal.at });
+    // The same derivation, and here it matters more. A duplicated note is
+    // noise; a duplicated commitment asks someone to approve the same thing
+    // twice, and the second approval could act again.
+    //
+    // `confirmed` is deliberately NOT written here.
+    //
+    // Merging it back as false would un-approve a commitment the user had
+    // already approved, every time the meeting reconnected — silently undoing
+    // a human decision. An absent field reads as false in `listCommitments`,
+    // so a new proposal is still unconfirmed without this write ever being able
+    // to reverse one.
+    const { confirmed: _unused, ...withoutConfirmed } = proposal;
+    const id = utteranceId(proposal.at, proposal.speakerLabel, proposal.text);
+    batch.set(pending.doc(id), { ...withoutConfirmed, at: proposal.at }, { merge: true });
   }
 
   await batch.commit();
@@ -147,6 +178,10 @@ export async function listMeetings(uid: string): Promise<MeetingRecord[]> {
       explanation: d.get("explanation") ?? "",
       participants: d.get("participants") ?? [],
       status: (d.get("status") ?? "processing") as MeetingStatus,
+      // Null for a Tier 1 meeting: there is no live connection to measure, and
+      // showing a quality indicator for a transcript read afterwards would
+      // describe something that never happened.
+      health: (d.get("health") as MeetingRecord["health"]) ?? null,
     };
   });
 }
@@ -200,4 +235,139 @@ export async function confirmCommitment(
     confirmedAt: FieldValue.serverTimestamp(),
   });
   return true;
+}
+
+
+// --------------------------------------------------------- session health
+
+
+/**
+ * Session health, stored rather than only logged.
+ *
+ * The question after a bad meeting is "what happened *in that meeting*", and a
+ * metric you cannot join to a meeting id cannot answer it. Logs are keyed by
+ * time and instance; this is keyed by the thing the user is asking about.
+ *
+ * Sampled rather than streamed: one row every fifteen seconds describes a
+ * ninety-minute meeting in 360 documents, which is cheap to read whole. Storing
+ * every RTC statistics tick would be a write per second per meeting for data
+ * nobody reads at that resolution.
+ */
+export async function recordHealth(
+  uid: string,
+  meetingId: string,
+  sample: HealthSample,
+): Promise<void> {
+  // Keyed by timestamp so a redelivered sample overwrites rather than doubling
+  // the apparent reconnect count — the number someone would read as "this
+  // meeting was unstable".
+  const batch = db().batch();
+
+  batch.set(
+    meetings(uid).doc(meetingId).collection("health").doc(sample.at),
+    sample,
+    { merge: true },
+  );
+
+  // The latest sample is also denormalised onto the meeting itself.
+  //
+  // The meetings list shows a live quality indicator, and reading a
+  // subcollection per row would be fifty extra queries to render one screen.
+  // The history stays in the subcollection, where the question "what happened
+  // in that meeting" is answered.
+  batch.set(meetings(uid).doc(meetingId), { health: sample }, { merge: true });
+
+  await batch.commit();
+}
+
+export async function readHealth(uid: string, meetingId: string): Promise<HealthSample[]> {
+  const snap = await meetings(uid)
+    .doc(meetingId)
+    .collection("health")
+    .orderBy("at", "asc")
+    .limit(500)
+    .get();
+
+  return snap.docs.map((d) => ({
+    at: d.get("at") ?? "",
+    rtt: Number(d.get("rtt") ?? 0),
+    jitter: Number(d.get("jitter") ?? 0),
+    packetLoss: Number(d.get("packetLoss") ?? 0),
+    reconnects: Number(d.get("reconnects") ?? 0),
+    streamGaps: Number(d.get("streamGaps") ?? 0),
+  }));
+}
+
+/**
+ * Record a stretch with no audio, in the notes themselves.
+ *
+ * Written as a note rather than as metadata, deliberately. A gap recorded only
+ * in a health table is a gap nobody reading the notes will ever see — and the
+ * whole risk here is someone trusting a record that looks complete.
+ */
+export async function recordGaps(
+  uid: string,
+  meetingId: string,
+  gaps: Gap[],
+  timeZone?: string,
+): Promise<number> {
+  const worth = reportableGaps(gaps);
+  if (worth.length === 0) return 0;
+
+  const batch = db().batch();
+  const collection = meetings(uid).doc(meetingId).collection("notes");
+
+  for (const gap of worth) {
+    // Same idempotency rule as an utterance: a replayed disconnection must not
+    // produce a second identical "no audio" line.
+    const id = utteranceId(gap.from, "system", `gap:${gap.to}`);
+    batch.set(
+      collection.doc(id),
+      {
+        at: gap.from,
+        speakerLabel: "Coverage",
+        text: describeGap(gap, timeZone),
+        isCommitment: false,
+        isGap: true,
+      },
+      { merge: true },
+    );
+  }
+
+  await batch.commit();
+  return worth.length;
+}
+
+/** Whether this meeting may keep recording, and for how much longer. */
+export async function durationState(uid: string, meetingId: string, now = new Date()) {
+  const doc = await meetings(uid).doc(meetingId).get();
+  if (!doc.exists) return { stop: true, warn: false, minutesRemaining: 0 };
+
+  const startedAt = doc.get("startedAt");
+  const started =
+    startedAt && typeof startedAt === "object" && "toDate" in startedAt
+      ? (startedAt as { toDate: () => Date }).toDate().toISOString()
+      : "";
+
+  return capState(started, now, doc.get("extendedUntil") ?? null);
+}
+
+/**
+ * Extend a meeting past the cap.
+ *
+ * A decision, recorded as one: who extended it and until when. The cap exists
+ * because a forgotten meeting bills for as long as the room stays open, and an
+ * extension that happened automatically would defeat the point entirely.
+ */
+export async function extendMeeting(
+  uid: string,
+  meetingId: string,
+  minutes: number,
+  now = new Date(),
+): Promise<string> {
+  const until = new Date(now.getTime() + minutes * 60_000).toISOString();
+  await meetings(uid)
+    .doc(meetingId)
+    .set({ extendedUntil: until, extendedAt: FieldValue.serverTimestamp() }, { merge: true });
+  return until;
 }

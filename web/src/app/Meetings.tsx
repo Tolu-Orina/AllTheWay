@@ -5,6 +5,7 @@ import { Async } from "@/app/async";
 import { useAsync } from "@/app/use-async";
 import { api, type Commitment, type Meeting } from "@/app/data";
 import { cn } from "@/lib/utils";
+import { ConnectionQuality } from "@/app/MeetingHealth";
 
 /**
  * Meetings, and what the agent could and could not do in them.
@@ -207,6 +208,23 @@ function MeetingRow({ meeting }: { meeting: Meeting }) {
       </div>
 
       <ListeningIndicator meeting={meeting} />
+
+      {/* Quality while it is happening, not a verdict afterwards. "It says
+          patchy, I'll take my own notes for this bit" is a recovery that no
+          amount of post-hoc labelling can offer. */}
+      {meeting.status === "listening" ? (
+        <ConnectionQuality
+          sample={
+            meeting.health
+              ? {
+                  packetLoss: meeting.health.packetLoss,
+                  jitter: meeting.health.jitter,
+                  reconnects: meeting.health.reconnects,
+                }
+              : null
+          }
+        />
+      ) : null}
 
       {/*
         The per-meeting opt-out. The common case is not "never" but "not this

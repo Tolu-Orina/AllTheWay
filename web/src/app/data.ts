@@ -294,6 +294,8 @@ export const api = {
   unregisterPushToken: (token: string) => apiPost("/push/tokens/remove", { token }),
   setMeetingNotes: (enabled: boolean) =>
     apiPost("/settings/meetings", { enabled }),
+  extendMeeting: (meetingId: string, minutes = 30) =>
+    apiPost(`/meetings/${meetingId}/extend`, { minutes }),
   optOutOfMeeting: (meetingId: string) =>
     apiPost(`/meetings/${meetingId}/opt-out`, { optedOut: true }),
 

@@ -58,6 +58,17 @@ USER_OWNED = (
     "notes",
     "commitments",
     "meetingOptOuts",
+    # Added in v3 Phase G. Session health is joined to a meeting, and a meeting
+    # is joined to a person — a root-level `health` collection would say who was
+    # in a call and when their connection dropped.
+    "health",
+    # Added in v3 Phase E. A share is a property of the artifact and lives under
+    # it; the grantee's index lives under the grantee. Neither belongs at the
+    # root, where it would enumerate who can see whose work.
+    "shares",
+    "sharedWithMe",
+    "recoveries",
+    "pushTokens",
 )
 
 #: Spans every user by definition. Permitted nowhere.

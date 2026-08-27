@@ -4,6 +4,11 @@ import { z } from "zod";
 
 import {
   appendNotes,
+  durationState,
+  extendMeeting,
+  readHealth,
+  recordGaps,
+  recordHealth,
   closeMeeting,
   confirmCommitment,
   listCommitments,
@@ -364,6 +369,112 @@ app.post("/events/meet", (req, res) => {
       );
       res.status(500).end();
     }
+  })();
+});
+
+const HealthSchema = z.object({
+  meetingId: z.string().min(1).max(200),
+  at: z.string().min(1).max(40),
+  rtt: z.number().min(0).max(60_000).default(0),
+  jitter: z.number().min(0).max(60_000).default(0),
+  packetLoss: z.number().min(0).max(1).default(0),
+  reconnects: z.number().int().min(0).max(10_000).default(0),
+  streamGaps: z.number().int().min(0).max(10_000).default(0),
+});
+
+app.post("/meetings/health", (req, res) => {
+  void (async () => {
+    const uid = userOf(req);
+    if (!uid) {
+      res.status(401).json({ code: "unauthenticated", message: "No user on this request." });
+      return;
+    }
+
+    const body = HealthSchema.safeParse(req.body);
+    if (!body.success) {
+      res.status(400).json({ code: "invalid_request", message: "Expected a health sample." });
+      return;
+    }
+
+    const { meetingId, ...sample } = body.data;
+    await recordHealth(uid, meetingId, sample);
+
+    // The answer carries the cap state, so a long meeting learns it is near the
+    // limit from the sample it was already sending — rather than needing a
+    // second poll for the one thing that will interrupt it.
+    res.json(await durationState(uid, meetingId));
+  })();
+});
+
+app.get("/meetings/:id/health", (req, res) => {
+  void (async () => {
+    const uid = userOf(req);
+    if (!uid) {
+      res.status(401).json({ code: "unauthenticated", message: "No user on this request." });
+      return;
+    }
+    res.json({ samples: await readHealth(uid, req.params.id) });
+  })();
+});
+
+const GapsSchema = z.object({
+  meetingId: z.string().min(1).max(200),
+  gaps: z
+    .array(z.object({ from: z.string().max(40), to: z.string().max(40) }))
+    .max(200),
+  timeZone: z.string().max(64).optional(),
+});
+
+app.post("/meetings/gaps", (req, res) => {
+  void (async () => {
+    const uid = userOf(req);
+    if (!uid) {
+      res.status(401).json({ code: "unauthenticated", message: "No user on this request." });
+      return;
+    }
+
+    const body = GapsSchema.safeParse(req.body);
+    if (!body.success) {
+      res.status(400).json({ code: "invalid_request", message: "Expected gaps." });
+      return;
+    }
+
+    // Written into the notes, not just recorded as metadata. A gap nobody
+    // reading the notes can see is the silent degradation this phase exists to
+    // prevent.
+    const recorded = await recordGaps(
+      uid,
+      body.data.meetingId,
+      body.data.gaps,
+      body.data.timeZone,
+    );
+    res.json({ recorded });
+  })();
+});
+
+const ExtendSchema = z.object({
+  minutes: z.number().int().min(5).max(120).default(30),
+});
+
+app.post("/meetings/:id/extend", (req, res) => {
+  void (async () => {
+    const uid = userOf(req);
+    if (!uid) {
+      res.status(401).json({ code: "unauthenticated", message: "No user on this request." });
+      return;
+    }
+
+    const body = ExtendSchema.safeParse(req.body ?? {});
+    if (!body.success) {
+      res.status(400).json({ code: "invalid_request", message: "Expected a number of minutes." });
+      return;
+    }
+
+    // Never automatic. The cap exists because a forgotten meeting bills for as
+    // long as the room stays open, and an extension that happened on its own
+    // would defeat the whole point of having one.
+    const until = await extendMeeting(uid, req.params.id, body.data.minutes);
+    res.json({ extendedUntil: until });
   })();
 });
 

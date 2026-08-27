@@ -191,3 +191,44 @@ export const RecoverySchema = z.object({
 });
 
 export type Recovery = z.infer<typeof RecoverySchema>;
+
+
+// ------------------------------------------------------- connection quality
+
+/**
+ * How well the agent is hearing a meeting.
+ *
+ * Lives here rather than in the web app for two reasons: the scribe needs the
+ * same judgement to decide when to warn, and the web app has no test runner —
+ * a threshold that decides whether a user is told their notes will have holes
+ * should not be the one piece of logic nothing covers.
+ *
+ * The thresholds are about **audibility**, not network purity. 2% packet loss
+ * is inaudible in speech; 8% is where words start disappearing; jitter past
+ * 100ms is where a sentence arrives out of order. A single reconnect already
+ * means something was missed, which is why it counts as degraded on its own.
+ */
+export type Quality = "good" | "degraded" | "poor";
+
+export function qualityOf(sample: {
+  packetLoss: number;
+  jitter: number;
+  reconnects: number;
+}): Quality {
+  if (sample.packetLoss >= 0.08 || sample.jitter >= 200 || sample.reconnects >= 3) return "poor";
+  if (sample.packetLoss >= 0.02 || sample.jitter >= 100 || sample.reconnects >= 1) return "degraded";
+  return "good";
+}
+
+/**
+ * What each quality is called, in terms of what it costs the reader.
+ *
+ * Deliberately not "fair" or "moderate". A person needs to know whether to take
+ * their own notes, and "patchy - some words may be missed" answers that where
+ * "moderate" does not.
+ */
+export const QUALITY_LABELS: Record<Quality, string> = {
+  good: "Hearing this clearly",
+  degraded: "Patchy - some words may be missed",
+  poor: "Losing audio - notes will have gaps",
+};
