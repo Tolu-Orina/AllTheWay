@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useT } from "@/app/i18n";
 import { Loader2, Mic } from "lucide-react";
 
 import { useAsync } from "@/app/use-async";
@@ -22,6 +23,7 @@ import { api } from "@/app/data";
  * was agreed needs the answer as well as the question.
  */
 export function VoiceTranscripts() {
+  const t = useT();
   const { state, reload } = useAsync(() => api.keepsTranscripts());
   const [busy, setBusy] = useState(false);
   const [failure, setFailure] = useState<string | null>(null);
@@ -37,7 +39,7 @@ export function VoiceTranscripts() {
     } catch {
       // A retention switch that looks changed but was not saved is the worst
       // possible failure for this particular control.
-      setFailure("That could not be saved. Nothing changed — try again.");
+      setFailure(t("common.saveFailed"));
     } finally {
       setBusy(false);
     }
@@ -46,7 +48,7 @@ export function VoiceTranscripts() {
   return (
     <section className="flex flex-col gap-3">
       <h2 className="text-[12px] font-semibold tracking-[0.08em] text-blue-deep uppercase dark:text-blue-bright">
-        Spoken conversations
+        {t("voice.heading")}
       </h2>
 
       <label className="flex items-start gap-2.5 rounded-brand border bg-card px-3.5 py-3">
@@ -58,11 +60,9 @@ export function VoiceTranscripts() {
           className="mt-0.5 size-4 shrink-0"
         />
         <span className="text-[13px] leading-relaxed">
-          Keep a record of what is said
+          {t("voice.keep")}
           <span className="mt-0.5 block text-[12px] text-muted-foreground">
-            Off by default. When on, both what you say and what it replies are
-            saved to that conversation — useful for reviews and audits. You can
-            delete any conversation's record afterwards.
+            {t("voice.keepHint")}
           </span>
         </span>
         {busy ? (
@@ -91,6 +91,7 @@ export function VoiceTranscripts() {
  * evidence for a particular decision.
  */
 export function SessionTranscript({ sessionId }: { sessionId: string }) {
+  const t = useT();
   const { state, reload } = useAsync(() => api.transcript(sessionId));
   const [forgetting, setForgetting] = useState(false);
 
@@ -101,7 +102,7 @@ export function SessionTranscript({ sessionId }: { sessionId: string }) {
       <div className="flex items-center justify-between gap-3">
         <h3 className="flex items-center gap-1.5 text-[12px] font-semibold tracking-[0.08em] text-blue-deep uppercase dark:text-blue-bright">
           <Mic className="size-3.5" aria-hidden="true" />
-          What was said
+          {t("voice.whatWasSaid")}
         </h3>
         <button
           type="button"
@@ -119,7 +120,7 @@ export function SessionTranscript({ sessionId }: { sessionId: string }) {
           }}
           className="text-[12px] text-muted-foreground underline underline-offset-2 disabled:opacity-50"
         >
-          {forgetting ? "Deleting…" : "Delete this record"}
+          {forgetting ? t("voice.deleting") : t("voice.deleteRecord")}
         </button>
       </div>
 

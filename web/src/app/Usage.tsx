@@ -1,4 +1,5 @@
 import { Async } from "@/app/async";
+import { useT } from "@/app/i18n";
 import { useAsync } from "@/app/use-async";
 import { api, type MeterReading } from "@/app/data";
 import { cn } from "@/lib/utils";
@@ -56,12 +57,13 @@ function price(pence: number): string {
 }
 
 export function Usage() {
+  const t = useT();
   const { state, reload } = useAsync(() => api.usage());
 
   return (
     <section className="flex flex-col gap-3">
       <h2 className="text-[12px] font-semibold tracking-[0.08em] text-blue-deep uppercase dark:text-blue-bright">
-        This month
+        {t("usage.thisMonth")}
       </h2>
 
       <Async state={state} reload={reload}>
@@ -87,6 +89,7 @@ export function Usage() {
 }
 
 function MeterRow({ reading }: { reading: MeterReading }) {
+  const t = useT();
   const unmetered = reading.limit === null;
   const spent = reading.remaining === 0;
   // Clamped: a counter that overshot its limit should read as full, not as a
@@ -139,13 +142,13 @@ function MeterRow({ reading }: { reading: MeterReading }) {
 
       {reading.nearLimit && !spent ? (
         <p className="mt-2 text-[12.5px] text-muted-foreground">
-          Getting close. Nothing stops working without telling you first.
+          {t("usage.gettingCloseNothingStopsWorkingWit")}
         </p>
       ) : null}
 
       {spent ? (
         <p className="mt-2 text-[12.5px] text-muted-foreground">
-          Used up for this month. Everything else still works.
+          {t("usage.usedUpForThisMonthEverything")}
         </p>
       ) : null}
     </li>

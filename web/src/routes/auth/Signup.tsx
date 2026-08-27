@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useT } from "@/app/i18n";
 import { Check, X } from "lucide-react";
 import { Link, useNavigate } from "react-router";
 
@@ -41,6 +42,7 @@ function PasswordRules({ password }: { password: string }) {
 }
 
 export default function Signup() {
+  const t = useT();
   const { adapter } = useAuth();
   const navigate = useNavigate();
 
@@ -98,7 +100,7 @@ export default function Signup() {
             to="/login"
             className="font-medium text-blue-deep underline-offset-4 hover:underline dark:text-blue-bright"
           >
-            Sign in
+            {t("auth.signIn")}
           </Link>
         </>
       }

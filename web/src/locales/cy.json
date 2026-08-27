@@ -1,16 +1,17 @@
 {
   "nav": {
-    "home": "Hafan",
+    "home": "Cartref",
     "sessions": "Sesiynau",
     "watchers": "Gwylwyr",
     "agents": "Asiantau",
-    "profile": "Proffil"
+    "profile": "Proffil",
+    "recents": "Diweddar"
   },
   "digest": {
-    "heading": "Er ddoe",
-    "quiet": "Dim byd wedi digwydd dros nos. Dim byd yn aros amdanoch chi.",
-    "nothingWaiting": "Dim byd yn aros amdanoch chi.",
-    "andMore": "ac {{count}} arall",
+    "heading": "Ers ddoe",
+    "quiet": "Dim byd dros nos. Dim byd yn aros amdanoch.",
+    "nothingWaiting": "Dim byd yn aros amdanoch.",
+    "andMore": "a {{count}} arall",
     "decisions_zero": "{{count}} peth angen eich penderfyniad",
     "decisions_one": "{{count}} peth angen eich penderfyniad",
     "decisions_two": "{{count}} beth angen eich penderfyniad",
@@ -34,58 +35,132 @@
     "heading": "Cyfarfodydd",
     "intro": "Mae'n gwrando ac yn cymryd nodiadau. Ni all siarad mewn cyfarfod, a gofynnir i bawb yn yr ystafell cyn iddo gysylltu.",
     "none": "Dim cyfarfodydd eto.",
-    "listenedLive": "Wedi gwrando'n fyw",
+    "listenedLive": "Gwrandawyd yn fyw",
     "readTranscript": "Darllen y trawsgrifiad wedyn",
     "noNotes": "Dim nodiadau",
-    "listenedLocally": "Wedi gwrando ar eich dyfais",
+    "listenedLocally": "Gwrandawyd ar eich dyfais",
     "whyNoLiveNotes": "Pam dim nodiadau byw?",
     "hideWhy": "Cuddio pam",
     "listening": "Yn gwrando ar y cyfarfod hwn ac yn cymryd nodiadau. Ni all siarad.",
-    "stayOut": "Cadw allan o'r cyfarfod hwn",
-    "noticed": "Yr hyn a nodwyd",
-    "insightsQuiet": "Dim byd gwerth torri ar eich traws eto.",
+    "stayOut": "Peidio ag ymuno â'r cyfarfod hwn",
+    "noticed": "Yr hyn a sylwyd",
+    "insightsQuiet": "Dim byd gwerth torri ar eich traws amdano eto.",
     "insightsNone": "Ni chafodd dim ei fflagio yn ystod y cyfarfod hwn.",
     "insightsFailed": "Methwyd â llwytho'r rheini.",
     "enable": "Caniatáu iddo ymuno a chymryd nodiadau yn fy nghyfarfodydd",
-    "enableHint": "Wedi'i ddiffodd oni bai eich bod yn ei droi ymlaen. Gofynnir i bawb mewn cyfarfod cyn iddo gysylltu, ac ni all siarad byth."
+    "enableHint": "Wedi'i ddiffodd nes i chi ei alluogi. Gofynnir i bawb mewn cyfarfod cyn iddo gysylltu, ac ni all byth siarad.",
+    "meetingsAreCappedSoACall": "Mae terfyn ar gyfarfodydd er mwyn atal galwad a adawyd ar agor rhag parhau i recordio trwy'r dydd. Mae 30 munud arall yn defnyddio tua 30 munud yn ychwanegol o'ch lwfans cyfarfodydd.",
+    "nothingHasBeenDoneAboutThis": "Ni wnaed dim am hyn."
   },
   "documents": {
     "heading": "Eich dogfennau",
-    "intro": "Gall ddarllen a dyfynnu unrhyw beth a ychwanegwch yma. Ni ddefnyddir dim i hyfforddi unrhyw beth, ac mae dileu dogfen yn dileu'r hyn a ddysgwyd ohoni.",
-    "drop": "Gollwng dogfen yma, neu",
+    "intro": "Gall ddarllen a dyfynnu unrhyw beth a ychwanegir yma. Ni ddefnyddir dim i hyfforddi unrhyw fodel, ac mae dileu dogfen yn dileu'r hyn a ddysgwyd ohoni.",
+    "drop": "Gollyngwch ddogfen yma, neu",
     "choose": "dewiswch ffeil",
     "types": "PDF, testun, Markdown — neu lun o dudalen",
     "photograph": "Tynnu llun o dudalen",
     "none": "Dim dogfennau eto. Ychwanegwch gontract, manyleb neu bolisi a gofynnwch amdano.",
-    "reading": "Wrthi'n darllen {{name}}. Mae dogfen hir yn cymryd munud; mae llun yn gyflymach."
+    "reading": "Yn darllen {{name}}. Mae dogfen hir yn cymryd munud; mae llun yn gyflymach."
   },
   "voice": {
     "heading": "Sgyrsiau llafar",
     "keep": "Cadw cofnod o'r hyn a ddywedir",
-    "keepHint": "Wedi'i ddiffodd yn ddiofyn. Pan mae ymlaen, cedwir yr hyn a ddywedwch a'r hyn y mae'n ei ateb i'r sgwrs honno — defnyddiol ar gyfer adolygiadau ac archwiliadau. Gallwch ddileu cofnod unrhyw sgwrs wedyn.",
+    "keepHint": "Wedi'i ddiffodd yn ddiofyn. Pan fo ymlaen, cedwir yr hyn a ddywedwch a'r atebion i'r sgwrs honno — defnyddiol ar gyfer adolygiadau ac archwiliadau. Gallwch ddileu cofnod unrhyw sgwrs wedyn.",
     "whatWasSaid": "Yr hyn a ddywedwyd",
     "deleteRecord": "Dileu'r cofnod hwn",
-    "deleting": "Wrthi'n dileu…"
+    "deleting": "Yn dileu…"
   },
   "share": {
     "heading": "Rhannu",
-    "placeholder": "enw@cwmni.com",
-    "canView": "Yn gallu gweld",
-    "canComment": "Yn gallu rhoi sylwadau",
+    "placeholder": "enw@cwmni.cymru",
+    "canView": "Gall weld",
+    "canComment": "Gall wneud sylwadau",
     "action": "Rhannu",
-    "hint": "Wedi'i rannu â'r person, nid gyda dolen. Gallant ddarllen y darn hwn yn unig — byth y dogfennau y tu ôl iddo — a gallwch ei dynnu'n ôl ar unrhyw adeg.",
-    "nobody": "Ni all neb arall weld hyn."
+    "hint": "Wedi'i rannu gyda'r unigolyn, nid trwy ddolen. Gallant ddarllen yr eitem hon yn unig — byth y dogfennau y tu ôl iddi — a gallwch ei thynnu'n ôl unrhyw bryd.",
+    "nobody": "Ni all neb arall weld hyn.",
+    "emailAddressToShareWith": "Cyfeiriad e-bost i rannu ag ef",
+    "whatTheyCanDo": "Yr hyn y gallant ei wneud",
+    "sharedWithYou": "Rhannwyd â chi",
+    "nothingYetWhenSomeoneSharesA": "Dim byd eto. Pan fydd rhywun yn rhannu dogfen â chi, bydd yn ymddangos yma."
   },
   "language": {
     "heading": "Iaith",
-    "hint": "Iaith y rhyngwyneb hwn. Nid yw'n newid yr iaith rydych chi'n siarad ag ef ynddi — mae'n eich dilyn chi.",
-    "offer": "Gwell gennych {{language}}?",
-    "switch": "Newid",
+    "hint": "Iaith y rhyngwyneb hwn. Nid yw'n newid yr iaith rydych yn siarad ag ef ynddi — mae hynny'n eich dilyn chi.",
     "dismiss": "Dim diolch"
   },
   "common": {
     "retry": "Rhoi cynnig arall arni",
-    "cancel": "Gadael",
-    "saveFailed": "Methwyd â chadw hynny. Ni newidiodd dim — rhowch gynnig arall arni."
+    "cancel": "Gadael llonydd iddo",
+    "saveFailed": "Methwyd â chadw hynny. Ni newidiodd dim — rhowch gynnig arall arni.",
+    "everyAgentThisSystemWillTalk": "Pob asiant y bydd y system hon yn siarad ag ef, gyda'i gontract cyhoeddedig wedi'i wirio ar yr eiliad y gwnaethoch ofyn — nid pan gafodd ei ddefnyddio.",
+    "nothingHereIsAttestedIncludingThe": "Nid oes dim yma wedi'i ardystio, gan gynnwys y cyfeiriad a hysbysebir.",
+    "hereIsWhereThingsStand": "Dyma sefyllfa pethau.",
+    "inProgress": "Ar y gweill",
+    "continue": "Parhau",
+    "overnight": "Dros nos",
+    "allWatchers": "Pob gwyliwr",
+    "transparentTrace": "Trywydd tryloyw",
+    "cognitiveProfile": "Proffil gwybyddol",
+    "builtFromWhatYouActuallyDid": "Wedi'i adeiladu o'r hyn a wnaethoch ac a gywirrwyd gennych mewn gwirionedd — nid o ffurflen a lenwoch unwaith. Mae pob cofnod yn nodi beth a newidiodd a pham, a gallwch adfer unrhyw ran ohono.",
+    "messageTheCompanion": "Anfon neges at y cydymaith",
+    "everythingYouAndTheCompanionAre": "Popeth rydych chi a'r cydymaith yn gweithio drwyddo.",
+    "startYourFirstSession": "Dechrau eich sesiwn gyntaf",
+    "standingInstructionsThatRunWithout": "Cyfarwyddiadau parhaol sy'n rhedeg hebddoch chi. Mae pob rhediad yn glanio yn yr un cynllun a'r un trywydd â sesiwn a redir gennych eich hun.",
+    "irreversibleActionsExternalSendsPa": "Mae gweithredoedd na ellir eu dadwneud — anfon allanol, taliadau, dileu — bob amser yn aros ac yn gofyn, beth bynnag fo terfyn uchaf gwyliwr. Nid eich dewis chi yw gostwng y llawr hwnnw.",
+    "youAreOffline": "Rydych all-lein",
+    "allthewayCouldNotReachTheNetwork": "Ni lwyddodd AllTheWay i gyrraedd y rhwydwaith. Mae eich sesiynau'n ddiogel — ailgysylltwch a bydd y dudalen hon yn ailddechrau lle y gadawyd arni."
+  },
+  "account": {
+    "signOut": "Allgofnodi"
+  },
+  "canvas": {
+    "askForADraftInThe": "Gofynnwch am ddrafft yn y sgwrs a bydd yn ymddangos yma, lle gallwch ei gywiro.",
+    "generatedByAllthewayThisFileCarrie": "Cynhyrchwyd gan AllTheWay. Mae'r ffeil hon yn cynnwys tystlythyrau cynnwys sy'n ei nodi fel un a gynhyrchwyd gan AI, ac maent yn aros ar ôl ei lawrlwytho.",
+    "artifactContent": "Cynnwys yr eitem",
+    "whatChanged": "Beth a newidiodd?",
+    "allWork": "Pob gwaith",
+    "anythingItDraftsForYouLands": "Mae unrhyw beth y mae'n ei ddrafftio ar eich cyfer yn glanio yma — dogfen, crynodeb, ffrâm wifrog — gyda phob fersiwn a gywirwyd gennych, a ffordd i fynd ag ef gyda chi."
+  },
+  "comments": {
+    "comments": "Sylwadau",
+    "resolve": "Datrys",
+    "addAComment": "Ychwanegu sylw",
+    "youHaveViewOnlyAccessTo": "Mae gennych fynediad i weld hyn yn unig."
+  },
+  "connections": {
+    "connectedAccounts": "Cyfrifon cysylltiedig",
+    "whatAllthewayIsAllowedToReach": "Yr hyn y caiff AllTheWay ei gyrraedd ar eich rhan. Mae'n dal i ofyn cyn gwneud unrhyw beth na ellir ei ddadwneud.",
+    "draftingIsTheSafestThingIt": "Drafftio yw'r peth mwyaf diogel y gall ei wneud ag e-bost — ni chaiff dim ei anfon.",
+    "googleStillClassesThePermissionAs": "Mae Google yn dal i ddosbarthu'r caniatâd fel un cyfyngedig, felly mae hyn yn aros wedi'i ddiffodd oni bai eich bod yn gofyn amdano.",
+    "connected": "Cysylltiedig",
+    "comingSoon": "Yn dod yn fuan"
+  },
+  "specialists": {
+    "whatItCanDo": "Beth y gall ei wneud",
+    "eachOfTheseIsASeparate": "Mae pob un o'r rhain yn asiant ar wahân gyda'i gerdyn cyhoeddedig ei hun. Darllenir y fersiwn a'r llofnod isod o'r cerdyn hwnnw, nid o'r dudalen hon — felly bydd gallu sy'n peidio â dilysu yn dweud hynny yma.",
+    "internal": "Mewnol",
+    "runsInsideTheProductAndPublishes": "Yn rhedeg y tu mewn i'r cynnyrch ac nid yw'n cyhoeddi cerdyn — ni all dim y tu allan ei alw.",
+    "notRegisteredInThisDeploymentThis": "Heb ei gofrestru yn y gosodiad hwn — nid yw'r gallu hwn ar gael."
+  },
+  "usage": {
+    "thisMonth": "Y mis hwn",
+    "gettingCloseNothingStopsWorkingWit": "Yn agosáu at y terfyn. Ni fydd dim yn peidio â gweithio heb eich hysbysu gyntaf.",
+    "usedUpForThisMonthEverything": "Wedi'i ddisbyddu ar gyfer y mis hwn. Mae popeth arall yn dal i weithio."
+  },
+  "visual": {
+    "howYourWorkLooks": "Sut mae eich gwaith yn edrych",
+    "whatItHasPickedUpAbout": "Yr hyn y mae wedi'i ddysgu am eich arddull weledol, ac yn ei ddefnyddio pan fydd yn creu rhywbeth ar eich cyfer. Dadwnewch unrhyw ran ohono ac fe beidia â rhagdybio.",
+    "nothingYetAskItToMake": "Dim byd eto. Gofynnwch iddo greu rhywbeth a chywiro'r olwg — dyna o ble mae'n dysgu."
+  },
+  "auth": {
+    "backToSignIn": "Yn ôl i fewngofnodi",
+    "createAnAccount": "Creu cyfrif",
+    "forgotYourPassword": "Wedi anghofio'ch cyfrinair?",
+    "requestACode": "Gofyn am god",
+    "verificationCode": "Cod dilysu",
+    "signIn": "Mewngofnodi",
+    "goToSignIn": "Mynd i fewngofnodi",
+    "useADifferentEmail": "Defnyddio e-bost gwahanol",
+    "sendANewCode": "Anfon cod newydd"
   }
 }

@@ -51,6 +51,29 @@ export const LOCALE_NAMES: Record<Locale, string> = {
   zh: "中文",
 };
 
+/**
+ * "Switch", in each language, for the offer banner.
+ *
+ * It lives here beside the endonyms because it has the same requirement: the
+ * offer is rendered in the language being *offered*, before that catalogue is
+ * loaded, so `t()` cannot produce it — `t()` translates into the language
+ * currently showing, which is precisely the one the reader may not understand.
+ *
+ * This was `offer === "yo" ? "Yí padà" : "Switch"`, written when Yorùbá was the
+ * only alternative. Adding five more languages silently turned it into an
+ * English word shown to every non-Yorùbá speaker — the exact failure the offer
+ * exists to avoid.
+ */
+export const SWITCH_LABELS: Record<Locale, string> = {
+  en: "Switch",
+  cy: "Newid",
+  es: "Cambiar",
+  fr: "Changer",
+  pt: "Mudar",
+  yo: "Yí padà",
+  zh: "切换",
+};
+
 export const LocaleSchema = z.enum(LOCALES);
 
 /** A catalogue is nested objects of strings, as i18next expects. */

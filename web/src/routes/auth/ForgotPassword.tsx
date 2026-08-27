@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useT } from "@/app/i18n";
 import { Link, useNavigate } from "react-router";
 
 import { Button } from "@/components/ui/button";
@@ -7,6 +8,7 @@ import { isEmail } from "@/auth/types";
 import { AuthShell, Field, FormError } from "@/routes/auth/AuthShell";
 
 export default function ForgotPassword() {
+  const t = useT();
   const { adapter } = useAuth();
   const navigate = useNavigate();
   const [email, setEmail] = useState("");
@@ -40,7 +42,7 @@ export default function ForgotPassword() {
           to="/login"
           className="underline-offset-4 hover:text-foreground hover:underline"
         >
-          Back to sign in
+          {t("auth.backToSignIn")}
         </Link>
       }
     >

@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useT } from "@/app/i18n";
 import { Undo2 } from "lucide-react";
 
 import { Async } from "@/app/async";
@@ -23,6 +24,7 @@ import { api, type VisualPreference } from "@/app/data";
  * it gets looked at.
  */
 export function VisualPreferences() {
+  const t = useT();
   const { state, reload } = useAsync<VisualPreference[]>(() => api.visualPreferences());
   const [revertedIds, setRevertedIds] = useState<string[]>([]);
   const [failure, setFailure] = useState<string | null>(null);
@@ -41,11 +43,10 @@ export function VisualPreferences() {
   return (
     <section className="flex flex-col gap-3">
       <h2 className="text-[12px] font-semibold tracking-[0.08em] text-blue-deep uppercase dark:text-blue-bright">
-        How your work looks
+        {t("visual.howYourWorkLooks")}
       </h2>
       <p className="text-[13.5px] leading-relaxed text-muted-foreground">
-        What it has picked up about your visual style, and applies when it makes
-        something for you. Revert any of it and it will stop assuming.
+        {t("visual.whatItHasPickedUpAbout")}
       </p>
 
       {failure ? (
@@ -60,8 +61,7 @@ export function VisualPreferences() {
         isEmpty={(rows) => rows.filter((r) => !revertedIds.includes(r.id)).length === 0}
         empty={
           <p className="py-4 text-[12.5px] text-muted-foreground">
-            Nothing yet. Ask it to make something and correct the look — that is
-            what it learns from.
+            {t("visual.nothingYetAskItToMake")}
           </p>
         }
       >

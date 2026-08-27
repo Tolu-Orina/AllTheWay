@@ -166,6 +166,9 @@ system would have failed. Cloud Run rejects unauthenticated requests to
 `INGRESS_TRAFFIC_INTERNAL_ONLY` services, and locally nothing required auth —
 which is exactly why four phases passed without noticing.
 
+> **Superseded (2026-08-27).** These services are no longer `INGRESS_TRAFFIC_INTERNAL_ONLY`. There is no VPC in this project, and Cloud Run rejects an ingress-blocked call with a *404* — so every gateway→service call was refused at the edge and `/api/registry/agents` returned 502 for thirty days without one success. Ingress is now `ALL` and reachability is gated by IAM: only the principals holding `roles/run.invoker` can call these services, and an anonymous request gets a 403. See `infra/modules/backend-service/main.tf`.
+
+
 - **Gateway** (`src/a2a.ts`): a `fetchImpl` that mints an identity token per
   audience, passed to both the transport factory *and* the card resolver — the
   card fetch is a request to the same closed service and happens first.

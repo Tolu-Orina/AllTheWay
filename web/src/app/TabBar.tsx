@@ -2,6 +2,7 @@ import { NavLink, useLocation } from "react-router";
 import { motion, useReducedMotion } from "motion/react";
 
 import { NAV } from "@/app/nav";
+import { useT } from "@/app/i18n";
 import { cn } from "@/lib/utils";
 
 /**
@@ -13,6 +14,7 @@ import { cn } from "@/lib/utils";
  * an unlabelled control.
  */
 export function TabBar() {
+  const t = useT();
   const reduced = useReducedMotion();
   const { pathname } = useLocation();
 
@@ -56,7 +58,7 @@ export function TabBar() {
                 aria-hidden="true"
               />
               <span className={cn("relative", active ? "inline" : "sr-only")}>
-                {item.label}
+                {t(item.labelKey)}
               </span>
             </NavLink>
           );

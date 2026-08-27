@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useT } from "@/app/i18n";
 import { Check, X } from "lucide-react";
 import { Link, useLocation, useNavigate } from "react-router";
 
@@ -10,6 +11,7 @@ import { CodeInput } from "@/routes/auth/CodeInput";
 import { cn } from "@/lib/utils";
 
 export default function ResetPassword() {
+  const t = useT();
   const { adapter } = useAuth();
   const navigate = useNavigate();
   const location = useLocation() as { state?: { email?: string } };
@@ -57,7 +59,7 @@ export default function ResetPassword() {
           size="xl"
           className="w-full"
         >
-          Request a code
+          {t("auth.requestACode")}
         </Button>
       </AuthShell>
     );
@@ -77,7 +79,7 @@ export default function ResetPassword() {
           to="/login"
           className="underline-offset-4 hover:text-foreground hover:underline"
         >
-          Back to sign in
+          {t("auth.backToSignIn")}
         </Link>
       }
     >
@@ -86,7 +88,7 @@ export default function ResetPassword() {
 
         <div className="mb-5">
           <span className="mb-1.5 block text-[13px] font-medium">
-            Verification code
+            {t("auth.verificationCode")}
           </span>
           <CodeInput
             value={code}

@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useT } from "@/app/i18n";
 import { Check, Undo2 } from "lucide-react";
 
 import { Async, EmptyState } from "@/app/async";
@@ -14,6 +15,7 @@ import { VoiceTranscripts } from "@/app/VoiceTranscripts";
 import { LanguageChoice } from "@/app/LanguageChoice";
 
 export default function Profile() {
+  const t = useT();
   const { state, reload } = useAsync<LearnedPreference[]>(() =>
     api.preferences(),
   );
@@ -45,12 +47,10 @@ export default function Profile() {
     <div className="flex flex-col gap-5">
       <header>
         <h1 className="text-[26px] leading-tight font-bold tracking-[-0.02em]">
-          Cognitive profile
+          {t("common.cognitiveProfile")}
         </h1>
         <p className="mt-1 max-w-prose text-[14px] leading-relaxed text-muted-foreground">
-          Built from what you actually did and corrected — not from a form you
-          filled in once. Every entry says what changed and why, and you can put
-          any of it back.
+          {t("common.builtFromWhatYouActuallyDid")}
         </p>
       </header>
 

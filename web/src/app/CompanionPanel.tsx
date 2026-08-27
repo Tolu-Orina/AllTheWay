@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useId, useRef, useState } from "react";
+import { useT } from "@/app/i18n";
 import {
   AlertTriangle,
   Loader2,
@@ -144,6 +145,7 @@ function CompanionConversation({
   send,
   working,
 }: Thread) {
+  const t = useT();
   const last = messages[messages.length - 1];
   const reduced = useReducedMotion();
   const endRef = useRef<HTMLDivElement>(null);
@@ -315,7 +317,7 @@ function CompanionConversation({
         }}
       >
         <label htmlFor={inputId} className="sr-only">
-          Message the companion
+          {t("common.messageTheCompanion")}
         </label>
         <VoiceControl size="sm" />
         <input

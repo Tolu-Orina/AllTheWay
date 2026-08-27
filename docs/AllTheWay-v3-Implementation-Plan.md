@@ -328,7 +328,7 @@ It sits beside preferences in the Cognitive Profile — **visible and revertible
 It is the input that makes the third explanation different from the first, and it is what the guided-understanding loop (§4.3 of the manifest) reads.
 
 ### Services & infrastructure
-- New service **`librarian`** (Cloud Run, internal-only, invoker: orchestrator + gateway)
+- New service **`librarian`** (Cloud Run, IAM-gated, invoker: orchestrator + gateway). *Ingress is `ALL`, not internal-only — see §16.2; internal-only refused every service-to-service call with a 404 because there is no VPC. IAM is the boundary.*
 - Pipeline: **upload → screen → parse → chunk → embed → index**, in that order, with screening first
 - Firestore vector index on `documentChunks.embedding`, composite `(ownerUid, embedding)`
 - Deletion removes chunks and the blob, and reports what was removed
@@ -857,3 +857,91 @@ G. Tier 2 hardening          ██████            2 wks   needs D, and 
 ---
 
 *Every model id, region and limit in this plan was verified against `alltheway-rinegan` where a probe was possible, using an invalid payload so that a live model refuses rather than bills. Where verification failed — the embedding models, whose probe returned 401 on an expired token — it is marked as unverified rather than reported as fact.*
+
+---
+
+## 16. How this repo is worked on — handover
+
+*Written for whoever picks this up next. Everything below is a rule that was learned by breaking something, and each one names the incident that taught it. None of it is style preference.*
+
+### 16.1 The owner's standing constraints
+
+These are not defaults to be re-evaluated. They came from the person who owns the product, and they hold until he says otherwise.
+
+| Constraint | What it means in practice |
+|---|---|
+| **He commits and pushes himself. Always.** | Never run `git commit` or `git push`. Finish the work, run the checks, then list the changed files and stop. He deploys by pushing, so pushing on his behalf also deploys on his behalf. |
+| **Terraform gate: `fmt` → `validate` → `tflint` → `plan` → `apply`** | Apply only after all four pass, and read the plan before applying — not just the summary line. A plan that says `8 to change` should be checked to confirm *what* changed. |
+| **Cross-user retrieval is unacceptable** | Tenant isolation has no acceptable failure rate. `scripts/check-tenant-isolation.py` is the floor, not the ceiling. |
+| **Payment provider is deferred** | He will wire it once his PM validates open questions. Do not scaffold it early. |
+| **Meet Developer Preview is unblocked but deferred to v4** | Do not spend effort on it in v3. |
+
+### 16.2 Verify by running. Typechecking proves almost nothing here.
+
+This is the single most important rule in the repo, and the evidence is overwhelming. Every one of these passed a green build:
+
+- `web`'s `tsconfig.json` is solution-style with `"files": []`. **`tsc -p tsconfig.json` typechecks nothing and exits 0.** Only `tsc -b` checks it. The `typecheck` script did not exist at all until it was added; CI ran `lint` and `build`, and Vite builds with esbuild, which *strips* types without reading them. Type errors reached production as runtime failures for the life of the project.
+- Every backend service was `INGRESS_TRAFFIC_INTERNAL_ONLY` with **no VPC anywhere in the Terraform**. Cloud Run refuses ingress-blocked requests with a **404, not a 403**, and a Cloud Run service calling another leaves over the public internet without VPC egress. `/api/registry/agents` returned 502 for thirty days and **never once succeeded**. Nothing in the type system, the tests, or the build could have found it.
+- `libs/agentauth` imports `google.auth.transport.requests`, which raises `ImportError` unless `requests` is installed — `google-auth` does not pull it in. The import sat inside `except Exception` and was logged at **`debug`**, which is also the normal path on a laptop with no metadata server. Every internal call went out with no `Authorization` header for weeks.
+- The web client kept its own copy of the meters enum listing **three of seven**, so one `meeting_insights` row failed validation and the entire usage panel rendered the validator's output as prose. A Max subscriber's usage could not parse at all.
+- Terraform's `merge()` is **shallow**. A service present in two maps lost the keys from the first. That took secret-access IAM down to 3 of 5 services and caused a brief production incident.
+
+**The working method:** reproduce the failure, fix it, then reproduce the *fix*. Read production logs before theorising — `gcloud logging read` with `severity>=ERROR` is often not enough, because audit logs are `ERROR` too and application errors may be at `WARNING` or absent entirely. Check `httpRequest.status` by path; the shape of what succeeds versus what fails usually names the cause on its own.
+
+### 16.3 Guards, and the rule about them
+
+`npm run guards` runs five checks. Each exists because something got past review:
+
+| Guard | Proves |
+|---|---|
+| `check-tenant-isolation.py` | No collection-group queries, no user-owned root collections |
+| `check-image-deps.py` | Every service ships the libraries it imports; wheelhouse and Dockerfile continuations are consistent |
+| `check-plan-table.py` | The plan table the user sees matches `libs/metering`, which enforces it — including the shared `METERS`/`TIERS` the client validates against |
+| `check-locales.py` | No missing keys, dropped placeholders or incomplete plurals; plural categories come from ICU, never a hand-written table |
+| `check-tests-listed.py` | Every test file is actually run |
+
+**A guard you cannot prove will fail is not a guard.** Two in this repo were written unfalsifiable and had to be rewritten: the wheelhouse check matched `COPY libs/x ./libs/x` and so could never fail, and an early `terraform validate` ran in `envs/prod`, which holds only tfvars, and passed vacuously. After writing or changing a guard, break the thing on purpose, watch it fail, then restore it.
+
+### 16.4 Environment traps
+
+- **`gcloud` needs `CLOUDSDK_PYTHON` set** on this machine or it fails silently-empty. Cloud Build is regional; querying the wrong region returns nothing rather than an error.
+- **The shell is PowerShell 5.1 primary, with Bash available.** They take different syntax. PowerShell has no `&&`, no ternary, no `2>&1` on native exes without corrupting exit codes.
+- **Test scripts hand-list their files** in each `package.json`. This is deliberate: `node --test src` discovers **1** test file here instead of 44, and an unquoted `src/**/*.test.ts` is expanded by the shell before node sees it — without `globstar` that becomes `src/*/*.test.ts` and matches nothing. Both alternatives pass, fast, having run nearly nothing. `check-tests-listed.py` covers the one weakness of the explicit list.
+- **Cloud Run publishes two URL forms** — deterministic `{service}-{project_number}.{region}.run.app` and hashed `{service}-{hash}-{region}.a.run.app`. Both are valid. `status.url` reports only the hashed one, so a mismatch between them is not evidence of a problem.
+
+### 16.5 Known gaps, stated plainly
+
+Do not rediscover these as bugs:
+
+- **i18n is wired, and the catalogues are drafts.** The app interface renders through `t()`: 120 keys across seven languages, each locale shipped as its own ~8KB chunk with English bundled as the fallback. Two things are deliberately *not* translated — the public marketing page (the setting says "the language of this interface", and localising marketing copy is a separate decision) and the brand name. **Six of the seven catalogues are machine drafts and have not been read by a native speaker.** Treat them as unreviewed: `scripts/translate-locale.py` marks them so, and shipping unreviewed output as finished is how a product insults the people it claims to serve.
+- **Sessions cannot be created, and the model behind them is wrong.** There is no `POST /sessions`, no client method, and the "New" buttons have no `onClick`. Nothing writes a session document except `seed.ts`. The voice path writes `sessions/{id}/transcript/…` without creating the parent — and in Firestore a document with only subcollections carries no fields, so it never appears in an `orderBy` query, meaning **even a working conversation cannot populate the list**. Do not fix this by wiring the button: a session should be a *consequence* of talking, never a prerequisite. The turn handler should create the row on first output, titled from what the user actually said, so a session that exists always has something in it — which is the same principle as the rest of the product, where the server owns what is real.
+- **The orchestrator has no request logging.** Only startup and shutdown reach Cloud Logging, so a failed turn leaves no trace. `runTurn` now has a 45s timeout, which is containment, not observability.
+- **The browser extension needs a privacy policy and store listing** before it can be published.
+
+### 16.6 The permission map is the first place to look
+
+Two production outages came from the same file. `service_roles` in
+`infra/modules/stack/main.tf` lists what each service's identity may do, derived
+from what its code actually calls — and both times the failure was an *omission*,
+not a mistake.
+
+- Terraform's shallow `merge()` dropped a service's secret-access binding, taking
+  IAM down to three of five services.
+- `scribe` had **no entry in the map at all**. Its identity carried only the three
+  baseline roles, so every Firestore call failed with `PERMISSION_DENIED`, which
+  crashed the container. Cloud Run restarted it clean, so the logs showed healthy
+  startups and nothing else, and `/api/meetings` returned a bare 502 for weeks.
+
+Both were invisible because the failure was upstream of anything that logs. When a
+service 502s with no explanation, check its roles before reading its code:
+
+```bash
+gcloud projects get-iam-policy alltheway-rinegan --format=json
+```
+
+And when adding a service, add it to `service_roles` in the same commit. A service
+absent from that map does not get a permissive default — it gets nothing.
+
+### 16.7 How to report work
+
+State what was verified and how. If tests fail, say so and show the output. If a step was skipped, say which. Own mistakes in one sentence and move on — there are several in this project's history, including a process left running for two hours after it was reported killed, and a cost figure quoted from a stale number. Correcting the record costs less than a reader who later finds out you smoothed it over.

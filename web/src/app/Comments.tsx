@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useT } from "@/app/i18n";
 import { Check, MessageSquare } from "lucide-react";
 
 import { Async } from "@/app/async";
@@ -38,6 +39,7 @@ export function Comments({
   owner?: string;
   canComment: boolean;
 }) {
+  const t = useT();
   const { state, reload } = useAsync<Comment[]>(() => api.comments(artifactId, owner));
   const [draft, setDraft] = useState("");
   const [busy, setBusy] = useState(false);
@@ -63,7 +65,7 @@ export function Comments({
     <section className="flex flex-col gap-3 border-t p-4">
       <h3 className="flex items-center gap-1.5 text-[12px] font-semibold tracking-[0.08em] text-blue-deep uppercase dark:text-blue-bright">
         <MessageSquare className="size-3.5" aria-hidden="true" />
-        Comments
+        {t("comments.comments")}
       </h3>
 
       <Async
@@ -105,7 +107,7 @@ export function Comments({
                       className="mt-1.5 flex items-center gap-1 text-[12px] text-muted-foreground underline-offset-2 hover:underline"
                     >
                       <Check className="size-3.5" aria-hidden="true" />
-                      Resolve
+                      {t("comments.resolve")}
                     </button>
                   ) : null}
                 </li>
@@ -118,7 +120,7 @@ export function Comments({
       {canComment ? (
         <div className="flex items-end gap-2">
           <label htmlFor={`comment-${artifactId}`} className="sr-only">
-            Add a comment
+            {t("comments.addAComment")}
           </label>
           <textarea
             id={`comment-${artifactId}`}
@@ -139,7 +141,7 @@ export function Comments({
         </div>
       ) : (
         <p className="text-[12px] text-muted-foreground">
-          You have view-only access to this.
+          {t("comments.youHaveViewOnlyAccessTo")}
         </p>
       )}
     </section>

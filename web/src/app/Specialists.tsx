@@ -1,4 +1,5 @@
 import { BadgeCheck, Lock, ShieldAlert } from "lucide-react";
+import { useT } from "@/app/i18n";
 
 import type { Agent } from "@/app/data";
 import { cn } from "@/lib/utils";
@@ -85,15 +86,15 @@ const SPECIALISTS: Specialist[] = [
  */
 export function Specialists({ agents }: { agents: Agent[] }) {
 
+const t = useT();
+
   return (
     <section className="flex flex-col gap-3">
       <h2 className="text-[12px] font-semibold tracking-[0.08em] text-blue-deep uppercase dark:text-blue-bright">
-        What it can do
+        {t("specialists.whatItCanDo")}
       </h2>
       <p className="text-[13.5px] leading-relaxed text-muted-foreground">
-        Each of these is a separate agent with its own published card. The
-        version and signature below are read from that card, not from this
-        page — so a capability that stops verifying says so here.
+        {t("specialists.eachOfTheseIsASeparate")}
       </p>
 
       <ul className="flex flex-col gap-2">
@@ -116,6 +117,7 @@ function SpecialistRow({
   specialist: Specialist;
   agent: Agent | undefined;
 }) {
+  const t = useT();
   const trusted = agent?.signature?.trusted ?? false;
   // An internal service is not "unverified" — the control does not apply to it.
   // Conflating the two would either raise a false alarm or hide a real one.
@@ -141,7 +143,7 @@ function SpecialistRow({
         {specialist.internal ? (
           <span className="flex shrink-0 items-center gap-1 text-[12px] text-muted-foreground">
             <Lock className="size-3.5" aria-hidden="true" />
-            Internal
+            {t("specialists.internal")}
           </span>
         ) : agent ? (
           <span
@@ -162,8 +164,7 @@ function SpecialistRow({
 
       {specialist.internal ? (
         <p className="mt-2 text-[12px] text-muted-foreground">
-          Runs inside the product and publishes no card — nothing outside can
-          call it.
+          {t("specialists.runsInsideTheProductAndPublishes")}
         </p>
       ) : agent ? (
         <p className="mt-2 text-[12px] text-muted-foreground">
@@ -180,7 +181,7 @@ function SpecialistRow({
         // Said plainly rather than hidden. A specialist offered while nothing
         // stands behind it is the exact theatre this view exists to prevent.
         <p className="mt-2 text-[12px] text-destructive">
-          Not registered in this deployment — this capability is unavailable.
+          {t("specialists.notRegisteredInThisDeploymentThis")}
         </p>
       )}
     </li>

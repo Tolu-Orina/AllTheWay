@@ -1,7 +1,12 @@
-import { LOCALES, LOCALE_NAMES, type Locale } from "@alltheway/contracts";
+import {
+  LOCALES,
+  LOCALE_NAMES,
+  SWITCH_LABELS,
+  type Locale,
+} from "@alltheway/contracts";
 import { Languages } from "lucide-react";
 
-import { useI18n } from "@/app/i18n";
+import { useI18n, useT } from "@/app/i18n";
 
 /**
  * Choosing the interface language.
@@ -20,16 +25,16 @@ import { useI18n } from "@/app/i18n";
  * cannot find their language in a list written in English.
  */
 export function LanguageChoice() {
+  const t = useT();
   const { locale, setLocale } = useI18n();
 
   return (
     <section className="flex flex-col gap-3">
       <h2 className="text-[12px] font-semibold tracking-[0.08em] text-blue-deep uppercase dark:text-blue-bright">
-        Language
+        {t("language.heading")}
       </h2>
       <p className="text-[13.5px] leading-relaxed text-muted-foreground">
-        The language of this interface. It does not change the language you speak
-        to it in — that follows you.
+        {t("language.hint")}
       </p>
 
       <div className="flex flex-wrap gap-2">
@@ -68,6 +73,7 @@ export function LanguageChoice() {
  * minority case. This costs nothing when there is nothing to offer.
  */
 export function LanguageOffer() {
+  const t = useT();
   const { offer, setLocale, dismissOffer } = useI18n();
   if (!offer) return null;
 
@@ -85,14 +91,14 @@ export function LanguageOffer() {
         onClick={() => void setLocale(offer)}
         className="rounded-brand border px-2.5 py-1 text-[12.5px] transition-colors hover:bg-muted"
       >
-        <span lang={offer}>{offer === "yo" ? "Yí padà" : "Switch"}</span>
+        <span lang={offer}>{SWITCH_LABELS[offer as Locale]}</span>
       </button>
       <button
         type="button"
         onClick={dismissOffer}
         className="text-[12.5px] text-muted-foreground underline underline-offset-2"
       >
-        No thanks
+        {t("language.dismiss")}
       </button>
     </div>
   );

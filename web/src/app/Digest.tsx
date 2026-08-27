@@ -1,4 +1,5 @@
 import { CheckCircle2, ChevronRight, FileText, Play } from "lucide-react";
+import { useT } from "@/app/i18n";
 import { Link } from "react-router";
 
 import { Async } from "@/app/async";
@@ -30,12 +31,13 @@ import { api, type Digest as DigestData } from "@/app/data";
  * expensive mistake.
  */
 export function Digest() {
+  const t = useT();
   const { state, reload } = useAsync<DigestData>(() => api.digest());
 
   return (
     <section className="flex flex-col gap-3">
       <h2 className="text-[12px] font-semibold tracking-[0.08em] text-blue-deep uppercase dark:text-blue-bright">
-        Since yesterday
+        {t("digest.heading")}
       </h2>
 
       <Async state={state} reload={reload}>
@@ -48,7 +50,7 @@ export function Digest() {
           if (quiet) {
             return (
               <p className="rounded-brand border bg-card px-3.5 py-3 text-[13px] text-muted-foreground">
-                Nothing happened overnight. Nothing is waiting on you.
+                {t("digest.quiet")}
               </p>
             );
           }
@@ -58,9 +60,10 @@ export function Digest() {
               {digest.awaitingDecision.length > 0 ? (
                 <div className="flex flex-col gap-2 rounded-brand border border-primary/40 bg-primary/5 px-3.5 py-3">
                   <p className="text-[13px] font-medium">
-                    {digest.awaitingDecision.length === 1
-                      ? "One thing needs your decision"
-                      : `${digest.awaitingDecision.length} things need your decision`}
+                    {/* The plural form comes from Intl.PluralRules for the
+                        current language, not an === 1 check. Welsh has six
+                        categories; English's two are not a safe default. */}
+                    {t("digest.decisions", { count: digest.awaitingDecision.length })}
                   </p>
                   <ul className="flex flex-col gap-1.5">
                     {digest.awaitingDecision.map((d) => (
@@ -85,7 +88,7 @@ export function Digest() {
               ) : (
                 <p className="flex items-center gap-2 rounded-brand border bg-card px-3.5 py-2.5 text-[13px] text-muted-foreground">
                   <CheckCircle2 className="size-4 shrink-0" aria-hidden="true" />
-                  Nothing is waiting on you.
+                  {t("digest.nothingWaiting")}
                 </p>
               )}
 
@@ -93,9 +96,7 @@ export function Digest() {
                 <Group
                   icon={<Play className="size-3.5" aria-hidden="true" />}
                   label={
-                    digest.ranWatchers.length === 1
-                      ? "1 watcher ran"
-                      : `${digest.ranWatchers.length} watchers ran`
+                      t("digest.watchersRan", { count: digest.ranWatchers.length })
                   }
                   items={digest.ranWatchers.map((r) => r.summary)}
                 />
@@ -105,9 +106,7 @@ export function Digest() {
                 <Group
                   icon={<FileText className="size-3.5" aria-hidden="true" />}
                   label={
-                    digest.artifactsChanged.length === 1
-                      ? "1 thing changed"
-                      : `${digest.artifactsChanged.length} things changed`
+                      t("digest.changed", { count: digest.artifactsChanged.length })
                   }
                   items={digest.artifactsChanged.map((a) => a.title)}
                 />
@@ -129,6 +128,7 @@ function Group({
   label: string;
   items: string[];
 }) {
+  const t = useT();
   return (
     <div className="rounded-brand border bg-card px-3.5 py-3">
       <p className="flex items-center gap-1.5 text-[12px] text-muted-foreground">
@@ -145,7 +145,7 @@ function Group({
         ))}
         {items.length > 4 ? (
           <li className="text-[12px] text-muted-foreground">
-            and {items.length - 4} more
+            {t("digest.andMore", { count: items.length - 4 })}
           </li>
         ) : null}
       </ul>

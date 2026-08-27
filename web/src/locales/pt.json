@@ -4,56 +4,59 @@
     "sessions": "Sessões",
     "watchers": "Monitores",
     "agents": "Agentes",
-    "profile": "Perfil"
+    "profile": "Perfil",
+    "recents": "Recentes"
   },
   "digest": {
     "heading": "Desde ontem",
-    "quiet": "Nada aconteceu durante a noite. Nenhuma pendência para você.",
-    "nothingWaiting": "Nenhuma pendência para você.",
+    "quiet": "Nada aconteceu durante a noite. Nada pendente para você.",
+    "nothingWaiting": "Nada pendente para você.",
     "andMore": "e mais {{count}}",
     "decisions_one": "{{count}} item precisa da sua decisão",
     "decisions_many": "{{count}} itens precisam da sua decisão",
     "decisions_other": "{{count}} itens precisam da sua decisão",
-    "watchersRan_one": "{{count}} monitor executado",
-    "watchersRan_many": "{{count}} monitores executados",
-    "watchersRan_other": "{{count}} monitores executados",
-    "changed_one": "{{count}} item mudou",
-    "changed_many": "{{count}} itens mudaram",
-    "changed_other": "{{count}} itens mudaram"
+    "watchersRan_one": "{{count}} monitor foi executado",
+    "watchersRan_many": "{{count}} monitores foram executados",
+    "watchersRan_other": "{{count}} monitores foram executados",
+    "changed_one": "{{count}} item foi alterado",
+    "changed_many": "{{count}} itens foram alterados",
+    "changed_other": "{{count}} itens foram alterados"
   },
   "meetings": {
     "heading": "Reuniões",
-    "intro": "Ele escuta e faz anotações. Não pode falar na reunião e todos na sala são consultados antes de conectar.",
+    "intro": "Ele ouve e faz anotações. Não fala na reunião, e todos na sala são consultados antes de ele entrar.",
     "none": "Nenhuma reunião ainda.",
-    "listenedLive": "Acompanhado ao vivo",
+    "listenedLive": "Ouvido ao vivo",
     "readTranscript": "Transcrição lida depois",
     "noNotes": "Sem anotações",
     "listenedLocally": "Ouvido no seu dispositivo",
-    "whyNoLiveNotes": "Por que não há anotações ao vivo?",
-    "hideWhy": "Ocultar explicação",
-    "listening": "Acompanhando a reunião e anotando. Ele não pode falar.",
-    "stayOut": "Não entrar nesta reunião",
-    "noticed": "O que foi observado",
+    "whyNoLiveNotes": "Por que sem notas ao vivo?",
+    "hideWhy": "Ocultar motivo",
+    "listening": "Ouvindo esta reunião e anotando. Ele não fala.",
+    "stayOut": "Ficar fora desta reunião",
+    "noticed": "O que ele notou",
     "insightsQuiet": "Nada relevante para interromper você ainda.",
     "insightsNone": "Nada foi sinalizado durante esta reunião.",
     "insightsFailed": "Não foi possível carregar.",
-    "enable": "Permitir entrar e anotar nas minhas reuniões",
-    "enableHint": "Desativado por padrão. Todos na reunião são consultados antes de conectar e ele nunca fala."
+    "enable": "Permitir entrada e anotações nas minhas reuniões",
+    "enableHint": "Desativado por padrão. Todos na reunião são consultados antes da entrada, e ele nunca fala.",
+    "meetingsAreCappedSoACall": "As reuniões têm limite de tempo para evitar gravações acidentais o dia todo. Mais 30 minutos consomem cerca de 30 minutos do seu limite.",
+    "nothingHasBeenDoneAboutThis": "Nada foi feito a respeito disso."
   },
   "documents": {
     "heading": "Seus documentos",
-    "intro": "Tudo o que você adicionar aqui pode ser lido e citado. Nada é usado para treinamento, e excluir um documento remove o que foi aprendido com ele.",
+    "intro": "Tudo o que você adiciona aqui pode ser lido e citado. Nada é usado para treinamento, e excluir um documento remove o que foi aprendido com ele.",
     "drop": "Arraste um documento aqui ou",
     "choose": "escolha um arquivo",
-    "types": "PDF, texto, Markdown — ou foto de uma página",
-    "photograph": "Tirar foto de uma página",
-    "none": "Nenhum documento ainda. Adicione um contrato, especificação ou política e faça perguntas.",
+    "types": "PDF, texto, Markdown ou foto de uma página",
+    "photograph": "Fotografar uma página",
+    "none": "Nenhum documento ainda. Adicione um contrato, especificação ou política para fazer perguntas.",
     "reading": "Lendo {{name}}. Documentos longos levam um minuto; fotos são mais rápidas."
   },
   "voice": {
     "heading": "Conversas por voz",
-    "keep": "Manter registro do que for dito",
-    "keepHint": "Desativado por padrão. Quando ativo, o que você diz e as respostas são salvos na conversa — útil para revisões e auditorias. Você pode excluir o registro depois.",
+    "keep": "Salvar histórico do que for falado",
+    "keepHint": "Desativado por padrão. Quando ativo, o que você diz e as respostas são salvos na conversa — útil para revisões e auditorias. Você pode excluir o histórico a qualquer momento.",
     "whatWasSaid": "O que foi dito",
     "deleteRecord": "Excluir este registro",
     "deleting": "Excluindo…"
@@ -64,19 +67,91 @@
     "canView": "Pode visualizar",
     "canComment": "Pode comentar",
     "action": "Compartilhar",
-    "hint": "Compartilhado diretamente com a pessoa, não por link. Ela só poderá ler este item — nunca os documentos de origem — e você pode revogar o acesso a qualquer momento.",
-    "nobody": "Ninguém mais pode ver isso."
+    "hint": "Compartilhado com a pessoa, não por link. Ela só pode ver este item — nunca os documentos de origem — e você pode revogar o acesso a qualquer momento.",
+    "nobody": "Ninguém mais pode ver isto.",
+    "emailAddressToShareWith": "E-mail para compartilhar",
+    "whatTheyCanDo": "O que a pessoa pode fazer",
+    "sharedWithYou": "Compartilhado com você",
+    "nothingYetWhenSomeoneSharesA": "Nada ainda. Quando alguém compartilhar um documento com você, ele aparecerá aqui."
   },
   "language": {
     "heading": "Idioma",
-    "hint": "O idioma desta interface. Isso não altera o idioma em que você fala com ele — ele se adapta a você.",
-    "offer": "Prefere {{language}}?",
-    "switch": "Mudar",
-    "dismiss": "Não, obrigado"
+    "hint": "O idioma desta interface. Não altera o idioma em que você fala com ele — isso se adapta a você.",
+    "dismiss": "Agora não"
   },
   "common": {
     "retry": "Tentar novamente",
     "cancel": "Deixar assim",
-    "saveFailed": "Não foi possível salvar. Nada foi alterado — tente novamente."
+    "saveFailed": "Não foi possível salvar. Nada foi alterado — tente novamente.",
+    "everyAgentThisSystemWillTalk": "Todos os agentes com quem este sistema se comunica, com o contrato publicado verificado no momento da solicitação — não da publicação.",
+    "nothingHereIsAttestedIncludingThe": "Nada aqui é certificado, incluindo o endereço divulgado.",
+    "hereIsWhereThingsStand": "Situação atual.",
+    "inProgress": "Em andamento",
+    "continue": "Continuar",
+    "overnight": "Durante a noite",
+    "allWatchers": "Todos os monitores",
+    "transparentTrace": "Rastreamento transparente",
+    "cognitiveProfile": "Perfil cognitivo",
+    "builtFromWhatYouActuallyDid": "Criado com base no que você fez e corrigiu — não em um formulário preenchido. Cada entrada mostra o que mudou e o porquê, e você pode reverter qualquer item.",
+    "messageTheCompanion": "Mensagem para o assistente",
+    "everythingYouAndTheCompanionAre": "Tudo em que você e o assistente estão trabalhando.",
+    "startYourFirstSession": "Iniciar sua primeira sessão",
+    "standingInstructionsThatRunWithout": "Instruções contínuas executadas sem você. Cada execução entra no mesmo plano e rastreamento de uma sessão conduzida por você.",
+    "irreversibleActionsExternalSendsPa": "Ações irreversíveis — envios externos, pagamentos, exclusões — sempre pedem confirmação, independente do limite do monitor. Essa proteção mínima não pode ser reduzida.",
+    "youAreOffline": "Você está offline",
+    "allthewayCouldNotReachTheNetwork": "O AllTheWay não conseguiu se conectar à rede. Suas sessões estão salvas — reconecte-se para continuar de onde parou."
+  },
+  "account": {
+    "signOut": "Sair"
+  },
+  "canvas": {
+    "askForADraftInThe": "Peça um rascunho na conversa e ele aparecerá aqui para você ajustar.",
+    "generatedByAllthewayThisFileCarrie": "Gerado pelo AllTheWay. Este arquivo inclui credenciais que o identificam como gerado por IA, mantidas após o download.",
+    "artifactContent": "Conteúdo do item",
+    "whatChanged": "O que mudou?",
+    "allWork": "Todos os trabalhos",
+    "anythingItDraftsForYouLands": "Tudo o que for criado para você aparece aqui — documentos, resumos, wireframes — com histórico de alterações e opção de exportação."
+  },
+  "comments": {
+    "comments": "Comentários",
+    "resolve": "Resolver",
+    "addAComment": "Adicionar comentário",
+    "youHaveViewOnlyAccessTo": "Você tem acesso apenas para visualização."
+  },
+  "connections": {
+    "connectedAccounts": "Contas conectadas",
+    "whatAllthewayIsAllowedToReach": "O que o AllTheWay pode acessar em seu nome. Ele sempre pede confirmação antes de ações irreversíveis.",
+    "draftingIsTheSafestThingIt": "Criar rascunhos é a ação mais segura com e-mails — nada é enviado.",
+    "googleStillClassesThePermissionAs": "O Google classifica essa permissão como restrita, portanto ela fica desativada a menos que solicitada.",
+    "connected": "Conectado",
+    "comingSoon": "Em breve"
+  },
+  "specialists": {
+    "whatItCanDo": "O que pode fazer",
+    "eachOfTheseIsASeparate": "Cada um é um agente independente com seu próprio card publicado. A versão e a assinatura abaixo são lidas desse card — se um recurso deixar de ser verificado, isso será indicado aqui.",
+    "internal": "Interno",
+    "runsInsideTheProductAndPublishes": "Executado dentro do produto sem card publicado — inacessível externamente.",
+    "notRegisteredInThisDeploymentThis": "Não registrado nesta implantação — recurso indisponível."
+  },
+  "usage": {
+    "thisMonth": "Este mês",
+    "gettingCloseNothingStopsWorkingWit": "Quase no limite. Nada para de funcionar sem aviso prévio.",
+    "usedUpForThisMonthEverything": "Esgotado para este mês. Todos os outros recursos continuam funcionando."
+  },
+  "visual": {
+    "howYourWorkLooks": "Aparência do seu trabalho",
+    "whatItHasPickedUpAbout": "O que foi aprendido sobre seu estilo visual e aplicado nas criações. Reverta qualquer item para desconsiderá-lo.",
+    "nothingYetAskItToMake": "Nada ainda. Peça para criar algo e ajuste o visual — é assim que ele aprende."
+  },
+  "auth": {
+    "backToSignIn": "Voltar para o login",
+    "createAnAccount": "Criar conta",
+    "forgotYourPassword": "Esqueceu a senha?",
+    "requestACode": "Solicitar código",
+    "verificationCode": "Código de verificação",
+    "signIn": "Entrar",
+    "goToSignIn": "Ir para o login",
+    "useADifferentEmail": "Usar outro e-mail",
+    "sendANewCode": "Enviar novo código"
   }
 }

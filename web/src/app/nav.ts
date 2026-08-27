@@ -6,36 +6,18 @@ import { Brain, House, LayoutGrid, Radar, ShieldCheck } from "lucide-react";
  */
 export type NavItem = {
   to: string;
-  label: string;
+  /**
+   * A catalogue key, not a label. Both consumers translate it at render, so a
+   * language change re-renders the nav rather than leaving English behind.
+   */
+  labelKey: string;
   icon: React.ElementType;
-  /** Shown in the sidebar only — the tab bar has no room for it. */
-  hint?: string;
 };
 
 export const NAV: NavItem[] = [
-  { to: "/app", label: "Home", icon: House, hint: "Today at a glance" },
-  {
-    to: "/app/sessions",
-    label: "Sessions",
-    icon: LayoutGrid,
-    hint: "Work in progress",
-  },
-  {
-    to: "/app/watchers",
-    label: "Watchers",
-    icon: Radar,
-    hint: "Running for you",
-  },
-  {
-    to: "/app/agents",
-    label: "Agents",
-    icon: ShieldCheck,
-    hint: "What can act, and who vouches for it",
-  },
-  {
-    to: "/app/profile",
-    label: "Profile",
-    icon: Brain,
-    hint: "What it has learned",
-  },
+  { to: "/app", labelKey: "nav.home", icon: House },
+  { to: "/app/sessions", labelKey: "nav.sessions", icon: LayoutGrid },
+  { to: "/app/watchers", labelKey: "nav.watchers", icon: Radar },
+  { to: "/app/agents", labelKey: "nav.agents", icon: ShieldCheck },
+  { to: "/app/profile", labelKey: "nav.profile", icon: Brain },
 ];

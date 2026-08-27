@@ -1,4 +1,5 @@
 import { Link } from "react-router";
+import { useT } from "@/app/i18n";
 import { ArrowRight, Check, ShieldCheck } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
@@ -32,6 +33,7 @@ function HomeSkeleton() {
 }
 
 export default function Home() {
+  const t = useT();
   const { user } = useAuth();
   const { state, reload } = useAsync<HomeData>(async () => {
     const [plan, runs] = await Promise.all([api.homePlan(), api.watcherRuns()]);
@@ -69,7 +71,7 @@ export default function Home() {
             below exists to fix: real counts, from the ledger, or silence.
           */}
           <p className="mt-2 text-[15px] leading-relaxed text-muted-foreground">
-            Here is where things stand.
+            {t("common.hereIsWhereThingsStand")}
           </p>
         </div>
 
@@ -98,7 +100,7 @@ export default function Home() {
               <div className="flex items-start justify-between gap-4">
                 <div className="min-w-0">
                   <p className="text-[12px] font-semibold tracking-[0.08em] text-blue-deep uppercase dark:text-blue-bright">
-                    In progress
+                    {t("common.inProgress")}
                   </p>
                   <h2
                     id="continue-heading"
@@ -148,7 +150,7 @@ export default function Home() {
                 size="lg"
                 className="mt-5"
               >
-                Continue
+                {t("common.continue")}
                 <ArrowRight />
               </Button>
             </section>
@@ -158,13 +160,13 @@ export default function Home() {
             <section aria-labelledby="watchers-heading">
               <div className="mb-3 flex items-baseline justify-between">
                 <h2 id="watchers-heading" className="text-[16px] font-semibold">
-                  Overnight
+                  {t("common.overnight")}
                 </h2>
                 <Link
                   to="/app/watchers"
                   className="text-[13px] text-muted-foreground transition-colors hover:text-foreground"
                 >
-                  All watchers
+                  {t("common.allWatchers")}
                 </Link>
               </div>
 
@@ -219,7 +221,7 @@ export default function Home() {
           className="flex items-center gap-2 text-[16px] font-semibold"
         >
           <ShieldCheck className="size-4 text-primary" aria-hidden="true" />
-          Transparent trace
+          {t("common.transparentTrace")}
         </h2>
         <ul className="mt-3 space-y-2 text-[13px] leading-relaxed text-muted-foreground">
           {TRACE.map((t) => (

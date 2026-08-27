@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useT } from "@/app/i18n";
 import { Bell, BellOff, Users } from "lucide-react";
 import { Link } from "react-router";
 
@@ -25,6 +26,7 @@ import { enablePush } from "@/app/push";
  * behind a control the user chose to press.
  */
 export function SharedWithMe() {
+  const t = useT();
   const { state, reload } = useAsync<SharedArtifact[]>(() => api.sharedWithMe());
   const [push, setPush] = useState<{ on: boolean; note: string | null }>({
     on: false,
@@ -49,7 +51,7 @@ export function SharedWithMe() {
   return (
     <section className="flex flex-col gap-3">
       <h2 className="text-[12px] font-semibold tracking-[0.08em] text-blue-deep uppercase dark:text-blue-bright">
-        Shared with you
+        {t("share.sharedWithYou")}
       </h2>
 
       <Async
@@ -58,8 +60,7 @@ export function SharedWithMe() {
         isEmpty={(rows) => rows.length === 0}
         empty={
           <p className="py-3 text-[12.5px] text-muted-foreground">
-            Nothing yet. When someone shares a document with you, it appears
-            here.
+            {t("share.nothingYetWhenSomeoneSharesA")}
           </p>
         }
       >

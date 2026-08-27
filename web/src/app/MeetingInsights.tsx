@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { useT } from "@/app/i18n";
 import { AlertTriangle, ExternalLink, FileText, HelpCircle } from "lucide-react";
 
 import { api, type Insight } from "@/app/data";
@@ -53,6 +54,7 @@ export function MeetingInsights({
   /** Whether the meeting is still running. Polling stops when it is not. */
   live: boolean;
 }) {
+  const t = useT();
   const [insights, setInsights] = useState<Insight[]>([]);
   const [failed, setFailed] = useState(false);
 
@@ -91,10 +93,10 @@ export function MeetingInsights({
     return (
       <p className="text-[12.5px] text-muted-foreground">
         {live
-          ? "Nothing worth interrupting you for yet."
+          ? t("meetings.insightsQuiet")
           : failed
-            ? "Those could not be loaded."
-            : "Nothing was flagged during this meeting."}
+            ? t("meetings.insightsFailed")
+            : t("meetings.insightsNone")}
       </p>
     );
   }

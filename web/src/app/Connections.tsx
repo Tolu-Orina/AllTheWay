@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useT } from "@/app/i18n";
 import { Check, ExternalLink, Loader2 } from "lucide-react";
 
 import { Async } from "@/app/async";
@@ -35,6 +36,7 @@ const OUTCOMES: Record<string, { tone: "good" | "bad"; text: string }> = {
 };
 
 export function Connections() {
+  const t = useT();
   const { state, reload } = useAsync(() => api.connectors());
   const [starting, setStarting] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
@@ -74,11 +76,10 @@ export function Connections() {
   return (
     <section className="flex flex-col gap-3">
       <h2 className="text-[12px] font-semibold tracking-[0.08em] text-blue-deep uppercase dark:text-blue-bright">
-        Connected accounts
+        {t("connections.connectedAccounts")}
       </h2>
       <p className="text-[13.5px] leading-relaxed text-muted-foreground">
-        What AllTheWay is allowed to reach on your behalf. It still asks before
-        it does anything that cannot be undone.
+        {t("connections.whatAllthewayIsAllowedToReach")}
       </p>
 
       {outcome ? (
@@ -113,9 +114,8 @@ export function Connections() {
         <span>
           <span className="font-medium">Let it save Gmail drafts</span>
           <span className="mt-0.5 block text-[12.5px] leading-relaxed text-muted-foreground">
-            Drafting is the safest thing it can do with mail — nothing is sent.
-            Google still classes the permission as restricted, so this stays off
-            unless you ask for it.
+            {t("connections.draftingIsTheSafestThingIt")}
+            {t("connections.googleStillClassesThePermissionAs")}
           </span>
         </span>
       </label>
@@ -147,6 +147,7 @@ function ConnectorRow({
   busy: boolean;
   onConnect: () => void;
 }) {
+  const t = useT();
   const soon = connector.status === "coming_soon";
 
   return (
@@ -161,14 +162,14 @@ function ConnectorRow({
         {connector.connected ? (
           <p className="mt-0.5 flex items-center gap-1 text-[12.5px] text-muted-foreground">
             <Check className="size-3.5" aria-hidden="true" />
-            Connected
+            {t("connections.connected")}
           </p>
         ) : null}
       </div>
 
       {soon ? (
         <span className="shrink-0 rounded-full border px-2.5 py-1 text-[12px] text-muted-foreground">
-          Coming soon
+          {t("connections.comingSoon")}
         </span>
       ) : (
         <button

@@ -4,73 +4,148 @@
     "sessions": "Àwọn àkókò",
     "watchers": "Àwọn olùṣọ́",
     "agents": "Àwọn aṣojú",
-    "profile": "Prófáìlì"
+    "profile": "Prófáìlì",
+    "recents": "Àwọn àìpẹ́"
   },
   "digest": {
     "heading": "Láti àná",
-    "quiet": "Kò sí ohun tó ṣẹlẹ̀ lálẹ́ àná. Kò sí ohun tó ń dúró dè ọ́.",
+    "quiet": "Kò sí ohun tó ṣẹlẹ̀ lálẹ́ mọ́jú. Kò sí ohun tó ń dúró dè ọ́.",
     "nothingWaiting": "Kò sí ohun tó ń dúró dè ọ́.",
     "andMore": "àti {{count}} mìíràn",
-    "decisions_other": "Àwọn ohun {{count}} nílò ìpinnu rẹ",
-    "watchersRan_other": "Àwọn olùṣọ́ {{count}} ti ṣiṣẹ́",
-    "changed_other": "Àwọn ohun {{count}} ti yípadà"
+    "decisions_other": "Àwọn nǹkan {{count}} nílò ìpinnu rẹ",
+    "watchersRan_other": "Àwọn olùṣọ́ {{count}} ṣiṣẹ́",
+    "changed_other": "Àwọn nǹkan {{count}} yípadà"
   },
   "meetings": {
     "heading": "Àwọn ìpàdé",
-    "intro": "Ó ń gbọ́rọ̀, ó sì ń kọ àkọsílẹ̀. Kò lè sọ̀rọ̀ nínú ìpàdé, a sì gbọ́dọ̀ béèrè lọ́wọ́ gbogbo ènìyàn kí ó tó wọlé.",
+    "intro": "Ó ń tẹ́tí sílẹ̀, ó sì ń kọ àkọsílẹ̀. Kò lè sọ̀rọ̀ nínú ìpàdé, a sì gbọ́dọ̀ béèrè lọ́wọ́ gbogbo ènìyàn kó tó dara pọ̀.",
     "none": "Kò tíì sí ìpàdé kankan.",
     "listenedLive": "Gbọ́ ní tààrà",
-    "readTranscript": "Ka àkọsílẹ̀ lẹ́yìn náà",
+    "readTranscript": "Ka àkọsílẹ̀ ọ̀rọ̀ náà lẹ́yìn náà",
     "noNotes": "Kò sí àkọsílẹ̀",
     "listenedLocally": "Gbọ́ lórí ẹ̀rọ rẹ",
-    "whyNoLiveNotes": "Kí ló dé tí kò fi sí àkọsílẹ̀ lẹ́sẹ̀kẹsẹ̀?",
+    "whyNoLiveNotes": "Kí ló dé tí kò fi sí àkọsílẹ̀ tààrà?",
     "hideWhy": "Fi ìdí rẹ̀ pamọ́",
-    "listening": "Ó ń gbọ́ ìpàdé yìí, ó sì ń kọ àkọsílẹ̀. Kò lè sọ̀rọ̀.",
-    "stayOut": "Má wọ ìpàdé yìí",
-    "noticed": "Ohun tó kíyèsí",
-    "insightsQuiet": "Kò tíì sí ohun pàtàkì tó yẹ kí a yọ ọ́ lẹ́nu fún.",
-    "insightsNone": "Kò sí ohun tó jẹ́ sísàmì sí nínú ìpàdé yìí.",
-    "insightsFailed": "Kò lè gbé àwọn wọ̀nyí jáde.",
-    "enable": "Jẹ́ kí ó darapọ̀ kí ó sì kọ àkọsílẹ̀ nínú àwọn ìpàdé mi",
-    "enableHint": "Kò ní ṣiṣẹ́ àyàfi tí o bá tan-án. A ó béèrè lọ́wọ́ gbogbo ènìyàn kí ó tó wọlé, kò sì ní sọ̀rọ̀ láé."
+    "listening": "Ó ń tẹ́tí sí ìpàdé yìí, ó sì ń kọ àkọsílẹ̀. Kò lè sọ̀rọ̀.",
+    "stayOut": "Má kọ́kọ́ dara pọ̀ mọ́ ìpàdé yìí",
+    "noticed": "Ohun tí ó kíyèsí",
+    "insightsQuiet": "Kò sí ohun pàjáwìrì kankan tó yẹ kí a da ọ́ lẹ́kun fún báyìí.",
+    "insightsNone": "A kò sàmì sí ohunkóhun nínú ìpàdé yìí.",
+    "insightsFailed": "Àwọn wọ̀nyí kùnà láti gbé jáde.",
+    "enable": "Jẹ́ kí ó dara pọ̀ kí ó sì kọ àkọsílẹ̀ nínú àwọn ìpàdé mi",
+    "enableHint": "Wà ní pípa àyàfi tí o bá tàn án. A máa ń béèrè lọ́wọ́ gbogbo ènìyàn kó tó dara pọ̀, kò sì ní lè sọ̀rọ̀ láé.",
+    "meetingsAreCappedSoACall": "Ìpàdé ní ààlà àkókò kí ìpè tí kò sí ẹnì kankan má bàa tẹ̀síwájú láti gba ohùn sílẹ̀ gbogbo ọjọ́. Ìṣẹ́jú 30 mìíràn yóò lo nǹkan bí ìṣẹ́jú 30 nínú àkókò ìpàdé rẹ.",
+    "nothingHasBeenDoneAboutThis": "A kò tíì ṣe ohunkóhun nípa èyí."
   },
   "documents": {
-    "heading": "Àwọn ìwé rẹ",
-    "intro": "Ohun gbogbo tí o bá fi kún un níhìn-ín ni ó lè kà tí ó sì lè tọ́ka sí. A kì í fi kọ́ ẹ̀rọ mìíràn, bí o bá sì pa ìwé rẹ́, gbogbo ẹ̀kọ́ inú rẹ̀ yóò pa pẹ̀lú.",
-    "drop": "Ju ìwé síbí, tàbí",
+    "heading": "Àwọn àkọsílẹ̀ rẹ",
+    "intro": "Ohunkóhun tí o bá fi kún un níbí, ó lè kà á kí ó sì tọ́ka sí i. A kò lo ohunkóhun láti kọ́ ẹ̀rọ náà lẹ́kọ̀ọ́, pípéjú àkọsílẹ̀ sì ń pa ohun tí ó kọ́ nínú rẹ̀ rẹ́.",
+    "drop": "Ju àkọsílẹ̀ síbí, tàbí",
     "choose": "yan fáìlì kan",
     "types": "PDF, ọ̀rọ̀, Markdown — tàbí fọ́tò ojú-ìwé kan",
-    "photograph": "Ya fọ́tò ojú-ìwé kan",
-    "none": "Kò tíì sí ìwé kankan. Fi àdéhùn, àlàyé iṣẹ́ tàbí ìlànà kún un, kí o sì béèrè nípa rẹ̀.",
-    "reading": "Ó ń ka {{name}}. Ìwé gígùn máa ń gba ìṣẹ́jú kan; fọ́tò yára jù bẹ́ẹ̀ lọ."
+    "photograph": "Ya àwòrán ojú-ìwé kan",
+    "none": "Kò tíì sí àkọsílẹ̀ kankan. Fi àdéhùn, àlàyé tàbí ìlànà kún un kí o sì béèrè nípa rẹ̀.",
+    "reading": "Ó ń ka {{name}}. Àkọsílẹ̀ gígùn máa ń gba ìṣẹ́jú kan; àwòrán fọ́tò yára jù."
   },
   "voice": {
-    "heading": "Àwọn ìfọ̀rọ̀wérọ̀ ohùn",
+    "heading": "Àwọn ìjíròrò ohùn",
     "keep": "Tọ́jú àkọsílẹ̀ ohun tí a sọ",
-    "keepHint": "Ó wà ní pípa tẹ́lẹ̀. Bí o bá tàn-án, gbogbo ohun tí o sọ àti èsì rẹ̀ ni a ó tọ́jú — ó dára fún àtúnyẹ̀wò. O lè pa àkọsílẹ̀ ìfọ̀rọ̀wérọ̀ rẹ́ lẹ́yìn náà.",
+    "keepHint": "Pípa ní àkọ́kọ́gbà. Nígbà tí ó bá wà ní títàn, ohun tí o sọ àti èsì rẹ̀ ni a ó fi pamọ́ — èyí wúlò fún àtúnyẹ̀wò. O lè pa àkọsílẹ̀ ìjíròrò rẹ́ lẹ́yìn náà.",
     "whatWasSaid": "Ohun tí a sọ",
     "deleteRecord": "Pa àkọsílẹ̀ yìí rẹ́",
     "deleting": "Ó ń pa á rẹ́…"
   },
   "share": {
     "heading": "Pín",
-    "placeholder": "name@company.com",
+    "placeholder": "oruko@ile-ise.com",
     "canView": "Lè wò ó",
     "canComment": "Lè sọ èrò",
     "action": "Pín",
-    "hint": "A pín in pẹ̀lú ẹni náà, kì í ṣe pẹ̀lú ọ̀nà-ìsopọ̀. Wọ́n lè ka ohun yìí nìkan — kì í ṣe àwọn ìwé abẹ́ rẹ̀ — o sì lè gba àyè náà padà nígbàkúgbà.",
-    "nobody": "Kò sí ẹlòmíràn tó lè rí èyí."
+    "hint": "Pín pẹ̀lú ènìyàn, kì í ṣe pẹ̀lú ọ̀nà-ìjápọ̀. Wọ́n lè ka ohun yìí nìkan — kì í ṣe àwọn àkọsílẹ̀ abẹ́nú rẹ̀ — o sì lè gba àyè náà padà nígbàkúùgbà.",
+    "nobody": "Kò sí ẹlòmíràn tí ó lè rí èyí.",
+    "emailAddressToShareWith": "Àdírẹ́sì ímeèlì tí a fẹ́ pín fún",
+    "whatTheyCanDo": "Ohun tí wọ́n lè ṣe",
+    "sharedWithYou": "Tí a pín pẹ̀lú rẹ",
+    "nothingYetWhenSomeoneSharesA": "Kò tíì sí nǹkan. Nígbà tí ẹnì kan bá pín àkọsílẹ̀ pẹ̀lú rẹ, yóò hàn níbí."
   },
   "language": {
     "heading": "Èdè",
-    "hint": "Èdè ojú-ibìṣẹ́ yìí. Kò ní yí èdè tí o fi ń bá a sọ̀rọ̀ padà — ó ń tẹ̀lé ọ ni.",
-    "offer": "Ṣé o fẹ́ {{language}}?",
-    "switch": "Yí padà",
-    "dismiss": "Rárá, o ṣeun"
+    "hint": "Èdè ojú-ìbòjú yìí. Kò ní yí èdè tí o fi ń bá a sọ̀rọ̀ padà — èyí tẹ̀lé ọ.",
+    "dismiss": "Rárá o, o ṣeun"
   },
   "common": {
-    "retry": "Tún gbìyànjú",
+    "retry": "Gbìyànjú lẹ́ẹ̀kan síi",
     "cancel": "Fi sílẹ̀",
-    "saveFailed": "Kò lè fi pamọ́. Kò sí ohun tó yípadà — tún gbìyànjú."
+    "saveFailed": "Kò ṣeé fi pamọ́. Kò sí ohun tó yípadà — tún gbìyànjú.",
+    "everyAgentThisSystemWillTalk": "Gbogbo aṣojú tí ètò yìí yóò bá sọ̀rọ̀, pẹ̀lú àdéhùn rẹ̀ tí a ṣàyẹ̀wò ní àkókò tí o béèrè — kì í ṣe nígbà tí a gbé e jáde.",
+    "nothingHereIsAttestedIncludingThe": "Kò sí ohun tí a fọwọ́ sí níbí, títí kan àdírẹ́sì tí ó polongo.",
+    "hereIsWhereThingsStand": "Bí àwọn nǹkan ṣe rí nìyí.",
+    "inProgress": "Lọ́wọ́lọ́wọ́",
+    "continue": "Tẹ̀síwájú",
+    "overnight": "Lálẹ́ mọ́jú",
+    "allWatchers": "Gbogbo àwọn olùṣọ́",
+    "transparentTrace": "Àkọsílẹ̀ tí ó hàn kedere",
+    "cognitiveProfile": "Prófáìlì ìrònú",
+    "builtFromWhatYouActuallyDid": "A kọ́ ọ láti inú ohun tí o ṣe gangan tí o sì túnṣe — kì í ṣe láti inú fọ́ọ̀mù tí o kọ lẹ́ẹ̀kan. Gbogbo àkọsílẹ̀ ń sọ ohun tó yípadà àti ìdí rẹ̀, o sì lè da èyíkéyìí padà.",
+    "messageTheCompanion": "Fi ifiranṣẹ́ ránṣẹ́ sí olùrànlọ́wọ́",
+    "everythingYouAndTheCompanionAre": "Gbogbo ohun tí ìwọ àti olùrànlọ́wọ́ jọ ń ṣe papọ̀.",
+    "startYourFirstSession": "Bẹ̀rẹ̀ àkókò àkọ́kọ́ rẹ",
+    "standingInstructionsThatRunWithout": "Àwọn ìtọ́ni títí láé tí ń ṣiṣẹ́ láìsí ìwọ. Gbogbo ìgbésẹ̀ ń lọ sí àkọsílẹ̀ àti ètò kan náà gẹ́gẹ́ bí iṣẹ́ tí o darí fúnra rẹ.",
+    "irreversibleActionsExternalSendsPa": "Àwọn ìgbésẹ̀ tí a kò lè dá padà — ríránṣẹ́ síta, ìsanwó, pípa nǹkan rẹ́ — máa ń dánudúró láti béèrè lọ́wọ́ rẹ nígbà gbogbo. O kò lè dín ààbò yìí kù.",
+    "youAreOffline": "O kò sí lórí ayélujára",
+    "allthewayCouldNotReachTheNetwork": "AllTheWay kò lè bá nẹ́tíwọ́ọ̀kì pàdé. Àwọn àkókò rẹ wà ní ààbò — tún so pọ̀, ojú-ìwé yìí yóò sì tẹ̀síwájú láti ibi tí ó dádúró."
+  },
+  "account": {
+    "signOut": "Jáde"
+  },
+  "canvas": {
+    "askForADraftInThe": "Béèrè fún àkọsílẹ̀ àkọ́kọ́ nínú ìfọ̀rọ̀wérọ̀, yóò sì hàn níbí, níbi tí o ti lè tún un ṣe.",
+    "generatedByAllthewayThisFileCarrie": "AllTheWay ló ṣe èyí. Fáìlì yìí ní ẹ̀rí tí ó fi hàn pé AI ló ṣe é, èyí sì máa ń wà pẹ̀lú rẹ̀ lẹ́yìn ìgbàsílẹ̀.",
+    "artifactContent": "Àkóónú iṣẹ́ náà",
+    "whatChanged": "Kí ló yípadà?",
+    "allWork": "Gbogbo iṣẹ́",
+    "anythingItDraftsForYouLands": "Ohunkóhun tí ó bá kọ fún ọ yóò wá síbí — àkọsílẹ̀, àkótán, tàbí àpẹẹrẹ àwòrán — pẹ̀lú gbogbo àtúnṣe rẹ, àti ọ̀nà láti gbé e lọ."
+  },
+  "comments": {
+    "comments": "Àwọn àfikún ọ̀rọ̀",
+    "resolve": "Yanjú",
+    "addAComment": "Fi àfikún ọ̀rọ̀ kún un",
+    "youHaveViewOnlyAccessTo": "Àyè láti wo nìkan ni o ní sí èyí."
+  },
+  "connections": {
+    "connectedAccounts": "Àwọn àkọọ́lẹ̀ tí a so pọ̀",
+    "whatAllthewayIsAllowedToReach": "Ohun tí AllTheWay ní àṣẹ láti wọ̀ nítorí rẹ. Yóò ṣì béèrè kí ó tó ṣe ohun tí a kò lè dá padà.",
+    "draftingIsTheSafestThingIt": "Kíkọ àkọsílẹ̀ sílẹ̀ ni ohun tó ní ààbò jù lọ tí ó lè ṣe pẹ̀lú ímeèlì — a kò fi nǹkan ránṣẹ́.",
+    "googleStillClassesThePermissionAs": "Google ṣì ka àṣẹ yìí sí èyí tí a dínkù, nítorí náà èyí yóò wà ní pípa àyàfi tí o bá béèrè fún un.",
+    "connected": "Ti so pọ̀",
+    "comingSoon": "Ń bọ̀ láìpẹ́"
+  },
+  "specialists": {
+    "whatItCanDo": "Ohun tí ó lè ṣe",
+    "eachOfTheseIsASeparate": "Ọ̀kọ̀ọ̀kan àwọn wọ̀nyí jẹ́ aṣojú ọ̀tọ̀ọ̀tọ̀ pẹ̀lú káàdì tirẹ̀. Ẹ̀yà àti ìfọwọ́sí ìsàlẹ̀ ni a kà láti inú káàdì yẹn — nítorí náà agbára tí kò bá fìdí múlẹ̀ mọ́ yóò sọ bẹ́ẹ̀ níbí.",
+    "internal": "Ti inú",
+    "runsInsideTheProductAndPublishes": "Ó ń ṣiṣẹ́ nínú ẹ̀rọ náà kò sì gbé káàdì jáde — kò sí ohun láti òde tí ó lè pè é.",
+    "notRegisteredInThisDeploymentThis": "A kò forúkọ rẹ̀ sílẹ̀ níbí — agbára yìí kò sí."
+  },
+  "usage": {
+    "thisMonth": "Oṣù yìí",
+    "gettingCloseNothingStopsWorkingWit": "Ó ti ń súnmọ́ tòsí. Kò sí ohun tí yóò dáṣẹ́ dúró láìsọ fún ọ tẹ́lẹ̀.",
+    "usedUpForThisMonthEverything": "Ti tán fún oṣù yìí. Gbogbo àwọn nǹkan yòókù ṣì ń ṣiṣẹ́."
+  },
+  "visual": {
+    "howYourWorkLooks": "Bí iṣẹ́ rẹ ṣe rí",
+    "whatItHasPickedUpAbout": "Ohun tí ó ti mọ̀ nípa àkànṣe ìrísí iṣẹ́ rẹ, tí ó sì ń lò nígbà tí ó bá ń ṣe nǹkan fún ọ. Dá èyíkéyìí padà kí ó lè dáwọ́ ríro bẹ́ẹ̀ dúró.",
+    "nothingYetAskItToMake": "Kò tíì sí nǹkan. Ní kí ó ṣe nǹkan kan kí o sì tún ìrísí rẹ̀ ṣe — látinú èyí ni ó ti ń kẹ́kọ̀ọ́."
+  },
+  "auth": {
+    "backToSignIn": "Padà sí ìwọlé",
+    "createAnAccount": "Ṣẹ̀dá àkọọ́lẹ̀ kan",
+    "forgotYourPassword": "Ṣé o gbàgbé ọ̀rọ̀-ìpamọ́ rẹ?",
+    "requestACode": "Béèrè fún kóòdù",
+    "verificationCode": "Kóòdù ìjẹ́rìí",
+    "signIn": "Wọlé",
+    "goToSignIn": "Lọ sí ìwọlé",
+    "useADifferentEmail": "Lo ímeèlì mìíràn",
+    "sendANewCode": "Fi kóòdù tuntun ránṣẹ́"
   }
 }

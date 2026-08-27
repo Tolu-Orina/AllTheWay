@@ -1,4 +1,5 @@
 import { AlertTriangle, Clock, SignalHigh, SignalLow, SignalMedium } from "lucide-react";
+import { useT } from "@/app/i18n";
 
 import { cn } from "@/lib/utils";
 import { QUALITY_LABELS, qualityOf, type Quality } from "@alltheway/contracts";
@@ -77,6 +78,7 @@ export function DurationNotice({
   stopped: boolean;
   onExtend: (minutes: number) => void;
 }) {
+  const t = useT();
   if (!warn && !stopped) return null;
 
   return (
@@ -98,9 +100,7 @@ export function DurationNotice({
       </p>
 
       <p className="text-[12px] leading-relaxed text-muted-foreground">
-        Meetings are capped so a call nobody closed cannot keep recording all
-        day. Another 30 minutes uses about 30 more minutes of your meeting
-        allowance.
+        {t("meetings.meetingsAreCappedSoACall")}
       </p>
 
       <button

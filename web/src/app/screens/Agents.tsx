@@ -1,4 +1,5 @@
 import { AlertTriangle, ShieldCheck, ShieldX } from "lucide-react";
+import { useT } from "@/app/i18n";
 
 import { Async } from "@/app/async";
 import { Specialists } from "@/app/Specialists";
@@ -27,17 +28,17 @@ import { cn } from "@/lib/utils";
  */
 
 export default function Agents() {
+  const t = useT();
   const { state, reload } = useAsync(() => api.agents());
 
   return (
     <div className="flex flex-col gap-5">
       <header>
         <h1 className="text-[26px] leading-tight font-bold tracking-[-0.02em]">
-          Agents
+          {t("nav.agents")}
         </h1>
         <p className="mt-1 max-w-prose text-[14px] leading-relaxed text-muted-foreground">
-          Every agent this system will talk to, with its published contract
-          checked at the moment you asked — not when it was deployed.
+          {t("common.everyAgentThisSystemWillTalk")}
         </p>
       </header>
 
@@ -68,6 +69,7 @@ export default function Agents() {
 }
 
 function AgentCard({ agent }: { agent: Agent }) {
+  const t = useT();
   const trusted = agent.signature?.trusted ?? false;
   // Reachable but unverified is the case worth shouting about. Unreachable is
   // an availability problem; unverified is a trust problem, and they should
@@ -142,7 +144,7 @@ function AgentCard({ agent }: { agent: Agent }) {
           <AlertTriangle className="mt-0.5 size-3.5 shrink-0" aria-hidden="true" />
           <span>
             {agent.signature?.summary ?? "This agent's card could not be verified."}{" "}
-            Nothing here is attested, including the address it advertises.
+            {t("common.nothingHereIsAttestedIncludingThe")}
           </span>
         </p>
       ) : null}

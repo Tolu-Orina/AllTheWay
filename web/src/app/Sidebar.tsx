@@ -4,6 +4,7 @@ import { DoorOpen } from "lucide-react";
 import { Logo } from "@/components/primitives/logo";
 import { Avatar } from "@/app/Avatar";
 import { NAV } from "@/app/nav";
+import { useT } from "@/app/i18n";
 import { nameFor, useAppUser } from "@/app/user";
 import { useAuth } from "@/auth/useAuth";
 import { cn } from "@/lib/utils";
@@ -21,6 +22,7 @@ const RECENTS = [
  * you are, never about what you are doing.
  */
 export function Sidebar() {
+  const t = useT();
   const user = useAppUser();
   const name = nameFor(user);
   const { adapter } = useAuth();
@@ -60,7 +62,7 @@ export function Sidebar() {
                     strokeWidth={isActive ? 2.3 : 1.9}
                     aria-hidden="true"
                   />
-                  {item.label}
+                  {t(item.labelKey)}
                 </>
               )}
             </NavLink>
@@ -69,7 +71,7 @@ export function Sidebar() {
 
         <div>
           <h2 className="px-3 pb-2 text-[11px] font-semibold tracking-[0.1em] text-muted-foreground uppercase">
-            Recents
+            {t("nav.recents")}
           </h2>
           <ul className="flex flex-col gap-0.5">
             {RECENTS.map((r) => (

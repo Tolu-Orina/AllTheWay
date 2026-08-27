@@ -1,4 +1,5 @@
 import { useCallback, useRef, useState } from "react";
+import { useT } from "@/app/i18n";
 import { Camera, Loader2, ShieldAlert, Trash2, Upload } from "lucide-react";
 
 import { Async } from "@/app/async";
@@ -59,6 +60,7 @@ async function toBase64(file: File): Promise<string> {
 }
 
 export function Documents() {
+  const t = useT();
   const { state, reload } = useAsync(() => api.documents());
   const [busy, setBusy] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
@@ -96,11 +98,10 @@ export function Documents() {
   return (
     <section className="flex flex-col gap-3">
       <h2 className="text-[12px] font-semibold tracking-[0.08em] text-blue-deep uppercase dark:text-blue-bright">
-        Your documents
+        {t("documents.heading")}
       </h2>
       <p className="text-[13.5px] leading-relaxed text-muted-foreground">
-        Anything you add here, it can read and cite. Nothing is used to train
-        anything, and deleting a document removes what it learned from it.
+        {t("documents.intro")}
       </p>
 
       <div
@@ -121,17 +122,17 @@ export function Documents() {
       >
         <Upload className="size-5 text-muted-foreground" aria-hidden="true" />
         <p className="text-[13px]">
-          Drop a document here, or{" "}
+          {t("documents.drop")}{" "}
           <button
             type="button"
             onClick={() => input.current?.click()}
             className="underline underline-offset-2"
           >
-            choose a file
+            {t("documents.choose")}
           </button>
         </p>
         <p className="text-[12px] text-muted-foreground">
-          PDF, text, Markdown — or a photo of a page
+          {t("documents.types")}
         </p>
         <input
           ref={input}
@@ -174,7 +175,7 @@ export function Documents() {
           className="hidden items-center gap-1.5 rounded-brand border px-3 py-1.5 text-[12.5px] transition-colors hover:bg-muted [@media(pointer:coarse)]:inline-flex"
         >
           <Camera className="size-3.5" aria-hidden="true" />
-          Photograph a page
+          {t("documents.photograph")}
         </button>
       </div>
 
@@ -198,7 +199,7 @@ export function Documents() {
         isEmpty={(d) => d.documents.length === 0}
         empty={
           <p className="py-4 text-[12.5px] text-muted-foreground">
-            No documents yet. Add a contract, a spec or a policy and ask about it.
+            {t("documents.none")}
           </p>
         }
       >

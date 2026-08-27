@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useT } from "@/app/i18n";
 import { Loader2, Trash2, UserPlus } from "lucide-react";
 
 import { Async } from "@/app/async";
@@ -26,6 +27,7 @@ import { api, type Share } from "@/app/data";
  * work.
  */
 export function ShareControls({ artifactId }: { artifactId: string }) {
+  const t = useT();
   const { state, reload } = useAsync<Share[]>(() => api.shares(artifactId));
   const [email, setEmail] = useState("");
   const [role, setRole] = useState<"viewer" | "commenter">("viewer");
@@ -54,23 +56,23 @@ export function ShareControls({ artifactId }: { artifactId: string }) {
   return (
     <section className="flex flex-col gap-3 border-t p-4">
       <h3 className="text-[12px] font-semibold tracking-[0.08em] text-blue-deep uppercase dark:text-blue-bright">
-        Share
+        {t("share.heading")}
       </h3>
 
       <div className="flex flex-wrap items-center gap-2">
         <label htmlFor={`share-${artifactId}`} className="sr-only">
-          Email address to share with
+          {t("share.emailAddressToShareWith")}
         </label>
         <input
           id={`share-${artifactId}`}
           type="email"
           value={email}
           onChange={(e) => setEmail(e.target.value)}
-          placeholder="name@company.com"
+          placeholder={t("share.placeholder")}
           className="min-w-0 flex-1 rounded-brand border bg-background px-3 py-1.5 text-[13px] outline-none placeholder:text-muted-foreground"
         />
         <label htmlFor={`role-${artifactId}`} className="sr-only">
-          What they can do
+          {t("share.whatTheyCanDo")}
         </label>
         <select
           id={`role-${artifactId}`}
@@ -78,8 +80,8 @@ export function ShareControls({ artifactId }: { artifactId: string }) {
           onChange={(e) => setRole(e.target.value as "viewer" | "commenter")}
           className="rounded-brand border bg-background px-2 py-1.5 text-[13px]"
         >
-          <option value="viewer">Can view</option>
-          <option value="commenter">Can comment</option>
+          <option value="viewer">{t("share.canView")}</option>
+          <option value="commenter">{t("share.canComment")}</option>
         </select>
         <button
           type="button"
@@ -92,13 +94,12 @@ export function ShareControls({ artifactId }: { artifactId: string }) {
           ) : (
             <UserPlus className="size-3.5" aria-hidden="true" />
           )}
-          Share
+          {t("share.heading")}
         </button>
       </div>
 
       <p className="text-[12px] leading-relaxed text-muted-foreground">
-        Shared with the person, not with a link. They can read this one artifact
-        — never the documents behind it — and you can take it back at any time.
+        {t("share.hint")}
       </p>
 
       {failure ? (
@@ -113,7 +114,7 @@ export function ShareControls({ artifactId }: { artifactId: string }) {
         isEmpty={(rows) => rows.length === 0}
         empty={
           <p className="text-[12.5px] text-muted-foreground">
-            Nobody else can see this.
+            {t("share.nobody")}
           </p>
         }
       >

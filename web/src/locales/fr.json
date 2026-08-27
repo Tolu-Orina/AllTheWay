@@ -4,79 +4,154 @@
     "sessions": "Sessions",
     "watchers": "Observateurs",
     "agents": "Agents",
-    "profile": "Profil"
+    "profile": "Profil",
+    "recents": "Récents"
   },
   "digest": {
     "heading": "Depuis hier",
-    "quiet": "Rien cette nuit. Aucune action n’attend votre intervention.",
-    "nothingWaiting": "Aucune action n’attend votre intervention.",
-    "andMore": "et {{count}} autres",
-    "decisions_one": "{{count}} élément attend votre décision",
-    "decisions_many": "{{count}} éléments attendent votre décision",
-    "decisions_other": "{{count}} éléments attendent votre décision",
-    "watchersRan_one": "{{count}} observateur s’est exécuté",
-    "watchersRan_many": "{{count}} observateurs se sont exécutés",
-    "watchersRan_other": "{{count}} observateurs se sont exécutés",
-    "changed_one": "{{count}} élément a changé",
-    "changed_many": "{{count}} éléments ont changé",
-    "changed_other": "{{count}} éléments ont changé"
+    "quiet": "Rien ne s'est passé cette nuit. Rien n'attend votre intervention.",
+    "nothingWaiting": "Rien n'attend votre intervention.",
+    "andMore": "et {{count}} de plus",
+    "decisions_one": "{{count}} décision à prendre",
+    "decisions_many": "{{count}} décisions à prendre",
+    "decisions_other": "{{count}} décisions à prendre",
+    "watchersRan_one": "{{count}} observateur exécuté",
+    "watchersRan_many": "{{count}} observateurs exécutés",
+    "watchersRan_other": "{{count}} observateurs exécutés",
+    "changed_one": "{{count}} élément modifié",
+    "changed_many": "{{count}} éléments modifiés",
+    "changed_other": "{{count}} éléments modifiés"
   },
   "meetings": {
     "heading": "Réunions",
-    "intro": "Écoute et prend des notes. Ne peut pas parler, et l’accord des participants est demandé avant la connexion.",
-    "none": "Aucune réunion pour l’instant.",
+    "intro": "Il écoute et prend des notes. Il ne peut pas intervenir, et chaque participant est prévenu avant sa connexion.",
+    "none": "Aucune réunion pour l'instant.",
     "listenedLive": "Écouté en direct",
     "readTranscript": "Transcription lue après coup",
     "noNotes": "Aucune note",
     "listenedLocally": "Écouté sur votre appareil",
     "whyNoLiveNotes": "Pourquoi pas de notes en direct ?",
-    "hideWhy": "Masquer l’explication",
-    "listening": "Écoute de la réunion et prise de notes. Ne peut pas parler.",
+    "hideWhy": "Masquer",
+    "listening": "Écoute de la réunion et prise de notes en cours. Ne peut pas intervenir.",
     "stayOut": "Ne pas rejoindre cette réunion",
     "noticed": "Points relevés",
-    "insightsQuiet": "Rien qui justifie de vous interrompre pour l’instant.",
-    "insightsNone": "Rien n’a été signalé pendant cette réunion.",
+    "insightsQuiet": "Rien qui justifie de vous interrompre pour l'instant.",
+    "insightsNone": "Rien à signaler durant cette réunion.",
     "insightsFailed": "Impossible de charger ces éléments.",
-    "enable": "Autoriser à rejoindre et prendre des notes",
-    "enableHint": "Désactivé par défaut. L’accord de chacun est demandé avant la connexion, et il ne peut jamais intervenir à l’oral."
+    "enable": "Autoriser à rejoindre et prendre des notes lors de mes réunions",
+    "enableHint": "Désactivé par défaut. Chaque participant est prévenu avant sa connexion, et il ne peut jamais intervenir.",
+    "meetingsAreCappedSoACall": "Les réunions sont limitées pour éviter qu'un appel oublié n'enregistre toute la journée. 30 minutes de plus déduisent environ 30 minutes de votre forfait.",
+    "nothingHasBeenDoneAboutThis": "Aucune action n'a été entreprise."
   },
   "documents": {
     "heading": "Vos documents",
-    "intro": "Tout document ajouté ici peut être lu et cité. Rien ne sert à l’entraînement, et supprimer un document efface ce qui en a été appris.",
+    "intro": "Tout ce que vous ajoutez ici peut être lu et cité. Rien ne sert à l'entraînement, et supprimer un document efface ce qui en a été retenu.",
     "drop": "Glissez un document ici, ou",
     "choose": "choisissez un fichier",
-    "types": "PDF, texte, Markdown — ou photo d’une page",
+    "types": "PDF, texte, Markdown — ou photo d'une page",
     "photograph": "Photographier une page",
-    "none": "Aucun document. Ajoutez un contrat, une spécification ou une charte pour poser des questions.",
-    "reading": "Lecture de {{name}}… Un long document prend une minute, une photo est plus rapide."
+    "none": "Aucun document. Ajoutez un contrat, une spécification ou une politique pour poser des questions dessus.",
+    "reading": "Lecture de {{name}}. Un long document prend une minute ; une photo est plus rapide."
   },
   "voice": {
-    "heading": "Échanges vocaux",
-    "keep": "Conserver l’historique des échanges",
-    "keepHint": "Désactivé par défaut. Si activé, vos propos et les réponses sont enregistrés dans la conversation — utile pour vos revues et audits. Vous pouvez supprimer cet historique à tout moment.",
-    "whatWasSaid": "Ce qui a été dit",
+    "heading": "Conversations vocales",
+    "keep": "Conserver l'historique des échanges",
+    "keepHint": "Désactivé par défaut. Si activé, vos propos et ses réponses sont enregistrés dans cette conversation (utile pour les revues et audits). Vous pouvez supprimer cet historique à tout moment.",
+    "whatWasSaid": "Échanges enregistrés",
     "deleteRecord": "Supprimer cet enregistrement",
     "deleting": "Suppression…"
   },
   "share": {
     "heading": "Partager",
     "placeholder": "nom@entreprise.com",
-    "canView": "Peut consulter",
+    "canView": "Lecture seule",
     "canComment": "Peut commenter",
     "action": "Partager",
-    "hint": "Partagé nominativement, sans lien public. La personne accède uniquement à cet élément — jamais aux documents sources — et vous pouvez révoquer l’accès à tout moment.",
-    "nobody": "Personne d’autre n’y a accès."
+    "hint": "Partagé avec la personne, pas via un lien. Elle ne peut voir que cet élément — jamais les documents sources — et vous pouvez révoquer l'accès à tout moment.",
+    "nobody": "Personne d'autre ne peut voir ceci.",
+    "emailAddressToShareWith": "Adresse e-mail du destinataire",
+    "whatTheyCanDo": "Autorisations",
+    "sharedWithYou": "Partagé avec vous",
+    "nothingYetWhenSomeoneSharesA": "Rien pour l'instant. Les documents partagés avec vous apparaîtront ici."
   },
   "language": {
     "heading": "Langue",
-    "hint": "Langue de l’interface. Cela ne change pas la langue dans laquelle vous vous exprimez — le système s’adapte.",
-    "offer": "Passer en {{language}} ?",
-    "switch": "Changer",
+    "hint": "Langue de l'interface. Ne change pas la langue dans laquelle vous vous exprimez — elle s'adapte à vous.",
     "dismiss": "Non merci"
   },
   "common": {
     "retry": "Réessayer",
-    "cancel": "Laisser tel quel",
-    "saveFailed": "Enregistrement impossible. Rien n’a été modifié — veuillez réessayer."
+    "cancel": "Ignorer",
+    "saveFailed": "Impossible d'enregistrer. Rien n'a changé — réessayez.",
+    "everyAgentThisSystemWillTalk": "Tous les agents avec lesquels ce système interagira, avec leur contrat publié vérifié au moment de votre demande — et non lors de leur déploiement.",
+    "nothingHereIsAttestedIncludingThe": "Aucun élément ici n'est certifié, y compris l'adresse annoncée.",
+    "hereIsWhereThingsStand": "Voici où en sont les choses.",
+    "inProgress": "En cours",
+    "continue": "Continuer",
+    "overnight": "Cette nuit",
+    "allWatchers": "Tous les observateurs",
+    "transparentTrace": "Trace transparente",
+    "cognitiveProfile": "Profil cognitif",
+    "builtFromWhatYouActuallyDid": "Généré à partir de vos actions et corrections réelles — pas d'un formulaire rempli une seule fois. Chaque entrée détaille les modifications et leur raison, et vous pouvez tout rétablir.",
+    "messageTheCompanion": "Écrire au compagnon",
+    "everythingYouAndTheCompanionAre": "Tout ce sur quoi vous et le compagnon travaillez.",
+    "startYourFirstSession": "Démarrer une première session",
+    "standingInstructionsThatRunWithout": "Instructions permanentes exécutées sans vous. Chaque exécution s'intègre au même plan et à la même trace qu'une session menée par vous-même.",
+    "irreversibleActionsExternalSendsPa": "Les actions irréversibles — envois externes, paiements, suppressions — demandent toujours confirmation, quel que soit le plafond de l'observateur. Cette sécurité minimale ne peut être abaissée.",
+    "youAreOffline": "Vous êtes hors ligne",
+    "allthewayCouldNotReachTheNetwork": "AllTheWay n'a pas pu se connecter au réseau. Vos sessions sont en sécurité — reconnectez-vous pour reprendre là où vous en étiez."
+  },
+  "account": {
+    "signOut": "Se déconnecter"
+  },
+  "canvas": {
+    "askForADraftInThe": "Demandez un brouillon dans la conversation pour le voir apparaître ici et le corriger.",
+    "generatedByAllthewayThisFileCarrie": "Généré par AllTheWay. Ce fichier contient des identifiants certifiant qu'il est issu d'une IA, conservés même après téléchargement.",
+    "artifactContent": "Contenu de l'artefact",
+    "whatChanged": "Qu'est-ce qui a changé ?",
+    "allWork": "Tous les travaux",
+    "anythingItDraftsForYouLands": "Tout ce qu'il rédige pour vous apparaît ici — document, résumé, maquette — avec l'historique de vos corrections et une option pour l'exporter."
+  },
+  "comments": {
+    "comments": "Commentaires",
+    "resolve": "Résoudre",
+    "addAComment": "Ajouter un commentaire",
+    "youHaveViewOnlyAccessTo": "Vous avez un accès en lecture seule."
+  },
+  "connections": {
+    "connectedAccounts": "Comptes connectés",
+    "whatAllthewayIsAllowedToReach": "Ce à quoi AllTheWay peut accéder en votre nom. Une confirmation vous est toujours demandée avant toute action irréversible.",
+    "draftingIsTheSafestThingIt": "Créer des brouillons est l'action la plus sûre avec vos e-mails — rien n'est envoyé.",
+    "googleStillClassesThePermissionAs": "Google classant cette autorisation comme restreinte, elle reste désactivée sauf si vous l'activez.",
+    "connected": "Connecté",
+    "comingSoon": "Bientôt disponible"
+  },
+  "specialists": {
+    "whatItCanDo": "Ce qu'il peut faire",
+    "eachOfTheseIsASeparate": "Chacun est un agent distinct doté de sa propre fiche publiée. La version et la signature ci-dessous proviennent de cette fiche, et non de cette page — toute fonctionnalité qui cesse d'être vérifiée sera signalée ici.",
+    "internal": "Interne",
+    "runsInsideTheProductAndPublishes": "S'exécute dans le produit sans publier de fiche — inaccessible depuis l'extérieur.",
+    "notRegisteredInThisDeploymentThis": "Non enregistré dans ce déploiement — cette capacité n'est pas disponible."
+  },
+  "usage": {
+    "thisMonth": "Ce mois-ci",
+    "gettingCloseNothingStopsWorkingWit": "Presque atteint. Rien ne sera bloqué sans vous prévenir au préalable.",
+    "usedUpForThisMonthEverything": "Forfait épuisé pour ce mois-ci. Tout le reste continue de fonctionner."
+  },
+  "visual": {
+    "howYourWorkLooks": "Style visuel",
+    "whatItHasPickedUpAbout": "Préférences visuelles déduites et appliquées lors de ses créations. Rétablissez l'état initial pour désactiver ces déductions.",
+    "nothingYetAskItToMake": "Rien pour l'instant. Demandez-lui une création et ajustez le style — c'est ainsi qu'il apprend."
+  },
+  "auth": {
+    "backToSignIn": "Retour à la connexion",
+    "createAnAccount": "Créer un compte",
+    "forgotYourPassword": "Mot de passe oublié ?",
+    "requestACode": "Demander un code",
+    "verificationCode": "Code de vérification",
+    "signIn": "Se connecter",
+    "goToSignIn": "Aller à la connexion",
+    "useADifferentEmail": "Utiliser une autre adresse e-mail",
+    "sendANewCode": "Envoyer un nouveau code"
   }
 }

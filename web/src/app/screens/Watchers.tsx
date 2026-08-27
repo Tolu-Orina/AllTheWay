@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useT } from "@/app/i18n";
 import { Pause, Play, ShieldAlert } from "lucide-react";
 
 import { Async } from "@/app/async";
@@ -10,6 +11,7 @@ import { relativeTime } from "@/lib/format";
 import { cn } from "@/lib/utils";
 
 export default function Watchers() {
+  const t = useT();
   const { state, reload } = useAsync<Watcher[]>(() => api.watchers());
 
   // Local overrides only, merged during render. Mirroring the whole list into
@@ -39,11 +41,10 @@ export default function Watchers() {
     <div className="flex flex-col gap-5">
       <header>
         <h1 className="text-[26px] leading-tight font-bold tracking-[-0.02em]">
-          Watchers
+          {t("nav.watchers")}
         </h1>
         <p className="mt-1 text-[14px] leading-relaxed text-muted-foreground">
-          Standing instructions that run without you. Every run lands in the
-          same plan and the same trace as a session you drove yourself.
+          {t("common.standingInstructionsThatRunWithout")}
         </p>
       </header>
 
@@ -134,9 +135,7 @@ export default function Watchers() {
       </Async>
 
       <p className="rounded-brand border bg-muted/50 p-4 text-[13px] leading-relaxed text-muted-foreground">
-        Irreversible actions — external sends, payments, deletions — always stop
-        and ask, whatever a watcher’s ceiling is set to. That floor is not yours
-        to lower.
+        {t("common.irreversibleActionsExternalSendsPa")}
       </p>
     </div>
   );

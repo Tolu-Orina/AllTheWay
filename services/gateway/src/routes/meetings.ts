@@ -58,6 +58,11 @@ async function relay(res: express.Response, upstream: Response): Promise<void> {
     res.status(upstream.status).type("application/json").send(body || "{}");
     return;
   }
+  // Logged with the real status. Without this the route returned a bare 502 and
+  // wrote nothing, so a permission error, a timeout and a crash all looked
+  // identical from outside -- which is how a scribe that could not read
+  // Firestore at all went unexplained while its container restarted cleanly.
+  console.warn(`[meetings] scribe returned HTTP ${upstream.status}`);
   res.status(502).json({
     code: "upstream_error",
     message: "Meetings could not be reached.",
@@ -71,6 +76,7 @@ meetingRoutes.get("/meetings", (req, res) => {
       const upstream = await callScribe(req.uid!, "/meetings");
       const body = await upstream.text();
       if (!upstream.ok) {
+        console.warn(`[meetings] scribe returned HTTP ${upstream.status}`);
         res.status(502).json({ code: "upstream_error", message: "Meetings could not be reached." });
         return;
       }
@@ -78,7 +84,8 @@ meetingRoutes.get("/meetings", (req, res) => {
       // scribe wraps it. Doing this here keeps the shape decision in one place.
       const parsed = JSON.parse(body || "{}") as { meetings?: unknown };
       res.json(parsed.meetings ?? []);
-    } catch {
+    } catch (err) {
+      console.warn(`[meetings] could not reach scribe: ${(err as Error).message}`);
       res.status(502).json({ code: "upstream_error", message: "Meetings could not be reached." });
     }
   })();
@@ -94,12 +101,14 @@ meetingRoutes.get("/meetings/:id/commitments", (req, res) => {
       );
       const body = await upstream.text();
       if (!upstream.ok) {
+        console.warn(`[meetings] scribe returned HTTP ${upstream.status}`);
         res.status(502).json({ code: "upstream_error", message: "Those could not be loaded." });
         return;
       }
       const parsed = JSON.parse(body || "{}") as { commitments?: unknown };
       res.json(parsed.commitments ?? []);
-    } catch {
+    } catch (err) {
+      console.warn(`[meetings] could not reach scribe: ${(err as Error).message}`);
       res.status(502).json({ code: "upstream_error", message: "Those could not be loaded." });
     }
   })();
@@ -121,7 +130,8 @@ meetingRoutes.post("/settings/meetings", (req, res) => {
         body: JSON.stringify({ enabled: enabled.data }),
       });
       await relay(res, upstream);
-    } catch {
+    } catch (err) {
+      console.warn(`[meetings] could not reach scribe: ${(err as Error).message}`);
       res.status(502).json({ code: "upstream_error", message: "That could not be saved." });
     }
   })();
@@ -138,7 +148,8 @@ meetingRoutes.post("/meetings/:id/opt-out", (req, res) => {
         { method: "POST", body: JSON.stringify({ optedOut: req.body?.optedOut ?? true }) },
       );
       await relay(res, upstream);
-    } catch {
+    } catch (err) {
+      console.warn(`[meetings] could not reach scribe: ${(err as Error).message}`);
       res.status(502).json({ code: "upstream_error", message: "That could not be saved." });
     }
   })();
@@ -154,12 +165,14 @@ meetingRoutes.get("/meetings/:id/health", (req, res) => {
       );
       const body = await upstream.text();
       if (!upstream.ok) {
+        console.warn(`[meetings] scribe returned HTTP ${upstream.status}`);
         res.status(502).json({ code: "upstream_error", message: "That could not be loaded." });
         return;
       }
       const parsed = JSON.parse(body || "{}") as { samples?: unknown };
       res.json(parsed.samples ?? []);
-    } catch {
+    } catch (err) {
+      console.warn(`[meetings] could not reach scribe: ${(err as Error).message}`);
       res.status(502).json({ code: "upstream_error", message: "That could not be loaded." });
     }
   })();
@@ -175,12 +188,14 @@ meetingRoutes.get("/meetings/:id/insights", (req, res) => {
       );
       const body = await upstream.text();
       if (!upstream.ok) {
+        console.warn(`[meetings] scribe returned HTTP ${upstream.status}`);
         res.status(502).json({ code: "upstream_error", message: "Those could not be loaded." });
         return;
       }
       const parsed = JSON.parse(body || "{}") as { insights?: unknown };
       res.json(parsed.insights ?? []);
-    } catch {
+    } catch (err) {
+      console.warn(`[meetings] could not reach scribe: ${(err as Error).message}`);
       res.status(502).json({ code: "upstream_error", message: "Those could not be loaded." });
     }
   })();
@@ -205,7 +220,8 @@ meetingRoutes.post("/meetings/:id/extend", (req, res) => {
         { method: "POST", body: JSON.stringify({ minutes: minutes.data }) },
       );
       await relay(res, upstream);
-    } catch {
+    } catch (err) {
+      console.warn(`[meetings] could not reach scribe: ${(err as Error).message}`);
       res.status(502).json({ code: "upstream_error", message: "That could not be extended." });
     }
   })();
@@ -234,7 +250,8 @@ meetingRoutes.post("/meetings/:id/commitments/confirm", (req, res) => {
         { method: "POST", body: JSON.stringify(body.data) },
       );
       await relay(res, upstream);
-    } catch {
+    } catch (err) {
+      console.warn(`[meetings] could not reach scribe: ${(err as Error).message}`);
       res.status(502).json({ code: "upstream_error", message: "That could not be confirmed." });
     }
   })();

@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useT } from "@/app/i18n";
 import { Link, useParams } from "react-router";
 import { motion, useReducedMotion } from "motion/react";
 import { AlertCircle, ArrowLeft, Check, Send, ShieldAlert } from "lucide-react";
@@ -103,6 +104,7 @@ function Bubble({ children }: { children: React.ReactNode }) {
 }
 
 export default function SessionDetailScreen() {
+  const t = useT();
   const { id = "" } = useParams();
   const { state, reload } = useAsync<Detail | null>(() => api.session(id), [id]);
   const { turn, send } = useTurn(id);
@@ -157,7 +159,7 @@ export default function SessionDetailScreen() {
         className="inline-flex items-center gap-1.5 text-[13px] text-muted-foreground transition-colors hover:text-foreground"
       >
         <ArrowLeft className="size-4" aria-hidden="true" />
-        Sessions
+        {t("nav.sessions")}
       </Link>
 
       <Async
@@ -357,7 +359,7 @@ export default function SessionDetailScreen() {
                         onClick={() => submit(turn.request)}
                         className="font-medium underline underline-offset-2"
                       >
-                        Try again
+                        {t("common.retry")}
                       </button>
                     </span>
                   </div>
@@ -372,7 +374,7 @@ export default function SessionDetailScreen() {
                 }}
               >
                 <label htmlFor="composer" className="sr-only">
-                  Message the companion
+                  {t("common.messageTheCompanion")}
                 </label>
                 <input
                   id="composer"

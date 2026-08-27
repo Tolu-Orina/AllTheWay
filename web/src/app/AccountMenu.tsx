@@ -1,4 +1,5 @@
 import { useEffect, useId, useRef, useState } from "react";
+import { useT } from "@/app/i18n";
 import { LogOut, User } from "lucide-react";
 import { useNavigate } from "react-router";
 
@@ -23,6 +24,7 @@ import { cn } from "@/lib/utils";
  * as the app having frozen.
  */
 export function AccountMenu({ className }: { className?: string }) {
+  const t = useT();
   const user = useAppUser();
   const name = nameFor(user);
   const { adapter } = useAuth();
@@ -93,7 +95,7 @@ export function AccountMenu({ className }: { className?: string }) {
             className="flex w-full items-center gap-2.5 px-3.5 py-2.5 text-left text-[13.5px] transition-colors hover:bg-muted"
           >
             <User className="size-4 shrink-0 text-muted-foreground" aria-hidden="true" />
-            Profile
+            {t("nav.profile")}
           </button>
 
           <button
@@ -103,7 +105,7 @@ export function AccountMenu({ className }: { className?: string }) {
             className="flex w-full items-center gap-2.5 border-t px-3.5 py-2.5 text-left text-[13.5px] transition-colors hover:bg-muted"
           >
             <LogOut className="size-4 shrink-0 text-muted-foreground" aria-hidden="true" />
-            Sign out
+            {t("account.signOut")}
           </button>
         </div>
       ) : null}

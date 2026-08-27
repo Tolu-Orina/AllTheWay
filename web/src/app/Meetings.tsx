@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useT } from "@/app/i18n";
 import { Check, Circle, Ear, FileText, MicOff, Slash } from "lucide-react";
 
 import { Async } from "@/app/async";
@@ -35,9 +36,9 @@ import { MeetingInsights } from "@/app/MeetingInsights";
  */
 
 const TIER_LABEL: Record<Meeting["tier"], string> = {
-  2: "Listened live",
-  1: "Read the transcript afterwards",
-  0: "No notes",
+  2: "meetings.listenedLive",
+  1: "meetings.readTranscript",
+  0: "meetings.noNotes",
 };
 
 /**
@@ -47,8 +48,10 @@ const TIER_LABEL: Record<Meeting["tier"], string> = {
  * served it — showing "No notes" for that would report a failure that did not
  * happen, on a meeting that has a full record.
  */
-function describeTier(meeting: Meeting): string {
-  return meeting.capturedLocally ? "Listened on your device" : TIER_LABEL[meeting.tier];
+function describeTier(meeting: Meeting, t: (key: string) => string): string {
+  // Takes the translator rather than reading a module-level map: these are
+  // resolved per render, so switching language re-labels existing rows.
+  return t(meeting.capturedLocally ? "meetings.listenedLocally" : TIER_LABEL[meeting.tier]);
 }
 
 /**
@@ -63,6 +66,7 @@ function describeTier(meeting: Meeting): string {
  * rather than showing an unchecked box and letting the user infer it.
  */
 function GlobalSwitch({ enabled, onChange }: { enabled: boolean; onChange: (v: boolean) => void }) {
+  const t = useT();
   return (
     <label className="flex items-start gap-2.5 rounded-brand border bg-card px-3.5 py-3">
       <input
@@ -72,10 +76,9 @@ function GlobalSwitch({ enabled, onChange }: { enabled: boolean; onChange: (v: b
         className="mt-0.5 size-4 shrink-0"
       />
       <span className="text-[13px] leading-relaxed">
-        Let it join and take notes in my meetings
+        {t("meetings.enable")}
         <span className="mt-0.5 block text-[12px] text-muted-foreground">
-          Off unless you turn it on. Everyone in a meeting is asked before it
-          connects, and it can never speak.
+          {t("meetings.enableHint")}
         </span>
       </span>
     </label>
@@ -83,6 +86,7 @@ function GlobalSwitch({ enabled, onChange }: { enabled: boolean; onChange: (v: b
 }
 
 export function Meetings() {
+  const t = useT();
   const { state, reload } = useAsync<Meeting[]>(() => api.meetings());
   const [enabled, setEnabled] = useState(false);
   const [failure, setFailure] = useState<string | null>(null);
@@ -96,18 +100,17 @@ export function Meetings() {
       // Put back. A consent switch that looks changed but was not saved is the
       // worst possible failure for this particular control.
       setEnabled(!next);
-      setFailure("That could not be saved. Nothing changed — try again.");
+      setFailure(t("common.saveFailed"));
     }
   }
 
   return (
     <section className="flex flex-col gap-3">
       <h2 className="text-[12px] font-semibold tracking-[0.08em] text-blue-deep uppercase dark:text-blue-bright">
-        Meetings
+        {t("meetings.heading")}
       </h2>
       <p className="text-[13.5px] leading-relaxed text-muted-foreground">
-        It listens and takes notes. It cannot speak in a meeting, and everyone
-        in the room is asked before it connects.
+        {t("meetings.intro")}
       </p>
 
       <GlobalSwitch enabled={enabled} onChange={toggle} />
@@ -124,7 +127,7 @@ export function Meetings() {
         isEmpty={(rows) => rows.length === 0}
         empty={
           <p className="py-4 text-[12.5px] text-muted-foreground">
-            No meetings yet.
+            {t("meetings.none")}
           </p>
         }
       >
@@ -148,6 +151,7 @@ export function Meetings() {
  * person who joined late never saw it at all.
  */
 export function ListeningIndicator({ meeting }: { meeting: Meeting }) {
+  const t = useT();
   if (meeting.status !== "listening") return null;
 
   return (
@@ -159,12 +163,13 @@ export function ListeningIndicator({ meeting }: { meeting: Meeting }) {
         className="size-2 shrink-0 fill-current text-primary motion-safe:animate-pulse"
         aria-hidden="true"
       />
-      Listening to this meeting and taking notes. It cannot speak.
+      {t("meetings.listening")}
     </p>
   );
 }
 
 function MeetingRow({ meeting }: { meeting: Meeting }) {
+  const t = useT();
   const [open, setOpen] = useState(false);
 
   return (
@@ -182,7 +187,7 @@ function MeetingRow({ meeting }: { meeting: Meeting }) {
             ) : (
               <MicOff className="size-3.5" aria-hidden="true" />
             )}
-            {describeTier(meeting)}
+            {describeTier(meeting, t)}
           </p>
 
           {/*
@@ -197,7 +202,7 @@ function MeetingRow({ meeting }: { meeting: Meeting }) {
               onClick={() => setOpen((v) => !v)}
               className="mt-1 text-[12px] underline underline-offset-2 text-muted-foreground"
             >
-              {open ? "Hide why" : "Why no live notes?"}
+              {open ? t("meetings.hideWhy") : t("meetings.whyNoLiveNotes")}
             </button>
           ) : null}
 
@@ -231,7 +236,7 @@ function MeetingRow({ meeting }: { meeting: Meeting }) {
       */}
       <details className="mt-2" open={meeting.status === "listening"}>
         <summary className="cursor-pointer text-[12.5px] text-muted-foreground">
-          What it noticed
+          {t("meetings.noticed")}
         </summary>
         <div className="mt-2">
           <MeetingInsights
@@ -270,7 +275,7 @@ function MeetingRow({ meeting }: { meeting: Meeting }) {
           className="mt-2 flex items-center gap-1.5 text-[12.5px] underline underline-offset-2 text-muted-foreground"
         >
           <Slash className="size-3.5" aria-hidden="true" />
-          Stay out of this meeting
+          {t("meetings.stayOut")}
         </button>
       ) : null}
     </li>
@@ -292,6 +297,7 @@ export function CommitmentCard({
   commitment: Commitment;
   onConfirm: (id: string) => Promise<void>;
 }) {
+  const t = useT();
   const [busy, setBusy] = useState(false);
 
   const who =
@@ -309,7 +315,7 @@ export function CommitmentCard({
         “{commitment.text}”
       </p>
       <p className="text-[12px] text-muted-foreground">
-        Nothing has been done about this.
+        {t("meetings.nothingHasBeenDoneAboutThis")}
       </p>
 
       <button

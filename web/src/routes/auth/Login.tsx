@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useT } from "@/app/i18n";
 import { Link, useLocation, useNavigate } from "react-router";
 
 import { Button } from "@/components/ui/button";
@@ -12,6 +13,7 @@ import {
 } from "@/routes/auth/AuthShell";
 
 export default function Login() {
+  const t = useT();
   const { adapter } = useAuth();
   const navigate = useNavigate();
   const location = useLocation() as { state?: { from?: string } };
@@ -64,7 +66,7 @@ export default function Login() {
             to="/signup"
             className="font-medium text-blue-deep underline-offset-4 hover:underline dark:text-blue-bright"
           >
-            Create an account
+            {t("auth.createAnAccount")}
           </Link>
         </>
       }
@@ -111,7 +113,7 @@ export default function Login() {
             to="/forgot-password"
             className="text-[13px] text-muted-foreground underline-offset-4 hover:text-foreground hover:underline"
           >
-            Forgot your password?
+            {t("auth.forgotYourPassword")}
           </Link>
         </div>
 

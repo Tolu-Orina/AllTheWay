@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { useT } from "@/app/i18n";
 import { Link, useLocation, useNavigate } from "react-router";
 
 import { Button } from "@/components/ui/button";
@@ -9,6 +10,7 @@ import { CodeInput } from "@/routes/auth/CodeInput";
 const RESEND_SECONDS = 30;
 
 export default function Verify() {
+  const t = useT();
   const { adapter, user } = useAuth();
   const navigate = useNavigate();
   const location = useLocation() as { state?: { email?: string } };
@@ -57,7 +59,7 @@ export default function Verify() {
           size="xl"
           className="w-full"
         >
-          Go to sign in
+          {t("auth.goToSignIn")}
         </Button>
       </AuthShell>
     );
@@ -78,7 +80,7 @@ export default function Verify() {
           to="/login"
           className="underline-offset-4 hover:text-foreground hover:underline"
         >
-          Use a different email
+          {t("auth.useADifferentEmail")}
         </Link>
       }
     >
@@ -113,7 +115,7 @@ export default function Verify() {
               onClick={resend}
               className="font-medium text-blue-deep underline-offset-4 hover:underline dark:text-blue-bright"
             >
-              Send a new code
+              {t("auth.sendANewCode")}
             </button>
           </>
         )}

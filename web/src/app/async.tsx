@@ -3,6 +3,7 @@ import { RotateCw, TriangleAlert } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import type { AsyncState } from "@/app/use-async";
+import { useT } from "@/app/i18n";
 
 /**
  * Errors say what happened and offer the next action. They never blame the
@@ -15,6 +16,7 @@ export function ErrorState({
   message: string;
   onRetry: () => void;
 }) {
+  const t = useT();
   return (
     <div
       role="alert"
@@ -24,13 +26,13 @@ export function ErrorState({
         className="mx-auto size-5 text-destructive"
         aria-hidden="true"
       />
-      <h2 className="mt-3 text-[15px] font-semibold">We could not load this</h2>
+      <h2 className="mt-3 text-[15px] font-semibold">{t("common.couldNotLoad")}</h2>
       <p className="mx-auto mt-1.5 max-w-sm text-[14px] leading-relaxed text-muted-foreground">
-        {message} Your work is safe — nothing was lost.
+        {message} {t("common.workSafe")}
       </p>
       <Button variant="outline" size="lg" className="mt-4" onClick={onRetry}>
         <RotateCw />
-        Try again
+        {t("common.retry")}
       </Button>
     </div>
   );

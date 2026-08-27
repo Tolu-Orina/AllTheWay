@@ -1,4 +1,5 @@
 import { Link } from "react-router";
+import { useT } from "@/app/i18n";
 import { Plus } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
@@ -8,6 +9,7 @@ import { api, type Session } from "@/app/data";
 import { relativeTime } from "@/lib/format";
 
 export default function Sessions() {
+  const t = useT();
   const { state, reload } = useAsync<Session[]>(() => api.sessions());
 
   return (
@@ -15,10 +17,10 @@ export default function Sessions() {
       <header className="flex items-end justify-between gap-4">
         <div>
           <h1 className="text-[26px] leading-tight font-bold tracking-[-0.02em]">
-            Sessions
+            {t("nav.sessions")}
           </h1>
           <p className="mt-1 text-[14px] text-muted-foreground">
-            Everything you and the companion are working through.
+            {t("common.everythingYouAndTheCompanionAre")}
           </p>
         </div>
         <Button variant="brand" size="lg" className="shrink-0">
@@ -38,7 +40,7 @@ export default function Sessions() {
             action={
               <Button variant="brand" size="lg">
                 <Plus />
-                Start your first session
+                {t("common.startYourFirstSession")}
               </Button>
             }
           />

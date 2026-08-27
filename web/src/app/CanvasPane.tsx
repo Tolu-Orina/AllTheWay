@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useT } from "@/app/i18n";
 import { ArrowLeft, FileText, Image as ImageIcon, ListChecks } from "lucide-react";
 
 import { Canvas } from "@/app/Canvas";
@@ -24,6 +25,7 @@ const ICONS = {
 } as const;
 
 export function CanvasPane() {
+  const t = useT();
   const [openId, setOpenId] = useState<string | null>(null);
   const { state, reload } = useAsync(() => api.artifacts());
 
@@ -41,7 +43,7 @@ export function CanvasPane() {
           className="flex items-center gap-1.5 border-b px-4 py-2 text-[12.5px] text-muted-foreground transition-colors hover:text-foreground"
         >
           <ArrowLeft className="size-3.5" aria-hidden="true" />
-          All work
+          {t("canvas.allWork")}
         </button>
         <div className="min-h-0 flex-1">
           <Canvas artifactId={openId} />
@@ -63,9 +65,7 @@ export function CanvasPane() {
             <FileText className="size-6 text-muted-foreground" aria-hidden="true" />
             <p className="text-[13.5px] font-medium">Nothing made yet</p>
             <p className="max-w-[20rem] text-[12.5px] leading-relaxed text-muted-foreground">
-              Anything it drafts for you lands here — a document, a summary, a
-              wireframe — with every version you corrected, and a way to take it
-              with you.
+              {t("canvas.anythingItDraftsForYouLands")}
             </p>
           </div>
         }
