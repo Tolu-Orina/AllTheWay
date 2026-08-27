@@ -13,6 +13,7 @@ import {
   parseServerMessage,
   realtimePcm,
   setupMessage,
+  SYSTEM_INSTRUCTION,
 } from "./voice/protocol.js";
 
 test("auth message requires a session id", () => {
@@ -165,3 +166,51 @@ function waitFor(pred: () => boolean, ms = 2000): Promise<void> {
     tick();
   });
 }
+
+
+/**
+ * The language rules, asserted because they are invisible.
+ *
+ * A system instruction has no type and no runtime error: a line deleted during
+ * an unrelated edit changes how the product behaves for everyone who does not
+ * speak English, and nothing fails. These assertions are deliberately about
+ * *properties* rather than wording, so the prose can be improved without
+ * breaking them.
+ */
+test("the voice instruction tells the model to follow the speaker's language", () => {
+  const s = SYSTEM_INSTRUCTION.toLowerCase();
+  assert.match(s, /speak the language they speak/);
+  assert.match(s, /switch the moment they switch/);
+  // Silently: announcing a switch turns the user's own language into a topic.
+  assert.match(s, /never announce a switch/);
+  assert.match(s, /never ask them to choose one/);
+});
+
+test("the voice instruction expects code-mixing rather than correcting it", () => {
+  // Mixing English with Yoruba or Pidgin inside one sentence is fluent speech
+  // for a great many users. A companion that tidies it is correcting them.
+  const s = SYSTEM_INSTRUCTION.toLowerCase();
+  assert.match(s, /mix languages inside one sentence/);
+  assert.match(s, /mirror the mix/);
+  assert.match(s, /do not tidy them into a/);
+  // ...but a single loanword must not flip the whole reply.
+  assert.match(s, /one borrowed word is not a switch/);
+});
+
+test("the voice instruction does not let an English plan be read out in English", () => {
+  // plan_turn returns the orchestrator's result, which is generated in English.
+  // Without this rule a French speaker hears the confirmation in English --
+  // exactly at the moment they are being asked to approve something.
+  const s = SYSTEM_INSTRUCTION.toLowerCase();
+  assert.match(s, /plan_turn answers you in english/);
+  assert.match(s, /do not read that english aloud/);
+  // The request goes up in the user's own words, untranslated.
+  assert.match(s, /in the language they used/);
+  assert.match(s, /do not translate the request first/);
+});
+
+test("the voice instruction still refuses to claim work it has not done", () => {
+  assert.match(SYSTEM_INSTRUCTION, /Never claim you have sent, paid, or deleted anything\./);
+  // Honesty about languages it cannot speak, rather than bad output in them.
+  assert.match(SYSTEM_INSTRUCTION, /Igbo/);
+});
