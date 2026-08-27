@@ -304,7 +304,13 @@ export const DigestSchema = z.object({
   ),
   /** The actionable half: things still waiting for a person. */
   awaitingDecision: z.array(
-    z.object({ id: z.string(), summary: z.string(), at: z.string() }),
+    z.object({
+      id: z.string(),
+      summary: z.string(),
+      at: z.string(),
+      /** When present, the digest links to this work item rather than the list. */
+      sessionId: z.string().default(""),
+    }),
   ),
   artifactsChanged: z.array(
     z.object({ id: z.string(), title: z.string(), at: z.string() }),

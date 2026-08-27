@@ -142,6 +142,13 @@ export const api = {
   sessions: () => apiGet("/sessions", z.array(SessionSchema)),
   session: (id: string) =>
     apiGet(`/sessions/${encodeURIComponent(id)}`, SessionDetailSchema.nullable()),
+  createSession: () => apiPost("/sessions", {}, z.object({ id: z.string().min(1) })),
+  endSession: (id: string) =>
+    apiPost(
+      `/sessions/${encodeURIComponent(id)}/end`,
+      {},
+      z.object({ ok: z.boolean(), messageId: z.string().nullable().optional() }),
+    ),
   watchers: () => apiGet("/watchers", z.array(WatcherSchema)),
   watcherRuns: () => apiGet("/watcher-runs", z.array(WatcherRunSchema)),
   preferences: () => apiGet("/preferences", z.array(LearnedPreferenceSchema)),

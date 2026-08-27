@@ -1,4 +1,5 @@
-import { Link } from "react-router";
+import { Link, useNavigate, useSearchParams } from "react-router";
+import { useEffect } from "react";
 import { useT } from "@/app/i18n";
 import { Plus } from "lucide-react";
 
@@ -6,11 +7,31 @@ import { Button } from "@/components/ui/button";
 import { Async, EmptyState } from "@/app/async";
 import { useAsync } from "@/app/use-async";
 import { api, type Session } from "@/app/data";
+import { useStartWork } from "@/app/use-start-work";
 import { relativeTime } from "@/lib/format";
 
 export default function Sessions() {
   const t = useT();
+  const navigate = useNavigate();
+  const [searchParams, setSearchParams] = useSearchParams();
   const { state, reload } = useAsync<Session[]>(() => api.sessions());
+  const { startWork, starting } = useStartWork();
+
+  useEffect(() => {
+    if (searchParams.get("new") !== "1") return;
+    let cancelled = false;
+    void (async () => {
+      try {
+        const { id } = await api.createSession();
+        if (!cancelled) navigate(`/app/sessions/${id}`, { replace: true });
+      } catch {
+        if (!cancelled) setSearchParams({}, { replace: true });
+      }
+    })();
+    return () => {
+      cancelled = true;
+    };
+  }, [navigate, searchParams, setSearchParams]);
 
   return (
     <div className="flex flex-col gap-5">
@@ -23,7 +44,13 @@ export default function Sessions() {
             {t("common.everythingYouAndTheCompanionAre")}
           </p>
         </div>
-        <Button variant="brand" size="lg" className="shrink-0">
+        <Button
+          variant="brand"
+          size="lg"
+          className="shrink-0"
+          disabled={starting}
+          onClick={() => void startWork()}
+        >
           <Plus />
           New
         </Button>
@@ -38,7 +65,12 @@ export default function Sessions() {
             title="No sessions yet"
             body="Start one by describing what you are trying to get done. The companion will ask before it assumes anything."
             action={
-              <Button variant="brand" size="lg">
+              <Button
+                variant="brand"
+                size="lg"
+                disabled={starting}
+                onClick={() => void startWork()}
+              >
                 <Plus />
                 {t("common.startYourFirstSession")}
               </Button>

@@ -7,10 +7,11 @@ import {
   useState,
   type ReactNode,
 } from "react";
+import { useLocation } from "react-router";
 
 import { openVoiceSocket, type VoiceSocket } from "@/lib/voice";
-import { api } from "@/app/data";
 import { useT } from "@/app/i18n";
+import { resolveVoiceSessionId } from "@/app/work-id";
 
 export type VoiceStatus = "idle" | "connecting" | "live" | "error";
 
@@ -44,17 +45,9 @@ export function useVoice(): VoiceState {
   return ctx;
 }
 
-async function resolveSessionId(): Promise<string> {
-  try {
-    const rows = await api.sessions();
-    return rows.find((s) => s.done < s.total)?.id ?? rows[0]?.id ?? "live";
-  } catch {
-    return "live";
-  }
-}
-
 export function VoiceProvider({ children }: { children: ReactNode }) {
   const t = useT();
+  const { pathname } = useLocation();
   const [status, setStatus] = useState<VoiceStatus>("idle");
   const [error, setError] = useState("");
   const [userText, setUserText] = useState("");
@@ -171,10 +164,8 @@ export function VoiceProvider({ children }: { children: ReactNode }) {
         const ctx = new AudioContext();
         await ctx.resume();
 
-        // In parallel, and alongside finding the session: three independent
-        // round trips that were previously serial.
-        const [sessionId] = await Promise.all([
-          resolveSessionId(),
+        const sessionId = resolveVoiceSessionId(pathname);
+        await Promise.all([
           ctx.audioWorklet.addModule("/worklets/pcm-capture.js"),
           ctx.audioWorklet.addModule("/worklets/pcm-play.js"),
         ]);
@@ -271,7 +262,7 @@ export function VoiceProvider({ children }: { children: ReactNode }) {
         );
       }
     })();
-  }, [status, stop, teardown]);
+  }, [pathname, status, stop, teardown, t]);
 
   return (
     <VoiceContext.Provider

@@ -104,6 +104,7 @@
     "messageTheCompanion": "Enviar mensaje al asistente",
     "everythingYouAndTheCompanionAre": "Todo en lo que estáis trabajando tú y el asistente.",
     "startYourFirstSession": "Inicia tu primera sesión",
+    "doneForNow": "Listo por ahora",
     "standingInstructionsThatRunWithout": "Instrucciones fijas que se ejecutan de forma autónoma. Cada ejecución genera el mismo plan y la misma traza que una sesión manual.",
     "irreversibleActionsExternalSendsPa": "Las acciones irreversibles (envíos externos, pagos, eliminaciones) siempre pedirán confirmación, independientemente del límite del observador. Ese mínimo no se puede reducir.",
     "youAreOffline": "Estás sin conexión",

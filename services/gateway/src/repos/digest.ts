@@ -42,6 +42,7 @@ export interface DigestDecision {
   id: string;
   summary: string;
   at: string;
+  sessionId: string;
 }
 
 export interface Digest {
@@ -113,6 +114,7 @@ export async function buildDigest(uid: string, now = new Date()): Promise<Digest
       // something they did not read.
       summary: d.get("summary") ?? "A step needs your decision.",
       at: iso(d.get("at")) ?? "",
+      sessionId: String(d.get("sessionId") ?? ""),
     }));
 
   const artifactsChanged = artifactsSnap.docs

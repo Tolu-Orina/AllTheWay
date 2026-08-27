@@ -1,6 +1,6 @@
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useT } from "@/app/i18n";
-import { Link, useParams } from "react-router";
+import { Link, useNavigate, useParams } from "react-router";
 import { motion, useReducedMotion } from "motion/react";
 import { AlertCircle, ArrowLeft, Check, Send, ShieldAlert } from "lucide-react";
 
@@ -105,10 +105,23 @@ function Bubble({ children }: { children: React.ReactNode }) {
 
 export default function SessionDetailScreen() {
   const t = useT();
+  const navigate = useNavigate();
   const { id = "" } = useParams();
   const { state, reload } = useAsync<Detail | null>(() => api.session(id), [id]);
   const { turn, send } = useTurn(id);
   const [draft, setDraft] = useState("");
+  const hadTurn = useRef(false);
+  const ended = useRef(false);
+
+  useEffect(() => {
+    hadTurn.current = false;
+    ended.current = false;
+    const sessionId = id;
+    return () => {
+      if (!sessionId || ended.current || !hadTurn.current) return;
+      void api.endSession(sessionId).catch(() => {});
+    };
+  }, [id]);
 
   const working = turn.phase === "working";
   // Once a turn has produced steps they are the plan on screen. Before that the
@@ -128,6 +141,7 @@ export default function SessionDetailScreen() {
    * to know their refusal did not stick.
    */
   const decide = async (kind: "confirmed" | "declined") => {
+    hadTurn.current = true;
     setDecision(kind);
     setRecorded("pending");
     try {
@@ -146,21 +160,37 @@ export default function SessionDetailScreen() {
   const submit = (text: string) => {
     const trimmed = text.trim();
     if (!trimmed || working) return;
+    hadTurn.current = true;
     setDraft("");
     setDecision(null);
     setRecorded("pending");
     void send(trimmed);
   };
 
+  const doneForNow = () => {
+    ended.current = true;
+    void api.endSession(id).catch(() => {});
+    navigate("/app/sessions");
+  };
+
   return (
     <div className="flex flex-col gap-5">
-      <Link
-        to="/app/sessions"
-        className="inline-flex items-center gap-1.5 text-[13px] text-muted-foreground transition-colors hover:text-foreground"
-      >
-        <ArrowLeft className="size-4" aria-hidden="true" />
-        {t("nav.sessions")}
-      </Link>
+      <div className="flex items-center justify-between gap-3">
+        <Link
+          to="/app/sessions"
+          className="inline-flex items-center gap-1.5 text-[13px] text-muted-foreground transition-colors hover:text-foreground"
+        >
+          <ArrowLeft className="size-4" aria-hidden="true" />
+          {t("nav.sessions")}
+        </Link>
+        <button
+          type="button"
+          onClick={doneForNow}
+          className="text-[13px] text-muted-foreground transition-colors hover:text-foreground"
+        >
+          {t("common.doneForNow")}
+        </button>
+      </div>
 
       <Async
         state={state}
@@ -184,7 +214,8 @@ export default function SessionDetailScreen() {
                   {session.title}
                 </h1>
                 <p className="mt-1 text-[14px] text-muted-foreground">
-                  {session.scope} · {session.done} of {session.total} done
+                  {session.scope ? `${session.scope} · ` : null}
+                  {session.done} of {session.total} done
                 </p>
               </header>
 
@@ -251,7 +282,7 @@ export default function SessionDetailScreen() {
               ) : null}
 
               <section aria-label="Companion" className="flex flex-col gap-3">
-                <Bubble>{session.companionNote}</Bubble>
+                {session.companionNote ? <Bubble>{session.companionNote}</Bubble> : null}
 
                 {turn.request ? (
                   <p className="ml-auto max-w-[26rem] rounded-brand rounded-tr-sm bg-accent px-3.5 py-2.5 text-[14px] leading-relaxed text-accent-foreground">

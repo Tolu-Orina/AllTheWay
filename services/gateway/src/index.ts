@@ -11,7 +11,12 @@ import { artifactRoutes } from "./routes/artifacts.js";
 import { documentRoutes } from "./routes/documents.js";
 import { meetingRoutes } from "./routes/meetings.js";
 import { shareRoutes } from "./routes/shares.js";
-import { getSession, listSessions } from "./repos/sessions.js";
+import {
+  ensureSession,
+  getSession,
+  listSessions,
+  touchSession,
+} from "./repos/sessions.js";
 import { listPreferences, revertPreference } from "./repos/preferences.js";
 import { listVisualPreferences, revertVisualPreference } from "./repos/visual.js";
 import { listRuns, listWatchers, setWatcherRunning } from "./repos/watchers.js";
@@ -27,7 +32,7 @@ import {
   setKeepTranscripts,
 } from "./repos/transcripts.js";
 import { recordOffered, recordTaken } from "./repos/recoveries.js";
-import { FailureKindSchema, LocaleSchema } from "@alltheway/contracts";
+import { FailureKindSchema, LocaleSchema, type PlanStep } from "@alltheway/contracts";
 import { retrieve } from "./repos/retrieval.js";
 import { attachVoice } from "./voice/relay.js";
 import { attachCapture } from "./meetings/capture.js";
@@ -93,6 +98,23 @@ const handle =
     });
   };
 
+/**
+ * Persist work from a turn. Lives here, not in the orchestrator: that service
+ * is a planner and must stay stateless. A failed write is logged rather than
+ * failing the turn — talking still happened.
+ */
+async function rememberWork(
+  uid: string,
+  sessionId: string,
+  input: { utterance: string; plan?: PlanStep[]; companionNote?: string },
+): Promise<void> {
+  try {
+    await touchSession(uid, sessionId, input);
+  } catch (err) {
+    console.error("[gateway] persist session", sessionId, err);
+  }
+}
+
 // Where the user stands this month.
 //
 // Advisory: entitlement is decided in the connector gateway, beside the
@@ -109,6 +131,20 @@ api.get(
   "/sessions",
   handle(async (req, res) => {
     res.json(await listSessions(req.uid!));
+  }),
+);
+
+/**
+ * Allocate a piece of work. Talking also creates a row — this exists so New
+ * can land on a URL before the first message, not so a session becomes a
+ * prerequisite for a conversation.
+ */
+api.post(
+  "/sessions",
+  handle(async (req, res) => {
+    const id = crypto.randomUUID();
+    await ensureSession(req.uid!, id, { title: "New work" });
+    res.status(201).json({ id });
   }),
 );
 
@@ -213,15 +249,26 @@ api.get(
       retrieve(req.uid!, message),
     ]);
     const stream = openStream(req, res);
+    const sessionId = param(req, "id");
+    const steps: PlanStep[] = [];
+    let note = "";
 
     try {
+      // Materialise the parent before the planner answers, so a hang still
+      // leaves a row titled from what they said.
+      await rememberWork(req.uid!, sessionId, { utterance: message });
+
       for await (const event of streamTurn({
-        sessionId: param(req, "id"),
+        sessionId,
         userId: req.uid!,
         message,
         knownPreferences: prefs.map((p) => p.now),
-          passages,
+        passages,
       })) {
+        if (event.kind === "step") steps.push(event.step);
+        if (event.kind === "done") note = event.note;
+        if (event.kind === "confirm") note = note || event.summary;
+        if (event.kind === "clarify") note = note || event.question;
         // The reader left. Stop pulling from the agent rather than finishing a
         // turn nobody is waiting for.
         if (stream.closed()) break;
@@ -234,6 +281,11 @@ api.get(
       console.error(`[gateway] stream ${req.path}`, err);
       stream.send({ kind: "error", message: "Something went wrong on our side." });
     } finally {
+      await rememberWork(req.uid!, sessionId, {
+        utterance: message,
+        plan: steps.length > 0 ? steps : undefined,
+        companionNote: note || undefined,
+      });
       stream.end();
     }
   }),
@@ -258,12 +310,23 @@ api.post(
       retrieve(req.uid!, body.data.message),
     ]);
 
+    const sessionId = param(req, "id");
+    await rememberWork(req.uid!, sessionId, { utterance: body.data.message });
+
     const result = await runTurn({
-      sessionId: param(req, "id"),
+      sessionId,
       userId: req.uid!,
       message: body.data.message,
       knownPreferences: prefs.map((p) => p.now),
-        passages,
+      passages,
+    });
+
+    const companionNote =
+      result.note || result.confirm?.summary || result.clarify?.question || undefined;
+    await rememberWork(req.uid!, sessionId, {
+      utterance: body.data.message,
+      plan: result.plan.length > 0 ? result.plan : undefined,
+      companionNote,
     });
 
     res.json(result);

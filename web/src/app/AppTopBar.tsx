@@ -2,6 +2,7 @@ import { Plus, Search } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import { AccountMenu } from "@/app/AccountMenu";
+import { useStartWork } from "@/app/use-start-work";
 
 /**
  * Desktop top bar, inside the main column rather than the sidebar.
@@ -10,6 +11,8 @@ import { AccountMenu } from "@/app/AccountMenu";
  * keeps the sidebar purely about where you are.
  */
 export function AppTopBar() {
+  const { startWork, starting } = useStartWork();
+
   return (
     <div className="mb-6 hidden items-center gap-3 lg:flex">
       <label htmlFor="app-search" className="sr-only">
@@ -32,7 +35,7 @@ export function AppTopBar() {
       </div>
 
       <div className="ml-auto flex items-center gap-3">
-        <Button variant="brand" size="lg">
+        <Button variant="brand" size="lg" disabled={starting} onClick={() => void startWork()}>
           <Plus />
           New
         </Button>

@@ -69,7 +69,7 @@ export function Digest() {
                     {digest.awaitingDecision.map((d) => (
                       <li key={d.id}>
                         <Link
-                          to="/app/sessions"
+                          to={d.sessionId ? `/app/sessions/${d.sessionId}` : "/app/sessions"}
                           className="flex items-start justify-between gap-2 text-[13px] leading-relaxed underline-offset-2 hover:underline"
                         >
                           {/* Verbatim. A digest that paraphrases what someone

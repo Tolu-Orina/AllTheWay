@@ -98,6 +98,7 @@
     "messageTheCompanion": "向助手发送消息",
     "everythingYouAndTheCompanionAre": "您与助手正在协同处理的所有事项。",
     "startYourFirstSession": "开始您的首个会话",
+    "doneForNow": "先到这里",
     "standingInstructionsThatRunWithout": "无需您参与即可运行的常驻指令。每次运行都会生成与您亲自操作时相同的计划和链路追踪。",
     "irreversibleActionsExternalSendsPa": "无论监控器的权限上限如何设置，不可逆操作（对外发送、付款、删除）始终会暂停并请求确认。该安全底线无法降低。",
     "youAreOffline": "您已离线",

@@ -104,6 +104,7 @@
     "messageTheCompanion": "Enviar mensagem ao assistente",
     "everythingYouAndTheCompanionAre": "Tudo o que você e o assistente estão realizando juntos.",
     "startYourFirstSession": "Iniciar primeira sessão",
+    "doneForNow": "Por agora, chega",
     "standingInstructionsThatRunWithout": "Instruções permanentes que rodam sem você. Cada execução fica no mesmo plano e registro de uma sessão manual.",
     "irreversibleActionsExternalSendsPa": "Ações irreversíveis — envios externos, pagamentos, exclusões — sempre pedem confirmação, independente do limite do monitor. Essa regra de segurança não pode ser desativada.",
     "youAreOffline": "Você está offline",

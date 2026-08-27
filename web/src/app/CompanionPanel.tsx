@@ -16,6 +16,7 @@ import { CanvasPane } from "@/app/CanvasPane";
 import { useAuth } from "@/auth/useAuth";
 import { api } from "@/app/data";
 import { useTurn, type ProposedAction, type TurnPhase } from "@/app/use-turn";
+import { COMPANION_SESSION_ID } from "@/app/work-id";
 import { cn } from "@/lib/utils";
 import { VoiceCaptions, VoiceControl } from "@/app/VoiceControl";
 
@@ -46,7 +47,7 @@ const DOCKED_FROM = "(min-width: 80rem)";
  * signed-in user at the repository layer, so the constant is not a shared
  * namespace — `getSession(uid, id)` is what makes it private.
  */
-const COMPANION_SESSION = "companion";
+const COMPANION_SESSION = COMPANION_SESSION_ID;
 
 function useCompanionThread() {
   const { user } = useAuth();

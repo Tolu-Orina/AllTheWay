@@ -8,6 +8,7 @@ import { runTurn } from "../orchestrator.js";
 import { listPreferences } from "../repos/preferences.js";
 import { recordUsage } from "../repos/usage.js";
 import { recordLine } from "../repos/transcripts.js";
+import { ensureSession, touchSession, VOICE_TITLE } from "../repos/sessions.js";
 import { createLiveOpener, type LiveOpener } from "./backend.js";
 import {
   AUTH_TIMEOUT_MS,
@@ -154,6 +155,17 @@ async function handleConnection(ws: WebSocket, opener: LiveOpener): Promise<void
     };
   } = {};
 
+  // Parent document first, so a conversation that only lives in a transcript
+  // subcollection is not invisible to listSessions. Title is a placeholder
+  // until the first finished user line arrives.
+  try {
+    await ensureSession(uid, sessionId, { title: VOICE_TITLE });
+  } catch (err) {
+    console.error("[voice] persist session", sessionId, err);
+  }
+
+  let titled = false;
+
   try {
     slot.live = await opener({
       resumeHandle: raw.auth.resumeHandle,
@@ -183,7 +195,15 @@ async function handleConnection(ws: WebSocket, opener: LiveOpener): Promise<void
           //
           // Never awaited: a slow write must not delay the caption a person is
           // reading while they speak.
-          if (finished) void keep(uid, sessionId, "user", text);
+          if (finished) {
+            void keep(uid, sessionId, "user", text);
+            if (!titled && text.trim()) {
+              titled = true;
+              void touchSession(uid, sessionId, { utterance: text }).catch((err) =>
+                console.error("[voice] retitle session", sessionId, err),
+              );
+            }
+          }
         },
         onModelTranscript(text, finished) {
           send(ws, { transcript: { side: "model", text, finished } });
@@ -289,6 +309,13 @@ async function runPlanTurn(opts: {
       knownPreferences: prefs.map((p) => p.now),
     });
     if (cancelled.has(call.id)) return;
+    const companionNote =
+      result.note || result.confirm?.summary || result.clarify?.question || undefined;
+    void touchSession(uid, sessionId, {
+      utterance: request,
+      plan: result.plan.length > 0 ? result.plan : undefined,
+      companionNote,
+    }).catch((err) => console.error("[voice] persist turn", sessionId, err));
     send(ws, { turn: result });
     live.sendToolResult(call.id, call.name, result);
   } catch (err) {

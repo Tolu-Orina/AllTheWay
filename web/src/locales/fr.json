@@ -104,6 +104,7 @@
     "messageTheCompanion": "Écrire au compagnon",
     "everythingYouAndTheCompanionAre": "Tout ce sur quoi vous et le compagnon avancez.",
     "startYourFirstSession": "Démarrer votre première session",
+    "doneForNow": "C'est tout pour l'instant",
     "standingInstructionsThatRunWithout": "Instructions permanentes s'exécutant en autonomie. Chaque passage rejoint le même plan et le même historique qu'une session menée par vous.",
     "irreversibleActionsExternalSendsPa": "Les actions irréversibles (envois externes, paiements, suppressions) demandent toujours confirmation, quel que soit le niveau accordé au watcher. Ce garde-fou ne peut être retiré.",
     "youAreOffline": "Vous êtes hors ligne",
