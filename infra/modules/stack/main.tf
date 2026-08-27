@@ -229,6 +229,17 @@ locals {
     research-cell       = ["roles/aiplatform.user"]
     profile-synthesizer = ["roles/datastore.user"]
     watcher-runtime     = ["roles/datastore.user"]
+
+    # Meetings, consent, credentials and the meeting registry -- four modules,
+    # all through firebase-admin. Scribe had no entry here at all, so its
+    # identity carried only the three baseline roles and every Firestore call
+    # failed with PERMISSION_DENIED. That surfaced as `/api/meetings` returning
+    # 502 while the error crashed the container, which then restarted clean --
+    # so the logs showed healthy startups and nothing else.
+    #
+    # Firestore only: scribe reaches no other Google API. Its transcription runs
+    # in the gateway, which is why aiplatform is not here.
+    scribe = ["roles/datastore.user"]
     librarian = [
       "roles/datastore.user",  # documents and chunks, under each user's path
       "roles/aiplatform.user", # embeddings, in europe-west1
