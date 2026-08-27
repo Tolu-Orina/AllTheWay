@@ -15,7 +15,22 @@ resource "google_cloud_run_v2_service" "this" {
   name     = "${var.service_name}-${var.env}"
   location = var.region
 
-  ingress = var.allow_unauthenticated ? "INGRESS_TRAFFIC_ALL" : "INGRESS_TRAFFIC_INTERNAL_ONLY"
+  # Reachability is gated by IAM, not by ingress.
+  #
+  # INTERNAL_ONLY looks stricter and was not: Cloud Run rejects a request the
+  # ingress rule disallows with a *404*, and a Cloud Run service calling another
+  # Cloud Run service leaves over the public internet unless its egress is routed
+  # through a VPC. There is no VPC here, so every gateway -> service call was
+  # refused at the edge. In production that surfaced as `/api/registry/agents`
+  # answering 502 for thirty days without a single success, and as voice turns
+  # failing with "The planner could not finish this turn" — the WebSocket
+  # upgraded, then the call to the orchestrator was refused.
+  #
+  # What actually protects these services is unchanged: `allow_unauthenticated`
+  # is false for all of them, so only the principals granted roles/run.invoker —
+  # today just run-gateway-${var.env}@ — can call them at all. An anonymous
+  # request reaches the edge and is rejected there with a 403.
+  ingress = "INGRESS_TRAFFIC_ALL"
 
   deletion_protection = var.env == "prod"
 
@@ -85,8 +100,12 @@ resource "google_cloud_run_v2_service" "this" {
   }
 }
 
-# Only the gateway is reachable from the internet. Everything else is invoked
+# Only the gateway is reachable *anonymously*. Everything else is invoked
 # service-to-service with an IAM-authenticated identity.
+#
+# This binding, not the ingress rule above, is the boundary: every service now
+# has INGRESS_TRAFFIC_ALL, so an unauthenticated request to one of them reaches
+# the edge and is refused there with a 403 for lacking roles/run.invoker.
 resource "google_cloud_run_v2_service_iam_member" "public" {
   count = var.allow_unauthenticated ? 1 : 0
 
