@@ -99,7 +99,8 @@
     "standingInstructionsThatRunWithout": "Instructions permanentes exécutées sans vous. Chaque exécution s'intègre au même plan et à la même trace qu'une session menée par vous-même.",
     "irreversibleActionsExternalSendsPa": "Les actions irréversibles — envois externes, paiements, suppressions — demandent toujours confirmation, quel que soit le plafond de l'observateur. Cette sécurité minimale ne peut être abaissée.",
     "youAreOffline": "Vous êtes hors ligne",
-    "allthewayCouldNotReachTheNetwork": "AllTheWay n'a pas pu se connecter au réseau. Vos sessions sont en sécurité — reconnectez-vous pour reprendre là où vous en étiez."
+    "allthewayCouldNotReachTheNetwork": "AllTheWay n'a pas pu se connecter au réseau. Vos sessions sont en sécurité — reconnectez-vous pour reprendre là où vous en étiez.",
+    "checkingSession": "Vérification de votre session…"
   },
   "account": {
     "signOut": "Se déconnecter"

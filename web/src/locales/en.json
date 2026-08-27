@@ -96,7 +96,8 @@
     "standingInstructionsThatRunWithout": "Standing instructions that run without you. Every run lands in the same plan and the same trace as a session you drove yourself.",
     "irreversibleActionsExternalSendsPa": "Irreversible actions — external sends, payments, deletions — always stop and ask, whatever a watcher’s ceiling is set to. That floor is not yours to lower.",
     "youAreOffline": "You are offline",
-    "allthewayCouldNotReachTheNetwork": "AllTheWay could not reach the network. Your sessions are safe — reconnect and this page will pick up where it left off."
+    "allthewayCouldNotReachTheNetwork": "AllTheWay could not reach the network. Your sessions are safe — reconnect and this page will pick up where it left off.",
+    "checkingSession": "Checking your session…"
   },
   "account": {
     "signOut": "Sign out"

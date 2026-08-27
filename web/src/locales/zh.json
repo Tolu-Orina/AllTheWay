@@ -93,7 +93,8 @@
     "standingInstructionsThatRunWithout": "无需您参与即可运行的固定指令。每次运行都会像您亲自操作的会话一样，计入相同的计划与追踪记录中。",
     "irreversibleActionsExternalSendsPa": "不可逆操作（对外发送、付款、删除等）无论监视器上限如何设置，都会先暂停并询问。此底线不可调低。",
     "youAreOffline": "您已离线",
-    "allthewayCouldNotReachTheNetwork": "AllTheWay 无法连接网络。您的会话已安全保存——重新连接后本页面将自动恢复。"
+    "allthewayCouldNotReachTheNetwork": "AllTheWay 无法连接网络。您的会话已安全保存——重新连接后本页面将自动恢复。",
+    "checkingSession": "正在检查您的会话…"
   },
   "account": {
     "signOut": "退出登录"

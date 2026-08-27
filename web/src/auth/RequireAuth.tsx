@@ -1,6 +1,7 @@
 import { Navigate, Outlet, useLocation } from "react-router";
 
 import { useAuth } from "@/auth/useAuth";
+import { useT } from "@/app/i18n";
 
 /**
  * True when running locally, so every page stays reachable during development
@@ -20,6 +21,7 @@ function isLocal() {
 }
 
 export function RequireAuth() {
+  const t = useT();
   const { user, loading } = useAuth();
   const location = useLocation();
 
@@ -31,7 +33,7 @@ export function RequireAuth() {
     return (
       <div className="grid min-h-dvh place-items-center bg-background">
         <p className="text-[14px] text-muted-foreground" role="status">
-          Checking your session…
+          {t("common.checkingSession")}
         </p>
       </div>
     );

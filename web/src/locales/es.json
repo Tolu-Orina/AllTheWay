@@ -99,7 +99,8 @@
     "standingInstructionsThatRunWithout": "Instrucciones fijas que se ejecutan sin ti. Cada ejecución queda registrada en el mismo plan y seguimiento que una sesión manual.",
     "irreversibleActionsExternalSendsPa": "Las acciones irreversibles (envíos externos, pagos, eliminaciones) siempre pedirán confirmación, sea cual sea el límite del observador. Este nivel mínimo no se puede reducir.",
     "youAreOffline": "Sin conexión",
-    "allthewayCouldNotReachTheNetwork": "AllTheWay no pudo conectarse a la red. Tus sesiones están a salvo: vuelve a conectarte y la página continuará donde lo dejó."
+    "allthewayCouldNotReachTheNetwork": "AllTheWay no pudo conectarse a la red. Tus sesiones están a salvo: vuelve a conectarte y la página continuará donde lo dejó.",
+    "checkingSession": "Comprobando tu sesión…"
   },
   "account": {
     "signOut": "Cerrar sesión"

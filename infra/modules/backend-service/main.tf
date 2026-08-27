@@ -55,6 +55,17 @@ resource "google_cloud_run_v2_service" "this" {
         }
         # false => billed only while handling a request.
         cpu_idle = true
+
+        # Extra CPU while the container boots, billed only for those seconds.
+        #
+        # Measured before this existed: a request arriving at a scaled-to-zero
+        # gateway waited about five seconds for the instance to answer, and the
+        # p95 on every endpoint sat between four and ten seconds while the p50
+        # was under a tenth of a second. That gap is entirely startup.
+        #
+        # This does not remove a cold start, it shortens one. `min_instances`
+        # is what removes it, and that is set per service rather than globally.
+        startup_cpu_boost = true
       }
 
       dynamic "env" {

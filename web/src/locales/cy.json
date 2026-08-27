@@ -108,7 +108,8 @@
     "standingInstructionsThatRunWithout": "Cyfarwyddiadau parhaol sy'n rhedeg hebddoch chi. Mae pob rhediad yn glanio yn yr un cynllun a'r un trywydd â sesiwn a redir gennych eich hun.",
     "irreversibleActionsExternalSendsPa": "Mae gweithredoedd na ellir eu dadwneud — anfon allanol, taliadau, dileu — bob amser yn aros ac yn gofyn, beth bynnag fo terfyn uchaf gwyliwr. Nid eich dewis chi yw gostwng y llawr hwnnw.",
     "youAreOffline": "Rydych all-lein",
-    "allthewayCouldNotReachTheNetwork": "Ni lwyddodd AllTheWay i gyrraedd y rhwydwaith. Mae eich sesiynau'n ddiogel — ailgysylltwch a bydd y dudalen hon yn ailddechrau lle y gadawyd arni."
+    "allthewayCouldNotReachTheNetwork": "Ni lwyddodd AllTheWay i gyrraedd y rhwydwaith. Mae eich sesiynau'n ddiogel — ailgysylltwch a bydd y dudalen hon yn ailddechrau lle y gadawyd arni.",
+    "checkingSession": "Yn gwirio eich sesiwn…"
   },
   "account": {
     "signOut": "Allgofnodi"

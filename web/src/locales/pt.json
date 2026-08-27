@@ -99,7 +99,8 @@
     "standingInstructionsThatRunWithout": "Instruções contínuas executadas sem você. Cada execução entra no mesmo plano e rastreamento de uma sessão conduzida por você.",
     "irreversibleActionsExternalSendsPa": "Ações irreversíveis — envios externos, pagamentos, exclusões — sempre pedem confirmação, independente do limite do monitor. Essa proteção mínima não pode ser reduzida.",
     "youAreOffline": "Você está offline",
-    "allthewayCouldNotReachTheNetwork": "O AllTheWay não conseguiu se conectar à rede. Suas sessões estão salvas — reconecte-se para continuar de onde parou."
+    "allthewayCouldNotReachTheNetwork": "O AllTheWay não conseguiu se conectar à rede. Suas sessões estão salvas — reconecte-se para continuar de onde parou.",
+    "checkingSession": "Verificando sua sessão…"
   },
   "account": {
     "signOut": "Sair"

@@ -29,9 +29,29 @@ variable "domain_verification_txt" {
 }
 
 variable "prod_min_instances" {
-  description = "Set to 1 only if cold starts on the gateway become a real problem — it removes scale-to-zero and its cost saving."
+  description = "Instances kept warm in prod for the services named in `warm_services`. Everything else still scales to zero."
   type        = number
-  default     = 0
+  default     = 1
+}
+
+variable "warm_services" {
+  description = "Services that must never be cold in prod. Everything else scales to zero."
+  type        = set(string)
+
+  # The gateway only, and deliberately.
+  #
+  # Cold starts stopped being theoretical: p50 on every endpoint was under a
+  # tenth of a second while p95 sat between four and ten, and the logs put an
+  # instance finishing startup five seconds after the request that woke it. A
+  # person signing in met that on their first tap.
+  #
+  # The gateway is enough because the screen shown straight after sign-in --
+  # digest, sessions, watcher runs, preferences -- is served by the gateway out
+  # of Firestore and touches no other service. Warming all nine would multiply
+  # the idle cost to remove a delay nobody is waiting on: the librarian and the
+  # scribe are reached only by a deliberate navigation, where `startup_cpu_boost`
+  # is the cheaper answer.
+  default = ["gateway"]
 }
 
 variable "common_env_vars" {

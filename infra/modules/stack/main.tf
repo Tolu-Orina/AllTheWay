@@ -424,7 +424,7 @@ module "service" {
     for caller in each.value : local.runtime_sa["${caller}-${var.env}"]
   ]
 
-  min_instances = var.env == "prod" ? var.prod_min_instances : 0
+  min_instances = var.env == "prod" && contains(var.warm_services, each.key) ? var.prod_min_instances : 0
   max_instances = var.env == "prod" ? 20 : 4
 
   # Voice sockets pin an instance for their duration (ADR 0006). Cloud Run's
