@@ -1,6 +1,7 @@
-import { Mic, Loader2, Square } from "lucide-react";
+import { Mic, MicOff, Loader2, Square } from "lucide-react";
 
 import { useVoice } from "@/app/use-voice";
+import { useT } from "@/app/i18n";
 import { cn } from "@/lib/utils";
 
 /**
@@ -15,20 +16,50 @@ export function VoiceControl({
   className?: string;
   size?: "sm" | "md" | "lg";
 }) {
+  const t = useT();
   const voice = useVoice();
   const live = voice.status === "live";
   const connecting = voice.status === "connecting";
   // "Cancel" while connecting, because the button remains pressable — see below.
   const label = live
-    ? "Stop voice session"
+    ? t("voice.stopSession")
     : connecting
-      ? "Cancel connecting"
-      : "Start a voice session";
+      ? t("voice.cancelConnecting")
+      : t("voice.startSession");
   const box = size === "lg" ? "size-14" : size === "sm" ? "size-9" : "size-11";
   const icon = size === "lg" ? "size-6" : "size-5";
 
   return (
     <div className={cn("flex flex-col items-end gap-1", className)}>
+      <div className="flex items-center gap-2">
+        {/*
+          Stop listening, without hanging up.
+          
+          The model answers whatever the microphone hears and cannot tell who is
+          speaking — so turning to talk to somebody else got an answer meant for
+          them. Ending the call to avoid that loses the conversation; this does
+          not. Shown only while live, because there is nothing to mute otherwise.
+        */}
+        {live ? (
+          <button
+            type="button"
+            aria-label={voice.muted ? t("voice.unmute") : t("voice.mute")}
+            aria-pressed={voice.muted}
+            onClick={() => voice.toggleMute()}
+            className={cn(
+              "grid size-9 place-items-center rounded-full border transition-colors active:scale-95",
+              voice.muted
+                ? "border-destructive/40 bg-destructive/10 text-destructive"
+                : "bg-card text-muted-foreground hover:bg-muted",
+            )}
+          >
+            {voice.muted ? (
+              <MicOff className="size-4" aria-hidden />
+            ) : (
+              <Mic className="size-4" aria-hidden />
+            )}
+          </button>
+        ) : null}
       <button
         type="button"
         aria-label={label}
@@ -62,6 +93,12 @@ export function VoiceControl({
           <Mic className={cn("relative z-10", icon)} aria-hidden />
         )}
       </button>
+      </div>
+      {voice.muted && live ? (
+        <p role="status" className="text-[11px] text-destructive">
+          {t("voice.muted")}
+        </p>
+      ) : null}
       {voice.status === "error" ? (
         <p role="status" className="max-w-[14rem] text-right text-[12px] leading-snug text-destructive">
           {voice.error}

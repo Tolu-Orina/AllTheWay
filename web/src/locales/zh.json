@@ -2,58 +2,66 @@
   "nav": {
     "home": "首页",
     "sessions": "会话",
-    "watchers": "监视器",
+    "watchers": "监控器",
     "agents": "智能体",
     "profile": "个人资料",
     "recents": "最近"
   },
   "digest": {
     "heading": "昨日至今",
-    "quiet": "夜间无新动态，暂无待办事项。",
+    "quiet": "夜间无事发生。暂无待办事项。",
     "nothingWaiting": "暂无待办事项。",
-    "andMore": "以及另外 {{count}} 项",
-    "decisions_other": "{{count}} 个事项需要您决定",
-    "watchersRan_other": "运行了 {{count}} 个监视器",
-    "changed_other": "{{count}} 项内容发生变更"
+    "andMore": "以及其他 {{count}} 项",
+    "decisions_other": "{{count}} 项待决事项",
+    "watchersRan_other": "已运行 {{count}} 个监控器",
+    "changed_other": "{{count}} 项变更"
   },
   "meetings": {
     "heading": "会议",
-    "intro": "它会旁听并记录要点。它无法在会议中发言，加入前也会先征得参会人员同意。",
-    "none": "暂无会议记录。",
+    "intro": "它可以旁听并记录笔记。它无法在会议中发言，且接入前会征求全员同意。",
+    "none": "暂无会议。",
     "listenedLive": "实时旁听",
-    "readTranscript": "会后阅读逐字稿",
+    "readTranscript": "事后阅读速记",
     "noNotes": "无笔记",
     "listenedLocally": "在您的设备上旁听",
     "whyNoLiveNotes": "为何没有实时笔记？",
-    "hideWhy": "隐藏说明",
-    "listening": "正在旁听会议并做笔记。它无法发言。",
-    "stayOut": "退出此会议",
-    "noticed": "重点关注",
-    "insightsQuiet": "暂无需要打扰您的重要事项。",
-    "insightsNone": "本次会议未标记任何事项。",
-    "insightsFailed": "无法加载内容。",
-    "enable": "允许其加入我的会议并做笔记",
-    "enableHint": "默认关闭。接入前会征得每位参会者同意，且它绝不会在会议中发言。",
-    "meetingsAreCappedSoACall": "会议设有单次时长上限，以防未挂断的通话全天持续录音。再录制 30 分钟将消耗约 30 分钟的会议额度。",
-    "nothingHasBeenDoneAboutThis": "尚未对此采取任何操作。"
+    "hideWhy": "隐藏原因",
+    "listening": "正在旁听此会议并记录笔记。无法发言。",
+    "stayOut": "不参与此会议",
+    "noticed": "会议要点",
+    "insightsQuiet": "暂无需要打扰您的要点。",
+    "insightsNone": "本次会议未标记任何内容。",
+    "insightsFailed": "无法加载这些内容。",
+    "enable": "允许其加入会议并记录笔记",
+    "enableHint": "默认关闭。接入前会征求会议全员同意，且它绝不会发言。",
+    "meetingsAreCappedSoACall": "会议设有上限，避免未挂断的通话全天录制。延长 30 分钟将消耗约 30 分钟的会议额度。",
+    "nothingHasBeenDoneAboutThis": "尚未对此采取任何行动。"
   },
   "documents": {
     "heading": "您的文档",
-    "intro": "此处添加的任何内容均可被读取和引用。内容不会用于模型训练，删除文档也会一并清除它从中习得的记忆。",
-    "drop": "拖放文档至此，或",
+    "intro": "您在此添加的任何内容，它都能阅读并引用。任何内容均不会用于模型训练，删除文档将同时清除从中学习到的内容。",
+    "drop": "将文档拖放到此处，或",
     "choose": "选择文件",
-    "types": "PDF、文本、Markdown 或单页照片",
-    "photograph": "拍摄单页",
-    "none": "暂无文档。添加合同、规范或制度文件后即可发起提问。",
-    "reading": "正在读取 {{name}}。长文档约需 1 分钟，照片会更快。"
+    "types": "PDF、文本、Markdown — 或页面照片",
+    "photograph": "拍摄页面照片",
+    "none": "暂无文档。添加合同、规范或政策文件以开始提问。",
+    "reading": "正在阅读 {{name}}。长文档需要约一分钟；照片会更快。"
   },
   "voice": {
     "heading": "语音对话",
     "keep": "保留对话记录",
-    "keepHint": "默认关闭。开启后，您的发言与回复内容均会保存在会话中，便于回顾和审计。您可以随时删除记录。",
+    "keepHint": "默认关闭。开启后，您的发言与回复都将保存在该会话中——便于回顾和审计。您可以随时在事后删除记录。",
     "whatWasSaid": "对话内容",
     "deleteRecord": "删除此记录",
-    "deleting": "正在删除…"
+    "deleting": "正在删除…",
+    "mute": "停止聆听",
+    "unmute": "继续聆听",
+    "muted": "未在聆听",
+    "stopSession": "结束语音会话",
+    "cancelConnecting": "取消连接",
+    "startSession": "开始语音会话",
+    "micDenied": "需要麦克风权限才能进行语音对话。",
+    "unavailable": "当前语音不可用。您可以继续通过文字输入。"
   },
   "share": {
     "heading": "分享",
@@ -61,82 +69,82 @@
     "canView": "可查看",
     "canComment": "可评论",
     "action": "分享",
-    "hint": "直接分享给指定人员而非生成公开链接。对方仅能查看该产出物，无法访问底层文档；您可随时撤回分享。",
+    "hint": "仅限指定人员访问，而非公开链接。对方仅可阅读此产物，绝无法查看其背后的文档，您可随时收回权限。",
     "nobody": "其他人均无法查看此内容。",
-    "emailAddressToShareWith": "接收分享的邮箱地址",
-    "whatTheyCanDo": "操作权限",
-    "sharedWithYou": "与我共享",
-    "nothingYetWhenSomeoneSharesA": "暂无内容。他人向您分享文档后会显示在此处。"
+    "emailAddressToShareWith": "接收分享者的邮箱地址",
+    "whatTheyCanDo": "权限设置",
+    "sharedWithYou": "与您共享",
+    "nothingYetWhenSomeoneSharesA": "暂无内容。当有人与您共享文档时，将显示在此处。"
   },
   "language": {
     "heading": "语言",
-    "hint": "界面显示语言。这不会影响您与它交流时所用的语言，它会自动适应您的语言。",
-    "dismiss": "暂不需要"
+    "hint": "界面的显示语言。这不会改变您与它对话时使用的语言——对话语言将跟随您的输入。",
+    "dismiss": "不用了"
   },
   "common": {
     "retry": "重试",
     "cancel": "取消",
-    "saveFailed": "保存失败，未做任何更改，请重试。",
-    "everyAgentThisSystemWillTalk": "系统交互的每一个智能体，均在您发起请求时即时校验其发布的协议，而非在部署时。",
-    "nothingHereIsAttestedIncludingThe": "此处内容均未通过认证，包括其声明的地址。",
+    "saveFailed": "无法保存。未做任何更改 — 请重试。",
+    "everyAgentThisSystemWillTalk": "该系统将与之交互的每个智能体，其公开协议均在您发出请求时实时核验 — 而非基于部署时的状态。",
+    "nothingHereIsAttestedIncludingThe": "此处均未经认证，包括其声明的地址。",
     "hereIsWhereThingsStand": "当前进展如下。",
     "inProgress": "进行中",
     "continue": "继续",
     "overnight": "夜间",
-    "allWatchers": "全部监视器",
-    "transparentTrace": "透明调用链路",
+    "allWatchers": "所有监控器",
+    "transparentTrace": "透明追踪",
     "cognitiveProfile": "认知画像",
-    "builtFromWhatYouActuallyDid": "基于您的实际操作与修正建立，而非一次性填写的表单。每项条目都说明了变更内容及原因，您随时可以恢复。",
-    "messageTheCompanion": "发消息给助手",
-    "everythingYouAndTheCompanionAre": "您与助手正在处理的所有事项。",
-    "startYourFirstSession": "开启您的首次会话",
-    "standingInstructionsThatRunWithout": "无需您参与即可运行的固定指令。每次运行都会像您亲自操作的会话一样，计入相同的计划与追踪记录中。",
-    "irreversibleActionsExternalSendsPa": "不可逆操作（对外发送、付款、删除等）无论监视器上限如何设置，都会先暂停并询问。此底线不可调低。",
+    "builtFromWhatYouActuallyDid": "基于您的实际操作和修改构建 — 而非一次性填写的表单。每条记录都会说明更改内容与原因，您可以随时还原任何更改。",
+    "messageTheCompanion": "向助手发送消息",
+    "everythingYouAndTheCompanionAre": "您与助手正在协同处理的所有事项。",
+    "startYourFirstSession": "开始您的首个会话",
+    "standingInstructionsThatRunWithout": "无需您参与即可运行的常驻指令。每次运行都会生成与您亲自操作时相同的计划和链路追踪。",
+    "irreversibleActionsExternalSendsPa": "无论监控器的权限上限如何设置，不可逆操作（对外发送、付款、删除）始终会暂停并请求确认。该安全底线无法降低。",
     "youAreOffline": "您已离线",
-    "allthewayCouldNotReachTheNetwork": "AllTheWay 无法连接网络。您的会话已安全保存——重新连接后本页面将自动恢复。",
-    "checkingSession": "正在检查您的会话…"
+    "allthewayCouldNotReachTheNetwork": "AllTheWay 无法连接网络。您的会话很安全 — 重新连接后本页面将自动恢复。",
+    "checkingSession": "正在检查会话…"
   },
   "account": {
     "signOut": "退出登录"
   },
   "canvas": {
-    "askForADraftInThe": "在对话中要求起草内容，生成后会显示在此处供您修改。",
-    "generatedByAllthewayThisFileCarrie": "由 AllTheWay 生成。该文件包含 AI 生成凭据标识，下载后仍会保留。",
-    "artifactContent": "产出内容",
-    "whatChanged": "有哪些修改？",
-    "allWork": "全部成果",
-    "anythingItDraftsForYouLands": "它为您起草的任何内容都会保存在这里（文档、摘要、线框图等），包含您的历次修改版本，并支持导出。"
+    "askForADraftInThe": "在对话中请求生成草稿，草稿将显示在此处供您修改。",
+    "generatedByAllthewayThisFileCarrie": "由 AllTheWay 生成。该文件包含表明其由 AI 生成的内容凭据，下载后依然保留。",
+    "artifactContent": "产物内容",
+    "whatChanged": "更改了什么？",
+    "allWork": "全部工作",
+    "anythingItDraftsForYouLands": "它为您起草的任何内容都会保存在这里 — 文档、摘要、线框图等 — 包含您修改过的每个版本，并支持随时导出。"
   },
   "comments": {
     "comments": "评论",
     "resolve": "解决",
     "addAComment": "添加评论",
-    "youHaveViewOnlyAccessTo": "您仅对该内容拥有查看权限。"
+    "youHaveViewOnlyAccessTo": "您对此内容仅有查看权限。"
   },
   "connections": {
     "connectedAccounts": "已关联账号",
-    "whatAllthewayIsAllowedToReach": "AllTheWay 经授权可代您访问的内容。在执行任何不可逆操作前，它仍会先征得您的同意。",
-    "draftingIsTheSafestThingIt": "起草邮件是最安全的操作——不会发送任何邮件。",
-    "googleStillClassesThePermissionAs": "Google 仍将此权限列为受限权限，因此除非您主动开启，否则默认保持关闭。",
+    "whatAllthewayIsAllowedToReach": "AllTheWay 获准代表您访问的内容。执行任何不可逆操作前，它仍会先行确认。",
+    "draftingIsTheSafestThingIt": "起草是处理邮件时最安全的操作 — 不会发送任何内容。",
+    "googleStillClassesThePermissionAs": "Google 仍将此权限归为受限权限，因此除非您主动开启，否则默认保持关闭。",
     "connected": "已连接",
     "comingSoon": "即将推出"
   },
   "specialists": {
-    "whatItCanDo": "支持能力",
-    "eachOfTheseIsASeparate": "每个专家都是独立的智能体，拥有公开发布的身份卡片。下方的版本和签名直接读取自卡片，因此一旦能力验证失效会在此明确提示。",
-    "internal": "内置",
-    "runsInsideTheProductAndPublishes": "在产品内部运行且不公开发布卡片，外部无法调用。",
-    "notRegisteredInThisDeploymentThis": "未在此部署中注册——该能力不可用。"
+    "whatItCanDo": "支持的功能",
+    "eachOfTheseIsASeparate": "每个都是独立的智能体，具有公开发布的名片。下方的版本和签名均读取自该名片而非本页面 — 一旦某项功能失效，将在此提示。",
+    "internal": "内部",
+    "runsInsideTheProductAndPublishes": "在产品内部运行且不公开名片 — 外部无法调用。",
+    "notRegisteredInThisDeploymentThis": "未在此部署中注册 — 该功能不可用。"
   },
   "usage": {
     "thisMonth": "本月",
-    "gettingCloseNothingStopsWorkingWit": "额度即将用尽。在提前通知您之前，任何功能均不会停止运行。",
-    "usedUpForThisMonthEverything": "本月额度已用尽。其他功能仍可正常使用。"
+    "gettingCloseNothingStopsWorkingWit": "额度即将用尽。在未提前通知您之前，任何功能都不会停止工作。",
+    "usedUpForThisMonthEverything": "本月额度已用尽。其他所有功能仍可正常使用。"
   },
   "visual": {
-    "howYourWorkLooks": "视觉风格偏好",
-    "whatItHasPickedUpAbout": "它学习到的您的视觉风格，并在为您生成内容时应用。还原任意设置后，它将不再默认套用。",
-    "nothingYetAskItToMake": "暂无数据。让它生成一些内容并修正样式，它会从中学习。"
+    "howYourWorkLooks": "视觉风格",
+    "whatItHasPickedUpAbout": "它所掌握的关于您的视觉风格偏好，并会在为您生成内容时应用。还原任何设置后，它将不再做相应预设。",
+    "nothingYetAskItToMake": "暂无内容。让它生成内容并调整外观 — 它将从中学习您的偏好。"
   },
   "auth": {
     "backToSignIn": "返回登录",

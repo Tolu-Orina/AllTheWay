@@ -4,7 +4,7 @@
 
 *Does not supersede Product Manifest v3. v3 scoped capabilities. This document scopes **delivery, perception, and payment** — the gap between a working system and a product a person with a job and a life would actually keep.*
 
-**Date:** 2026-08-27 · **Status:** proposed · **Horizon:** v3.5, not v4 · **Companion docs:** [Product Manifest v3](AllTheWay-Product-Manifest-v3.md), [v3 Implementation Plan](AllTheWay-v3-Implementation-Plan.md), [A2A and Platform Plan](AllTheWay-A2A-and-Platform-Plan.md)
+**Date:** 2026-08-27 · **Status:** proposed · **Horizon:** v3.5, not v4 · **Companion docs:** [Product Manifest v3](AllTheWay-Product-Manifest-v3.md), [v3 Implementation Plan](AllTheWay-v3-Implementation-Plan.md), [v3.5 Implementation Plan](AllTheWay-v3.5-Implementation-Plan.md), [A2A and Platform Plan](AllTheWay-A2A-and-Platform-Plan.md)
 
 ---
 

@@ -56,7 +56,15 @@
     "keepHint": "Off by default. When on, both what you say and what it replies are saved to that conversation — useful for reviews and audits. You can delete any conversation's record afterwards.",
     "whatWasSaid": "What was said",
     "deleteRecord": "Delete this record",
-    "deleting": "Deleting…"
+    "deleting": "Deleting…",
+    "mute": "Stop listening",
+    "unmute": "Listen again",
+    "muted": "Not listening",
+    "stopSession": "Stop voice session",
+    "cancelConnecting": "Cancel connecting",
+    "startSession": "Start a voice session",
+    "micDenied": "Microphone permission is needed to talk.",
+    "unavailable": "Voice is not available right now. You can keep typing."
   },
   "share": {
     "heading": "Share",

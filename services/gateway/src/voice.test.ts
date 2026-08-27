@@ -214,3 +214,36 @@ test("the voice instruction still refuses to claim work it has not done", () => 
   // Honesty about languages it cannot speak, rather than bad output in them.
   assert.match(SYSTEM_INSTRUCTION, /Igbo/);
 });
+
+
+test("voice keeps automatic turn detection, but not at its most eager", () => {
+  /**
+   * The model answers whatever the microphone hears and cannot tell speakers
+   * apart, so a user turning to talk to someone else in the room got an answer
+   * meant for them.
+   *
+   * Automatic detection stays on — push-to-talk would tax every ordinary turn
+   * to fix an occasional problem — but it is deliberately less eager, and the
+   * browser has a mute control for when the room is not its business.
+   */
+  const msg = setupMessage({
+    modelResource: "projects/p/locations/global/publishers/google/models/gemini-live-2.5-flash-native-audio",
+  });
+  const setup = msg.setup as Record<string, unknown>;
+  const rt = setup.realtimeInputConfig as { automaticActivityDetection?: Record<string, unknown> };
+  const vad = rt?.automaticActivityDetection;
+
+  assert.ok(vad, "voice must configure activity detection explicitly");
+  // Not the transcriber's setting: disabling detection here would mean the
+  // model never decides a turn ended, and it would never reply at all.
+  assert.notEqual(vad.disabled, true);
+  assert.equal(vad.startOfSpeechSensitivity, "START_SENSITIVITY_LOW");
+  assert.ok(
+    (vad.silenceDurationMs as number) >= 700,
+    "too short a silence window makes it interrupt a pause mid-thought",
+  );
+  assert.ok(
+    (vad.prefixPaddingMs as number) > 0,
+    "without prefix padding the first syllable of a turn is clipped",
+  );
+});

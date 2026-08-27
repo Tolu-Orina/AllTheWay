@@ -151,6 +151,36 @@ export function setupMessage(opts: {
       model: opts.modelResource,
       generationConfig: { responseModalities: ["AUDIO"] },
       systemInstruction: { parts: [{ text: SYSTEM_INSTRUCTION }] },
+
+      // How readily it decides someone is talking to it.
+      //
+      // Left at the default, it answered whatever the microphone picked up --
+      // including the user turning away to speak to somebody else in the room.
+      // It cannot tell speakers apart, so every voice in earshot reads as a
+      // question addressed to it.
+      //
+      // Automatic detection stays ON: the alternative is push-to-talk, which
+      // makes every ordinary turn cost a button press to fix an occasional
+      // problem. What changes is how eager it is. A low start sensitivity waits
+      // for speech clearly aimed at it, and a longer silence window stops it
+      // interrupting a pause mid-thought.
+      //
+      // These numbers are a considered starting point, not a measured optimum.
+      // If it becomes slow to answer, raise the sensitivity before shortening
+      // the silence window -- being cut off mid-sentence is the worse failure.
+      // The mute control in the browser is the deliberate escape hatch, and is
+      // what a user should reach for when the room is not for it to hear.
+      realtimeInputConfig: {
+        automaticActivityDetection: {
+          startOfSpeechSensitivity: "START_SENSITIVITY_LOW",
+          endOfSpeechSensitivity: "END_SENSITIVITY_LOW",
+          // Audio kept from just before speech is detected, so the first
+          // syllable is not clipped off the front of a turn.
+          prefixPaddingMs: 300,
+          // How long a pause must last before it treats the turn as finished.
+          silenceDurationMs: 900,
+        },
+      },
       tools: [
         {
           functionDeclarations: [

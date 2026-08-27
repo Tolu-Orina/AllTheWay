@@ -53,7 +53,15 @@
     "keepHint": "Pípa ní àkọ́kọ́gbà. Nígbà tí ó bá wà ní títàn, ohun tí o sọ àti èsì rẹ̀ ni a ó fi pamọ́ — èyí wúlò fún àtúnyẹ̀wò. O lè pa àkọsílẹ̀ ìjíròrò rẹ́ lẹ́yìn náà.",
     "whatWasSaid": "Ohun tí a sọ",
     "deleteRecord": "Pa àkọsílẹ̀ yìí rẹ́",
-    "deleting": "Ó ń pa á rẹ́…"
+    "deleting": "Ó ń pa á rẹ́…",
+    "startSession": "Bẹ̀rẹ̀ ìjíròrò ohùn",
+    "stopSession": "Dá ìjíròrò ohùn dúró",
+    "cancelConnecting": "Dá ìsopọ̀ dúró",
+    "mute": "Dáwọ́ ìgbọ́ dúró",
+    "unmute": "Gbọ́ lẹ́ẹ̀kan síi",
+    "muted": "Kò gbọ́",
+    "micDenied": "A nílò àṣẹ gbohùngbohùn láti sọ̀rọ̀.",
+    "unavailable": "Ohùn kò sí ní àkókò yìí. O lè máa tẹ̀wé lọ."
   },
   "share": {
     "heading": "Pín",
