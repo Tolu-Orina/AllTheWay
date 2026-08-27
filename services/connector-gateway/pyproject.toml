@@ -33,7 +33,10 @@ dependencies = [
   # identity. Declared rather than inherited: today it arrives only as a
   # transitive of google-cloud-firestore, and a package that is present because
   # something else happens to want it is the `ws` outage all over again.
-  "google-auth>=2.35",
+    # The `[requests]` extra, not bare google-auth: `google.auth.transport.requests`
+  # raises ImportError without the `requests` package, and google-auth does not
+  # install it. This module imports that transport directly.
+  "google-auth[requests]>=2.35",
 ]
 
 [project.optional-dependencies]

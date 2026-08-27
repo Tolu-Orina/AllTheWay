@@ -18,7 +18,10 @@ dependencies = [
   # identity. Declared rather than inherited: it arrives today only as a
   # transitive of google-cloud-firestore, and a package present because
   # something else happens to want it is how the `ws` outage happened.
-  "google-auth>=2.35",
+    # The `[requests]` extra, not bare google-auth: `google.auth.transport.requests`
+  # raises ImportError without the `requests` package, and google-auth does not
+  # install it. This module imports that transport directly.
+  "google-auth[requests]>=2.35",
   "httpx>=0.27",
   # Imported by app/a2a_client.py. Was missing: the dev machine had it
   # installed globally, so nothing failed until a clean image build.

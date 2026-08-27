@@ -14,7 +14,10 @@ dependencies = [
   "pydantic>=2.9",
   "httpx>=0.27",
   "google-cloud-firestore>=2.19",
-  "google-auth>=2.35",
+    # The `[requests]` extra, not bare google-auth: `google.auth.transport.requests`
+  # raises ImportError without the `requests` package, and google-auth does not
+  # install it. This module imports that transport directly.
+  "google-auth[requests]>=2.35",
   # Mechanical text extraction. Runs before any model sees the content, and
   # deliberately in this service rather than the gateway: a malicious PDF
   # attacks the parser, and this process holds no connector credentials.

@@ -13,6 +13,7 @@ import {
   WatcherRunSchema,
   WatcherSchema,
   type SessionDetail,
+  UsageSchema,
 } from "@alltheway/contracts";
 import { z } from "zod";
 
@@ -57,24 +58,12 @@ export const ConnectorListSchema = z.object({
 
 export type Connector = z.infer<typeof ConnectorSchema>;
 
-export const MeterSchema = z.object({
-  meter: z.enum(["voice_minutes", "watcher_runs", "connector_calls"]),
-  used: z.number(),
-  limit: z.number().nullable(),
-  remaining: z.number().nullable(),
-  nearLimit: z.boolean(),
-});
+// MeterSchema and UsageSchema now come from @alltheway/contracts, imported
+// above. They were declared here with three of the seven meters and three of
+// the four tiers, so `meeting_insights` failed validation and the usage panel
+// showed "We could not load this" over a wall of Zod output.
 
-export const UsageSchema = z.object({
-  tier: z.enum(["free", "plus", "team"]),
-  label: z.string(),
-  pricePence: z.number(),
-  period: z.string(),
-  meters: z.array(MeterSchema),
-});
-
-export type Usage = z.infer<typeof UsageSchema>;
-export type MeterReading = z.infer<typeof MeterSchema>;
+export type { Usage, MeterReading } from "@alltheway/contracts";
 
 export const AgentSchema = z.object({
   id: z.string(),

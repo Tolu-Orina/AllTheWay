@@ -19,16 +19,36 @@ import { cn } from "@/lib/utils";
  * beside the autonomy floor, which is why nothing here can grant anything.
  */
 
+/**
+ * Every meter needs a name a person recognises and a unit that reads.
+ *
+ * `Record<MeterReading["meter"], string>` is exhaustive on purpose: adding a
+ * meter to the shared contract without naming it here fails to compile. That is
+ * how the four meters below were found missing — the client had its own shorter
+ * copy of the enum, so the type never noticed they existed and the server's
+ * `meeting_insights` row failed validation instead.
+ */
 const LABELS: Record<MeterReading["meter"], string> = {
   voice_minutes: "Voice",
   watcher_runs: "Watcher runs",
   connector_calls: "Connector calls",
+  meeting_insights: "Live meeting insights",
+  images: "Images",
+  // Draft and final are separate meters because a final Veo render costs about
+  // fifteen times a draft one. Naming both "Video" would hide the difference
+  // that the split exists to make visible.
+  draft_video_seconds: "Video drafts",
+  final_video_seconds: "Final video",
 };
 
 const UNITS: Record<MeterReading["meter"], string> = {
   voice_minutes: "minutes",
   watcher_runs: "runs",
   connector_calls: "calls",
+  meeting_insights: "checks",
+  images: "images",
+  draft_video_seconds: "seconds",
+  final_video_seconds: "seconds",
 };
 
 function price(pence: number): string {

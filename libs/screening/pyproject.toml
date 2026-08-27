@@ -3,7 +3,12 @@ name = "alltheway-screening"
 version = "0.0.0"
 description = "Screening untrusted content before a model reads it. Fails closed."
 requires-python = ">=3.11"
-dependencies = []
+# `google.auth.transport.requests` is imported directly by this module, and it
+# raises ImportError unless the `requests` package is installed -- google-auth
+# does not pull it in. This was empty, so the import worked only in services
+# that happened to depend on google-cloud-firestore, which drags `requests` in
+# transitively. Declared here so it holds wherever screening is installed.
+dependencies = ["google-auth[requests]>=2.30"]
 
 [project.optional-dependencies]
 test = ["pytest>=8.0"]

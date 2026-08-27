@@ -3,7 +3,14 @@ name = "alltheway-agentauth"
 version = "0.0.0"
 description = "Google-signed identity tokens for service-to-service A2A calls."
 requires-python = ">=3.11"
-dependencies = ["google-auth>=2.30"]
+# The `requests` extra is load-bearing, not optional.
+#
+# `id_token_for` imports `google.auth.transport.requests`, and that module
+# raises ImportError unless the `requests` package is present -- google-auth
+# does not pull it in on its own. Without the extra the import failed, the
+# failure was swallowed as "call without a token", and every internal call went
+# out unauthenticated. Cloud Run answered 403, and nothing said why.
+dependencies = ["google-auth[requests]>=2.30"]
 
 [project.optional-dependencies]
 test = ["pytest>=8.0"]

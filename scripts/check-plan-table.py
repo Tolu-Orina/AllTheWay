@@ -31,6 +31,26 @@ sys.path.insert(0, str(ROOT / "libs" / "metering" / "src"))
 from alltheway_metering import as_json  # noqa: E402
 
 USAGE_TS = ROOT / "services" / "gateway" / "src" / "repos" / "usage.ts"
+CONTRACTS_TS = ROOT / "services" / "contracts" / "src" / "index.ts"
+
+
+def shared_lists(source: str) -> tuple[list[str], list[str]]:
+    """METERS and TIERS as declared in the shared contract.
+
+    These are what the *client* validates against. They lived in three places --
+    the gateway, the web app and here -- and the web copy listed three of the
+    seven meters and three of the four tiers. The server duly returned a
+    `meeting_insights` row, the client rejected the whole response, and the usage
+    panel showed "We could not load this" over a wall of Zod output. A Max
+    subscriber's usage could not be parsed at all.
+    """
+
+    def literal(name: str) -> list[str]:
+        start = source.index(f"export const {name} = [")
+        body = source[start : source.index("] as const;", start)]
+        return re.findall(r'"([a-z_]+)"', body)
+
+    return literal("METERS"), literal("TIERS")
 
 
 def typescript_table(source: str) -> dict[str, dict]:
@@ -64,8 +84,28 @@ def typescript_table(source: str) -> dict[str, dict]:
 def main() -> int:
     python_plans = {p["tier"]: p for p in as_json()["plans"]}
     ts_plans = typescript_table(io.open(USAGE_TS, encoding="utf-8").read())
+    ts_meters, ts_tiers = shared_lists(io.open(CONTRACTS_TS, encoding="utf-8").read())
 
     failures: list[str] = []
+
+    # The shared contract is what the browser validates every usage response
+    # against, so a meter missing here is not a cosmetic gap: the response fails
+    # to parse and the panel renders an error instead of any numbers at all.
+    python_meters = {m for p in as_json()["plans"] for m in p["limits"]}
+    for meter in sorted(python_meters - set(ts_meters)):
+        failures.append(
+            f"METERS in contracts omits {meter}; the client will reject every "
+            "usage response that includes it"
+        )
+    for meter in sorted(set(ts_meters) - python_meters):
+        failures.append(f"METERS in contracts lists {meter}, which nothing meters")
+
+    for tier in sorted(set(python_plans) - set(ts_tiers)):
+        failures.append(
+            f"TIERS in contracts omits {tier}; a {tier} subscriber's usage cannot parse"
+        )
+    for tier in sorted(set(ts_tiers) - set(python_plans)):
+        failures.append(f"TIERS in contracts lists {tier}, which is not a real plan")
 
     missing = sorted(set(python_plans) - set(ts_plans))
     if missing:

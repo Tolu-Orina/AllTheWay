@@ -73,8 +73,28 @@ def id_token_for(audience: str) -> str | None:
         return hit[0]
 
     try:
-        import google.auth.transport.requests
-        import google.oauth2.id_token
+        try:
+            import google.auth.transport.requests
+            import google.oauth2.id_token
+        except ImportError as exc:
+            # Never normal, anywhere.
+            #
+            # A metadata server that will not answer is expected on a laptop, so
+            # that is logged at debug below. This is not that: it means the image
+            # was built without `requests`, so *no* call from this process can
+            # ever carry a token. It stayed hidden for weeks because it was
+            # swallowed with everything else -- the registry's card fetches and
+            # the orchestrator's calls went out unauthenticated, Cloud Run
+            # answered 403, and the only record was a debug line nobody enables.
+            #
+            # Raised at error level and re-raised so the packaging bug is loud.
+            log.error(
+                "identity tokens are unavailable in this build: %s. "
+                "Install google-auth[requests] -- every internal call will be "
+                "rejected until this is fixed.",
+                exc,
+            )
+            raise
 
         request = google.auth.transport.requests.Request()
         token = google.oauth2.id_token.fetch_id_token(request, audience)

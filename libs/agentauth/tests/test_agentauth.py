@@ -1,5 +1,8 @@
 """Attaching identity, and what happens when it cannot be attached."""
 
+import builtins
+import logging
+
 import alltheway_agentauth as aa
 
 
@@ -52,3 +55,40 @@ def test_tokens_are_cached_per_audience(monkeypatch):
     assert a != b
     assert again == a
     assert calls == ["https://a.example", "https://b.example"]  # the repeat was cached
+
+
+def test_a_missing_requests_transport_is_reported_loudly(monkeypatch, caplog):
+    """The failure that went unnoticed for weeks.
+
+    `google.auth.transport.requests` raises ImportError unless the `requests`
+    package is installed, and google-auth does not install it. That import sat
+    inside the same `except Exception` as an unreachable metadata server, which
+    is normal on a laptop and logged at debug -- so an image built without a
+    working identity transport looked exactly like a developer machine.
+
+    In production it meant every internal call went out with no Authorization
+    header: the registry's card fetches and the orchestrator's calls were
+    refused with 403, and nothing in the logs said why.
+
+    Callers still get None, because proceeding without a token is still the
+    right behaviour. What must not happen again is it being quiet.
+    """
+    real_import = builtins.__import__
+
+    def missing_transport(name, *args, **kwargs):
+        if name == "google.auth.transport.requests":
+            raise ImportError("The requests library is not installed")
+        return real_import(name, *args, **kwargs)
+
+    monkeypatch.setattr(builtins, "__import__", missing_transport)
+
+    with caplog.at_level(logging.ERROR, logger="alltheway_agentauth"):
+        token = aa.id_token_for("https://example-run.app")
+
+    assert token is None, "a build with no transport must not invent a token"
+
+    errors = [r for r in caplog.records if r.levelno >= logging.ERROR]
+    assert errors, "a build that cannot mint tokens must say so at ERROR, not debug"
+    assert "google-auth[requests]" in errors[0].getMessage(), (
+        "the message should name the fix, since the symptom is a distant 403"
+    )

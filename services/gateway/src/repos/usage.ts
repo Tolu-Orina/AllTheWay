@@ -1,3 +1,4 @@
+import { METERS as SHARED_METERS, type MeterName, type Tier } from "@alltheway/contracts";
 import { FieldValue } from "firebase-admin/firestore";
 
 import { db } from "../firestore.js";
@@ -24,15 +25,12 @@ import { db } from "../firestore.js";
  * would mean trusting a client to report its own consumption.
  */
 
-export type Meter =
-  | "voice_minutes"
-  | "watcher_runs"
-  | "connector_calls"
-  | "images"
-  | "draft_video_seconds"
-  | "final_video_seconds"
-  | "meeting_insights";
-export type Tier = "free" | "plus" | "team" | "max";
+// Both come from @alltheway/contracts so the server, the client and this
+// table cannot disagree about what a meter is. The client had its own copy
+// listing three of these seven, which is how a `meeting_insights` row broke
+// the whole usage panel.
+export type Meter = MeterName;
+export type { Tier };
 
 type Limits = Record<Meter, number | null>;
 
@@ -97,15 +95,7 @@ const PLANS: Record<Tier, { label: string; pricePence: number; limits: Limits }>
   },
 };
 
-const METERS: Meter[] = [
-  "voice_minutes",
-  "watcher_runs",
-  "connector_calls",
-  "meeting_insights",
-  "images",
-  "draft_video_seconds",
-  "final_video_seconds",
-];
+const METERS: readonly Meter[] = SHARED_METERS;
 
 /**
  * UTC, so a counter cannot be reset by travelling and two services never

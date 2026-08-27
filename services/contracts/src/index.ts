@@ -436,3 +436,53 @@ export type Provenance = z.infer<typeof ProvenanceSchema>;
 export type ArtifactVersion = z.infer<typeof ArtifactVersionSchema>;
 export type Artifact = z.infer<typeof ArtifactSchema>;
 export type ArtifactDetail = z.infer<typeof ArtifactDetailSchema>;
+
+/* ------------------------------------------------------------------ *
+ * Usage and plan
+ *
+ * Here, not in the gateway or the client, because both read it and the
+ * two had already drifted: the web app hardcoded three of the seven
+ * meters and three of the four tiers, so a `meeting_insights` row failed
+ * validation and the whole usage panel rendered as "We could not load
+ * this" — and a Max subscriber's usage could not parse at all.
+ *
+ * `scripts/check-plan-table.py` proves METERS and TIERS still match
+ * libs/metering, which is the side that actually enforces the limits.
+ * ------------------------------------------------------------------ */
+
+/** Every metered dimension, in the order the UI lists them. */
+export const METERS = [
+  "voice_minutes",
+  "watcher_runs",
+  "connector_calls",
+  "meeting_insights",
+  "images",
+  "draft_video_seconds",
+  "final_video_seconds",
+] as const;
+
+export const TIERS = ["free", "plus", "team", "max"] as const;
+
+export const MeterNameSchema = z.enum(METERS);
+export const TierSchema = z.enum(TIERS);
+
+export const MeterSchema = z.object({
+  meter: MeterNameSchema,
+  used: z.number(),
+  limit: z.number().nullable(),
+  remaining: z.number().nullable(),
+  nearLimit: z.boolean(),
+});
+
+export const UsageSchema = z.object({
+  tier: TierSchema,
+  label: z.string(),
+  pricePence: z.number(),
+  period: z.string(),
+  meters: z.array(MeterSchema),
+});
+
+export type MeterName = z.infer<typeof MeterNameSchema>;
+export type Tier = z.infer<typeof TierSchema>;
+export type MeterReading = z.infer<typeof MeterSchema>;
+export type Usage = z.infer<typeof UsageSchema>;
