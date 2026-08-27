@@ -12,6 +12,7 @@ import { CompanionPanel } from "@/app/CompanionPanel";
 import { VoiceProvider } from "@/app/use-voice";
 import { registerAppServiceWorker } from "@/app/pwa";
 import { serveExtensionToken } from "@/app/extension-bridge";
+import { I18nProvider } from "@/app/i18n";
 import { cn } from "@/lib/utils";
 
 /**
@@ -37,6 +38,7 @@ export function AppLayout() {
   }, []);
 
   return (
+    <I18nProvider>
     <VoiceProvider>
       <div className="relative isolate flex min-h-dvh flex-col bg-background lg:flex-row">
       <Ambient />
@@ -89,5 +91,6 @@ export function AppLayout() {
       <TabBar />
       </div>
     </VoiceProvider>
+    </I18nProvider>
   );
 }

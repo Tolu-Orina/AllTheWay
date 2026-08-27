@@ -1,0 +1,82 @@
+{
+  "nav": {
+    "home": "Accueil",
+    "sessions": "Sessions",
+    "watchers": "Observateurs",
+    "agents": "Agents",
+    "profile": "Profil"
+  },
+  "digest": {
+    "heading": "Depuis hier",
+    "quiet": "Rien cette nuit. Aucune action n’attend votre intervention.",
+    "nothingWaiting": "Aucune action n’attend votre intervention.",
+    "andMore": "et {{count}} autres",
+    "decisions_one": "{{count}} élément attend votre décision",
+    "decisions_many": "{{count}} éléments attendent votre décision",
+    "decisions_other": "{{count}} éléments attendent votre décision",
+    "watchersRan_one": "{{count}} observateur s’est exécuté",
+    "watchersRan_many": "{{count}} observateurs se sont exécutés",
+    "watchersRan_other": "{{count}} observateurs se sont exécutés",
+    "changed_one": "{{count}} élément a changé",
+    "changed_many": "{{count}} éléments ont changé",
+    "changed_other": "{{count}} éléments ont changé"
+  },
+  "meetings": {
+    "heading": "Réunions",
+    "intro": "Écoute et prend des notes. Ne peut pas parler, et l’accord des participants est demandé avant la connexion.",
+    "none": "Aucune réunion pour l’instant.",
+    "listenedLive": "Écouté en direct",
+    "readTranscript": "Transcription lue après coup",
+    "noNotes": "Aucune note",
+    "listenedLocally": "Écouté sur votre appareil",
+    "whyNoLiveNotes": "Pourquoi pas de notes en direct ?",
+    "hideWhy": "Masquer l’explication",
+    "listening": "Écoute de la réunion et prise de notes. Ne peut pas parler.",
+    "stayOut": "Ne pas rejoindre cette réunion",
+    "noticed": "Points relevés",
+    "insightsQuiet": "Rien qui justifie de vous interrompre pour l’instant.",
+    "insightsNone": "Rien n’a été signalé pendant cette réunion.",
+    "insightsFailed": "Impossible de charger ces éléments.",
+    "enable": "Autoriser à rejoindre et prendre des notes",
+    "enableHint": "Désactivé par défaut. L’accord de chacun est demandé avant la connexion, et il ne peut jamais intervenir à l’oral."
+  },
+  "documents": {
+    "heading": "Vos documents",
+    "intro": "Tout document ajouté ici peut être lu et cité. Rien ne sert à l’entraînement, et supprimer un document efface ce qui en a été appris.",
+    "drop": "Glissez un document ici, ou",
+    "choose": "choisissez un fichier",
+    "types": "PDF, texte, Markdown — ou photo d’une page",
+    "photograph": "Photographier une page",
+    "none": "Aucun document. Ajoutez un contrat, une spécification ou une charte pour poser des questions.",
+    "reading": "Lecture de {{name}}… Un long document prend une minute, une photo est plus rapide."
+  },
+  "voice": {
+    "heading": "Échanges vocaux",
+    "keep": "Conserver l’historique des échanges",
+    "keepHint": "Désactivé par défaut. Si activé, vos propos et les réponses sont enregistrés dans la conversation — utile pour vos revues et audits. Vous pouvez supprimer cet historique à tout moment.",
+    "whatWasSaid": "Ce qui a été dit",
+    "deleteRecord": "Supprimer cet enregistrement",
+    "deleting": "Suppression…"
+  },
+  "share": {
+    "heading": "Partager",
+    "placeholder": "nom@entreprise.com",
+    "canView": "Peut consulter",
+    "canComment": "Peut commenter",
+    "action": "Partager",
+    "hint": "Partagé nominativement, sans lien public. La personne accède uniquement à cet élément — jamais aux documents sources — et vous pouvez révoquer l’accès à tout moment.",
+    "nobody": "Personne d’autre n’y a accès."
+  },
+  "language": {
+    "heading": "Langue",
+    "hint": "Langue de l’interface. Cela ne change pas la langue dans laquelle vous vous exprimez — le système s’adapte.",
+    "offer": "Passer en {{language}} ?",
+    "switch": "Changer",
+    "dismiss": "Non merci"
+  },
+  "common": {
+    "retry": "Réessayer",
+    "cancel": "Laisser tel quel",
+    "saveFailed": "Enregistrement impossible. Rien n’a été modifié — veuillez réessayer."
+  }
+}

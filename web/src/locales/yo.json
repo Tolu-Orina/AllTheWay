@@ -1,0 +1,76 @@
+{
+  "nav": {
+    "home": "Ilé",
+    "sessions": "Àwọn àkókò",
+    "watchers": "Àwọn olùṣọ́",
+    "agents": "Àwọn aṣojú",
+    "profile": "Prófáìlì"
+  },
+  "digest": {
+    "heading": "Láti àná",
+    "quiet": "Kò sí ohun tó ṣẹlẹ̀ lálẹ́ àná. Kò sí ohun tó ń dúró dè ọ́.",
+    "nothingWaiting": "Kò sí ohun tó ń dúró dè ọ́.",
+    "andMore": "àti {{count}} mìíràn",
+    "decisions_other": "Àwọn ohun {{count}} nílò ìpinnu rẹ",
+    "watchersRan_other": "Àwọn olùṣọ́ {{count}} ti ṣiṣẹ́",
+    "changed_other": "Àwọn ohun {{count}} ti yípadà"
+  },
+  "meetings": {
+    "heading": "Àwọn ìpàdé",
+    "intro": "Ó ń gbọ́rọ̀, ó sì ń kọ àkọsílẹ̀. Kò lè sọ̀rọ̀ nínú ìpàdé, a sì gbọ́dọ̀ béèrè lọ́wọ́ gbogbo ènìyàn kí ó tó wọlé.",
+    "none": "Kò tíì sí ìpàdé kankan.",
+    "listenedLive": "Gbọ́ ní tààrà",
+    "readTranscript": "Ka àkọsílẹ̀ lẹ́yìn náà",
+    "noNotes": "Kò sí àkọsílẹ̀",
+    "listenedLocally": "Gbọ́ lórí ẹ̀rọ rẹ",
+    "whyNoLiveNotes": "Kí ló dé tí kò fi sí àkọsílẹ̀ lẹ́sẹ̀kẹsẹ̀?",
+    "hideWhy": "Fi ìdí rẹ̀ pamọ́",
+    "listening": "Ó ń gbọ́ ìpàdé yìí, ó sì ń kọ àkọsílẹ̀. Kò lè sọ̀rọ̀.",
+    "stayOut": "Má wọ ìpàdé yìí",
+    "noticed": "Ohun tó kíyèsí",
+    "insightsQuiet": "Kò tíì sí ohun pàtàkì tó yẹ kí a yọ ọ́ lẹ́nu fún.",
+    "insightsNone": "Kò sí ohun tó jẹ́ sísàmì sí nínú ìpàdé yìí.",
+    "insightsFailed": "Kò lè gbé àwọn wọ̀nyí jáde.",
+    "enable": "Jẹ́ kí ó darapọ̀ kí ó sì kọ àkọsílẹ̀ nínú àwọn ìpàdé mi",
+    "enableHint": "Kò ní ṣiṣẹ́ àyàfi tí o bá tan-án. A ó béèrè lọ́wọ́ gbogbo ènìyàn kí ó tó wọlé, kò sì ní sọ̀rọ̀ láé."
+  },
+  "documents": {
+    "heading": "Àwọn ìwé rẹ",
+    "intro": "Ohun gbogbo tí o bá fi kún un níhìn-ín ni ó lè kà tí ó sì lè tọ́ka sí. A kì í fi kọ́ ẹ̀rọ mìíràn, bí o bá sì pa ìwé rẹ́, gbogbo ẹ̀kọ́ inú rẹ̀ yóò pa pẹ̀lú.",
+    "drop": "Ju ìwé síbí, tàbí",
+    "choose": "yan fáìlì kan",
+    "types": "PDF, ọ̀rọ̀, Markdown — tàbí fọ́tò ojú-ìwé kan",
+    "photograph": "Ya fọ́tò ojú-ìwé kan",
+    "none": "Kò tíì sí ìwé kankan. Fi àdéhùn, àlàyé iṣẹ́ tàbí ìlànà kún un, kí o sì béèrè nípa rẹ̀.",
+    "reading": "Ó ń ka {{name}}. Ìwé gígùn máa ń gba ìṣẹ́jú kan; fọ́tò yára jù bẹ́ẹ̀ lọ."
+  },
+  "voice": {
+    "heading": "Àwọn ìfọ̀rọ̀wérọ̀ ohùn",
+    "keep": "Tọ́jú àkọsílẹ̀ ohun tí a sọ",
+    "keepHint": "Ó wà ní pípa tẹ́lẹ̀. Bí o bá tàn-án, gbogbo ohun tí o sọ àti èsì rẹ̀ ni a ó tọ́jú — ó dára fún àtúnyẹ̀wò. O lè pa àkọsílẹ̀ ìfọ̀rọ̀wérọ̀ rẹ́ lẹ́yìn náà.",
+    "whatWasSaid": "Ohun tí a sọ",
+    "deleteRecord": "Pa àkọsílẹ̀ yìí rẹ́",
+    "deleting": "Ó ń pa á rẹ́…"
+  },
+  "share": {
+    "heading": "Pín",
+    "placeholder": "name@company.com",
+    "canView": "Lè wò ó",
+    "canComment": "Lè sọ èrò",
+    "action": "Pín",
+    "hint": "A pín in pẹ̀lú ẹni náà, kì í ṣe pẹ̀lú ọ̀nà-ìsopọ̀. Wọ́n lè ka ohun yìí nìkan — kì í ṣe àwọn ìwé abẹ́ rẹ̀ — o sì lè gba àyè náà padà nígbàkúgbà.",
+    "nobody": "Kò sí ẹlòmíràn tó lè rí èyí."
+  },
+  "language": {
+    "heading": "Èdè",
+    "hint": "Èdè ojú-ibìṣẹ́ yìí. Kò ní yí èdè tí o fi ń bá a sọ̀rọ̀ padà — ó ń tẹ̀lé ọ ni.",
+    "offer": "Ṣé o fẹ́ {{language}}?",
+    "switch": "Yí padà",
+    "dismiss": "Rárá, o ṣeun"
+  },
+  "common": {
+    "retry": "Tún gbìyànjú",
+    "cancel": "Fi sílẹ̀",
+    "saveFailed": "Kò lè fi pamọ́. Kò sí ohun tó yípadà — tún gbìyànjú."
+  }
+}

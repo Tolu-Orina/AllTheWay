@@ -296,6 +296,8 @@ export const api = {
     apiPost("/recoveries/taken", { id, routeId }),
   registerPushToken: (token: string) => apiPost("/push/tokens", { token }),
   unregisterPushToken: (token: string) => apiPost("/push/tokens/remove", { token }),
+  locale: () => apiGet("/settings/locale", z.object({ locale: z.string().nullable() })),
+  setLocale: (locale: string) => apiPost("/settings/locale", { locale }),
   keepsTranscripts: () =>
     apiGet("/settings/voice", z.object({ keepTranscripts: z.boolean() })),
   setKeepTranscripts: (keepTranscripts: boolean) =>

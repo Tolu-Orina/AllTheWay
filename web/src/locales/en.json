@@ -1,0 +1,79 @@
+{
+  "nav": {
+    "home": "Home",
+    "sessions": "Sessions",
+    "watchers": "Watchers",
+    "agents": "Agents",
+    "profile": "Profile"
+  },
+  "digest": {
+    "heading": "Since yesterday",
+    "quiet": "Nothing happened overnight. Nothing is waiting on you.",
+    "nothingWaiting": "Nothing is waiting on you.",
+    "decisions_one": "One thing needs your decision",
+    "decisions_other": "{{count}} things need your decision",
+    "watchersRan_one": "1 watcher ran",
+    "watchersRan_other": "{{count}} watchers ran",
+    "changed_one": "1 thing changed",
+    "changed_other": "{{count}} things changed",
+    "andMore": "and {{count}} more"
+  },
+  "meetings": {
+    "heading": "Meetings",
+    "intro": "It listens and takes notes. It cannot speak in a meeting, and everyone in the room is asked before it connects.",
+    "none": "No meetings yet.",
+    "listenedLive": "Listened live",
+    "readTranscript": "Read the transcript afterwards",
+    "noNotes": "No notes",
+    "listenedLocally": "Listened on your device",
+    "whyNoLiveNotes": "Why no live notes?",
+    "hideWhy": "Hide why",
+    "listening": "Listening to this meeting and taking notes. It cannot speak.",
+    "stayOut": "Stay out of this meeting",
+    "noticed": "What it noticed",
+    "insightsQuiet": "Nothing worth interrupting you for yet.",
+    "insightsNone": "Nothing was flagged during this meeting.",
+    "insightsFailed": "Those could not be loaded.",
+    "enable": "Let it join and take notes in my meetings",
+    "enableHint": "Off unless you turn it on. Everyone in a meeting is asked before it connects, and it can never speak."
+  },
+  "documents": {
+    "heading": "Your documents",
+    "intro": "Anything you add here, it can read and cite. Nothing is used to train anything, and deleting a document removes what it learned from it.",
+    "drop": "Drop a document here, or",
+    "choose": "choose a file",
+    "types": "PDF, text, Markdown — or a photo of a page",
+    "photograph": "Photograph a page",
+    "none": "No documents yet. Add a contract, a spec or a policy and ask about it.",
+    "reading": "Reading {{name}}. A long document takes a minute; a photo is quicker."
+  },
+  "voice": {
+    "heading": "Spoken conversations",
+    "keep": "Keep a record of what is said",
+    "keepHint": "Off by default. When on, both what you say and what it replies are saved to that conversation — useful for reviews and audits. You can delete any conversation's record afterwards.",
+    "whatWasSaid": "What was said",
+    "deleteRecord": "Delete this record",
+    "deleting": "Deleting…"
+  },
+  "share": {
+    "heading": "Share",
+    "placeholder": "name@company.com",
+    "canView": "Can view",
+    "canComment": "Can comment",
+    "action": "Share",
+    "hint": "Shared with the person, not with a link. They can read this one artifact — never the documents behind it — and you can take it back at any time.",
+    "nobody": "Nobody else can see this."
+  },
+  "language": {
+    "heading": "Language",
+    "hint": "The language of this interface. It does not change the language you speak to it in — it follows you.",
+    "offer": "Prefer {{language}}?",
+    "switch": "Switch",
+    "dismiss": "No thanks"
+  },
+  "common": {
+    "retry": "Try again",
+    "cancel": "Leave it",
+    "saveFailed": "That could not be saved. Nothing changed — try again."
+  }
+}

@@ -1,0 +1,76 @@
+{
+  "nav": {
+    "home": "首页",
+    "sessions": "会话",
+    "watchers": "监控器",
+    "agents": "智能体",
+    "profile": "个人资料"
+  },
+  "digest": {
+    "heading": "昨日至今",
+    "quiet": "昨晚一切平静，暂无待办事项。",
+    "nothingWaiting": "暂无待办事项。",
+    "andMore": "还有 {{count}} 项",
+    "decisions_other": "{{count}} 个事项待决策",
+    "watchersRan_other": "{{count}} 个监控器已运行",
+    "changed_other": "{{count}} 处发生变动"
+  },
+  "meetings": {
+    "heading": "会议",
+    "intro": "用于旁听并记录要点。它无法在会议中发言，加入前会征得全员同意。",
+    "none": "暂无会议。",
+    "listenedLive": "实时旁听",
+    "readTranscript": "会后阅读逐字稿",
+    "noNotes": "暂无笔记",
+    "listenedLocally": "通过本机旁听",
+    "whyNoLiveNotes": "为何没有实时笔记？",
+    "hideWhy": "收起说明",
+    "listening": "正在旁听会议并记录要点。它无法发言。",
+    "stayOut": "不参与此会议",
+    "noticed": "识别要点",
+    "insightsQuiet": "暂无需要打扰您的重要事项。",
+    "insightsNone": "本次会议未标记任何事项。",
+    "insightsFailed": "加载失败。",
+    "enable": "允许其加入并在会议中记录",
+    "enableHint": "默认关闭。加入前会征求参会全员同意，且始终无法发言。"
+  },
+  "documents": {
+    "heading": "我的文档",
+    "intro": "此处添加的内容可供其阅读和引用。绝不用于训练模型，删除文档后相关记忆也将一并清除。",
+    "drop": "将文档拖放到此处，或",
+    "choose": "选择文件",
+    "types": "支持 PDF、文本、Markdown 或单页拍照",
+    "photograph": "拍摄页面",
+    "none": "暂无文档。添加合同、规范或制度文件即可进行提问。",
+    "reading": "正在读取 {{name}}。长文档约需 1 分钟，图片会更快。"
+  },
+  "voice": {
+    "heading": "语音对话",
+    "keep": "保存对话记录",
+    "keepHint": "默认关闭。开启后将保存双方对话内容，便于复盘与审计。您可随时删除记录。",
+    "whatWasSaid": "对话内容",
+    "deleteRecord": "删除此记录",
+    "deleting": "正在删除…"
+  },
+  "share": {
+    "heading": "分享",
+    "placeholder": "name@company.com",
+    "canView": "仅查看",
+    "canComment": "可评论",
+    "action": "分享",
+    "hint": "仅定向分享给该成员（非公开链接）。对方仅能查看此生成内容，无法访问背后的原始文档。您可随时撤回权限。",
+    "nobody": "其他人无法查看此内容。"
+  },
+  "language": {
+    "heading": "语言",
+    "hint": "界面的显示语言。这不会影响对话语言——它会自动适应您使用的语言。",
+    "offer": "是否切换为 {{language}}？",
+    "switch": "切换",
+    "dismiss": "不用了"
+  },
+  "common": {
+    "retry": "重试",
+    "cancel": "取消",
+    "saveFailed": "保存失败，未做任何更改。请重试。"
+  }
+}

@@ -27,7 +27,7 @@ import {
   setKeepTranscripts,
 } from "./repos/transcripts.js";
 import { recordOffered, recordTaken } from "./repos/recoveries.js";
-import { FailureKindSchema } from "@alltheway/contracts";
+import { FailureKindSchema, LocaleSchema } from "@alltheway/contracts";
 import { retrieve } from "./repos/retrieval.js";
 import { attachVoice } from "./voice/relay.js";
 import { attachCapture } from "./meetings/capture.js";
@@ -36,6 +36,7 @@ import { captureToScribe } from "./meetings/capture-sink.js";
 import { runInsightPass } from "./meetings/insight-runner.js";
 import { applyCors, openStream } from "./sse.js";
 import { TOPICS, publish } from "./events.js";
+import { userDoc } from "./firestore.js";
 import { z } from "zod";
 
 const app = express();
@@ -432,6 +433,35 @@ api.delete(
     // already there, and that is the next thing anyone asks.
     const removed = await forgetTranscript(req.uid!, String(req.params.id));
     res.json({ removed });
+  }),
+);
+
+// Interface language. Stored against the person rather than the browser: a
+// choice made on a laptop is about them, not about that device, and
+// rediscovering it per device is how a setting feels broken.
+api.get(
+  "/settings/locale",
+  handle(async (req, res) => {
+    const doc = await userDoc(req.uid!).collection("settings").doc("locale").get();
+    res.json({ locale: doc.exists ? (doc.get("locale") ?? null) : null });
+  }),
+);
+
+api.post(
+  "/settings/locale",
+  handle(async (req, res) => {
+    const locale = LocaleSchema.safeParse(req.body?.locale);
+    if (!locale.success) {
+      // A locale we do not have would render an interface nobody can read, so
+      // it is refused rather than stored and discovered at load.
+      res.status(400).json({ code: "invalid_request", message: "Not a supported language." });
+      return;
+    }
+    await userDoc(req.uid!)
+      .collection("settings")
+      .doc("locale")
+      .set({ locale: locale.data }, { merge: true });
+    res.status(204).end();
   }),
 );
 

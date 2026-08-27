@@ -12,6 +12,7 @@ import { useAuth } from "@/auth/useAuth";
 import { cn } from "@/lib/utils";
 import { VoiceControl } from "@/app/VoiceControl";
 import { Digest } from "@/app/Digest";
+import { LanguageOffer } from "@/app/LanguageChoice";
 
 const TRACE = [
   "Clarify gate asked about scope before drafting",
@@ -82,6 +83,8 @@ export default function Home() {
       {/* Above the fold and above everything else on the screen: the two
           things that need a person come first, because on a phone at 07:40
           nothing below them will be read. */}
+      <LanguageOffer />
+
       <Digest />
 
       <Async state={state} reload={reload} skeleton={<HomeSkeleton />}>

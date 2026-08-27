@@ -1,0 +1,82 @@
+{
+  "nav": {
+    "home": "Inicio",
+    "sessions": "Sesiones",
+    "watchers": "Observadores",
+    "agents": "Agentes",
+    "profile": "Perfil"
+  },
+  "digest": {
+    "heading": "Desde ayer",
+    "quiet": "Nada nuevo esta noche. No tienes nada pendiente.",
+    "nothingWaiting": "No tienes nada pendiente.",
+    "andMore": "y {{count}} más",
+    "decisions_one": "{{count}} asunto requiere tu decisión",
+    "decisions_many": "{{count}} asuntos requieren tu decisión",
+    "decisions_other": "{{count}} asuntos requieren tu decisión",
+    "watchersRan_one": "Se ejecutó {{count}} observador",
+    "watchersRan_many": "Se ejecutaron {{count}} observadores",
+    "watchersRan_other": "Se ejecutaron {{count}} observadores",
+    "changed_one": "{{count}} elemento ha cambiado",
+    "changed_many": "{{count}} elementos han cambiado",
+    "changed_other": "{{count}} elementos han cambiado"
+  },
+  "meetings": {
+    "heading": "Reuniones",
+    "intro": "Escucha y toma notas. No puede hablar en las reuniones y se pide permiso a todos antes de unirse.",
+    "none": "Aún no hay reuniones.",
+    "listenedLive": "Escuchado en directo",
+    "readTranscript": "Transcripción leída después",
+    "noNotes": "Sin notas",
+    "listenedLocally": "Escuchado en tu dispositivo",
+    "whyNoLiveNotes": "¿Por qué no hay notas en directo?",
+    "hideWhy": "Ocultar motivo",
+    "listening": "Escuchando y tomando notas de la reunión. No puede hablar.",
+    "stayOut": "No unirse a esta reunión",
+    "noticed": "Qué ha detectado",
+    "insightsQuiet": "Aún no hay nada que requiera tu atención.",
+    "insightsNone": "No se detectó nada relevante en esta reunión.",
+    "insightsFailed": "No se han podido cargar.",
+    "enable": "Permitir que se una y tome notas en mis reuniones",
+    "enableHint": "Desactivado por defecto. Se pide permiso a todos antes de unirse y nunca puede hablar."
+  },
+  "documents": {
+    "heading": "Tus documentos",
+    "intro": "Podrá leer y citar todo lo que añadas aquí. Nada se usa para entrenar modelos y, si eliminas un documento, se borrará lo aprendido de él.",
+    "drop": "Arrastra un documento aquí o",
+    "choose": "selecciona un archivo",
+    "types": "PDF, texto, Markdown o una foto de una página",
+    "photograph": "Fotografiar una página",
+    "none": "Aún no hay documentos. Añade un contrato, especificación o política y haz preguntas sobre ello.",
+    "reading": "Leyendo {{name}}. Un documento largo tarda un minuto; una foto es más rápida."
+  },
+  "voice": {
+    "heading": "Conversaciones de voz",
+    "keep": "Guardar un registro de lo que se dice",
+    "keepHint": "Desactivado por defecto. Al activarlo, lo que digas y sus respuestas se guardarán en la conversación (útil para auditorías). Puedes eliminar el registro después.",
+    "whatWasSaid": "Lo que se dijo",
+    "deleteRecord": "Eliminar este registro",
+    "deleting": "Eliminando…"
+  },
+  "share": {
+    "heading": "Compartir",
+    "placeholder": "nombre@empresa.com",
+    "canView": "Puede ver",
+    "canComment": "Puede comentar",
+    "action": "Compartir",
+    "hint": "Se comparte con la persona, no mediante enlace. Solo podrá ver este elemento (nunca los documentos de origen) y puedes revocar el acceso en cualquier momento.",
+    "nobody": "Nadie más puede ver esto."
+  },
+  "language": {
+    "heading": "Idioma",
+    "hint": "El idioma de la interfaz. No afecta al idioma en el que le hablas: se adapta a ti.",
+    "offer": "¿Prefieres {{language}}?",
+    "switch": "Cambiar",
+    "dismiss": "No, gracias"
+  },
+  "common": {
+    "retry": "Reintentar",
+    "cancel": "Cancelar",
+    "saveFailed": "No se pudo guardar. No se ha modificado nada; inténtalo de nuevo."
+  }
+}
