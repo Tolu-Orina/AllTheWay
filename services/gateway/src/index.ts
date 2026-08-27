@@ -32,7 +32,14 @@ import {
   setKeepTranscripts,
 } from "./repos/transcripts.js";
 import { recordOffered, recordTaken } from "./repos/recoveries.js";
-import { FailureKindSchema, LocaleSchema, type PlanStep } from "@alltheway/contracts";
+import {
+  FailureKindSchema,
+  LifeContextSchema,
+  LocaleSchema,
+  OnboardingJobSchema,
+  type PlanStep,
+} from "@alltheway/contracts";
+import { getOnboarding, setOnboarding } from "./repos/onboarding.js";
 import { retrieve } from "./repos/retrieval.js";
 import { attachVoice } from "./voice/relay.js";
 import { attachCapture } from "./meetings/capture.js";
@@ -525,6 +532,32 @@ api.post(
       .doc("locale")
       .set({ locale: locale.data }, { merge: true });
     res.status(204).end();
+  }),
+);
+
+// First-run job. Absent is a real state — show the job screen — so this never
+// 404s. A blip that looked like a first visit would trap them on it forever.
+api.get(
+  "/settings/onboarding",
+  handle(async (req, res) => {
+    res.json(await getOnboarding(req.uid!));
+  }),
+);
+
+api.post(
+  "/settings/onboarding",
+  handle(async (req, res) => {
+    const body = z
+      .object({
+        job: OnboardingJobSchema,
+        lifeContext: LifeContextSchema.nullable().optional(),
+      })
+      .safeParse(req.body);
+    if (!body.success) {
+      res.status(400).json({ code: "invalid_request", message: "Expected a job we recognise." });
+      return;
+    }
+    res.json(await setOnboarding(req.uid!, body.data));
   }),
 );
 

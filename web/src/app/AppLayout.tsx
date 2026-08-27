@@ -9,10 +9,10 @@ import { AppTopBar } from "@/app/AppTopBar";
 import { Sidebar } from "@/app/Sidebar";
 import { TabBar } from "@/app/TabBar";
 import { CompanionPanel } from "@/app/CompanionPanel";
+import { CompanionThreadProvider } from "@/app/companion-thread";
 import { VoiceProvider } from "@/app/use-voice";
 import { registerAppServiceWorker } from "@/app/pwa";
 import { serveExtensionToken } from "@/app/extension-bridge";
-import { I18nProvider } from "@/app/i18n";
 import { cn } from "@/lib/utils";
 
 /**
@@ -38,8 +38,8 @@ export function AppLayout() {
   }, []);
 
   return (
-    <I18nProvider>
     <VoiceProvider>
+    <CompanionThreadProvider>
       <div className="relative isolate flex min-h-dvh flex-col bg-background lg:flex-row">
       <Ambient />
 
@@ -90,7 +90,7 @@ export function AppLayout() {
 
       <TabBar />
       </div>
+    </CompanionThreadProvider>
     </VoiceProvider>
-    </I18nProvider>
   );
 }

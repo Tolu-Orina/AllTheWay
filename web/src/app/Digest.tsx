@@ -2,9 +2,7 @@ import { CheckCircle2, ChevronRight, FileText, Play } from "lucide-react";
 import { useT } from "@/app/i18n";
 import { Link } from "react-router";
 
-import { Async } from "@/app/async";
-import { useAsync } from "@/app/use-async";
-import { api, type Digest as DigestData } from "@/app/data";
+import { type Digest as DigestData } from "@/app/data";
 
 /**
  * The morning digest — the manifest's 07:40 moment.
@@ -30,9 +28,17 @@ import { api, type Digest as DigestData } from "@/app/data";
  * on a phone, on a train, it would be the easiest place in the app to make an
  * expensive mistake.
  */
-export function Digest() {
+export function digestIsQuiet(digest: DigestData): boolean {
+  return (
+    digest.ranWatchers.length === 0 &&
+    digest.awaitingDecision.length === 0 &&
+    digest.artifactsChanged.length === 0
+  );
+}
+
+export function Digest({ digest }: { digest: DigestData }) {
   const t = useT();
-  const { state, reload } = useAsync<DigestData>(() => api.digest());
+  const quiet = digestIsQuiet(digest);
 
   return (
     <section className="flex flex-col gap-3">
@@ -40,81 +46,58 @@ export function Digest() {
         {t("digest.heading")}
       </h2>
 
-      <Async state={state} reload={reload}>
-        {(digest) => {
-          const quiet =
-            digest.ranWatchers.length === 0 &&
-            digest.awaitingDecision.length === 0 &&
-            digest.artifactsChanged.length === 0;
-
-          if (quiet) {
-            return (
-              <p className="rounded-brand border bg-card px-3.5 py-3 text-[13px] text-muted-foreground">
-                {t("digest.quiet")}
+      {quiet ? (
+        <p className="rounded-brand border bg-card px-3.5 py-3 text-[13px] text-muted-foreground">
+          {t("digest.quiet")}
+        </p>
+      ) : (
+        <div className="flex flex-col gap-3">
+          {digest.awaitingDecision.length > 0 ? (
+            <div className="flex flex-col gap-2 rounded-brand border border-primary/40 bg-primary/5 px-3.5 py-3">
+              <p className="text-[13px] font-medium">
+                {t("digest.decisions", { count: digest.awaitingDecision.length })}
               </p>
-            );
-          }
-
-          return (
-            <div className="flex flex-col gap-3">
-              {digest.awaitingDecision.length > 0 ? (
-                <div className="flex flex-col gap-2 rounded-brand border border-primary/40 bg-primary/5 px-3.5 py-3">
-                  <p className="text-[13px] font-medium">
-                    {/* The plural form comes from Intl.PluralRules for the
-                        current language, not an === 1 check. Welsh has six
-                        categories; English's two are not a safe default. */}
-                    {t("digest.decisions", { count: digest.awaitingDecision.length })}
-                  </p>
-                  <ul className="flex flex-col gap-1.5">
-                    {digest.awaitingDecision.map((d) => (
-                      <li key={d.id}>
-                        <Link
-                          to={d.sessionId ? `/app/sessions/${d.sessionId}` : "/app/sessions"}
-                          className="flex items-start justify-between gap-2 text-[13px] leading-relaxed underline-offset-2 hover:underline"
-                        >
-                          {/* Verbatim. A digest that paraphrases what someone
-                              is approving is asking them to approve something
-                              they did not read. */}
-                          <span className="min-w-0">{d.summary}</span>
-                          <ChevronRight
-                            className="mt-0.5 size-4 shrink-0 text-muted-foreground"
-                            aria-hidden="true"
-                          />
-                        </Link>
-                      </li>
-                    ))}
-                  </ul>
-                </div>
-              ) : (
-                <p className="flex items-center gap-2 rounded-brand border bg-card px-3.5 py-2.5 text-[13px] text-muted-foreground">
-                  <CheckCircle2 className="size-4 shrink-0" aria-hidden="true" />
-                  {t("digest.nothingWaiting")}
-                </p>
-              )}
-
-              {digest.ranWatchers.length > 0 ? (
-                <Group
-                  icon={<Play className="size-3.5" aria-hidden="true" />}
-                  label={
-                      t("digest.watchersRan", { count: digest.ranWatchers.length })
-                  }
-                  items={digest.ranWatchers.map((r) => r.summary)}
-                />
-              ) : null}
-
-              {digest.artifactsChanged.length > 0 ? (
-                <Group
-                  icon={<FileText className="size-3.5" aria-hidden="true" />}
-                  label={
-                      t("digest.changed", { count: digest.artifactsChanged.length })
-                  }
-                  items={digest.artifactsChanged.map((a) => a.title)}
-                />
-              ) : null}
+              <ul className="flex flex-col gap-1.5">
+                {digest.awaitingDecision.map((d) => (
+                  <li key={d.id}>
+                    <Link
+                      to={d.sessionId ? `/app/sessions/${d.sessionId}` : "/app/sessions"}
+                      className="flex items-start justify-between gap-2 text-[13px] leading-relaxed underline-offset-2 hover:underline"
+                    >
+                      <span className="min-w-0">{d.summary}</span>
+                      <ChevronRight
+                        className="mt-0.5 size-4 shrink-0 text-muted-foreground"
+                        aria-hidden="true"
+                      />
+                    </Link>
+                  </li>
+                ))}
+              </ul>
             </div>
-          );
-        }}
-      </Async>
+          ) : (
+            <p className="flex items-center gap-2 rounded-brand border bg-card px-3.5 py-2.5 text-[13px] text-muted-foreground">
+              <CheckCircle2 className="size-4 shrink-0" aria-hidden="true" />
+              {t("digest.nothingWaiting")}
+            </p>
+          )}
+
+          {digest.ranWatchers.length > 0 ? (
+            <Group
+              icon={<Play className="size-3.5" aria-hidden="true" />}
+              label={t("digest.watchersRan", { count: digest.ranWatchers.length })}
+              items={digest.ranWatchers.map((r) => r.summary)}
+            />
+          ) : null}
+
+          {digest.artifactsChanged.length > 0 ? (
+            <Group
+              icon={<FileText className="size-3.5" aria-hidden="true" />}
+              label={t("digest.changed", { count: digest.artifactsChanged.length })}
+              items={digest.artifactsChanged.map((a) => a.title)}
+            />
+          ) : null}
+        </div>
+      )}
     </section>
   );
 }

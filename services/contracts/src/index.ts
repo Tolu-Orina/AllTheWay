@@ -102,6 +102,21 @@ export const SessionDetailSchema = SessionSchema.extend({
 });
 
 /**
+ * What the person said they were here to do. Null on GET means they have not
+ * been asked yet — that is the first-run screen, not a missing row to 404.
+ */
+export const OnboardingJobSchema = z.enum(["talk", "document", "meetings", "skipped"]);
+export const LifeContextSchema = z.enum(["work", "personal", "both"]);
+export const OnboardingSchema = z.object({
+  job: OnboardingJobSchema.nullable(),
+  lifeContext: LifeContextSchema.nullable(),
+});
+
+export type OnboardingJob = z.infer<typeof OnboardingJobSchema>;
+export type LifeContext = z.infer<typeof LifeContextSchema>;
+export type Onboarding = z.infer<typeof OnboardingSchema>;
+
+/**
  * How much a watcher may do unsupervised. The floor for irreversible actions is
  * enforced server-side regardless of this value — see the manifest, FR-W4.
  */

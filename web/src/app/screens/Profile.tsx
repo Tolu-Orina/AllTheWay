@@ -12,7 +12,7 @@ import { VisualPreferences } from "@/app/VisualPreferences";
 import { Meetings } from "@/app/Meetings";
 import { SharedWithMe } from "@/app/SharedWithMe";
 import { VoiceTranscripts } from "@/app/VoiceTranscripts";
-import { LanguageChoice } from "@/app/LanguageChoice";
+import { LanguageChoice, LanguageOffer } from "@/app/LanguageChoice";
 
 export default function Profile() {
   const t = useT();
@@ -123,6 +123,7 @@ export default function Profile() {
 
       <VisualPreferences />
 
+      <LanguageOffer />
       <LanguageChoice />
 
       <VoiceTranscripts />

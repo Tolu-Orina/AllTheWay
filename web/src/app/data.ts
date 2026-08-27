@@ -8,11 +8,14 @@ import {
   CommentSchema,
   SharedArtifactSchema,
   DigestSchema,
+  OnboardingSchema,
   SessionDetailSchema,
   SessionSchema,
   WatcherRunSchema,
   WatcherSchema,
   type SessionDetail,
+  type OnboardingJob,
+  type LifeContext,
   UsageSchema,
 } from "@alltheway/contracts";
 import { z } from "zod";
@@ -37,6 +40,9 @@ export type {
   Comment,
   SharedArtifact,
   Digest,
+  Onboarding,
+  OnboardingJob,
+  LifeContext,
   Session,
   SessionDetail,
   Watcher,
@@ -294,6 +300,9 @@ export const api = {
   unregisterPushToken: (token: string) => apiPost("/push/tokens/remove", { token }),
   locale: () => apiGet("/settings/locale", z.object({ locale: z.string().nullable() })),
   setLocale: (locale: string) => apiPost("/settings/locale", { locale }),
+  onboarding: () => apiGet("/settings/onboarding", OnboardingSchema),
+  setOnboarding: (input: { job: OnboardingJob; lifeContext?: LifeContext | null }) =>
+    apiPost("/settings/onboarding", input, OnboardingSchema),
   keepsTranscripts: () =>
     apiGet("/settings/voice", z.object({ keepTranscripts: z.boolean() })),
   setKeepTranscripts: (keepTranscripts: boolean) =>

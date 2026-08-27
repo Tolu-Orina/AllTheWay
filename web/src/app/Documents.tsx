@@ -59,9 +59,8 @@ async function toBase64(file: File): Promise<string> {
   return btoa(binary);
 }
 
-export function Documents() {
+export function DocumentPickup({ onUploaded }: { onUploaded?: () => void }) {
   const t = useT();
-  const { state, reload } = useAsync(() => api.documents());
   const [busy, setBusy] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [dragging, setDragging] = useState(false);
@@ -82,28 +81,19 @@ export function Documents() {
       setBusy(file.name);
       try {
         await api.uploadDocument(file.name, await toBase64(file), file.type || "text/plain");
-        await reload();
+        onUploaded?.();
       } catch (err) {
-        // A screening refusal arrives as a 422 with a real message. Showing it
-        // verbatim is the point — a generic failure teaches nothing.
         const message = (err as { message?: string }).message;
         setError(message || "That document could not be added.");
       } finally {
         setBusy(null);
       }
     },
-    [reload],
+    [onUploaded],
   );
 
   return (
-    <section className="flex flex-col gap-3">
-      <h2 className="text-[12px] font-semibold tracking-[0.08em] text-blue-deep uppercase dark:text-blue-bright">
-        {t("documents.heading")}
-      </h2>
-      <p className="text-[13.5px] leading-relaxed text-muted-foreground">
-        {t("documents.intro")}
-      </p>
-
+    <>
       <div
         onDragOver={(e) => {
           e.preventDefault();
@@ -131,9 +121,7 @@ export function Documents() {
             {t("documents.choose")}
           </button>
         </p>
-        <p className="text-[12px] text-muted-foreground">
-          {t("documents.types")}
-        </p>
+        <p className="text-[12px] text-muted-foreground">{t("documents.types")}</p>
         <input
           ref={input}
           type="file"
@@ -144,19 +132,6 @@ export function Documents() {
             e.target.value = "";
           }}
         />
-
-        {/*
-          A second input, existing only to carry `capture`.
-
-          It cannot be a prop on the one above: `capture` makes a mobile browser
-          open the camera *directly*, skipping the file picker entirely. That is
-          right when someone means "photograph this page" and wrong when they
-          mean "attach the PDF I already have", and one input cannot be both.
-
-          Desktop browsers ignore `capture` and would show a file picker
-          labelled "Take a photo", so the button is hidden outside the coarse
-          pointers that actually have a camera in hand.
-        */}
         <input
           ref={camera}
           type="file"
@@ -168,7 +143,6 @@ export function Documents() {
             e.target.value = "";
           }}
         />
-
         <button
           type="button"
           onClick={() => camera.current?.click()}
@@ -182,7 +156,7 @@ export function Documents() {
       {busy ? (
         <p role="status" className="flex items-center gap-2 text-[12.5px] text-muted-foreground">
           <Loader2 className="size-3.5 animate-spin motion-reduce:animate-none" aria-hidden="true" />
-          Reading {busy}. A long document takes a minute; a photo is quicker.
+          {t("documents.reading", { name: busy })}
         </p>
       ) : null}
 
@@ -192,6 +166,24 @@ export function Documents() {
           {error}
         </p>
       ) : null}
+    </>
+  );
+}
+
+export function Documents() {
+  const t = useT();
+  const { state, reload } = useAsync(() => api.documents());
+
+  return (
+    <section className="flex flex-col gap-3">
+      <h2 className="text-[12px] font-semibold tracking-[0.08em] text-blue-deep uppercase dark:text-blue-bright">
+        {t("documents.heading")}
+      </h2>
+      <p className="text-[13.5px] leading-relaxed text-muted-foreground">
+        {t("documents.intro")}
+      </p>
+
+      <DocumentPickup onUploaded={reload} />
 
       <Async
         state={state}

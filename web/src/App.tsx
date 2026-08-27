@@ -3,6 +3,7 @@ import { Route, Routes } from "react-router";
 
 import { RequireAuth } from "@/auth/RequireAuth";
 import { RouteFallback } from "@/app/RouteFallback";
+import { I18nProvider } from "@/app/i18n";
 
 /**
  * Routes, split so a page only downloads what it needs.
@@ -40,6 +41,19 @@ const Watchers = lazy(() => import("@/app/screens/Watchers"));
 const Agents = lazy(() => import("@/app/screens/Agents"));
 const Profile = lazy(() => import("@/app/screens/Profile"));
 
+/**
+ * Auth guard and the signed-in shell share one catalogue. RequireAuth calls
+ * `useT` for the session check; wrapping only AppLayout left that call
+ * outside the provider, so /app threw before Home could ask the job.
+ */
+function Authenticated() {
+  return (
+    <I18nProvider>
+      <RequireAuth />
+    </I18nProvider>
+  );
+}
+
 export default function App() {
   return (
     <Suspense fallback={<RouteFallback />}>
@@ -53,7 +67,7 @@ export default function App() {
         <Route path="/forgot-password" element={<ForgotPassword />} />
         <Route path="/reset-password" element={<ResetPassword />} />
 
-        <Route element={<RequireAuth />}>
+        <Route element={<Authenticated />}>
           <Route path="/app" element={<AppLayout />}>
             <Route index element={<Home />} />
             <Route path="sessions" element={<Sessions />} />

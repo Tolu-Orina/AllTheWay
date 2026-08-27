@@ -70,12 +70,13 @@ export function LanguageChoice() {
  * dismiss without reading.
  *
  * Deliberately not an onboarding step: adding one would tax every user for a
- * minority case. This costs nothing when there is nothing to offer.
+ * minority case. Home shows it after a first win so it cannot fight the job
+ * screen; You always can. If the locale is already set, `offer` is null.
  */
-export function LanguageOffer() {
+export function LanguageOffer({ show = true }: { show?: boolean }) {
   const t = useT();
   const { offer, setLocale, dismissOffer } = useI18n();
-  if (!offer) return null;
+  if (!show || !offer) return null;
 
   return (
     <div
