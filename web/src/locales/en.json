@@ -185,6 +185,28 @@
     "welcomeGeneric": "Welcome back{{who}}. Ask me for something, or correct me — I learn from the corrections more than the requests.",
     "askHere": "Ask, or correct it…"
   },
+  "watchers": {
+    "empty": "It watches something and stops before anything irreversible.",
+    "create": "Create a watcher",
+    "instructionLabel": "What should it do?",
+    "instructionPlaceholder": "When the morning arrives, draft what needs me…",
+    "triggerLabel": "When should it run?",
+    "triggerDaily": "Every weekday morning",
+    "triggerHourly": "Every hour",
+    "triggerSessionEnded": "When a piece of work ends",
+    "nameLabel": "Name",
+    "confirmSummary": "Create “{{name}}”. It will run: {{trigger}}. Each run stops for you to review before anything goes out.",
+    "confirmReason": "It will keep going until you pause it. Irreversible actions still stop and ask.",
+    "confirm": "Yes, create it",
+    "decline": "Not yet",
+    "creating": "Creating…",
+    "createFailed": "That watcher was not created. Nothing was saved — try again.",
+    "cannotWatchInbox": "It cannot watch an inbox. Use a time of day, or the end of a piece of work.",
+    "openLastRun": "Open the last run",
+    "neverRun": "Never run",
+    "running": "Running",
+    "paused": "Paused"
+  },
   "auth": {
     "backToSignIn": "Back to sign in",
     "createAnAccount": "Create an account",

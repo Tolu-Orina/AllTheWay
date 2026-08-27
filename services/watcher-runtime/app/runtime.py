@@ -11,6 +11,7 @@ happens to what the model made of it -- not a check somewhere in the middle.
 
 from __future__ import annotations
 
+from collections.abc import Callable
 from dataclasses import dataclass, field
 from datetime import datetime, timezone
 
@@ -33,6 +34,9 @@ class RunOutcome:
     #: carries screened content -- see alltheway_screening on why quoting a
     #: payload turns the block into a second delivery route.
     trace: list[str] = field(default_factory=list)
+    #: False for a pause skip and for a quota refusal: neither consumed a
+    #: model turn, so neither should consume an allowance.
+    counts_as_run: bool = True
 
 
 def _orchestrate(message: str, preferences: list[str]) -> dict:
@@ -46,11 +50,18 @@ def execute_run(
     trigger_detail: str,
     preferences: list[str],
     waiver: Waiver | None = None,
+    quota: Callable[[], bool] | None = None,
 ) -> RunOutcome:
     """Run one watcher firing through the same graph a live session uses."""
 
     if not watcher.get("running", False):
-        return RunOutcome("skipped", "Watcher is paused.", "Paused by the user.", [])
+        return RunOutcome(
+            "skipped",
+            "Watcher is paused.",
+            "Paused by the user.",
+            [],
+            counts_as_run=False,
+        )
 
     trace: list[str] = []
 
@@ -67,7 +78,24 @@ def execute_run(
             trace,
         )
 
-    turn = _orchestrate(trigger_detail, preferences)
+    # After screening, before the model. A quota check that ran afterwards
+    # would still have spent the turn.
+    if quota is not None and not quota():
+        trace.append("Allowance exhausted; the model was not called.")
+        return RunOutcome(
+            "blocked",
+            "This month's watcher runs are used up.",
+            "Allowance exhausted.",
+            [],
+            trace,
+            counts_as_run=False,
+        )
+
+    standing = str(watcher.get("instruction") or watcher.get("trigger") or "").strip()
+    turn = _orchestrate(
+        f"{standing}\n\nWhat fired: {trigger_detail}" if standing else trigger_detail,
+        preferences,
+    )
 
     # FR-W3: an ambiguous trigger with nobody in-session pauses for review
     # rather than guessing. A watcher never resolves its own ambiguity.
@@ -104,12 +132,15 @@ def execute_run(
 
     trace.append(decision.reason)
 
-    if not decision.execute:
-        return RunOutcome(
-            "awaiting_review", plan[0] if plan else "Drafted.", decision.reason, plan, trace
-        )
-
-    return RunOutcome("done", plan[0] if plan else "Completed.", decision.reason, plan, trace)
+    # A plan without an invoke is waiting, not done. Claiming "done" here is
+    # how a watcher looked finished while nothing happened outside the ledger.
+    return RunOutcome(
+        "awaiting_review",
+        plan[0] if plan else "Drafted.",
+        decision.reason,
+        plan,
+        trace,
+    )
 
 
 def now_iso() -> str:

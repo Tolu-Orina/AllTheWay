@@ -13,7 +13,9 @@ const BASE = `http://${HOST}/v1/projects/${PROJECT}`;
 
 const WIRING = [
   { topic: "session-ended", sub: "profile-synth", endpoint: "http://localhost:8092/events" },
+  { topic: "session-ended", sub: "watcher-on-session-ended", endpoint: "http://localhost:8091/events/session-ended" },
   { topic: "watcher-trigger", sub: "watcher-run", endpoint: "http://localhost:8091/events" },
+  { topic: "watcher-due", sub: "watcher-due-scan", endpoint: "http://localhost:8091/events/due" },
 ];
 
 const put = async (path, body) => {

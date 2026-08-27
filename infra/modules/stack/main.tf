@@ -131,6 +131,11 @@ locals {
       ORCHESTRATOR_URL      = local.service_url["orchestrator"]
       CONNECTOR_GATEWAY_URL = local.service_url["connector-gateway"]
 
+      # The due-scan publishes onto the existing trigger topic. Full resource
+      # id, same shape as MEET_EVENTS_TOPIC: a short name would publish into
+      # the wrong project the moment the runtime identity is in another one.
+      WATCHER_TRIGGER_TOPIC = google_pubsub_topic.events["watcher-trigger"].id
+
       # The service that reads what strangers wrote. It screens the trigger
       # inbound and the plan outbound (runtime.py), and until now it did both
       # with the heuristic screener because nothing set this.
@@ -196,7 +201,7 @@ locals {
 # logs and traces) and says the rest "belongs in envs/*". This is that.
 #
 # Derived from what each service's code actually calls, not from what might be
-# convenient later: the gateway is the only thing that publishes events, only
+# convenient later: the gateway and the watcher runtime publish events, only
 # the two services with a ModelProvider reach Vertex, and only the connector
 # gateway reads secrets. A service that gains a dependency gains a line here, in
 # a diff someone reads.
@@ -228,7 +233,11 @@ locals {
     orchestrator        = ["roles/aiplatform.user"] # Vertex, via ModelProvider
     research-cell       = ["roles/aiplatform.user"]
     profile-synthesizer = ["roles/datastore.user"]
-    watcher-runtime     = ["roles/datastore.user"]
+    watcher-runtime = [
+      "roles/datastore.user",
+      # Due-scan and session-ended fan-out publish onto watcher-trigger.
+      "roles/pubsub.publisher",
+    ]
 
     # Meetings, consent, credentials and the meeting registry -- four modules,
     # all through firebase-admin. Scribe had no entry here at all, so its
@@ -582,30 +591,42 @@ resource "google_firestore_field" "auth_codes_ttl" {
 # ---------------------------------------------------------------------------
 
 resource "google_pubsub_topic" "events" {
-  # Derived from the consumer map rather than listed again. Two lists that must
-  # agree is one list too many: a topic added here but not there is unconsumed,
-  # and a consumer added there but not here fails at delivery — quietly, in a
-  # retry loop, long after a green apply.
-  for_each = toset(keys(local.event_consumers))
+  # Topics are the named buses. Consumers are who reads them. They must not
+  # be the same map: two services subscribe to session-ended, and adding a
+  # consumer key must not invent a topic.
+  for_each = local.event_topics
 
   project = var.project_id
   name    = "${each.value}-${var.env}"
 }
 
 locals {
+  # Existing topic keys stay so Terraform does not destroy them.
+  event_topics = toset([
+    "session-ended",
+    "watcher-trigger",
+    "meet-events",
+    "digest-due",
+    "watcher-due",
+  ])
+
   # Which service consumes which topic, and at what path.
   event_consumers = {
-    "session-ended"   = { service = "profile-synthesizer", path = "/events" }
-    "watcher-trigger" = { service = "watcher-runtime", path = "/events" }
+    "session-ended" = { topic = "session-ended", service = "profile-synthesizer", path = "/events" }
+    # Same topic, second subscriber. The runtime matches triggerKind rather
+    # than receiving a dedicated bus — the gateway already publishes here.
+    "session-ended-watchers" = { topic = "session-ended", service = "watcher-runtime", path = "/events/session-ended" }
+    "watcher-trigger"        = { topic = "watcher-trigger", service = "watcher-runtime", path = "/events" }
     # Tier 1's trigger. Google Workspace Events publishes here when a conference
     # ends, which is the moment a transcript can exist — polling for something
     # that happens twice a day would be both wasteful and late.
-    "meet-events" = { service = "scribe", path = "/events/meet" }
+    "meet-events" = { topic = "meet-events", service = "scribe", path = "/events/meet" }
     # The morning digest. The watcher runtime consumes it because it already
     # owns the per-user push path and the run records the digest reports on —
     # a separate service would need both, and would be a second thing to keep
     # alive for one message a day.
-    "digest-due" = { service = "watcher-runtime", path = "/events/digest" }
+    "digest-due"  = { topic = "digest-due", service = "watcher-runtime", path = "/events/digest" }
+    "watcher-due" = { topic = "watcher-due", service = "watcher-runtime", path = "/events/due" }
   }
 }
 
@@ -642,7 +663,7 @@ resource "google_pubsub_subscription" "push" {
 
   project = var.project_id
   name    = "${each.key}-${var.env}"
-  topic   = google_pubsub_topic.events[each.key].name
+  topic   = google_pubsub_topic.events[each.value.topic].name
 
   push_config {
     push_endpoint = "${module.service[each.value.service].uri}${each.value.path}"
@@ -704,4 +725,51 @@ resource "google_cloud_scheduler_job" "digest" {
   }
 
   depends_on = [google_pubsub_topic.events]
+}
+
+# ---------------------------------------------------------------------------
+# Watcher due-scan
+#
+# One job, one message every five minutes. The handler fans out to due rows
+# itself rather than the scheduler holding a user list or a per-watcher job:
+# N scheduler jobs is how a standing instruction becomes a denial-of-wallet.
+#
+# UTC on purpose. This is a due-scan, not a morning product. Local morning
+# belongs on the watcher's interval, not on the tick that notices it.
+# ---------------------------------------------------------------------------
+
+resource "google_cloud_scheduler_job" "watcher_due" {
+  project   = var.project_id
+  region    = var.region
+  name      = "watcher-due-${var.env}"
+  schedule  = "*/5 * * * *"
+  time_zone = "Etc/UTC"
+
+  description = "Publishes the watcher due-scan. The runtime fans it out per due row."
+
+  pubsub_target {
+    topic_name = google_pubsub_topic.events["watcher-due"].id
+    data       = base64encode(jsonencode({ sweep = true }))
+  }
+
+  depends_on = [google_pubsub_topic.events]
+}
+
+# The due-scan filters running==true AND nextRunAt<=now. Two fields, so a
+# composite is required; a missing index fails the query at runtime, not at
+# apply. Identical to the entry in firestore.indexes.json.
+resource "google_firestore_index" "watcher_schedule_due" {
+  project    = var.project_id
+  database   = google_firestore_database.this.name
+  collection = "watcherSchedule"
+
+  fields {
+    field_path = "running"
+    order      = "ASCENDING"
+  }
+
+  fields {
+    field_path = "nextRunAt"
+    order      = "ASCENDING"
+  }
 }

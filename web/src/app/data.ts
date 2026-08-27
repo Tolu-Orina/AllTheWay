@@ -156,6 +156,13 @@ export const api = {
       z.object({ ok: z.boolean(), messageId: z.string().nullable().optional() }),
     ),
   watchers: () => apiGet("/watchers", z.array(WatcherSchema)),
+  createWatcher: (body: {
+    name: string;
+    instruction: string;
+    triggerKind: "schedule" | "session_ended";
+    intervalMinutes?: number;
+    ceiling?: "draft_only" | "send_after_review" | "send_automatically";
+  }) => apiPost("/watchers", body, WatcherSchema),
   watcherRuns: () => apiGet("/watcher-runs", z.array(WatcherRunSchema)),
   preferences: () => apiGet("/preferences", z.array(LearnedPreferenceSchema)),
   visualPreferences: () =>

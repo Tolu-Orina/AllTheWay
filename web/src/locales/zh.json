@@ -182,6 +182,28 @@
     "welcomeGeneric": "欢迎回来{{who}}。问我一件事，或纠正我——我从纠正里学到的，比从请求里多。",
     "askHere": "提问，或纠正它…"
   },
+  "watchers": {
+    "empty": "它会盯着某件事，并在任何不可逆操作前停下来。",
+    "create": "创建监控器",
+    "instructionLabel": "它应该做什么？",
+    "instructionPlaceholder": "当一天开始时，起草需要我处理的事项…",
+    "triggerLabel": "它应该何时运行？",
+    "triggerDaily": "每个工作日早晨",
+    "triggerHourly": "每小时",
+    "triggerSessionEnded": "当一件工作结束时",
+    "nameLabel": "名称",
+    "confirmSummary": "创建“{{name}}”。运行方式：{{trigger}}。每次运行都会先停下来给你审阅，然后才会发出任何内容。",
+    "confirmReason": "会一直运行到你暂停。不可逆操作仍会停下来询问。",
+    "confirm": "是的，创建",
+    "decline": "先不要",
+    "creating": "正在创建…",
+    "createFailed": "未能创建该监控器。未保存任何内容 — 请重试。",
+    "cannotWatchInbox": "它不能监控收件箱。请使用一天中的某个时间，或一件工作的结束。",
+    "openLastRun": "打开上次运行",
+    "neverRun": "从未运行",
+    "running": "运行中",
+    "paused": "已暂停"
+  },
   "auth": {
     "backToSignIn": "返回登录",
     "createAnAccount": "创建账号",

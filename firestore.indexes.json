@@ -40,6 +40,19 @@
         { "fieldPath": "sessionId", "order": "ASCENDING" },
         { "fieldPath": "at", "order": "DESCENDING" }
       ]
+    },
+    {
+      "//": [
+        "The watcher due-scan: running == true AND nextRunAt <= now, limit 50.",
+        "watcherSchedule is a project pointer collection, not a user subcollection,",
+        "and queryScope is COLLECTION — this is not a collectionGroup query."
+      ],
+      "collectionGroup": "watcherSchedule",
+      "queryScope": "COLLECTION",
+      "fields": [
+        { "fieldPath": "running", "order": "ASCENDING" },
+        { "fieldPath": "nextRunAt", "order": "ASCENDING" }
+      ]
     }
   ],
 

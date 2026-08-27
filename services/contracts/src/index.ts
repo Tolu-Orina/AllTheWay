@@ -126,6 +126,8 @@ export const CeilingSchema = z.enum([
   "send_automatically",
 ]);
 
+export const WatcherTriggerKindSchema = z.enum(["schedule", "session_ended"]);
+
 export const WatcherSchema = z.object({
   id: z.string(),
   name: z.string(),
@@ -133,7 +135,32 @@ export const WatcherSchema = z.object({
   ceiling: CeilingSchema,
   running: z.boolean(),
   lastRunAt: z.string().datetime().nullable(),
+  instruction: z.string().default(""),
+  triggerKind: WatcherTriggerKindSchema.default("schedule"),
+  intervalMinutes: z.number().int().positive().nullable().default(null),
 });
+
+/**
+ * A standing instruction. intervalMinutes is required for schedule and ignored
+ * for session_ended. The server refuses anything under 60 minutes.
+ */
+export const CreateWatcherSchema = z
+  .object({
+    name: z.string().trim().min(1).max(80),
+    instruction: z.string().trim().min(1).max(2000),
+    triggerKind: WatcherTriggerKindSchema,
+    intervalMinutes: z.number().int().min(60).max(10_080).optional(),
+    ceiling: CeilingSchema.default("send_after_review"),
+  })
+  .superRefine((value, ctx) => {
+    if (value.triggerKind === "schedule" && value.intervalMinutes == null) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        message: "A schedule needs an interval.",
+        path: ["intervalMinutes"],
+      });
+    }
+  });
 
 export const WatcherRunSchema = z.object({
   id: z.string(),
@@ -153,6 +180,8 @@ export const WatcherRunSchema = z.object({
    */
   trace: z.array(z.string()).default([]),
   at: z.string().datetime(),
+  /** Work item this run produced, if any. Empty until something was kept. */
+  sessionId: z.string().default(""),
 });
 
 export const LearnedPreferenceSchema = z.object({
@@ -351,6 +380,8 @@ export type Session = z.infer<typeof SessionSchema>;
 export type SessionDetail = z.infer<typeof SessionDetailSchema>;
 export type Ceiling = z.infer<typeof CeilingSchema>;
 export type Watcher = z.infer<typeof WatcherSchema>;
+export type WatcherTriggerKind = z.infer<typeof WatcherTriggerKindSchema>;
+export type CreateWatcher = z.infer<typeof CreateWatcherSchema>;
 export type WatcherRun = z.infer<typeof WatcherRunSchema>;
 export type LearnedPreference = z.infer<typeof LearnedPreferenceSchema>;
 export type VisualPreference = z.infer<typeof VisualPreferenceSchema>;

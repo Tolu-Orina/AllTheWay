@@ -188,6 +188,28 @@
     "welcomeGeneric": "Hola de nuevo{{who}}. Pídeme algo, o corrígeme — aprendo más de las correcciones que de las peticiones.",
     "askHere": "Pregunta, o corrígelo…"
   },
+  "watchers": {
+    "empty": "Vigila algo y se detiene antes de cualquier cosa irreversible.",
+    "create": "Crear un observador",
+    "instructionLabel": "¿Qué debe hacer?",
+    "instructionPlaceholder": "Cuando empiece el día, prepara un borrador de lo que me necesita…",
+    "triggerLabel": "¿Cuándo debe ejecutarse?",
+    "triggerDaily": "Cada mañana entre semana",
+    "triggerHourly": "Cada hora",
+    "triggerSessionEnded": "Cuando termina un trabajo",
+    "nameLabel": "Nombre",
+    "confirmSummary": "Crear “{{name}}”. Se ejecutará: {{trigger}}. Cada pasada se detiene para que lo revises antes de enviar nada.",
+    "confirmReason": "Seguirá hasta que lo pauses. Las acciones irreversibles siguen pidiendo confirmación.",
+    "confirm": "Sí, créalo",
+    "decline": "Todavía no",
+    "creating": "Creando…",
+    "createFailed": "Ese observador no se creó. No se guardó nada — inténtalo de nuevo.",
+    "cannotWatchInbox": "No puede vigilar una bandeja de entrada. Usa una hora del día, o el final de un trabajo.",
+    "openLastRun": "Abrir la última ejecución",
+    "neverRun": "Nunca se ha ejecutado",
+    "running": "En marcha",
+    "paused": "En pausa"
+  },
   "auth": {
     "backToSignIn": "Volver a iniciar sesión",
     "createAnAccount": "Crear una cuenta",

@@ -62,6 +62,7 @@ DISTRIBUTIONS = {
     "jwt": "pyjwt",
     "google.auth": "google-auth",
     "google.cloud.firestore": "google-cloud-firestore",
+    "google.cloud.pubsub": "google-cloud-pubsub",
     "google.cloud.storage": "google-cloud-storage",
     "pypdf": "pypdf",
     "google.genai": "google-genai",

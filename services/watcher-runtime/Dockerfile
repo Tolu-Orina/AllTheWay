@@ -30,11 +30,15 @@ COPY libs/agentauth ./libs/agentauth
 # reason as the policy: a safety check behind a network call is unavailable
 # exactly when the network is degraded, and this one fails closed.
 COPY libs/screening ./libs/screening
+# Plans and entitlements. A watcher run is refused before the model is
+# called; the library has to be in the image or the container exits on
+# import — the same failure this repo has now seen three times.
+COPY libs/metering ./libs/metering
 COPY services/watcher-runtime/pyproject.toml ./
 
 # --target gives a flat, relocatable tree that can be copied into an image with
 # no pip -- which is exactly what distroless is.
-RUN pip install --no-cache-dir --upgrade pip  && pip wheel --no-cache-dir --wheel-dir=/wheels ./libs/policy ./libs/screening ./libs/agentauth && pip install --no-cache-dir --target=/deps --find-links=/wheels .
+RUN pip install --no-cache-dir --upgrade pip  && pip wheel --no-cache-dir --wheel-dir=/wheels ./libs/policy ./libs/screening ./libs/agentauth ./libs/metering && pip install --no-cache-dir --target=/deps --find-links=/wheels .
 
 # ---------------------------------------------------------------------- test
 # A real build stage, not a convenience: `docker build --target test` exits

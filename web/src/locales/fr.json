@@ -188,6 +188,28 @@
     "welcomeGeneric": "Bon retour{{who}}. Demandez-moi quelque chose, ou corrigez-moi — j'apprends plus des corrections que des demandes.",
     "askHere": "Demandez, ou corrigez…"
   },
+  "watchers": {
+    "empty": "Il surveille quelque chose et s'arrête avant tout acte irréversible.",
+    "create": "Créer un watcher",
+    "instructionLabel": "Que doit-il faire ?",
+    "instructionPlaceholder": "Quand la journée commence, prépare ce qui a besoin de moi…",
+    "triggerLabel": "Quand doit-il s'exécuter ?",
+    "triggerDaily": "Chaque matin en semaine",
+    "triggerHourly": "Chaque heure",
+    "triggerSessionEnded": "Quand un travail se termine",
+    "nameLabel": "Nom",
+    "confirmSummary": "Créer « {{name}} ». Il s'exécutera : {{trigger}}. Chaque passage s'arrête pour que vous relisiez avant que quoi que ce soit parte.",
+    "confirmReason": "Il continuera jusqu'à ce que vous le mettiez en pause. Les actions irréversibles demandent toujours confirmation.",
+    "confirm": "Oui, créez-le",
+    "decline": "Pas encore",
+    "creating": "Création…",
+    "createFailed": "Ce watcher n'a pas été créé. Rien n'a été enregistré — réessayez.",
+    "cannotWatchInbox": "Il ne peut pas surveiller une boîte de réception. Utilisez un moment de la journée, ou la fin d'un travail.",
+    "openLastRun": "Ouvrir la dernière exécution",
+    "neverRun": "Jamais exécuté",
+    "running": "En cours",
+    "paused": "En pause"
+  },
   "auth": {
     "backToSignIn": "Retour à la connexion",
     "createAnAccount": "Créer un compte",

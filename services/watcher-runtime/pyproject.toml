@@ -10,10 +10,14 @@ dependencies = [
   "alltheway-agentauth",
   # Mandatory screening of untrusted external content (manifest risk table).
   "alltheway-screening",
+  # Watcher runs are refused before the model is called.
+  "alltheway-metering",
   "fastapi>=0.115",
   "uvicorn[standard]>=0.34",
   "pydantic>=2.9",
   "google-cloud-firestore>=2.19",
+  # Due-scan and session-ended fan-out publish onto watcher-trigger.
+  "google-cloud-pubsub>=2.23",
   # Sending the digest notification authenticates to FCM with this service's own
   # identity. Declared rather than inherited: it arrives today only as a
   # transitive of google-cloud-firestore, and a package present because
@@ -36,4 +40,4 @@ test = ["pytest>=8.0"]
 [tool.pytest.ini_options]
 # The shared autonomy floor. Installed properly in the image; on the path
 # here so the suite runs without an editable install step.
-pythonpath = [".", "../../libs/policy/src", "../../libs/screening/src", "../../libs/agentauth/src"]
+pythonpath = [".", "../../libs/policy/src", "../../libs/screening/src", "../../libs/agentauth/src", "../../libs/metering/src"]

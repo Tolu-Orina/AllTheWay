@@ -1,6 +1,6 @@
 import { createServer } from "node:http";
 import express from "express";
-import { RevertPreferenceSchema, ToggleWatcherSchema } from "@alltheway/contracts";
+import { RevertPreferenceSchema, ToggleWatcherSchema, CreateWatcherSchema } from "@alltheway/contracts";
 
 import { env } from "./env.js";
 import { requireUser } from "./auth.js";
@@ -19,7 +19,12 @@ import {
 } from "./repos/sessions.js";
 import { listPreferences, revertPreference } from "./repos/preferences.js";
 import { listVisualPreferences, revertVisualPreference } from "./repos/visual.js";
-import { listRuns, listWatchers, setWatcherRunning } from "./repos/watchers.js";
+import {
+  createWatcher,
+  listRuns,
+  listWatchers,
+  setWatcherRunning,
+} from "./repos/watchers.js";
 import { runTurn, streamTurn } from "./orchestrator.js";
 import { listRecent, record } from "./repos/ledger.js";
 import { readUsage } from "./repos/usage.js";
@@ -171,6 +176,21 @@ api.get(
   "/watchers",
   handle(async (req, res) => {
     res.json(await listWatchers(req.uid!));
+  }),
+);
+
+api.post(
+  "/watchers",
+  handle(async (req, res) => {
+    const body = CreateWatcherSchema.safeParse(req.body);
+    if (!body.success) {
+      res.status(400).json({
+        code: "invalid_request",
+        message: "Expected a name, an instruction, and a trigger we recognise. Schedules cannot run more often than once an hour.",
+      });
+      return;
+    }
+    res.status(201).json(await createWatcher(req.uid!, body.data));
   }),
 );
 

@@ -46,14 +46,15 @@ def test_irreversible_action_pauses_even_at_the_highest_ceiling(monkeypatch):
     assert "not user-adjustable" in out.reason
 
 
-def test_reversible_action_completes_at_the_highest_ceiling(monkeypatch):
+def test_reversible_action_pauses_for_review_without_an_invoke(monkeypatch):
     stub_turn(monkeypatch)
     out = runtime.execute_run(
         watcher=watcher(ceiling=Ceiling.SEND_AUTOMATICALLY.value, action="create_task"),
         trigger_detail="x",
         preferences=[],
     )
-    assert out.state == "done"
+    assert out.state == "awaiting_review"
+    assert out.state != "done"
 
 
 def test_ambiguous_trigger_pauses_rather_than_guessing(monkeypatch):
@@ -64,7 +65,7 @@ def test_ambiguous_trigger_pauses_rather_than_guessing(monkeypatch):
     assert out.plan == []
 
 
-def test_admin_waiver_permits_an_irreversible_action(monkeypatch):
+def test_admin_waiver_still_pauses_without_an_invoke(monkeypatch):
     stub_turn(monkeypatch)
     out = runtime.execute_run(
         watcher=watcher(ceiling=Ceiling.SEND_AUTOMATICALLY.value, action="send_external"),
@@ -72,4 +73,38 @@ def test_admin_waiver_permits_an_irreversible_action(monkeypatch):
         preferences=[],
         waiver=Waiver(granted_by="admin@org.com", justification="Contractual auto-acknowledgement"),
     )
-    assert out.state == "done"
+    assert out.state == "awaiting_review"
+    assert out.state != "done"
+
+
+def test_quota_exhausted_never_reaches_the_model(monkeypatch):
+    def explode(*_args, **_kwargs):
+        raise AssertionError("the model was reached after the allowance was exhausted")
+
+    monkeypatch.setattr(runtime, "_orchestrate", explode)
+    out = runtime.execute_run(
+        watcher=watcher(),
+        trigger_detail="A clean calendar event ended.",
+        preferences=[],
+        quota=lambda: False,
+    )
+    assert out.state == "blocked"
+    assert out.counts_as_run is False
+    assert "Allowance exhausted" in out.reason
+
+
+def test_the_standing_instruction_is_what_the_model_sees(monkeypatch):
+    seen: dict[str, str] = {}
+
+    def fake(message, preferences):
+        seen["message"] = message
+        return {"decision": "plan", "plan": [{"label": "Draft the follow-up"}]}
+
+    monkeypatch.setattr(runtime, "_orchestrate", fake)
+    runtime.execute_run(
+        watcher=watcher(instruction="When the morning arrives, draft what needs me"),
+        trigger_detail="Scheduled run is due.",
+        preferences=[],
+    )
+    assert "When the morning arrives, draft what needs me" in seen["message"]
+    assert "Scheduled run is due." in seen["message"]
