@@ -41,11 +41,13 @@ export default function Agents() {
         </p>
       </header>
 
-      <Specialists />
-
       <Async state={state} reload={reload}>
         {(registry) => (
           <>
+            {/* One fetch, shared. Two calls here meant the registry
+                verified five cards twice for the same screen. */}
+            <Specialists agents={registry.agents} />
+
             <p className="text-[13px] text-muted-foreground">
               {registry.summary.trusted} of {registry.summary.total} verified
               {registry.summary.reachable < registry.summary.total

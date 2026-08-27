@@ -1,7 +1,7 @@
 import { Plus, Search } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
-import { Avatar } from "@/app/Avatar";
+import { AccountMenu } from "@/app/AccountMenu";
 
 /**
  * Desktop top bar, inside the main column rather than the sidebar.
@@ -36,7 +36,7 @@ export function AppTopBar() {
           <Plus />
           New
         </Button>
-        <Avatar />
+        <AccountMenu />
       </div>
     </div>
   );

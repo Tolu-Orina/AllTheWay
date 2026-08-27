@@ -14,7 +14,7 @@
     "dev:web": "npm --workspace web run dev",
     "seed": "npm --workspace @alltheway/gateway run seed",
     "build": "npm --workspace @alltheway/contracts run build && npm --workspace @alltheway/gateway run build && npm --workspace web run build",
-    "typecheck": "npm --workspace @alltheway/contracts run typecheck && npm --workspace @alltheway/gateway run typecheck && npm --workspace @alltheway/scribe run typecheck",
+    "typecheck": "npm --workspace @alltheway/contracts run typecheck && npm --workspace @alltheway/gateway run typecheck && npm --workspace @alltheway/scribe run typecheck && npm --workspace web run typecheck",
     "dev:orchestrator": "cd services/orchestrator && python -m uvicorn app.main:app --port 8090",
     "dev:watchers": "cd services/watcher-runtime && python -m uvicorn app.main:app --port 8091",
     "dev:synth": "cd services/profile-synthesizer && python -m uvicorn app.main:app --port 8092",
@@ -28,7 +28,8 @@
     "postinstall": "npm --workspace @alltheway/contracts run build",
     "docker:build": "node scripts/docker-build.mjs",
     "test:confirm": "npm --workspace web run test:confirm",
-    "dev:connectors": "cd services/connector-gateway && python -m uvicorn app.main:app --port 8094"
+    "dev:connectors": "cd services/connector-gateway && python -m uvicorn app.main:app --port 8094",
+    "guards": "python scripts/check-tenant-isolation.py && python scripts/check-image-deps.py && python scripts/check-plan-table.py && python scripts/check-locales.py && python scripts/check-tests-listed.py"
   },
   "devDependencies": {
     "firebase-tools": "^14.27.0"

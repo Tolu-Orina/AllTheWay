@@ -1,8 +1,6 @@
 import { BadgeCheck, Lock, ShieldAlert } from "lucide-react";
 
-import { Async } from "@/app/async";
-import { useAsync } from "@/app/use-async";
-import { api, type Agent } from "@/app/data";
+import type { Agent } from "@/app/data";
 import { cn } from "@/lib/utils";
 
 /**
@@ -77,8 +75,15 @@ const SPECIALISTS: Specialist[] = [
   },
 ];
 
-export function Specialists() {
-  const { state, reload } = useAsync(() => api.agents());
+/**
+ * Takes the registry rather than fetching it.
+ *
+ * This screen already loads it, and asking again meant two identical requests —
+ * each of which makes the registry fetch and verify a card from *five* services,
+ * any of which may be scaling from zero. On a phone that doubled the wait for no
+ * new information.
+ */
+export function Specialists({ agents }: { agents: Agent[] }) {
 
   return (
     <section className="flex flex-col gap-3">
@@ -91,19 +96,15 @@ export function Specialists() {
         page — so a capability that stops verifying says so here.
       </p>
 
-      <Async state={state} reload={reload}>
-        {(registry) => (
-          <ul className="flex flex-col gap-2">
-            {SPECIALISTS.map((specialist) => (
-              <SpecialistRow
-                key={specialist.agentId}
-                specialist={specialist}
-                agent={registry.agents.find((a) => a.id === specialist.agentId)}
-              />
-            ))}
-          </ul>
-        )}
-      </Async>
+      <ul className="flex flex-col gap-2">
+        {SPECIALISTS.map((specialist) => (
+          <SpecialistRow
+            key={specialist.agentId}
+            specialist={specialist}
+            agent={agents.find((a) => a.id === specialist.agentId)}
+          />
+        ))}
+      </ul>
     </section>
   );
 }

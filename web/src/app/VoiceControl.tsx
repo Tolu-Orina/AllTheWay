@@ -1,4 +1,4 @@
-import { Mic, MicOff, Square } from "lucide-react";
+import { Mic, Loader2, Square } from "lucide-react";
 
 import { useVoice } from "@/app/use-voice";
 import { cn } from "@/lib/utils";
@@ -18,8 +18,12 @@ export function VoiceControl({
   const voice = useVoice();
   const live = voice.status === "live";
   const connecting = voice.status === "connecting";
-  const label =
-    live ? "Stop voice session" : connecting ? "Connecting voice" : "Start a voice session";
+  // "Cancel" while connecting, because the button remains pressable — see below.
+  const label = live
+    ? "Stop voice session"
+    : connecting
+      ? "Cancel connecting"
+      : "Start a voice session";
   const box = size === "lg" ? "size-14" : size === "sm" ? "size-9" : "size-11";
   const icon = size === "lg" ? "size-6" : "size-5";
 
@@ -29,18 +33,31 @@ export function VoiceControl({
         type="button"
         aria-label={label}
         aria-pressed={live}
-        disabled={connecting}
+        // Deliberately NOT disabled while connecting.
+        //
+        // On a phone this step can take seconds — a permission sheet, a cold
+        // service — and a dead button with a muted-microphone icon reads as
+        // "voice is off and broken". Leaving it pressable means a connection
+        // that stalls can be abandoned instead of forcing a page reload.
         onClick={() => voice.start()}
         className={cn(
           "sheen relative isolate grid place-items-center overflow-hidden rounded-full text-white shadow-e2 transition-transform hover:scale-105 active:scale-95 disabled:opacity-60",
           box,
-          live ? "bg-destructive" : "bg-slate",
+          // Three states, three appearances. Connecting previously looked
+          // identical to idle apart from the icon.
+          live ? "bg-destructive" : connecting ? "bg-slate/70" : "bg-slate",
         )}
       >
         {live ? (
           <Square className={cn("relative z-10", icon === "size-6" ? "size-5" : "size-4")} aria-hidden />
         ) : connecting ? (
-          <MicOff className={cn("relative z-10 animate-pulse", icon)} aria-hidden />
+          // A spinner, not a crossed-out microphone. `MicOff` is the icon for
+          // "muted", and using it for "connecting" told the user the opposite of
+          // what was happening.
+          <Loader2
+            className={cn("relative z-10 animate-spin motion-reduce:animate-none", icon)}
+            aria-hidden
+          />
         ) : (
           <Mic className={cn("relative z-10", icon)} aria-hidden />
         )}

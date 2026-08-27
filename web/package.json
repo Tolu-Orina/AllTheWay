@@ -17,7 +17,8 @@
     "test:auth": "node scripts/auth-flow.mjs",
     "test:streaming": "node scripts/streaming.mjs",
     "test:confirm": "node scripts/confirm-gate.mjs",
-    "test:companion": "node scripts/companion.mjs"
+    "test:companion": "node scripts/companion.mjs",
+    "typecheck": "tsc -b"
   },
   "dependencies": {
     "@base-ui/react": "^1.7.0",

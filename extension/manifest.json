@@ -12,8 +12,10 @@
     "tabCapture"
   ],
   "host_permissions": [
-    "https://*.run.app/*",
-    "https://alltheway.rinegansolutions.com/*"
+    "https://gateway-prod-g32kip7okq-ew.a.run.app/*",
+    "https://gateway-prod-678063096671.europe-west1.run.app/*",
+    "https://alltheway.rinegansolutions.com/*",
+    "https://alltheway-prod.web.app/*"
   ],
   "background": {
     "service_worker": "background.js",
@@ -21,7 +23,13 @@
   },
   "action": {
     "default_popup": "popup.html",
-    "default_title": "AllTheWay meeting notes"
+    "default_title": "AllTheWay meeting notes",
+    "default_icon": {
+      "16": "icons/16.png",
+      "32": "icons/32.png",
+      "48": "icons/48.png",
+      "128": "icons/128.png"
+    }
   },
   "content_scripts": [
     {
@@ -37,5 +45,11 @@
   ],
   "side_panel": {
     "default_path": "panel.html"
+  },
+  "icons": {
+    "16": "icons/16.png",
+    "32": "icons/32.png",
+    "48": "icons/48.png",
+    "128": "icons/128.png"
   }
 }

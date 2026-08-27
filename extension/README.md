@@ -61,9 +61,52 @@ is a courtesy and the gateway is the boundary.
 
 ## Publishing
 
-Sensitive permissions from a new account should expect **2–4 weeks** of Chrome
-Web Store review; unlisted still requires it. For an organisation, force-install
-via Workspace admin policy avoids the public store entirely.
+Chrome Web Store enforcement of the 2026 privacy rules began on **1 August
+2026**, and this extension records meeting audio and sends it to a server —
+which is the most scrutinised category there is. The code side is ready; the
+listing side is not, and the remaining work is disclosure rather than
+engineering.
+
+### Done
+
+- Icons at 16/32/48/128.
+- `host_permissions` narrowed to four specific hosts. It briefly read
+  `https://*.run.app/*`, which is every Cloud Run service on the internet —
+  more access than this needs and the first thing a reviewer would ask about.
+  Note the **hashed** Cloud Run hostname is the one that matters: that is what
+  the web build bakes into `VITE_STREAM_ORIGIN`, and narrowing to only the
+  deterministic `{service}-{project}.{region}` form silently blocks the socket.
+
+### Still required before submitting
+
+1. **A privacy policy at a public, persistent URL** — reachable without logging
+   in, carrying an effective date and a working contact address. It must say
+   plainly that meeting audio is captured, transmitted for transcription, and
+   what is retained.
+2. **Privacy Practices declarations** in the dashboard, ticking every data
+   category the permissions imply. Audio is the significant one.
+3. **A justification per permission.** `tabCapture` is the one that decides the
+   review: say that capture is user-initiated per meeting, bound to one tab, and
+   gated behind an explicit disclosure the server also enforces.
+4. **Listing assets** — screenshots, a category, and a description whose single
+   stated purpose matches what the code does. Collecting anything beyond that
+   purpose is now a policy violation regardless of disclosure.
+5. **A developer account** (one-off fee).
+
+### Which visibility
+
+**Unlisted** is probably right, and possibly for good. It is still reviewed, but
+only people with the link install it — which suits an internal tool and avoids
+supporting strangers who record other people's meetings.
+
+**Enterprise force-install** via Workspace admin policy skips the store review
+entirely and is the better answer if this stays inside one organisation.
+
+**Public** invites the most scrutiny and the most support burden, for an
+audience this does not yet have. Expect two to four weeks of review for
+sensitive permissions on a new account.
+
+For a demo, `Load unpacked` needs none of this.
 
 ## Transcription
 

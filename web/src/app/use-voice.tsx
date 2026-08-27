@@ -95,12 +95,14 @@ export function VoiceProvider({ children }: { children: ReactNode }) {
       setFake(false);
 
       try {
-        const sessionId = await resolveSessionId();
-        const ctx = new AudioContext();
-        await ctx.resume();
-        await ctx.audioWorklet.addModule("/worklets/pcm-capture.js");
-        await ctx.audioWorklet.addModule("/worklets/pcm-play.js");
-
+        // The microphone is asked for FIRST, while the user's tap is still the
+        // most recent thing that happened.
+        //
+        // It used to be fourth: behind a network call to find the session, an
+        // AudioContext resume, and two worklet fetches. On a phone that is
+        // seconds of nothing before the permission sheet appears, and the user
+        // taps again thinking it did not register. Browsers also tie permission
+        // prompts to user activation, which repeated awaits can spend.
         const stream = await navigator.mediaDevices.getUserMedia({
           audio: {
             echoCancellation: true,
@@ -108,6 +110,17 @@ export function VoiceProvider({ children }: { children: ReactNode }) {
             autoGainControl: true,
           },
         });
+
+        const ctx = new AudioContext();
+        await ctx.resume();
+
+        // In parallel, and alongside finding the session: three independent
+        // round trips that were previously serial.
+        const [sessionId] = await Promise.all([
+          resolveSessionId(),
+          ctx.audioWorklet.addModule("/worklets/pcm-capture.js"),
+          ctx.audioWorklet.addModule("/worklets/pcm-play.js"),
+        ]);
 
         const source = ctx.createMediaStreamSource(stream);
         const capture = new AudioWorkletNode(ctx, "pcm-capture");

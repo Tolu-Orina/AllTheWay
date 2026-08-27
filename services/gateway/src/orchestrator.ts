@@ -129,15 +129,37 @@ function buildMessage(input: TurnInput): Message {
   };
 }
 
+/**
+ * How long a turn may take before it is reported as failed.
+ *
+ * There was no bound at all. A planning call that never returned left the
+ * browser waiting indefinitely with the microphone open — and on a phone that
+ * is indistinguishable from the product being broken, because there is nothing
+ * to look at while it happens.
+ *
+ * Generous rather than tight: a genuine plan that consults documents can take
+ * many seconds, and cutting a working turn short would be a worse bug than the
+ * one this fixes.
+ */
+const TURN_TIMEOUT_MS = 45_000;
+
 export async function runTurn(input: TurnInput): Promise<TurnResponse> {
   const client = await orchestratorClient();
 
-  const result = await client.sendMessage({
-    tenant: "",
-    message: buildMessage(input),
-    configuration: undefined,
-    metadata: undefined,
-  });
+  const result = await Promise.race([
+    client.sendMessage({
+      tenant: "",
+      message: buildMessage(input),
+      configuration: undefined,
+      metadata: undefined,
+    }),
+    new Promise<never>((_, reject) =>
+      setTimeout(
+        () => reject(new Error("the planner did not answer in time")),
+        TURN_TIMEOUT_MS,
+      ),
+    ),
+  ]);
 
   // sendMessage returns Message | Task. A bare Message means the agent replied
   // without opening a task, which this agent never does — treat it as a fault
