@@ -16,9 +16,37 @@ from alltheway_metering import (
     PLANS,
     Tier,
     check,
+    effective_tier,
     period,
     plan_for,
 )
+
+
+def test_documents_are_five_on_free_and_two_hundred_on_plus():
+    assert PLANS[Tier.FREE].documents == 5
+    assert PLANS[Tier.PLUS].documents == 200
+    assert PLANS[Tier.TEAM].documents is None
+    assert PLANS[Tier.MAX].documents is None
+
+
+def test_a_sixth_document_on_free_is_refused():
+    assert not check(tier=Tier.FREE, meter=Meter.DOCUMENTS, used=5).allowed
+    assert check(tier=Tier.FREE, meter=Meter.DOCUMENTS, used=4).allowed
+
+
+def test_effective_tier_keeps_plus_during_smart_retries():
+    assert effective_tier({"tier": "plus", "status": "active"}) is Tier.PLUS
+    assert effective_tier({"tier": "plus", "status": "trialing"}) is Tier.PLUS
+    assert effective_tier({"tier": "plus", "status": "past_due"}) is Tier.PLUS
+
+
+def test_effective_tier_is_free_when_stripe_has_given_up():
+    assert effective_tier(None) is DEFAULT_TIER
+    assert effective_tier({}) is DEFAULT_TIER
+    assert effective_tier({"tier": "plus"}) is DEFAULT_TIER
+    assert effective_tier({"tier": "plus", "status": "canceled"}) is DEFAULT_TIER
+    assert effective_tier({"tier": "plus", "status": "unpaid"}) is DEFAULT_TIER
+    assert effective_tier({"tier": "free", "status": "active"}) is DEFAULT_TIER
 
 
 def test_the_plus_price_is_the_shipped_one():

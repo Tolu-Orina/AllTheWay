@@ -143,7 +143,21 @@
   "usage": {
     "thisMonth": "本月",
     "gettingCloseNothingStopsWorkingWit": "额度即将用尽。在未提前通知您之前，任何功能都不会停止工作。",
-    "usedUpForThisMonthEverything": "本月额度已用尽。其他所有功能仍可正常使用。"
+    "usedUpForThisMonthEverything": "本月额度已用尽。其他所有功能仍可正常使用。",
+    "upgrade": "升级到 Plus",
+    "getMax": "升级到 Max",
+    "manage": "管理方案",
+    "updatingPlan": "正在更新你的方案…",
+    "refreshIfNotUpdated": "付款已完成。如果方案尚未更新，请刷新。",
+    "checkoutCancelled": "已取消付款。你仍在当前方案。",
+    "paymentFailed": "付款失败。请更新卡片 — 重试期间你仍可使用当前方案。",
+    "cancelsOn": "将于 {{date}} 取消。",
+    "metersHint": "语音分钟、观察者运行次数和已存储文档是方案实际计量的内容。",
+    "sharingIsTeam": "共享属于 Team，不属于 Plus 或 Max。请联系我们。",
+    "documentsFull": "删除一份即可腾出位置。",
+    "videoIsMax": "成片在 Max。",
+    "meetingsAreTeam": "会议实时检查在 Team。",
+    "talkToUs": "联系我们"
   },
   "visual": {
     "howYourWorkLooks": "视觉风格",

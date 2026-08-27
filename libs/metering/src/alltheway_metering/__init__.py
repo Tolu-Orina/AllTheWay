@@ -60,6 +60,11 @@ class Meter(StrEnum):
     #: it is cheap.
     CONNECTOR_CALLS = "connector_calls"
 
+    #: Documents currently stored, not a monthly counter. Delete frees a slot.
+    #: Counted at ingest so a sixth upload on Free is refused with a sentence,
+    #: not discovered when retrieval starts ignoring the file.
+    DOCUMENTS = "documents"
+
     #: Live meeting insight passes. Each is a grounded reasoning call with web
     #: search over a growing transcript window, so it costs meaningfully more
     #: than a connector call and meaningfully less than a video second.
@@ -96,6 +101,8 @@ class Plan:
     voice_minutes: int | None
     watcher_runs: int | None
     connector_calls: int | None
+    #: Current stored documents, not a monthly spend. None is unmetered.
+    documents: int | None
     images: int | None = 0
     draft_video_seconds: int | None = 0
     final_video_seconds: int | None = 0
@@ -109,6 +116,7 @@ class Plan:
             Meter.VOICE_MINUTES: self.voice_minutes,
             Meter.WATCHER_RUNS: self.watcher_runs,
             Meter.CONNECTOR_CALLS: self.connector_calls,
+            Meter.DOCUMENTS: self.documents,
             Meter.IMAGES: self.images,
             Meter.DRAFT_VIDEO_SECONDS: self.draft_video_seconds,
             Meter.FINAL_VIDEO_SECONDS: self.final_video_seconds,
@@ -127,6 +135,7 @@ PLANS: dict[Tier, Plan] = {
         voice_minutes=30,
         watcher_runs=50,
         connector_calls=200,
+        documents=5,
         images=20,
         # Zero, not a small number. A free tier that can spend real money on
         # video is a free tier someone will spend real money with.
@@ -144,6 +153,7 @@ PLANS: dict[Tier, Plan] = {
         voice_minutes=600,
         watcher_runs=1000,
         connector_calls=5000,
+        documents=200,
         images=500,
         draft_video_seconds=20,
         # Plus cannot render a final. One 8-second render is $6 against £18.
@@ -159,6 +169,7 @@ PLANS: dict[Tier, Plan] = {
         voice_minutes=None,
         watcher_runs=None,
         connector_calls=None,
+        documents=None,
         images=2000,
         draft_video_seconds=60,
         final_video_seconds=10,
@@ -175,6 +186,7 @@ PLANS: dict[Tier, Plan] = {
         voice_minutes=None,
         watcher_runs=None,
         connector_calls=None,
+        documents=None,
         images=None,
         draft_video_seconds=300,
         final_video_seconds=20,
@@ -183,6 +195,38 @@ PLANS: dict[Tier, Plan] = {
 }
 
 DEFAULT_TIER = Tier.FREE
+
+#: Stripe statuses that keep a paid entitlement. `past_due` is Smart Retries;
+#: `canceled` / `unpaid` / missing fall to Free. `tier` alone is not enough —
+#: a webhook that wrote plus and later unpaid must not keep generating.
+PAID_STATUSES = frozenset({"active", "trialing", "past_due"})
+
+
+def effective_tier(doc: dict | None) -> Tier:
+    """The plan that actually applies, given a subscriptions/{uid} document.
+
+    Paid only when Stripe says the subscription is still in force *and* the
+    stored tier is not free. A missing document, a missing status, or a
+    corrupted tier is Free — never the most generous reading.
+    """
+    if not doc:
+        return DEFAULT_TIER
+    status = str(doc.get("status") or "").strip().lower()
+    if status not in PAID_STATUSES:
+        return DEFAULT_TIER
+    plan = plan_for(doc.get("tier"))
+    if plan.tier is Tier.FREE:
+        return DEFAULT_TIER
+    return plan.tier
+
+
+def documents_refused_message(tier: Tier) -> str:
+    """Said when ingest is refused, not 'plan limit exceeded'."""
+    if tier is Tier.FREE:
+        return "Free keeps 5 documents. Delete one, or upgrade to Plus for 200."
+    if tier is Tier.PLUS:
+        return "Plus keeps 200 documents. Delete one to free a slot."
+    return "You have reached this plan's document limit. Delete one to free a slot."
 
 
 def plan_for(tier: str | Tier | None) -> Plan:

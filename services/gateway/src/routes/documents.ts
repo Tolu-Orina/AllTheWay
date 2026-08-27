@@ -5,6 +5,7 @@ import { requireUser } from "../auth.js";
 import { authenticatingFetch } from "../a2a.js";
 import { env } from "../env.js";
 import { scopeHeader, scopeTokenConfigured } from "../scope.js";
+import { documentsSlot } from "../repos/usage.js";
 
 /**
  * Documents, proxied to the librarian.
@@ -111,6 +112,18 @@ async function relay(res: express.Response, upstream: Response): Promise<void> {
     return;
   }
 
+  if (upstream.status === 403) {
+    let message = "Free keeps 5 documents. Delete one, or upgrade to Plus for 200.";
+    try {
+      const parsed = JSON.parse(body) as { detail?: string };
+      if (parsed.detail) message = parsed.detail;
+    } catch {
+      /* keep the default */
+    }
+    res.status(403).json({ code: "plan_limit", message });
+    return;
+  }
+
   console.warn(`[documents] librarian returned HTTP ${upstream.status}`);
   res.status(502).json({
     code: "upstream_error",
@@ -144,6 +157,11 @@ documentRoutes.post("/", requireUser, async (req, res) => {
       code: "too_large",
       message: `That is larger than the ${Math.round(MAX_BYTES / 1024 / 1024)}MB limit.`,
     });
+  }
+
+  const slot = await documentsSlot(req.uid!);
+  if (!slot.allowed) {
+    return res.status(403).json({ code: "plan_limit", message: slot.message });
   }
 
   try {

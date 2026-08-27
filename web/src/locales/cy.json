@@ -158,7 +158,21 @@
   "usage": {
     "thisMonth": "Y mis hwn",
     "gettingCloseNothingStopsWorkingWit": "Yn agosáu at y terfyn. Ni fydd dim yn peidio â gweithio heb roi gwybod i chi yn gyntaf.",
-    "usedUpForThisMonthEverything": "Wedi'i ddefnyddio i gyd ar gyfer y mis hwn. Mae popeth arall yn dal i weithio."
+    "usedUpForThisMonthEverything": "Wedi'i ddefnyddio i gyd ar gyfer y mis hwn. Mae popeth arall yn dal i weithio.",
+    "upgrade": "Uwchraddio i Plus",
+    "getMax": "Cael Max",
+    "manage": "Rheoli'r cynllun",
+    "updatingPlan": "Yn diweddaru eich cynllun…",
+    "refreshIfNotUpdated": "Aeth y taliad drwodd. Adnewyddwch os nad yw'r cynllun wedi newid eto.",
+    "checkoutCancelled": "Cafodd y taliad ei ganslo. Rydych dal ar eich cynllun presennol.",
+    "paymentFailed": "Methodd y taliad. Diweddarwch eich cerdyn — rydych dal ar eich cynllun tra byddwn yn ailgynnig.",
+    "cancelsOn": "Yn canslo ar {{date}}.",
+    "metersHint": "Munudau llais, rhediadau gwylwyr, a dogfennau sydd wedi'u storio yw'r hyn mae'r cynllun yn ei gyfrif.",
+    "sharingIsTeam": "Mae rhannu yn Team, nid Plus na Max. Siaradwch â ni.",
+    "documentsFull": "Dilewch un i ryddhau lle.",
+    "videoIsMax": "Mae fideo terfynol ar Max.",
+    "meetingsAreTeam": "Mae gwiriadau cyfarfod byw ar Team.",
+    "talkToUs": "Siaradwch â ni"
   },
   "visual": {
     "howYourWorkLooks": "Golwg eich gwaith",

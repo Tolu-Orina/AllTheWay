@@ -6,7 +6,7 @@ import { env } from "../env.js";
 import { routeUpgrade } from "../ws-router.js";
 import { runTurn } from "../orchestrator.js";
 import { listPreferences } from "../repos/preferences.js";
-import { recordUsage } from "../repos/usage.js";
+import { readUsage, recordUsage } from "../repos/usage.js";
 import { recordLine } from "../repos/transcripts.js";
 import { ensureSession, touchSession, VOICE_TITLE } from "../repos/sessions.js";
 import { createLiveOpener, type LiveOpener } from "./backend.js";
@@ -142,6 +142,18 @@ async function handleConnection(ws: WebSocket, opener: LiveOpener): Promise<void
       error: { code: "unauthenticated", message: "Sign in to continue." },
     });
     ws.close(4001, "unauthenticated");
+    return;
+  }
+
+  const usage = await readUsage(uid);
+  const voice = usage.meters.find((meter) => meter.meter === "voice_minutes");
+  if (voice && voice.limit !== null && voice.remaining === 0) {
+    const message =
+      usage.tier === "free"
+        ? "You've used this month's voice minutes. Upgrade to Plus for 600 minutes, or keep typing."
+        : "You've used this month's voice minutes. You can keep typing.";
+    send(ws, { error: { code: "plan_limit", message } });
+    ws.close(4008, "plan_limit");
     return;
   }
 

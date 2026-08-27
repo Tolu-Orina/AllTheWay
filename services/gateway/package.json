@@ -9,7 +9,7 @@
     "build": "tsc -p tsconfig.build.json",
     "seed": "tsx src/seed.ts",
     "typecheck": "tsc -p tsconfig.json --noEmit",
-    "test": "node --import tsx --test src/voice.test.ts src/artifacts.test.ts src/shares.test.ts src/digest.test.ts src/capture.test.ts src/transcripts.test.ts src/sessions.test.ts src/onboarding.test.ts src/watchers.test.ts",
+    "test": "node --import tsx --test src/voice.test.ts src/artifacts.test.ts src/shares.test.ts src/digest.test.ts src/capture.test.ts src/transcripts.test.ts src/sessions.test.ts src/onboarding.test.ts src/watchers.test.ts src/billing.test.ts",
     "start:tsx": "tsx src/index.ts"
   },
   "dependencies": {
@@ -20,6 +20,7 @@
     "express": "^5.1.0",
     "firebase-admin": "^13.6.0",
     "google-auth-library": "^9.15.1",
+    "stripe": "^22.6.0",
     "ws": "^8.18.3",
     "zod": "^3.25.0"
   },

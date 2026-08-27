@@ -179,6 +179,25 @@ variable "resend_api_key_secret" {
   default     = ""
 }
 
+variable "stripe_secret_key_secret" {
+  description = <<-EOT
+    Secret Manager secret name holding the Stripe secret key. Empty leaves
+    checkout, portal, and the webhook unconfigured (503), which is a supported
+    local and two-phase-apply state. Names, never values.
+  EOT
+  type        = string
+  default     = ""
+}
+
+variable "stripe_webhook_secret" {
+  description = <<-EOT
+    Secret Manager secret name holding the Stripe webhook signing secret.
+    Empty leaves the webhook unconfigured. Names, never values.
+  EOT
+  type        = string
+  default     = ""
+}
+
 variable "mail_from" {
   description = <<-EOT
     The From address for verification and reset mail, e.g.

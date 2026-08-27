@@ -11,7 +11,7 @@ Team would be an outage that also gave away the product.
 
 from __future__ import annotations
 
-from alltheway_metering import DEFAULT_TIER, Meter, Tier, check, period
+from alltheway_metering import Meter, check, effective_tier, period
 
 from .firestore import db
 
@@ -19,14 +19,11 @@ from .firestore import db
 def watcher_runs_allowed(uid: str) -> bool:
     try:
         plan = db.collection("subscriptions").document(uid).get()
-        raw = plan.get("tier") if plan.exists else None
+        data = plan.to_dict() if plan.exists else None
     except Exception:  # noqa: BLE001 — unreadable plan is Free, not Team
-        raw = None
+        data = None
 
-    try:
-        tier = Tier(str(raw).strip().lower()) if raw else DEFAULT_TIER
-    except ValueError:
-        tier = DEFAULT_TIER
+    tier = effective_tier(data)
 
     used = 0
     try:

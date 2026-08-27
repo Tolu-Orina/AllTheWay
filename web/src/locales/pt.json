@@ -149,7 +149,21 @@
   "usage": {
     "thisMonth": "Este mês",
     "gettingCloseNothingStopsWorkingWit": "Perto do limite. Avisaremos antes que algo pare de funcionar.",
-    "usedUpForThisMonthEverything": "Cota do mês esgotada. Os demais recursos continuam funcionando."
+    "usedUpForThisMonthEverything": "Cota do mês esgotada. Os demais recursos continuam funcionando.",
+    "upgrade": "Passar para Plus",
+    "getMax": "Passar para Max",
+    "manage": "Gerenciar o plano",
+    "updatingPlan": "Atualizando o seu plano…",
+    "refreshIfNotUpdated": "O pagamento foi concluído. Atualize se o plano ainda não mudou.",
+    "checkoutCancelled": "O pagamento foi cancelado. Você continua no plano atual.",
+    "paymentFailed": "O pagamento falhou. Atualize o cartão — você continua no plano enquanto tentamos de novo.",
+    "cancelsOn": "Cancela em {{date}}.",
+    "metersHint": "Minutos de voz, execuções de watchers e documentos armazenados são o que o plano realmente conta.",
+    "sharingIsTeam": "Compartilhar é Team, não Plus nem Max. Fale conosco.",
+    "documentsFull": "Exclua um para liberar uma vaga.",
+    "videoIsMax": "O vídeo final está no Max.",
+    "meetingsAreTeam": "As checagens ao vivo estão no Team.",
+    "talkToUs": "Fale conosco"
   },
   "visual": {
     "howYourWorkLooks": "Estilo visual",

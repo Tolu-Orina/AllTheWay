@@ -66,6 +66,11 @@ def now_iso() -> str:
     return datetime.now(timezone.utc).isoformat().replace("+00:00", "Z")
 
 
+def count_documents(user: str) -> int:
+    """How many documents this user currently stores. Delete frees a slot."""
+    return sum(1 for _ in documents(user).stream())
+
+
 @dataclass(frozen=True)
 class Passage:
     """One retrieved chunk, with everything a citation needs."""

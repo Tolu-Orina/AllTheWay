@@ -23,7 +23,7 @@ import os
 from dataclasses import dataclass
 from typing import Protocol
 
-from alltheway_metering import DEFAULT_TIER, Meter, Tier, period
+from alltheway_metering import DEFAULT_TIER, Meter, Tier, effective_tier, period
 
 
 @dataclass(frozen=True)
@@ -86,14 +86,11 @@ class FirestoreSubscriptions:
     def read(self, user: str) -> Subscription:
         try:
             plan_doc = self._db.collection(self.PLANS).document(user).get()
-            tier_raw = plan_doc.get("tier") if plan_doc.exists else None
+            data = plan_doc.to_dict() if plan_doc.exists else None
         except Exception:  # noqa: BLE001 — an unreadable plan is Free, not Team
-            tier_raw = None
+            data = None
 
-        try:
-            tier = Tier(str(tier_raw).strip().lower()) if tier_raw else DEFAULT_TIER
-        except ValueError:
-            tier = DEFAULT_TIER
+        tier = effective_tier(data)
 
         used: dict[Meter, int] = {}
         try:

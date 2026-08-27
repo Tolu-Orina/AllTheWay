@@ -8,59 +8,94 @@ import {
   RevealItem,
 } from "@/components/primitives/reveal";
 import { cn } from "@/lib/utils";
+import table from "@/lib/plans.json";
 
-type Tier = {
+type PlanRow = {
+  tier: string;
+  label: string;
+  pricePence: number;
+  limits: Record<string, number | null>;
+};
+
+const plans = table.plans as PlanRow[];
+const free = plans.find((p) => p.tier === "free")!;
+const plus = plans.find((p) => p.tier === "plus")!;
+const max = plans.find((p) => p.tier === "max")!;
+
+function gbp(pence: number): string {
+  return `£${(pence / 100).toFixed(0)}`;
+}
+
+function count(limit: number | null, unit: string): string {
+  if (limit === null) return `Unmetered ${unit}`;
+  return `${limit.toLocaleString("en-GB")} ${unit}`;
+}
+
+type Card = {
   name: string;
   price: string;
   cadence: string;
   tagline: string;
-  /** What this tier adds over the one before it — not a repeated checklist. */
   features: string[];
   cta: string;
   href: string;
   featured?: boolean;
 };
 
-const TIERS: Tier[] = [
+const TIERS: Card[] = [
   {
-    name: "Free",
-    price: "$0",
+    name: free.label,
+    price: gbp(free.pricePence),
     cadence: "forever",
     tagline: "Enough to find out whether it actually remembers you.",
     features: [
-      "One active session at a time",
-      "Profile updates weekly",
-      "Core connectors, text only",
-      "No Watchers",
+      count(free.limits.voice_minutes, "voice minutes"),
+      count(free.limits.watcher_runs, "watcher runs"),
+      count(free.limits.documents, "documents stored"),
+      count(free.limits.connector_calls, "connector calls"),
     ],
     cta: "Start free",
     href: "/signup",
   },
   {
-    name: "Plus",
-    price: "$18",
+    name: plus.label,
+    price: gbp(plus.pricePence),
     cadence: "per month",
     tagline: "For one person who wants voice, memory and their first Watchers.",
     features: [
-      "Unlimited sessions",
-      "Profile updates daily",
-      "Voice conversation, fair-use minutes",
-      "Up to 3 active Watchers",
+      count(plus.limits.voice_minutes, "voice minutes"),
+      count(plus.limits.watcher_runs, "watcher runs"),
+      count(plus.limits.documents, "documents stored"),
+      count(plus.limits.connector_calls, "connector calls"),
     ],
-    cta: "Start free trial",
-    href: "/signup?plan=plus",
+    cta: "Get Plus",
+    href: "/signup",
     featured: true,
   },
   {
-    name: "Team",
-    price: "Custom",
-    cadence: "per seat",
-    tagline: "When the companion has to be safe for a company to adopt.",
+    name: max.label,
+    price: gbp(max.pricePence),
+    cadence: "per month",
+    tagline: "Unmetered voice and Watchers, and room for a finished video.",
     features: [
-      "Everything in Plus, per seat",
-      "Org-wide Watcher policy controls",
-      "SSO through your identity provider",
-      "Admin visibility across every trace",
+      count(max.limits.voice_minutes, "voice minutes"),
+      count(max.limits.watcher_runs, "watcher runs"),
+      count(max.limits.documents, "documents stored"),
+      `${max.limits.draft_video_seconds}s draft / ${max.limits.final_video_seconds}s final video`,
+    ],
+    cta: "Get Max",
+    href: "/signup",
+  },
+  {
+    name: "Team / Enterprise",
+    price: "Talk to us",
+    cadence: "custom",
+    tagline: "Sharing, live meeting checks, and org policy — when you need more than one person.",
+    features: [
+      "Sharing is Team, not a checkout",
+      "Live meeting checks",
+      "Org policy for Watchers",
+      "SSO and seats when you need them",
     ],
     cta: "Talk to us",
     href: "/contact",
@@ -82,18 +117,20 @@ export function Pricing() {
             Pay for what it actually does
           </h2>
           <p className="mt-4 text-[17px] leading-relaxed text-muted-foreground">
-            Voice minutes and Watcher runs are metered, because both cost real
-            money to run. Everything else is a flat seat price.
+            Voice minutes, Watcher runs and stored documents are metered,
+            because those are what actually cost something to keep. Plus and
+            Max are billed in pounds. Team and Enterprise are a conversation.
+            There is no trial — start free, upgrade when you need the room.
           </p>
         </Reveal>
 
-        <RevealGroup className="mt-12 grid items-start gap-5 lg:grid-cols-3">
+        <RevealGroup className="mt-12 grid items-start gap-5 md:grid-cols-2 xl:grid-cols-4">
           {TIERS.map((tier) => (
             <RevealItem key={tier.name}>
               <div
                 className={cn(
                   "relative flex h-full flex-col rounded-brand-lg border bg-card p-6 shadow-e1 sm:p-8",
-                  tier.featured && "border-blue shadow-e2 lg:-mt-4 lg:pb-10",
+                  tier.featured && "border-blue shadow-e2 xl:-mt-4 xl:pb-10",
                 )}
               >
                 {tier.featured ? (

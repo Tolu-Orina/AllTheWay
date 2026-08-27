@@ -6,3 +6,5 @@
 process.env.FIRESTORE_EMULATOR_HOST ??= "127.0.0.1:8081";
 process.env.ALLOW_ANONYMOUS ??= "true";
 process.env.GOOGLE_CLOUD_PROJECT ??= "alltheway-local";
+process.env.STRIPE_WEBHOOK_SECRET ??= "whsec_test_secret";
+process.env.STRIPE_SECRET_KEY ??= "sk_test_not_used";

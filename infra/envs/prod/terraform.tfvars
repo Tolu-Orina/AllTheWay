@@ -24,3 +24,7 @@ resend_api_key_secret = "RESEND_API_KEY"
 # rinegansolutions.com) or every send is rejected at the API.
 mail_from = "AllTheWay <no-reply@rinegansolutions.com>"
 
+# Stripe secret *names*. Values live in Secret Manager, never here.
+stripe_secret_key_secret = "STRIPE_SECRET_KEY"
+stripe_webhook_secret    = "STRIPE_WEBHOOK_SECRET"
+

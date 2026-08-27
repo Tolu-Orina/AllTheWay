@@ -146,7 +146,21 @@
   "usage": {
     "thisMonth": "This month",
     "gettingCloseNothingStopsWorkingWit": "Getting close. Nothing stops working without telling you first.",
-    "usedUpForThisMonthEverything": "Used up for this month. Everything else still works."
+    "usedUpForThisMonthEverything": "Used up for this month. Everything else still works.",
+    "upgrade": "Upgrade to Plus",
+    "getMax": "Get Max",
+    "manage": "Manage plan",
+    "updatingPlan": "Updating your plan…",
+    "refreshIfNotUpdated": "Your payment went through. Refresh if your plan has not updated yet.",
+    "checkoutCancelled": "Checkout was cancelled. You're still on your current plan.",
+    "paymentFailed": "Payment failed. Update your card — you're still on your plan while we retry.",
+    "cancelsOn": "Cancels on {{date}}.",
+    "metersHint": "Voice minutes, watcher runs, and stored documents are what the plan actually counts.",
+    "sharingIsTeam": "Sharing is Team, not Plus or Max. Talk to us.",
+    "documentsFull": "Delete one to free a slot.",
+    "videoIsMax": "Final video is on Max.",
+    "meetingsAreTeam": "Live meeting checks are on Team.",
+    "talkToUs": "Talk to us"
   },
   "visual": {
     "howYourWorkLooks": "How your work looks",

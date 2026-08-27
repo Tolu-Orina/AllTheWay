@@ -507,6 +507,7 @@ export const METERS = [
   "voice_minutes",
   "watcher_runs",
   "connector_calls",
+  "documents",
   "meeting_insights",
   "images",
   "draft_video_seconds",
@@ -526,12 +527,27 @@ export const MeterSchema = z.object({
   nearLimit: z.boolean(),
 });
 
+export const SubscriptionStatusSchema = z.enum([
+  "free",
+  "active",
+  "trialing",
+  "past_due",
+  "canceled",
+  "unpaid",
+]);
+
 export const UsageSchema = z.object({
   tier: TierSchema,
   label: z.string(),
   pricePence: z.number(),
   period: z.string(),
   meters: z.array(MeterSchema),
+  /** Stripe subscription status. Missing/unknown is treated as free. */
+  status: SubscriptionStatusSchema.default("free"),
+  /** True once a Stripe customer exists, so Manage plan can open the portal. */
+  hasBilling: z.boolean().default(false),
+  cancelAtPeriodEnd: z.boolean().default(false),
+  currentPeriodEnd: z.string().nullable().default(null),
 });
 
 export type MeterName = z.infer<typeof MeterNameSchema>;

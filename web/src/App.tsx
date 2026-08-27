@@ -23,6 +23,7 @@ import { I18nProvider } from "@/app/i18n";
  */
 
 const LandingPage = lazy(() => import("@/routes/landing"));
+const ContactPage = lazy(() => import("@/routes/contact"));
 const OfflinePage = lazy(() => import("@/routes/offline"));
 
 const Login = lazy(() => import("@/routes/auth/Login"));
@@ -77,6 +78,7 @@ export default function App() {
     <Suspense fallback={<RouteFallback />}>
       <Routes>
         <Route path="/" element={<LandingPage />} />
+        <Route path="/contact" element={<ContactPage />} />
         <Route path="/offline" element={<OfflinePage />} />
 
         <Route path="/login" element={<Login />} />

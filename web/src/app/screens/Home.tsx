@@ -33,6 +33,7 @@ import { LanguageOffer } from "@/app/LanguageChoice";
 import { CompanionConversation } from "@/app/CompanionPanel";
 import { useCompanionThread } from "@/app/companion-thread";
 import { DocumentPickup } from "@/app/Documents";
+import { BillingReturnBanner } from "@/app/Usage";
 
 type HomeData = {
   plan: SessionDetail | null;
@@ -235,6 +236,8 @@ function HomeToday({
         </div>
         <VoiceControl />
       </header>
+
+      <BillingReturnBanner />
 
       <Async state={state} reload={reload} skeleton={<HomeSkeleton />}>
         {({ plan, runs, digest, documents }) => {

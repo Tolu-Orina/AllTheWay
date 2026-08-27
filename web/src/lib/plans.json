@@ -1,0 +1,64 @@
+{
+  "plans": [
+    {
+      "tier": "free",
+      "label": "Free",
+      "pricePence": 0,
+      "limits": {
+        "voice_minutes": 30,
+        "watcher_runs": 50,
+        "connector_calls": 200,
+        "documents": 5,
+        "meeting_insights": 0,
+        "images": 20,
+        "draft_video_seconds": 0,
+        "final_video_seconds": 0
+      }
+    },
+    {
+      "tier": "plus",
+      "label": "Plus",
+      "pricePence": 1800,
+      "limits": {
+        "voice_minutes": 600,
+        "watcher_runs": 1000,
+        "connector_calls": 5000,
+        "documents": 200,
+        "meeting_insights": 0,
+        "images": 500,
+        "draft_video_seconds": 20,
+        "final_video_seconds": 0
+      }
+    },
+    {
+      "tier": "team",
+      "label": "Team",
+      "pricePence": 3200,
+      "limits": {
+        "voice_minutes": null,
+        "watcher_runs": null,
+        "connector_calls": null,
+        "documents": null,
+        "meeting_insights": 300,
+        "images": 2000,
+        "draft_video_seconds": 60,
+        "final_video_seconds": 10
+      }
+    },
+    {
+      "tier": "max",
+      "label": "Max",
+      "pricePence": 6000,
+      "limits": {
+        "voice_minutes": null,
+        "watcher_runs": null,
+        "connector_calls": null,
+        "documents": null,
+        "meeting_insights": null,
+        "images": null,
+        "draft_video_seconds": 300,
+        "final_video_seconds": 20
+      }
+    }
+  ]
+}

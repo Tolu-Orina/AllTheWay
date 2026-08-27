@@ -1,7 +1,7 @@
 import { METERS as SHARED_METERS, type MeterName, type Tier } from "@alltheway/contracts";
-import { FieldValue } from "firebase-admin/firestore";
+import { FieldValue, Timestamp } from "firebase-admin/firestore";
 
-import { db } from "../firestore.js";
+import { db, userDoc } from "../firestore.js";
 
 /**
  * What a user is on, and what they have spent this month.
@@ -48,6 +48,7 @@ const PLANS: Record<Tier, { label: string; pricePence: number; limits: Limits }>
       voice_minutes: 30,
       watcher_runs: 50,
       connector_calls: 200,
+      documents: 5,
       meeting_insights: 0,
       images: 20,
       draft_video_seconds: 0,
@@ -61,6 +62,7 @@ const PLANS: Record<Tier, { label: string; pricePence: number; limits: Limits }>
       voice_minutes: 600,
       watcher_runs: 1000,
       connector_calls: 5000,
+      documents: 200,
       meeting_insights: 0,
       images: 500,
       draft_video_seconds: 20,
@@ -74,6 +76,7 @@ const PLANS: Record<Tier, { label: string; pricePence: number; limits: Limits }>
       voice_minutes: null,
       watcher_runs: null,
       connector_calls: null,
+      documents: null,
       meeting_insights: 300,
       images: 2000,
       draft_video_seconds: 60,
@@ -87,6 +90,7 @@ const PLANS: Record<Tier, { label: string; pricePence: number; limits: Limits }>
       voice_minutes: null,
       watcher_runs: null,
       connector_calls: null,
+      documents: null,
       meeting_insights: null,
       images: null,
       draft_video_seconds: 300,
@@ -96,6 +100,8 @@ const PLANS: Record<Tier, { label: string; pricePence: number; limits: Limits }>
 };
 
 const METERS: readonly Meter[] = SHARED_METERS;
+
+const PAID_STATUSES = new Set(["active", "trialing", "past_due"]);
 
 /**
  * UTC, so a counter cannot be reset by travelling and two services never
@@ -112,22 +118,83 @@ function tierOf(raw: unknown): Tier {
   return raw === "plus" || raw === "team" || raw === "max" ? raw : "free";
 }
 
+/**
+ * Mirrors libs/metering.effective_tier. Paid only when Stripe says the
+ * subscription is still in force *and* the stored tier is not free.
+ */
+export function effectiveTier(data: Record<string, unknown> | undefined): Tier {
+  if (!data) return "free";
+  const status = String(data.status ?? "").trim().toLowerCase();
+  if (!PAID_STATUSES.has(status)) return "free";
+  const tier = tierOf(data.tier);
+  return tier === "free" ? "free" : tier;
+}
+
+function isoOf(value: unknown): string | null {
+  if (!value) return null;
+  if (value instanceof Timestamp) return value.toDate().toISOString();
+  if (typeof value === "string") return value;
+  return null;
+}
+
+async function countDocuments(uid: string): Promise<number> {
+  const snap = await userDoc(uid).collection("documents").count().get();
+  return snap.data().count;
+}
+
+export function documentsLimitMessage(tier: Tier): string {
+  if (tier === "free") return "Free keeps 5 documents. Delete one, or upgrade to Plus for 200.";
+  if (tier === "plus") return "Plus keeps 200 documents. Delete one to free a slot.";
+  return "You have reached this plan's document limit. Delete one to free a slot.";
+}
+
+export async function documentsSlot(
+  uid: string,
+): Promise<{ allowed: boolean; message: string }> {
+  const usage = await readUsage(uid);
+  const row = usage.meters.find((meter) => meter.meter === "documents");
+  if (!row || row.limit === null || (row.remaining ?? 1) > 0) {
+    return { allowed: true, message: "" };
+  }
+  return { allowed: false, message: documentsLimitMessage(usage.tier) };
+}
+
 export async function readUsage(uid: string) {
-  const [planDoc, usageDoc] = await Promise.all([
+  const [planDoc, usageDoc, storedDocuments] = await Promise.all([
     db.collection("subscriptions").doc(uid).get(),
     db.collection("usage").doc(`${uid}::${period()}`).get(),
+    countDocuments(uid).catch(() => 0),
   ]);
 
-  const tier = tierOf(planDoc.exists ? planDoc.get("tier") : undefined);
+  const data = planDoc.exists ? (planDoc.data() as Record<string, unknown>) : undefined;
+  const tier = effectiveTier(data);
   const plan = PLANS[tier];
+  const statusRaw = String(data?.status ?? "free").trim().toLowerCase();
+  const status =
+    statusRaw === "active" ||
+    statusRaw === "trialing" ||
+    statusRaw === "past_due" ||
+    statusRaw === "canceled" ||
+    statusRaw === "unpaid"
+      ? statusRaw
+      : "free";
 
   return {
     tier,
     label: plan.label,
     pricePence: plan.pricePence,
     period: period(),
+    status,
+    hasBilling: Boolean(data?.stripeCustomerId),
+    cancelAtPeriodEnd: Boolean(data?.cancelAtPeriodEnd),
+    currentPeriodEnd: isoOf(data?.currentPeriodEnd),
     meters: METERS.map((meter) => {
-      const used = usageDoc.exists ? Number(usageDoc.get(meter) ?? 0) : 0;
+      const used =
+        meter === "documents"
+          ? storedDocuments
+          : usageDoc.exists
+            ? Number(usageDoc.get(meter) ?? 0)
+            : 0;
       const limit = plan.limits[meter];
       return {
         meter,

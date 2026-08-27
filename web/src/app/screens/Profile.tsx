@@ -20,8 +20,8 @@ import { useAuth } from "@/auth/useAuth";
  * You — account, memory, and what is running. Not the product.
  *
  * Section order is the design: plan first, learned memory, language, accounts,
- * libraries, registry collapsed, then sign out. Upgrade stays hidden until
- * billing exists so the button cannot 404.
+ * libraries, registry collapsed, then sign out. Upgrade starts Checkout;
+ * Manage plan opens the Stripe Customer Portal.
  */
 export default function Profile() {
   const t = useT();

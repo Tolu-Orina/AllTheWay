@@ -143,7 +143,21 @@
   "usage": {
     "thisMonth": "Oṣù yìí",
     "gettingCloseNothingStopsWorkingWit": "Ó ti ń súnmọ́ tòsí. Kò sí ohun tí yóò dáṣẹ́ dúró láìsọ fún ọ tẹ́lẹ̀.",
-    "usedUpForThisMonthEverything": "Ti tán fún oṣù yìí. Gbogbo àwọn nǹkan yòókù ṣì ń ṣiṣẹ́."
+    "usedUpForThisMonthEverything": "Ti tán fún oṣù yìí. Gbogbo àwọn nǹkan yòókù ṣì ń ṣiṣẹ́.",
+    "upgrade": "Gbé sí Plus",
+    "getMax": "Gbé sí Max",
+    "manage": "Ṣàkóso ètò",
+    "updatingPlan": "Ń ṣe àtúnṣe ètò rẹ…",
+    "refreshIfNotUpdated": "Owó náà ti wọlé. Tún ojú-ìwé ṣe tí ètò kò bá tíì yí.",
+    "checkoutCancelled": "O fagilé owó náà. O ṣì wà lórí ètò rẹ lọ́wọ́lọ́wọ́.",
+    "paymentFailed": "Owó kò wọlé. Ṣe àtúnṣe káàdì — o ṣì wà lórí ètò rẹ nígbà tí a bá tún gbìyànjú.",
+    "cancelsOn": "Yóò fagilé ní {{date}}.",
+    "metersHint": "Ìṣẹ́jú ohùn, ìṣiṣẹ́ olùṣọ́, àti àwọn ìwé tí a fipamọ́ ni ètò náà ń ka.",
+    "sharingIsTeam": "Pípín jẹ́ ti Team, kì í ṣe Plus tàbí Max. Bá wa sọ̀rọ̀.",
+    "documentsFull": "Pa ọ̀kan rẹ́ kí àyè lè sí.",
+    "videoIsMax": "Fídíò ìkẹyìn wà lórí Max.",
+    "meetingsAreTeam": "Àyẹ̀wò ìpàdé lọ́wọ́lọ́wọ́ wà lórí Team.",
+    "talkToUs": "Bá wa sọ̀rọ̀"
   },
   "visual": {
     "howYourWorkLooks": "Bí iṣẹ́ rẹ ṣe rí",

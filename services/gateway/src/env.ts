@@ -123,6 +123,17 @@ export const env = {
   resendApiKey: process.env.RESEND_API_KEY ?? "",
   mailFrom: process.env.MAIL_FROM ?? "",
 
+  /**
+   * Stripe. Empty is a supported local state: checkout and the webhook
+   * answer 503 rather than crashing the process. Secrets are mounted from
+   * Secret Manager on Cloud Run and never appear as VITE_* values.
+   */
+  stripeSecretKey: process.env.STRIPE_SECRET_KEY ?? "",
+  stripeWebhookSecret: process.env.STRIPE_WEBHOOK_SECRET ?? "",
+  stripePricePlus: process.env.STRIPE_PRICE_PLUS ?? "",
+  stripePriceMax: process.env.STRIPE_PRICE_MAX ?? "",
+  stripeLookupKey: process.env.STRIPE_LOOKUP_KEY ?? "plus",
+
   webOrigins: (process.env.WEB_ORIGINS ?? "")
     .split(",")
     .map((o) => o.trim())

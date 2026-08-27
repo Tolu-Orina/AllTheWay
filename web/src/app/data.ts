@@ -217,6 +217,10 @@ export const api = {
    * discovered by being refused.
    */
   usage: () => apiGet("/usage", UsageSchema),
+  billingCheckout: (plan: "plus" | "max" = "plus") =>
+    apiPost("/billing/checkout", { plan }, z.object({ url: z.string().url() })),
+  billingPortal: () =>
+    apiPost("/billing/portal", {}, z.object({ url: z.string().url() })),
 
   /* --- Documents (v3 Phase B) -------------------------------------- */
 

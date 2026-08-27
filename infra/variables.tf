@@ -72,6 +72,18 @@ variable "resend_api_key_secret" {
   default     = ""
 }
 
+variable "stripe_secret_key_secret" {
+  description = "Secret Manager secret name holding the Stripe secret key. Empty leaves billing unconfigured."
+  type        = string
+  default     = ""
+}
+
+variable "stripe_webhook_secret" {
+  description = "Secret Manager secret name holding the Stripe webhook signing secret. Empty leaves the webhook unconfigured."
+  type        = string
+  default     = ""
+}
+
 variable "mail_from" {
   description = "From address for verification and reset mail. Its domain must be verified in Resend."
   type        = string

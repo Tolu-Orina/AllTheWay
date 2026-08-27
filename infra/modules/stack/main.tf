@@ -109,6 +109,10 @@ locals {
         var.custom_domain != "" ? "https://${var.custom_domain}" : "",
         "https://${var.hosting_site_id}.web.app",
       ]))
+
+      # Lookup key, not a price id: test and live Stripe accounts differ only
+      # by secret. Empty STRIPE_PRICE_PLUS is the intended production path.
+      STRIPE_LOOKUP_KEY = "plus"
     }
     scribe = {
       # Screening and planning live in the orchestrator. The scribe stores what
@@ -396,6 +400,12 @@ locals {
       {
         SCOPE_TOKEN_SIGNING_KEY = "scopetoken_signing_key"
       },
+      var.stripe_secret_key_secret == "" ? {} : {
+        STRIPE_SECRET_KEY = var.stripe_secret_key_secret
+      },
+      var.stripe_webhook_secret == "" ? {} : {
+        STRIPE_WEBHOOK_SECRET = var.stripe_webhook_secret
+      },
     )
   })
 
@@ -520,6 +530,7 @@ module "service" {
     google_secret_manager_secret_iam_member.scope_token_verifier,
     google_secret_manager_secret_iam_member.gateway_reads_oauth_client,
     google_secret_manager_secret_iam_member.gateway_reads_resend_key,
+    google_secret_manager_secret_iam_member.gateway_reads_stripe,
   ]
 }
 

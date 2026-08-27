@@ -36,6 +36,7 @@ from pydantic import BaseModel, Field
 from . import embed, store
 from .a2a_card import build_card
 from .pipeline import Blocked, ingest
+from .quota import document_slot
 from .transcribe import TranscriptionFailed
 
 log = logging.getLogger(__name__)
@@ -97,6 +98,10 @@ def post_document(
         raise HTTPException(status_code=413, detail="That file is too large.")
     if not body:
         raise HTTPException(status_code=400, detail="That file was empty.")
+
+    allowed, message = document_slot(user)
+    if not allowed:
+        raise HTTPException(status_code=403, detail=message)
 
     try:
         return ingest(user, title=request.title, body=body, mime_type=request.mimeType)

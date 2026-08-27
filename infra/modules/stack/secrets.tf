@@ -6,6 +6,8 @@
  *  - the Google OAuth client id and secret, because the consent screen is a
  *    console-only flow
  *  - the Resend API key, because it is issued by a third party
+ *  - the Stripe secret key and webhook signing secret, because they are
+ *    issued by a third party
  *
  * They live in Secret Manager, created out of band. Terraform references them
  * by *name* and never holds the value in a variable, which keeps them out of
@@ -62,6 +64,18 @@ resource "google_secret_manager_secret_iam_member" "gateway_reads_resend_key" {
 
   project   = var.project_id
   secret_id = var.resend_api_key_secret
+  role      = "roles/secretmanager.secretAccessor"
+  member    = "serviceAccount:${local.runtime_sa["gateway-${var.env}"]}"
+}
+
+resource "google_secret_manager_secret_iam_member" "gateway_reads_stripe" {
+  for_each = toset(compact([
+    var.stripe_secret_key_secret,
+    var.stripe_webhook_secret,
+  ]))
+
+  project   = var.project_id
+  secret_id = each.value
   role      = "roles/secretmanager.secretAccessor"
   member    = "serviceAccount:${local.runtime_sa["gateway-${var.env}"]}"
 }

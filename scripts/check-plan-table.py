@@ -32,6 +32,7 @@ from alltheway_metering import as_json  # noqa: E402
 
 USAGE_TS = ROOT / "services" / "gateway" / "src" / "repos" / "usage.ts"
 CONTRACTS_TS = ROOT / "services" / "contracts" / "src" / "index.ts"
+PLANS_JSON = ROOT / "web" / "src" / "lib" / "plans.json"
 
 
 def shared_lists(source: str) -> tuple[list[str], list[str]]:
@@ -132,6 +133,26 @@ def main() -> int:
                 )
 
         print(f"  {tier:6} {len(got['limits'])} meters  {'OK' if not failures else ''}")
+
+    if not PLANS_JSON.exists():
+        failures.append(
+            "web/src/lib/plans.json is missing; run python scripts/export-plan-table.py"
+        )
+    else:
+        exported = json.loads(io.open(PLANS_JSON, encoding="utf-8").read())
+        exported_plans = {p["tier"]: p for p in exported.get("plans", [])}
+        for tier, want in python_plans.items():
+            got_export = exported_plans.get(tier)
+            if got_export is None:
+                failures.append(f"plans.json has no {tier} plan")
+            else:
+                if got_export.get("pricePence") != want["pricePence"]:
+                    failures.append(
+                        f"plans.json prices {tier} at {got_export.get('pricePence')}, "
+                        f"metering at {want['pricePence']}"
+                    )
+                if got_export.get("limits") != want["limits"]:
+                    failures.append(f"plans.json limits for {tier} drifted from metering")
 
     if failures:
         print("\nFAILURES:")

@@ -55,8 +55,23 @@ import { applyCors, openStream } from "./sse.js";
 import { TOPICS, publish } from "./events.js";
 import { userDoc } from "./firestore.js";
 import { z } from "zod";
+import { billingOrigin, processWebhook, startCheckout, startPortal } from "./billing.js";
 
 const app = express();
+
+app.post(
+  "/api/billing/webhook",
+  express.raw({ type: "application/json" }),
+  (req, res) => {
+    const raw = Buffer.isBuffer(req.body)
+      ? req.body
+      : Buffer.from(typeof req.body === "string" ? req.body : "");
+    void processWebhook(raw, req.header("stripe-signature")).then(({ status, body }) => {
+      res.status(status).json(body);
+    });
+  },
+);
+
 app.use(express.json({ limit: "1mb" }));
 
 /** Unauthenticated: Cloud Run needs this to consider the revision healthy. */
@@ -136,6 +151,45 @@ api.get(
   "/usage",
   handle(async (req, res) => {
     res.json(await readUsage(req.uid!));
+  }),
+);
+
+api.post(
+  "/billing/checkout",
+  handle(async (req, res) => {
+    const raw = z.object({ plan: z.string().optional() }).safeParse(req.body ?? {});
+    const plan = (raw.success ? raw.data.plan : undefined)?.trim().toLowerCase() || "plus";
+    if (plan === "team" || plan === "enterprise") {
+      res.status(400).json({
+        code: "not_self_serve",
+        message: "Team is not self-serve. Talk to us.",
+      });
+      return;
+    }
+    if (plan !== "plus" && plan !== "max") {
+      res.status(400).json({ code: "invalid_request", message: "Choose Plus or Max." });
+      return;
+    }
+    const result = await startCheckout(req.uid!, billingOrigin(req), plan);
+    if ("url" in result) {
+      res.json({ url: result.url });
+      return;
+    }
+    const code = result.status === 404 ? "not_found" : "not_configured";
+    res.status(result.status).json({ code, message: result.error });
+  }),
+);
+
+api.post(
+  "/billing/portal",
+  handle(async (req, res) => {
+    const result = await startPortal(req.uid!, billingOrigin(req));
+    if ("url" in result) {
+      res.json({ url: result.url });
+      return;
+    }
+    const code = result.status === 404 ? "not_found" : "not_configured";
+    res.status(result.status).json({ code, message: result.error });
   }),
 );
 
