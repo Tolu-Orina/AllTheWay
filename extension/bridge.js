@@ -20,13 +20,43 @@
  *
  * The page is asked; it is not scraped. `window.postMessage` with an explicit
  * request means the web app decides whether to answer, and can stop answering.
+ *
+ * ## Retry, because the first ask is usually too early
+ *
+ * This script runs at `document_idle`. The page's listener is a React effect.
+ * The first `postMessage` used to land before anyone was listening, and the
+ * signed-in event it then waited for was never dispatched. `sendMessage` to a
+ * sleeping service worker also fails silently (`lastError`). Ask again until
+ * a token arrives, and retry the worker hand-off when Chrome drops it.
  */
 
 const REQUEST = "alltheway:token-request";
 const RESPONSE = "alltheway:token";
 
+let haveToken = false;
+let retries = 0;
+const MAX_ASKS = 12;
+
 function ask() {
   window.postMessage({ type: REQUEST }, window.location.origin);
+}
+
+function deliver(token, gateway, attempt = 0) {
+  chrome.runtime.sendMessage(
+    {
+      type: "token",
+      token,
+      gateway: typeof gateway === "string" ? gateway : "",
+    },
+    () => {
+      if (chrome.runtime.lastError) {
+        if (attempt >= 8) return;
+        setTimeout(() => deliver(token, gateway, attempt + 1), 250);
+        return;
+      }
+      haveToken = true;
+    },
+  );
 }
 
 window.addEventListener("message", (event) => {
@@ -38,15 +68,28 @@ window.addEventListener("message", (event) => {
   const token = event.data.token;
   if (typeof token !== "string" || token.length < 20) return;
 
-  chrome.runtime.sendMessage({
-    type: "token",
-    token,
-    // The gateway the app itself is talking to. Read from the page rather than
-    // compiled in, so a dev build and a production build each reach their own.
-    gateway: typeof event.data.gateway === "string" ? event.data.gateway : "",
-  });
+  deliver(token, event.data.gateway);
 });
 
-// Ask once the page has had a chance to sign in, and again when it says it has.
-ask();
-window.addEventListener("alltheway:signed-in", ask);
+function askUntilHeard() {
+  if (haveToken || retries >= MAX_ASKS) return;
+  retries += 1;
+  ask();
+  window.setTimeout(askUntilHeard, 750);
+}
+
+askUntilHeard();
+window.addEventListener("alltheway:signed-in", () => {
+  haveToken = false;
+  retries = 0;
+  ask();
+});
+window.addEventListener("pageshow", () => {
+  if (!haveToken) {
+    retries = 0;
+    askUntilHeard();
+  }
+});
+document.addEventListener("visibilitychange", () => {
+  if (!document.hidden && !haveToken) ask();
+});

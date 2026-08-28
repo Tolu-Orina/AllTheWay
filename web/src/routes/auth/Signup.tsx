@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useT } from "@/app/i18n";
 import { Check, X } from "lucide-react";
 import { Link, useNavigate } from "react-router";
@@ -6,6 +6,7 @@ import { Link, useNavigate } from "react-router";
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/auth/useAuth";
 import { PASSWORD_RULES, isEmail, passwordProblems } from "@/auth/types";
+import { rememberAfterAuth, takeAfterAuth } from "@/auth/firebase-auth";
 import {
   AuthShell,
   Field,
@@ -43,7 +44,7 @@ function PasswordRules({ password }: { password: string }) {
 
 export default function Signup() {
   const t = useT();
-  const { adapter } = useAuth();
+  const { adapter, user, loading } = useAuth();
   const navigate = useNavigate();
 
   const [email, setEmail] = useState("");
@@ -54,6 +55,11 @@ export default function Signup() {
     password?: string;
   }>({});
   const [busy, setBusy] = useState(false);
+
+  useEffect(() => {
+    if (loading || !user) return;
+    navigate(takeAfterAuth("/app"), { replace: true });
+  }, [user, loading, navigate]);
 
   async function submit(e: React.FormEvent) {
     e.preventDefault();
@@ -83,6 +89,7 @@ export default function Signup() {
   async function google() {
     setError(null);
     setBusy(true);
+    rememberAfterAuth("/app");
     const res = await adapter.signInWithGoogle();
     setBusy(false);
     if (res.ok) navigate("/app", { replace: true });

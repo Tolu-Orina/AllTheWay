@@ -5,6 +5,7 @@ import { createFirebaseAuth } from "@/auth/firebase-auth";
 import { firebaseConfigured } from "@/auth/firebase";
 import { AuthContext } from "@/auth/context";
 import type { AuthAdapter, AuthUser } from "@/auth/types";
+import { serveExtensionToken } from "@/app/extension-bridge";
 
 /**
  * Chooses the adapter.
@@ -49,8 +50,24 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       setUser(next);
       setLoading(false);
     });
-    return stop;
+    // IndexedDB hangs used to leave this true forever. Persistence is now
+    // localStorage, but a fail-safe still beats a blank "Checking session"
+    // screen if Auth never calls back — five seconds is longer than a
+    // localStorage read and shorter than anyone will wait.
+    const failSafe = window.setTimeout(() => setLoading(false), 5_000);
+    return () => {
+      stop();
+      window.clearTimeout(failSafe);
+    };
   }, [adapter]);
+
+  useEffect(() => {
+    // Lives here, not in AppLayout: the content script asks as soon as the
+    // AllTheWay origin loads, including `/login`. A listener that only
+    // existed inside `/app` lost the first ask and never announced sign-in.
+    if (!firebaseConfigured) return;
+    return serveExtensionToken();
+  }, []);
 
   const value = useMemo(
     () => ({ user, loading, adapter }),

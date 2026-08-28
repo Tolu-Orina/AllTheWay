@@ -93,3 +93,34 @@ def test_a_document_turn_returns_citations_with_the_retrieved_passage():
     assert r.citations[0].document_id == "d1"
     assert r.citations[0].text == passage.text
 
+
+def test_lookups_are_in_the_system_context_not_the_user_message():
+    class Spy:
+        def __init__(self):
+            self.system = ""
+            self.user = ""
+
+        def structured(self, system, user, schema_hint):
+            self.system = system
+            self.user = user
+            return {
+                "decision": "plan",
+                "steps": [{"label": "Answer from the calendar", "done": False}],
+                "note": "Standup at 10.",
+            }
+
+    spy = Spy()
+    run_turn(
+        TurnRequest(
+            session_id="s1",
+            user_id="u1",
+            message="What's on today",
+            lookups=["whats_on_my_calendar: Standup at 10."],
+        ),
+        spy,
+    )
+    assert "LOOKUPS" in spy.system
+    assert "Standup at 10." in spy.system
+    assert "Standup at 10." not in spy.user
+    assert "What's on today" in spy.user
+

@@ -15,7 +15,7 @@ import { useAsync } from "@/app/use-async";
 import { useDecision } from "@/app/use-decision";
 import { useTurn, type ProposedAction, type TurnPhase } from "@/app/use-turn";
 import { COMPANION_SESSION_ID } from "@/app/work-id";
-import type { Citation, OnboardingJob, PlanStep } from "@alltheway/contracts";
+import type { Citation, OnboardingJob, PlanStep, ThreadMessage } from "@alltheway/contracts";
 
 export type CompanionMessage = {
   id: number;
@@ -56,6 +56,19 @@ function welcomeKey(job: OnboardingJob | null): string {
   return "today.welcomeGeneric";
 }
 
+function fromStored(thread: ThreadMessage[]): CompanionMessage[] {
+  return thread.map((m, i) => ({
+    id: i + 1,
+    role: m.role,
+    text: m.text,
+    phase: m.phase,
+    options: m.options,
+    actions: m.actions,
+    citations: m.citations,
+    steps: m.steps,
+  }));
+}
+
 /**
  * One companion thread for the shell.
  *
@@ -84,10 +97,37 @@ export function CompanionThreadProvider({ children }: { children: React.ReactNod
   ]);
   const [draft, setDraft] = useState("");
   const settled = useRef<string>("");
+  const hydrated = useRef(false);
+
+  // The thread is stored on the companion session. Reload used to start from
+  // the welcome bubble every time, which is how a conversation the person
+  // had just had vanished.
+  useEffect(() => {
+    let live = true;
+    void api
+      .session(COMPANION_SESSION_ID)
+      .then((detail) => {
+        if (!live || !detail?.thread?.length) return;
+        setHistory((prev) => {
+          // A send that landed before this GET must not be overwritten.
+          if (prev.some((m) => m.role === "user")) return prev;
+          hydrated.current = true;
+          return fromStored(detail.thread);
+        });
+      })
+      .catch(() => {
+        // No session yet, or offline. The welcome bubble stays.
+      });
+    return () => {
+      live = false;
+    };
+  }, []);
 
   // Replace the opening bubble while it is still the only message. After they
-  // have spoken, a job-aware rewrite would look like the companion forgot.
+  // have spoken — or after a stored thread has been restored — a job-aware
+  // rewrite would look like the companion forgot.
   useEffect(() => {
+    if (hydrated.current) return;
     setHistory((prev) => {
       if (prev.length !== 1 || prev[0].role !== "agent") return prev;
       if (prev[0].text === welcome) return prev;

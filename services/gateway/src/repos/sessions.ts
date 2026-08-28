@@ -3,12 +3,14 @@ import {
   PlanStepSchema,
   SessionDetailSchema,
   SessionSchema,
+  ThreadMessageSchema,
   type PlanStep,
   type Session,
   type SessionDetail,
+  type ThreadMessage,
 } from "@alltheway/contracts";
 
-import { sessions } from "../firestore.js";
+import { db, sessions } from "../firestore.js";
 
 /**
  * A session parent document that list queries can see.
@@ -46,6 +48,19 @@ function asPlan(value: unknown): PlanStep[] {
   }
   return out;
 }
+
+function asThread(value: unknown): ThreadMessage[] {
+  if (!Array.isArray(value)) return [];
+  const out: ThreadMessage[] = [];
+  for (const item of value) {
+    const parsed = ThreadMessageSchema.safeParse(item);
+    if (parsed.success) out.push(parsed.data);
+  }
+  return out;
+}
+
+/** Last N bubbles. A session document must stay well under Firestore's 1 MB. */
+const THREAD_CAP = 80;
 
 function planFields(plan: PlanStep[]) {
   return {
@@ -140,6 +155,31 @@ export async function touchSession(uid: string, id: string, input: TouchInput = 
   );
 }
 
+/**
+ * Append bubbles to the session's conversation.
+ *
+ * Transactional so two overlapping turns cannot drop a message. Cap, don't
+ * grow forever: this is the recent thread, not an archive.
+ */
+export async function appendThread(
+  uid: string,
+  id: string,
+  entries: ThreadMessage[],
+): Promise<void> {
+  if (!entries.length) return;
+  const ref = sessions(uid).doc(id);
+  await db.runTransaction(async (tx) => {
+    const snap = await tx.get(ref);
+    const existing = asThread(snap.exists ? snap.get("thread") : []);
+    const next = [...existing, ...entries].slice(-THREAD_CAP);
+    tx.set(
+      ref,
+      { thread: next, updatedAt: FieldValue.serverTimestamp() },
+      { merge: true },
+    );
+  });
+}
+
 /** Stub for Cut 1b: a confirmed plan is stored on the session, then cleared. */
 export async function clearPendingConfirm(uid: string, id: string): Promise<void> {
   await sessions(uid).doc(id).set({ pendingConfirm: FieldValue.delete() }, { merge: true });
@@ -165,6 +205,7 @@ export async function getSession(uid: string, id: string): Promise<SessionDetail
     scope: doc.get("scope") ?? "",
     companionNote: doc.get("companionNote") ?? "",
     correction: doc.get("correction") ?? null,
+    thread: asThread(doc.get("thread")),
     done: doc.get("done") ?? 0,
     total: Math.max(Number(doc.get("total")) || 0, 1),
   });

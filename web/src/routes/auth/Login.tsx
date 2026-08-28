@@ -1,10 +1,11 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useT } from "@/app/i18n";
 import { Link, useLocation, useNavigate } from "react-router";
 
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/auth/useAuth";
 import { isEmail } from "@/auth/types";
+import { rememberAfterAuth, takeAfterAuth } from "@/auth/firebase-auth";
 import {
   AuthShell,
   Field,
@@ -14,7 +15,7 @@ import {
 
 export default function Login() {
   const t = useT();
-  const { adapter } = useAuth();
+  const { adapter, user, loading } = useAuth();
   const navigate = useNavigate();
   const location = useLocation() as { state?: { from?: string } };
   const from = location.state?.from ?? "/app";
@@ -27,6 +28,13 @@ export default function Login() {
     password?: string;
   }>({});
   const [busy, setBusy] = useState(false);
+
+  // Google redirect unloads this page. When they come back signed in, send
+  // them on — including the case where they opened /login already signed in.
+  useEffect(() => {
+    if (loading || !user) return;
+    navigate(takeAfterAuth(from), { replace: true });
+  }, [user, loading, from, navigate]);
 
   async function submit(e: React.FormEvent) {
     e.preventDefault();
@@ -49,6 +57,7 @@ export default function Login() {
   async function google() {
     setError(null);
     setBusy(true);
+    rememberAfterAuth(from);
     const res = await adapter.signInWithGoogle();
     setBusy(false);
     if (res.ok) navigate(from, { replace: true });

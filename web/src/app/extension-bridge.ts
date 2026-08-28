@@ -1,3 +1,5 @@
+import { onAuthStateChanged } from "firebase/auth";
+
 import { firebaseAuth } from "@/auth/firebase";
 
 /**
@@ -26,54 +28,80 @@ import { firebaseAuth } from "@/auth/firebase";
  * Both the listener and the reply are pinned to this origin. An embedded frame
  * from somewhere else must not be able to ask, and the reply must not be
  * readable by one.
+ *
+ * ## The page pushes; it does not only wait to be asked
+ *
+ * The content script asks once at `document_idle`. React's listener used to
+ * mount later, on `/app` only, and `announceSignIn` was never called — so a
+ * signed-in user still looked signed-out to the extension, with no console
+ * output at all. The page now pushes whenever Auth says someone is in, and
+ * the listener lives for the whole app (including `/login`), not only the shell.
  */
 
 const REQUEST = "alltheway:token-request";
 const RESPONSE = "alltheway:token";
+const SIGNED_IN = "alltheway:signed-in";
+
+/**
+ * The Cloud Run origin the extension must open its capture socket against.
+ *
+ * Empty on purpose when the build has no `VITE_STREAM_ORIGIN`: falling back to
+ * `window.location.origin` (Firebase Hosting) produces a WebSocket that never
+ * upgrades. The extension then sits on a 10s timeout and reports nothing
+ * useful. Better to omit the gateway and keep a working one than to overwrite
+ * it with a hostname that cannot carry the socket.
+ */
+function gatewayOrigin(): string {
+  const baked = import.meta.env.VITE_STREAM_ORIGIN;
+  return typeof baked === "string" ? baked.trim() : "";
+}
+
+function announceSignIn(): void {
+  window.dispatchEvent(new Event(SIGNED_IN));
+}
+
+async function reply(): Promise<void> {
+  const user = firebaseAuth.currentUser;
+  if (!user) return;
+
+  let token: string;
+  try {
+    token = await user.getIdToken(false);
+  } catch {
+    return;
+  }
+
+  const gateway = gatewayOrigin();
+  window.postMessage(
+    {
+      type: RESPONSE,
+      token,
+      ...(gateway ? { gateway } : {}),
+    },
+    window.location.origin,
+  );
+  announceSignIn();
+}
 
 export function serveExtensionToken(): () => void {
-  const onMessage = async (event: MessageEvent) => {
+  const onMessage = (event: MessageEvent) => {
     if (event.source !== window || event.origin !== window.location.origin) return;
     if ((event.data as { type?: string } | null)?.type !== REQUEST) return;
-
-    const user = firebaseAuth.currentUser;
-    if (!user) {
-      // Silence rather than an error: not being signed in yet is the ordinary
-      // case on first load, and the extension asks again after sign-in.
-      return;
-    }
-
-    let token: string;
-    try {
-      token = await user.getIdToken();
-    } catch {
-      return;
-    }
-
-    window.postMessage(
-      {
-        type: RESPONSE,
-        token,
-        // Where the extension should open its capture socket. The same origin
-        // the voice socket uses — Firebase Hosting cannot carry a WebSocket
-        // upgrade, so this is the Cloud Run hostname rather than the site's.
-        gateway: import.meta.env.VITE_STREAM_ORIGIN ?? window.location.origin,
-      },
-      window.location.origin,
-    );
+    void reply();
   };
 
   window.addEventListener("message", onMessage);
-  return () => window.removeEventListener("message", onMessage);
-}
 
-/**
- * Tell the extension a sign-in just happened, so it can ask again.
- *
- * Without this the extension would hold "not signed in" until the user reloaded
- * the page — and the moment they most want to start recording is right after
- * signing in.
- */
-export function announceSignIn(): void {
-  window.dispatchEvent(new Event("alltheway:signed-in"));
+  const unsub = onAuthStateChanged(firebaseAuth, (user) => {
+    if (user) void reply();
+  });
+
+  // currentUser is often already set by the time this effect runs (localStorage
+  // persistence). Push once so we do not wait for a request that already flew.
+  void reply();
+
+  return () => {
+    window.removeEventListener("message", onMessage);
+    unsub();
+  };
 }

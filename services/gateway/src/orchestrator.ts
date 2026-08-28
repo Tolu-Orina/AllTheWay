@@ -70,6 +70,13 @@ export type TurnInput = {
     page: number;
     text: string;
   }[];
+  /**
+   * Live connected-account reads for this turn, already fetched.
+   *
+   * Same channel as passages: the orchestrator is stateless and cannot hold a
+   * connector grant. Empty when the utterance did not ask for a lookup.
+   */
+  lookups?: string[];
 };
 
 /** Parts are a tagged union; pull out the structured `data` payloads. */
@@ -142,6 +149,7 @@ function buildMessage(input: TurnInput): Message {
       // able to tell the difference between what the user said and what a
       // document said — they are not equally trustworthy.
       passages: input.passages ?? [],
+      lookups: input.lookups ?? [],
     },
     extensions: [],
     referenceTaskIds: [],

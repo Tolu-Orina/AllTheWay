@@ -66,8 +66,19 @@ export default defineConfig({
         // /app, not the filename.
         navigateFallback: "/index.html",
         navigateFallbackAllowlist: [/^\/app/],
-        navigateFallbackDenylist: [/^\/api\//],
+        // `/api` is the gateway. `/__/` is Firebase Auth's reserved helper
+        // namespace (`/__/auth/handler`) — a service worker that answered those
+        // with index.html is a sign-in that never returns.
+        navigateFallbackDenylist: [/^\/api\//, /^\/__\//],
         cleanupOutdatedCaches: true,
+        runtimeCaching: [
+          {
+            // Firebase Auth must never be served from the service worker cache.
+            // A stale identitytoolkit response is a sign-in that "hangs".
+            urlPattern: /^https:\/\/(securetoken|identitytoolkit)\.googleapis\.com\//i,
+            handler: "NetworkOnly",
+          },
+        ],
       },
       devOptions: { enabled: false },
     }),

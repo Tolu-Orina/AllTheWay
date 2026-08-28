@@ -66,6 +66,20 @@ function HomeSkeleton() {
 export default function Home() {
   const { state, reload } = useAsync(() => api.onboarding());
 
+  // The greeting is cheap and local. Waiting on onboarding before painting
+  // anything is why, after a successful login, the phone sat on two grey
+  // bars. First-run vs Today is a product branch, not a reason to hide the
+  // shell; if they have not been asked yet, FirstRun replaces this once the
+  // answer lands.
+  if (state.status === "loading") {
+    return (
+      <div className="flex flex-col gap-6">
+        <HomeHeader />
+        <HomeSkeleton />
+      </div>
+    );
+  }
+
   return (
     <Async state={state} reload={reload} skeleton={<HomeSkeleton />}>
       {(onboarding) =>
@@ -76,6 +90,37 @@ export default function Home() {
         )
       }
     </Async>
+  );
+}
+
+function HomeHeader() {
+  const t = useT();
+  const { user } = useAuth();
+  const now = new Date();
+  const today = now.toLocaleDateString(undefined, {
+    weekday: "long",
+    day: "numeric",
+    month: "long",
+  });
+  const hour = now.getHours();
+  const greeting =
+    hour < 12 ? "Good morning" : hour < 18 ? "Good afternoon" : "Good evening";
+  const firstName = user?.displayName?.trim().split(/\s+/)[0];
+
+  return (
+    <header className="flex items-end justify-between gap-4">
+      <div className="min-w-0">
+        <p className="text-[13px] text-muted-foreground">{today}</p>
+        <h1 className="mt-1 text-[26px] leading-tight font-bold tracking-[-0.02em] sm:text-[30px]">
+          {greeting}
+          {firstName ? `, ${firstName}` : ""}
+        </h1>
+        <p className="mt-2 text-[15px] leading-relaxed text-muted-foreground">
+          {t("common.hereIsWhereThingsStand")}
+        </p>
+      </div>
+      <VoiceControl />
+    </header>
   );
 }
 
@@ -180,7 +225,6 @@ function HomeToday({
   lifeContext: LifeContext | null;
 }) {
   const t = useT();
-  const { user } = useAuth();
   const { send } = useCompanionThread();
   const { state, reload } = useAsync<HomeData>(async () => {
     const [plan, runs, digest, docs] = await Promise.all([
@@ -213,32 +257,9 @@ function HomeToday({
   const [showMeetings, setShowMeetings] = useState(job === "meetings");
   const [focusComposer, setFocusComposer] = useState(job === "talk");
 
-  const now = new Date();
-  const today = now.toLocaleDateString(undefined, {
-    weekday: "long",
-    day: "numeric",
-    month: "long",
-  });
-  const hour = now.getHours();
-  const greeting =
-    hour < 12 ? "Good morning" : hour < 18 ? "Good afternoon" : "Good evening";
-  const firstName = user?.displayName?.trim().split(/\s+/)[0];
-
   return (
     <div className="flex flex-col gap-6">
-      <header className="flex items-end justify-between gap-4">
-        <div className="min-w-0">
-          <p className="text-[13px] text-muted-foreground">{today}</p>
-          <h1 className="mt-1 text-[26px] leading-tight font-bold tracking-[-0.02em] sm:text-[30px]">
-            {greeting}
-            {firstName ? `, ${firstName}` : ""}
-          </h1>
-          <p className="mt-2 text-[15px] leading-relaxed text-muted-foreground">
-            {t("common.hereIsWhereThingsStand")}
-          </p>
-        </div>
-        <VoiceControl />
-      </header>
+      <HomeHeader />
 
       <BillingReturnBanner />
 

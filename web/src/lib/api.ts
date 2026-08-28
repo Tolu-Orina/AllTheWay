@@ -27,19 +27,29 @@ export class ApiError extends Error {
  * `currentUser` is null for the first moments. Reading it synchronously sends
  * the opening requests with no token and they come back 401 — which only ever
  * reproduces on a hard reload, never on in-app navigation.
+ *
+ * `authStateReady()` can hang when IndexedDB persistence is wedged (the
+ * mobile Safari failure). Race it against a bound so a request either goes
+ * authenticated or goes without a token, rather than never going at all.
+ * If `currentUser` is already set — the common case after sign-in — skip the
+ * wait entirely so Home's first paint is not queued behind a token refresh.
  */
 let authReady: Promise<unknown> | null = null;
 function whenAuthReady() {
-  authReady ??= firebaseAuth.authStateReady();
+  authReady ??= Promise.race([
+    firebaseAuth.authStateReady(),
+    new Promise<void>((resolve) => setTimeout(resolve, 4_000)),
+  ]);
   return authReady;
 }
 
 export async function authHeader(): Promise<Record<string, string>> {
-  await whenAuthReady();
+  if (!firebaseAuth.currentUser) await whenAuthReady();
   const user = firebaseAuth.currentUser;
   if (!user) return {};
-  // getIdToken refreshes automatically when the token is close to expiry.
-  const token = await user.getIdToken();
+  // false: use the cached token. Forcing a refresh here is what made every
+  // screen's first API call wait on identitytoolkit after login.
+  const token = await user.getIdToken(false);
   return { authorization: `Bearer ${token}` };
 }
 

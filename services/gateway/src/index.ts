@@ -17,6 +17,7 @@ import {
   getSession,
   listSessions,
   touchSession,
+  appendThread,
 } from "./repos/sessions.js";
 import { listPreferences, revertPreference } from "./repos/preferences.js";
 import { listVisualPreferences, revertVisualPreference } from "./repos/visual.js";
@@ -44,9 +45,11 @@ import {
   LocaleSchema,
   OnboardingJobSchema,
   type PlanStep,
+  type ThreadMessage,
 } from "@alltheway/contracts";
 import { getOnboarding, setOnboarding } from "./repos/onboarding.js";
 import { retrieve } from "./repos/retrieval.js";
+import { connectedLookups } from "./lookups.js";
 import { attachVoice } from "./voice/relay.js";
 import { attachCapture } from "./meetings/capture.js";
 import { openLiveTranscriber } from "./meetings/live-transcriber.js";
@@ -142,6 +145,16 @@ async function rememberWork(
     console.error("[gateway] persist session", sessionId, err);
   }
 }
+
+async function rememberThread(uid: string, sessionId: string, entries: ThreadMessage[]): Promise<void> {
+  try {
+    await appendThread(uid, sessionId, entries);
+  } catch (err) {
+    console.error("[gateway] persist thread", sessionId, err);
+  }
+}
+
+const isoNow = () => new Date().toISOString();
 
 // Where the user stands this month.
 //
@@ -347,19 +360,27 @@ api.get(
     // Preferences and passages are both context the orchestrator cannot fetch
     // for itself — it is stateless, and only this service can scope a request
     // to a user. Fetched together so a turn makes one round of reads.
-    const [prefs, passages] = await Promise.all([
+    const [prefs, passages, lookups] = await Promise.all([
       listPreferences(req.uid!),
       retrieve(req.uid!, message),
+      connectedLookups(req.uid!, message),
     ]);
     const stream = openStream(req, res);
     const sessionId = param(req, "id");
     const steps: PlanStep[] = [];
     let note = "";
+    let phase: ThreadMessage["phase"] = "done";
+    let options: string[] | undefined;
+    let actions: ThreadMessage["actions"];
+    let citations: ThreadMessage["citations"];
 
     try {
       // Materialise the parent before the planner answers, so a hang still
       // leaves a row titled from what they said.
       await rememberWork(req.uid!, sessionId, { utterance: message });
+      await rememberThread(req.uid!, sessionId, [
+        { role: "user", text: message, at: isoNow() },
+      ]);
 
       for await (const event of streamTurn({
         sessionId,
@@ -367,11 +388,29 @@ api.get(
         message,
         knownPreferences: prefs.map((p) => p.now),
         passages,
+        lookups,
       })) {
         if (event.kind === "step") steps.push(event.step);
-        if (event.kind === "done") note = event.note;
-        if (event.kind === "confirm") note = note || event.summary;
-        if (event.kind === "clarify") note = note || event.question;
+        if (event.kind === "done") {
+          note = event.note;
+          citations = event.citations;
+          phase = "done";
+        }
+        if (event.kind === "confirm") {
+          note = note || event.summary;
+          options = event.options;
+          actions = event.actions;
+          phase = "confirm";
+        }
+        if (event.kind === "clarify") {
+          note = note || event.question;
+          options = event.options;
+          phase = "clarify";
+        }
+        if (event.kind === "error") {
+          note = event.message;
+          phase = "error";
+        }
         // The reader left. Stop pulling from the agent rather than finishing a
         // turn nobody is waiting for.
         if (stream.closed()) break;
@@ -383,12 +422,28 @@ api.get(
       // explanation the client could show.
       console.error(`[gateway] stream ${req.path}`, err);
       stream.send({ kind: "error", message: "Something went wrong on our side." });
+      note = note || "Something went wrong on our side.";
+      phase = "error";
     } finally {
       await rememberWork(req.uid!, sessionId, {
         utterance: message,
         plan: steps.length > 0 ? steps : undefined,
         companionNote: note || undefined,
       });
+      if (note) {
+        await rememberThread(req.uid!, sessionId, [
+          {
+            role: "agent",
+            text: note,
+            at: isoNow(),
+            phase,
+            options,
+            actions,
+            citations,
+            steps: steps.length ? steps : undefined,
+          },
+        ]);
+      }
       stream.end();
     }
   }),
@@ -408,13 +463,17 @@ api.post(
     // Preferences and passages are both context the orchestrator cannot fetch
     // for itself — it is stateless, and only this service can scope a request
     // to a user. Fetched together so a turn makes one round of reads.
-    const [prefs, passages] = await Promise.all([
+    const [prefs, passages, lookups] = await Promise.all([
       listPreferences(req.uid!),
       retrieve(req.uid!, body.data.message),
+      connectedLookups(req.uid!, body.data.message),
     ]);
 
     const sessionId = param(req, "id");
     await rememberWork(req.uid!, sessionId, { utterance: body.data.message });
+    await rememberThread(req.uid!, sessionId, [
+      { role: "user", text: body.data.message, at: isoNow() },
+    ]);
 
     const result = await runTurn({
       sessionId,
@@ -422,6 +481,7 @@ api.post(
       message: body.data.message,
       knownPreferences: prefs.map((p) => p.now),
       passages,
+      lookups,
     });
 
     const companionNote =
@@ -431,6 +491,26 @@ api.post(
       plan: result.plan.length > 0 ? result.plan : undefined,
       companionNote,
     });
+    if (companionNote) {
+      const phase =
+        result.decision === "clarify"
+          ? "clarify"
+          : result.decision === "confirm"
+            ? "confirm"
+            : "done";
+      await rememberThread(req.uid!, sessionId, [
+        {
+          role: "agent",
+          text: companionNote,
+          at: isoNow(),
+          phase,
+          options: result.clarify?.options ?? result.confirm?.options,
+          actions: result.confirm?.actions,
+          citations: result.citations,
+          steps: result.plan.length ? result.plan : undefined,
+        },
+      ]);
+    }
 
     res.json(result);
   }),

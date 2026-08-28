@@ -11,6 +11,7 @@ import {
 
 import en from "@/locales/en.json";
 import { api } from "@/app/data";
+import { useAuth } from "@/auth/useAuth";
 
 /**
  * Interface language.
@@ -83,13 +84,20 @@ async function load(locale: Locale): Promise<Catalogue> {
 }
 
 export function I18nProvider({ children }: { children: React.ReactNode }) {
+  const { user, loading } = useAuth();
   const [locale, setLocaleState] = useState<Locale>(() => cached() ?? DEFAULT_LOCALE);
   const [catalogue, setCatalogue] = useState<Catalogue>(en as Catalogue);
   const [offer, setOffer] = useState<Locale | null>(null);
   const [dismissed, setDismissed] = useState(false);
 
   // The server's answer wins over the cache, once it arrives.
+  //
+  // Not fetched until there is a user: `/settings/locale` is authenticated, and
+  // calling it on `/login` used to wait on Firebase `authStateReady` + a token
+  // fetch before the sign-in form could even translate. The cache (or English)
+  // is enough for that screen.
   useEffect(() => {
+    if (loading || !user) return;
     let live = true;
     void api
       .locale()
@@ -104,10 +112,10 @@ export function I18nProvider({ children }: { children: React.ReactNode }) {
         }
       })
       .catch(() => {
-        // Not signed in yet, or offline. The cache or English still applies.
+        // Offline. The cache or English still applies.
       });
     return () => void (live = false);
-  }, []);
+  }, [user, loading]);
 
   useEffect(() => {
     let live = true;

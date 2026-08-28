@@ -65,6 +65,13 @@ class TurnRequest(BaseModel):
     #: it apart from what the user actually said.
     passages: list["Passage"] = Field(default_factory=list)
 
+    #: Live reads from the user's connected accounts (calendar, Drive, digest,
+    #: meeting notes), fetched by the gateway the same way passages are.
+    #:
+    #: **Untrusted.** A calendar event title is text someone else wrote.
+    #: Labelled in the prompt, never concatenated into the user's message.
+    lookups: list[str] = Field(default_factory=list)
+
 
 class Passage(BaseModel):
     """One retrieved chunk. `chunk_id` is what a citation points at."""

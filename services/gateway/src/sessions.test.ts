@@ -9,6 +9,7 @@ import {
   getSession,
   listSessions,
   touchSession,
+  appendThread,
   VOICE_TITLE,
 } from "./repos/sessions.js";
 
@@ -137,4 +138,30 @@ test("an empty plan still stores total 1 so the detail schema can parse", emulat
   assert.ok(detail);
   assert.equal(detail.total, 1);
   assert.equal(detail.done, 0);
+  assert.deepEqual(detail.thread, []);
+});
+
+test("appended thread messages survive a later touch", emulated, async () => {
+  const id = `thread-${Date.now()}`;
+  await touchSession(UID, id, { utterance: "What's on today" });
+  await appendThread(UID, id, [
+    {
+      role: "user",
+      text: "What's on today",
+      at: new Date().toISOString(),
+    },
+    {
+      role: "agent",
+      text: "You have standup at 10.",
+      at: new Date().toISOString(),
+      phase: "done",
+    },
+  ]);
+
+  await touchSession(UID, id, { utterance: "and tomorrow" });
+
+  const detail = await getSession(UID, id);
+  assert.equal(detail?.thread.length, 2);
+  assert.equal(detail?.thread[0]?.role, "user");
+  assert.equal(detail?.thread[1]?.text, "You have standup at 10.");
 });

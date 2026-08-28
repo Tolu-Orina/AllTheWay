@@ -154,11 +154,39 @@ export const CorrectionSchema = z.object({
   now: z.string(),
 });
 
+/**
+ * One bubble in a persisted companion thread.
+ *
+ * `id` is assigned by the client for React keys and is not meaningful across
+ * devices. `at` is when it was stored, so a reload can reconstruct order even if
+ * two writes land in the same second.
+ */
+export const ThreadMessageSchema = z.object({
+  role: z.enum(["agent", "user"]),
+  text: z.string(),
+  at: z.string().datetime(),
+  phase: z.enum(["clarify", "confirm", "done", "error"]).optional(),
+  options: z.array(z.string()).optional(),
+  actions: z.array(ProposedActionSchema).optional(),
+  citations: z.array(CitationSchema).optional(),
+  steps: z.array(PlanStepSchema).optional(),
+});
+export type ThreadMessage = z.infer<typeof ThreadMessageSchema>;
+
 export const SessionDetailSchema = SessionSchema.extend({
   scope: z.string(),
   plan: z.array(PlanStepSchema),
   correction: CorrectionSchema.nullable(),
   companionNote: z.string(),
+  /**
+   * The conversation on this session, oldest first.
+   *
+   * Companion chat used to live only in React state, so a reload (or a phone
+   * that backgrounded the tab) forgot every word. Voice transcripts stay a
+   * separate opt-in; this is the typed thread, and it is persisted because
+   * the person asked us to remember it.
+   */
+  thread: z.array(ThreadMessageSchema).default([]),
 });
 
 /**

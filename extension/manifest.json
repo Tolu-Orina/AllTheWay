@@ -1,7 +1,7 @@
 {
   "manifest_version": 3,
   "name": "AllTheWay meeting notes",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Takes notes in the meeting you are already in. It listens on your own machine; nothing joins the call.",
   "minimum_chrome_version": "116",
   "permissions": [
@@ -12,8 +12,8 @@
     "tabCapture"
   ],
   "host_permissions": [
-    "https://gateway-prod-g32kip7okq-ew.a.run.app/*",
-    "https://gateway-prod-678063096671.europe-west1.run.app/*",
+    "https://*.run.app/*",
+    "wss://*.run.app/*",
     "https://alltheway.rinegansolutions.com/*",
     "https://alltheway-prod.web.app/*"
   ],

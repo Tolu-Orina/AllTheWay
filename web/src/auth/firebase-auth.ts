@@ -1,9 +1,13 @@
 import {
   GoogleAuthProvider,
+  browserPopupRedirectResolver,
   createUserWithEmailAndPassword,
+  getRedirectResult,
+  onAuthStateChanged,
   onIdTokenChanged,
   signInWithEmailAndPassword,
   signInWithPopup,
+  signInWithRedirect,
   signOut as fbSignOut,
 } from "firebase/auth";
 
@@ -20,6 +24,50 @@ import type { AuthAdapter, AuthResult, AuthUser } from "@/auth/types";
  */
 
 /**
+ * Where to send the person after a Google redirect comes back.
+ *
+ * Popup sign-in returns in-page. Redirect unloads the page, so the destination
+ * has to survive in sessionStorage rather than in React state.
+ */
+const AFTER_AUTH_KEY = "alltheway:after-auth";
+
+export function rememberAfterAuth(path: string): void {
+  try {
+    sessionStorage.setItem(AFTER_AUTH_KEY, path);
+  } catch {
+    /* private windows throw; they will land on /app */
+  }
+}
+
+export function takeAfterAuth(fallback = "/app"): string {
+  try {
+    const stored = sessionStorage.getItem(AFTER_AUTH_KEY);
+    if (stored) sessionStorage.removeItem(AFTER_AUTH_KEY);
+    return stored || fallback;
+  } catch {
+    return fallback;
+  }
+}
+
+/**
+ * Popup Google sign-in is the right desktop path. On a phone it is the wrong
+ * one: iOS Safari and installed PWAs block or stall the popup, and even when
+ * it opens, the iframe round-trip is the "Firebase is slow" report.
+ *
+ * Redirect is what Google's own mobile guidance uses. Coarse pointer, iOS,
+ * or an installed PWA — any one is enough.
+ */
+export function prefersGoogleRedirect(): boolean {
+  if (typeof window === "undefined" || typeof navigator === "undefined") return false;
+  const coarse = window.matchMedia?.("(pointer: coarse)")?.matches ?? false;
+  const standalone = window.matchMedia?.("(display-mode: standalone)")?.matches ?? false;
+  const iOS =
+    /iPad|iPhone|iPod/.test(navigator.userAgent) ||
+    (navigator.platform === "MacIntel" && navigator.maxTouchPoints > 1);
+  return Boolean(coarse || standalone || iOS);
+}
+
+/**
  * Firebase error codes are specific enough to enumerate accounts
  * (`user-not-found` vs `wrong-password`), so sign-in collapses them into one
  * message. Only genuinely actionable states get their own wording.
@@ -34,6 +82,12 @@ function toMessage(err: unknown): string {
     case "auth/popup-closed-by-user":
     case "auth/cancelled-popup-request":
       return "That sign-in window closed before it finished. Try again.";
+    case "auth/popup-blocked":
+      return "The sign-in window was blocked. Allow popups for this site, or try again.";
+    case "auth/operation-not-supported-in-this-environment":
+      return "Google sign-in is not available in this browser. Try the installed app, or use email.";
+    case "auth/unauthorized-domain":
+      return "This site is not authorised for Google sign-in. That is on us, not you.";
     case "auth/network-request-failed":
       return "We could not reach the network. Check your connection and try again.";
     case "auth/too-many-requests":
@@ -56,12 +110,67 @@ const fromApi = (err: unknown): AuthResult =>
     ? { ok: false, message: err.message }
     : { ok: false, message: "Something went wrong. Try again." };
 
+const POPUP_FALLBACK = new Set([
+  "auth/popup-blocked",
+  "auth/popup-closed-by-user",
+  "auth/cancelled-popup-request",
+  "auth/operation-not-supported-in-this-environment",
+]);
+
+async function signInWithGoogle(): Promise<AuthResult> {
+  const provider = new GoogleAuthProvider();
+  try {
+    if (prefersGoogleRedirect()) {
+      await signInWithRedirect(firebaseAuth, provider, browserPopupRedirectResolver);
+      // The page is unloading. The adapter never returns; Login/Signup pick
+      // the user up from onAuthStateChanged when they remount.
+      return { ok: true };
+    }
+    await signInWithPopup(firebaseAuth, provider, browserPopupRedirectResolver);
+    return { ok: true };
+  } catch (err) {
+    const code = (err as { code?: string })?.code ?? "";
+    // A phone that we failed to classify as redirect still gets a second
+    // chance rather than a stuck popup error.
+    if (POPUP_FALLBACK.has(code) && !prefersGoogleRedirect()) {
+      try {
+        await signInWithRedirect(firebaseAuth, provider, browserPopupRedirectResolver);
+        return { ok: true };
+      } catch (redirectErr) {
+        return { ok: false, message: toMessage(redirectErr) };
+      }
+    }
+    return { ok: false, message: toMessage(err) };
+  }
+}
+
 export function createFirebaseAuth(): AuthAdapter {
   return {
     init(onChange) {
-      // onIdTokenChanged, not onAuthStateChanged: it also fires on token
-      // refresh and after emailVerified flips, so the UI stays truthful.
-      return onIdTokenChanged(firebaseAuth, (u) => onChange(u ? toUser(u) : null));
+      // onAuthStateChanged unblocks the UI as soon as the persisted user is
+      // known. onIdTokenChanged used to be the only listener, and it waits
+      // for a token fetch — on a slow mobile radio that is the entire "signed
+      // in, still staring at Checking session" report.
+      //
+      // onIdTokenChanged is still subscribed: reload() after email verification
+      // does not fire onAuthStateChanged, and the Verify screen needs
+      // emailVerified to flip without a full reload.
+      const unsubAuth = onAuthStateChanged(firebaseAuth, (u) =>
+        onChange(u ? toUser(u) : null),
+      );
+      const unsubToken = onIdTokenChanged(firebaseAuth, (u) =>
+        onChange(u ? toUser(u) : null),
+      );
+
+      void getRedirectResult(firebaseAuth, browserPopupRedirectResolver).catch(() => {
+        // A failed redirect is reported the next time they tap Google, not as
+        // a stuck spinner on a page they just landed on.
+      });
+
+      return () => {
+        unsubAuth();
+        unsubToken();
+      };
     },
 
     async signIn(email, password) {
@@ -82,14 +191,7 @@ export function createFirebaseAuth(): AuthAdapter {
       }
     },
 
-    async signInWithGoogle() {
-      try {
-        await signInWithPopup(firebaseAuth, new GoogleAuthProvider());
-        return { ok: true };
-      } catch (err) {
-        return { ok: false, message: toMessage(err) };
-      }
-    },
+    signInWithGoogle,
 
     async signOut() {
       await fbSignOut(firebaseAuth);
