@@ -125,7 +125,9 @@
     "irreversibleActionsExternalSendsPa": "无论监控器的权限上限如何设置，不可逆操作（对外发送、付款、删除）始终会暂停并请求确认。该安全底线无法降低。",
     "youAreOffline": "您已离线",
     "allthewayCouldNotReachTheNetwork": "AllTheWay 无法连接网络。您的会话很安全 — 重新连接后本页面将自动恢复。",
-    "checkingSession": "正在检查会话…"
+    "checkingSession": "正在检查会话…",
+    "couldNotLoad": "无法加载。",
+    "workSafe": "没有丢失任何内容。"
   },
   "account": {
     "signOut": "退出登录"

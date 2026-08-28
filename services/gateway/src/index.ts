@@ -33,6 +33,7 @@ import { runTurn, streamTurn } from "./orchestrator.js";
 import { listRecent, record } from "./repos/ledger.js";
 import { readUsage } from "./repos/usage.js";
 import { buildDigest } from "./repos/digest.js";
+import { buildHome } from "./repos/home.js";
 import { registerToken, removeToken } from "./repos/push.js";
 import {
   forgetTranscript,
@@ -79,6 +80,12 @@ app.post(
 );
 
 app.use(express.json({ limit: "1mb" }));
+
+/** Reflect CORS on every response so studio generate (POST, gateway host) is readable. */
+app.use((req, res, next) => {
+  applyCors(req, res);
+  next();
+});
 
 /** Unauthenticated: Cloud Run needs this to consider the revision healthy. */
 // Both spellings, deliberately. Google's frontend on *.run.app swallows the
@@ -574,6 +581,13 @@ api.get(
   "/digest",
   handle(async (req, res) => {
     res.json(await buildDigest(req.uid!));
+  }),
+);
+
+api.get(
+  "/home",
+  handle(async (req, res) => {
+    res.json(await buildHome(req.uid!));
   }),
 );
 

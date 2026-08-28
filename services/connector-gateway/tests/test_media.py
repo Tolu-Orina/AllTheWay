@@ -211,6 +211,22 @@ async def test_images_are_metered_separately_from_video(connector):
     assert connector.reached
 
 
+async def test_generated_bytes_are_not_screened_as_inbound_text(connector, monkeypatch):
+    """A JPEG as JSON is ~80KB of base64. Model Armor on that fails closed
+    or matches SDP on noise, which is how a successful still vanished."""
+
+    def must_not_screen(text, direction):
+        raise AssertionError(f"must not screen media bytes as {direction}")
+
+    monkeypatch.setattr(service, "screen", must_not_screen)
+    paid = InMemorySubscriptions({"u": Subscription(tier=Tier.PLUS, used={})})
+    outcome = await _call(
+        "generate_image", {"prompt": "a wireframe"}, subscriptions=paid, confirmed=True
+    )
+    assert outcome.ok, outcome.reason
+    assert connector.reached
+
+
 # ----------------------------------------------------------- brand memory
 
 

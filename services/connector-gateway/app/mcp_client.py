@@ -66,10 +66,30 @@ class ToolResult:
 #: connector can read by default.
 _PASSED_THROUGH = ("PATH", "PYTHONPATH", "PYTHONHOME", "SYSTEMROOT", "TEMP", "TMP")
 
+#: Media calls Vertex with the service identity. The subprocess is otherwise
+#: stripped, so without the project the URL is `projects//locations/...` and
+#: generation 400s after a successful A2A handshake.
+_MEDIA_ENV = (
+    "GOOGLE_CLOUD_PROJECT",
+    "MEDIA_LOCATION",
+    "IMAGE_MODEL",
+    "VIDEO_DRAFT_MODEL",
+    "VIDEO_STANDARD_MODEL",
+    "VIDEO_FINAL_MODEL",
+)
 
-def _connector_env(credentials: dict[str, str] | None = None) -> dict[str, str]:
+
+def _connector_env(
+    credentials: dict[str, str] | None = None,
+    *,
+    connector: str = "",
+) -> dict[str, str]:
     env = {name: os.environ[name] for name in _PASSED_THROUGH if name in os.environ}
     env["PYTHONUNBUFFERED"] = "1"
+    if connector == "media":
+        for name in _MEDIA_ENV:
+            if name in os.environ:
+                env[name] = os.environ[name]
 
     # Credentials are added per call, by the gateway, for this one invocation.
     # They are never read from the gateway's own environment: that is what
@@ -102,7 +122,7 @@ async def _connect(connector: str, credentials: dict[str, str] | None = None):
         # connector cannot import `mcp` and dies on connect. That failed only
         # in the image — locally the packages are in site-packages and no path
         # is needed, so the stripped environment looked fine.
-        env=_connector_env(credentials),
+        env=_connector_env(credentials, connector=connector),
     )
 
     async with stdio_client(params) as (read, write):

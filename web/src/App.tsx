@@ -33,7 +33,10 @@ const ForgotPassword = lazy(() => import("@/routes/auth/ForgotPassword"));
 const ResetPassword = lazy(() => import("@/routes/auth/ResetPassword"));
 
 const AppLayout = lazy(() =>
-  import("@/app/AppLayout").then((m) => ({ default: m.AppLayout })),
+  import("@/app/AppLayout").then((m) => {
+    void import("@/app/screens/Home");
+    return { default: m.AppLayout };
+  }),
 );
 const Home = lazy(() => import("@/app/screens/Home"));
 const Sessions = lazy(() => import("@/app/screens/Sessions"));

@@ -131,7 +131,9 @@
     "irreversibleActionsExternalSendsPa": "Les actions irréversibles (envois externes, paiements, suppressions) demandent toujours confirmation, quel que soit le niveau accordé au watcher. Ce garde-fou ne peut être retiré.",
     "youAreOffline": "Vous êtes hors ligne",
     "allthewayCouldNotReachTheNetwork": "AllTheWay n'a pas pu accéder au réseau. Vos sessions sont en sécurité — reconnectez-vous pour reprendre là où vous en étiez.",
-    "checkingSession": "Vérification de la session…"
+    "checkingSession": "Vérification de la session…",
+    "couldNotLoad": "Impossible de charger ceci.",
+    "workSafe": "Rien n'a été perdu."
   },
   "account": {
     "signOut": "Se déconnecter"

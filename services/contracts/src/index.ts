@@ -508,6 +508,32 @@ export type SharedArtifact = z.infer<typeof SharedArtifactSchema>;
 export type Digest = z.infer<typeof DigestSchema>;
 export type ApiError = z.infer<typeof ApiErrorSchema>;
 
+/**
+ * One round trip for Today. Home used to wait on onboarding, then fire four
+ * more requests (including a list-then-detail for the continue card).
+ */
+export const HomeDocumentSchema = z.object({
+  id: z.string(),
+  title: z.string(),
+  mimeType: z.string().optional().default(""),
+  pages: z.number().optional().default(0),
+  chunks: z.number().optional().default(0),
+  status: z.enum(["screening", "indexing", "ready", "blocked"]),
+  blockedReason: z.string().optional().default(""),
+  createdAt: z.string().optional().default(""),
+});
+
+export const HomeSchema = z.object({
+  onboarding: OnboardingSchema,
+  plan: SessionDetailSchema.nullable(),
+  digest: DigestSchema,
+  runs: z.array(WatcherRunSchema),
+  documents: z.array(HomeDocumentSchema),
+});
+
+export type HomeDocument = z.infer<typeof HomeDocumentSchema>;
+export type Home = z.infer<typeof HomeSchema>;
+
 /** Human-facing labels live with the enum so both sides agree on wording. */
 export const CEILING_LABELS: Record<Ceiling, string> = {
   draft_only: "Draft only",

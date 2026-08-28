@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router";
 import { useT } from "@/app/i18n";
 import { ArrowRight, Clapperboard, ExternalLink, FileText, Image, ListTodo, Loader2 } from "lucide-react";
@@ -12,7 +12,7 @@ import {
   SheetHeader,
   SheetTitle,
 } from "@/components/ui/sheet";
-import { Async } from "@/app/async";
+import { ErrorState } from "@/app/async";
 import { useAsync } from "@/app/use-async";
 import { RUN_STATE_LABELS } from "@alltheway/contracts";
 
@@ -24,7 +24,6 @@ import {
   type WatcherRun,
 } from "@/app/data";
 import { timeOfDay } from "@/lib/format";
-import { ApiError } from "@/lib/api";
 import { useAuth } from "@/auth/useAuth";
 import { Meetings } from "@/app/Meetings";
 import { cn } from "@/lib/utils";
@@ -35,13 +34,6 @@ import { useCompanionThread } from "@/app/companion-thread";
 import { DocumentPickup, askAboutAdded } from "@/app/Documents";
 import { PlanStack } from "@/app/PlanStack";
 import { BillingReturnBanner } from "@/app/Usage";
-
-type HomeData = {
-  plan: SessionDetail | null;
-  runs: WatcherRun[];
-  digest: DigestData;
-  documents: UserDocument[];
-};
 
 type ActivationJob = Exclude<OnboardingJob, "skipped">;
 
@@ -63,32 +55,76 @@ function HomeSkeleton() {
 }
 
 export default function Home() {
-  const { state, reload } = useAsync(() => api.onboarding());
+  const t = useT();
+  const navigate = useNavigate();
+  const { send, openCompanion } = useCompanionThread();
+  const { state, reload } = useAsync(() => api.home());
+  const [docsOpen, setDocsOpen] = useState(false);
 
-  // The greeting is cheap and local. Waiting on onboarding before painting
-  // anything is why, after a successful login, the phone sat on two grey
-  // bars. First-run vs Today is a product branch, not a reason to hide the
-  // shell; if they have not been asked yet, FirstRun replaces this once the
-  // answer lands.
-  if (state.status === "loading") {
-    return (
-      <div className="flex flex-col gap-6">
-        <HomeHeader />
-        <HomeSkeleton />
-      </div>
-    );
+  const job = state.status === "ready" ? state.data.onboarding.job : undefined;
+
+  useEffect(() => {
+    if (job !== "document") return;
+    try {
+      const key = "alltheway:doc-sheet";
+      if (sessionStorage.getItem(key)) return;
+      sessionStorage.setItem(key, "1");
+      setDocsOpen(true);
+    } catch {
+      setDocsOpen(true);
+    }
+  }, [job]);
+
+  // Greeting and the four cards do not wait. First-run vs Today is a product
+  // branch, not a reason to hide the shell behind onboarding then four more
+  // round trips.
+  if (state.status === "ready" && state.data.onboarding.job === null) {
+    return <FirstRun onSaved={reload} />;
   }
 
   return (
-    <Async state={state} reload={reload} skeleton={<HomeSkeleton />}>
-      {(onboarding) =>
-        onboarding.job === null ? (
-          <FirstRun onSaved={reload} />
-        ) : (
-          <HomeToday job={onboarding.job} />
-        )
-      }
-    </Async>
+    <div className="flex flex-col gap-6">
+      <HomeHeader />
+      <BillingReturnBanner />
+      <CapabilityGrid
+        onImage={() => navigate("/app/studio?mode=image")}
+        onVideo={() => navigate("/app/studio?mode=video")}
+        onPlan={() => openCompanion()}
+        onFile={() => setDocsOpen(true)}
+      />
+
+      {state.status === "loading" ? <HomeSkeleton /> : null}
+      {state.status === "error" ? (
+        <ErrorState message={state.message} onRetry={reload} />
+      ) : null}
+      {state.status === "ready" ? (
+        <HomeRest
+          job={state.data.onboarding.job ?? "skipped"}
+          plan={state.data.plan}
+          runs={state.data.runs}
+          digest={state.data.digest}
+          documents={state.data.documents}
+          onAddFile={() => setDocsOpen(true)}
+        />
+      ) : null}
+
+      <Sheet open={docsOpen} onOpenChange={setDocsOpen}>
+        <SheetContent side="bottom" className="gap-4 p-4">
+          <SheetHeader className="p-0">
+            <SheetTitle>{t("today.addAFile")}</SheetTitle>
+            <SheetDescription>{t("today.addAFileHint")}</SheetDescription>
+          </SheetHeader>
+          <DocumentPickup
+            onUploaded={(name) => {
+              reload();
+              openCompanion();
+              send(askAboutAdded(name));
+              setDocsOpen(false);
+            }}
+          />
+        </SheetContent>
+      </Sheet>
+    </div>
   );
 }
 
@@ -216,125 +252,59 @@ function FirstRun({ onSaved }: { onSaved: () => void }) {
   );
 }
 
-function HomeToday({
+function HomeRest({
   job,
+  plan,
+  runs,
+  digest,
+  documents,
+  onAddFile,
 }: {
   job: OnboardingJob;
+  plan: SessionDetail | null;
+  runs: WatcherRun[];
+  digest: DigestData;
+  documents: UserDocument[];
+  onAddFile: () => void;
 }) {
   const t = useT();
-  const navigate = useNavigate();
-  const { send, openCompanion } = useCompanionThread();
-  const { state, reload } = useAsync<HomeData>(async () => {
-    const [plan, runs, digest, docs] = await Promise.all([
-      api.homePlan(),
-      api.watcherRuns(),
-      api.digest(),
-      api.documents().catch((err: unknown) => {
-        // Optional status row. A local/dev gateway without the librarian
-        // must not take Today down with it.
-        if (err instanceof ApiError && (err.status === 503 || err.code === "not_configured")) {
-          return { documents: [] };
-        }
-        throw err;
-      }),
-    ]);
-    return { plan, runs, digest, documents: docs.documents };
-  });
-
-  const [docsOpen, setDocsOpen] = useState(() => {
-    if (job !== "document") return false;
-    try {
-      const key = "alltheway:doc-sheet";
-      if (sessionStorage.getItem(key)) return false;
-      sessionStorage.setItem(key, "1");
-      return true;
-    } catch {
-      return true;
-    }
-  });
+  const firstWin = plan !== null || documents.length > 0;
+  const indexing = documents.find((d) => d.status === "indexing" || d.status === "screening");
 
   return (
-    <div className="flex flex-col gap-6">
-      <HomeHeader />
+    <>
+      <LanguageOffer show={firstWin} />
+      <Digest digest={digest} />
 
-      <BillingReturnBanner />
+      {indexing ? (
+        <p role="status" className="text-[13px] text-muted-foreground">
+          {t("today.indexing", { name: indexing.title })}
+        </p>
+      ) : null}
 
-      <Async state={state} reload={reload} skeleton={<HomeSkeleton />}>
-        {({ plan, runs, digest, documents }) => {
-          const firstWin = plan !== null || documents.length > 0;
-          const indexing = documents.find(
-            (d) => d.status === "indexing" || d.status === "screening",
-          );
+      {plan ? <ContinueCard plan={plan} /> : null}
 
-          return (
-            <>
-              <LanguageOffer show={firstWin} />
+      {job === "meetings" ? (
+        <>
+          <MeetingsJobCard />
+          <Meetings />
+        </>
+      ) : null}
 
-              <Digest digest={digest} />
+      {job === "document" ? (
+        <section className="rounded-brand-lg border bg-card p-5 shadow-e1">
+          <h2 className="text-[16px] font-semibold">{t("today.addAFile")}</h2>
+          <p className="mt-1 text-[13.5px] leading-relaxed text-muted-foreground">
+            {t("today.addAFileHint")}
+          </p>
+          <Button type="button" variant="brand" size="lg" className="mt-4" onClick={onAddFile}>
+            {t("today.addAFile")}
+          </Button>
+        </section>
+      ) : null}
 
-              <CapabilityGrid
-                onImage={() => navigate("/app/studio?mode=image")}
-                onVideo={() => navigate("/app/studio?mode=video")}
-                onPlan={() => openCompanion()}
-                onFile={() => setDocsOpen(true)}
-              />
-
-              {indexing ? (
-                <p role="status" className="text-[13px] text-muted-foreground">
-                  {t("today.indexing", { name: indexing.title })}
-                </p>
-              ) : null}
-
-              {plan ? <ContinueCard plan={plan} /> : null}
-
-              {job === "meetings" ? (
-                <>
-                  <MeetingsJobCard />
-                  <Meetings />
-                </>
-              ) : null}
-
-              {job === "document" ? (
-                <section className="rounded-brand-lg border bg-card p-5 shadow-e1">
-                  <h2 className="text-[16px] font-semibold">{t("today.addAFile")}</h2>
-                  <p className="mt-1 text-[13.5px] leading-relaxed text-muted-foreground">
-                    {t("today.addAFileHint")}
-                  </p>
-                  <Button
-                    type="button"
-                    variant="brand"
-                    size="lg"
-                    className="mt-4"
-                    onClick={() => setDocsOpen(true)}
-                  >
-                    {t("today.addAFile")}
-                  </Button>
-                </section>
-              ) : null}
-
-              <Overnight runs={runs} />
-            </>
-          );
-        }}
-      </Async>
-
-      <Sheet open={docsOpen} onOpenChange={setDocsOpen}>
-        <SheetContent side="bottom" className="gap-4 p-4">
-          <SheetHeader className="p-0">
-            <SheetTitle>{t("today.addAFile")}</SheetTitle>
-            <SheetDescription>{t("today.addAFileHint")}</SheetDescription>
-          </SheetHeader>
-          <DocumentPickup
-            onUploaded={(name) => {
-              reload();
-              openCompanion();
-              send(askAboutAdded(name));
-              setDocsOpen(false);
-            }}
-          />
-        </SheetContent>
-      </Sheet>
-    </div>
+      <Overnight runs={runs} />
+    </>
   );
 }
 

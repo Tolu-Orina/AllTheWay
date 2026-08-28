@@ -78,12 +78,13 @@ export const env = {
   /**
    * Origins allowed to open a stream cross-origin.
    *
-   * Needed because the SSE endpoint cannot be served through a Firebase Hosting
-   * rewrite: Hosting imposes a documented, unconfigurable 60-second request
-   * timeout on rewrites, which severs a long-lived stream regardless of any
-   * buffering behaviour. So the stream is served from the gateway's own
-   * hostname while the rest of the app stays behind Hosting -- and that split
-   * is what makes this cross-origin.
+ * Needed because the SSE endpoint cannot be served through a Firebase Hosting
+ * rewrite: Hosting imposes a documented, unconfigurable 60-second request
+ * timeout on rewrites, which severs a long-lived stream regardless of any
+ * buffering behaviour. Studio generate has the same bound — an image can
+ * take that long — so it also goes to the gateway hostname. So those two
+ * are served from the gateway's own hostname while the rest of the app
+ * stays behind Hosting -- and that split is what makes this cross-origin.
    *
    * Empty in development, where Vite proxies /api and the request is same-origin.
    */

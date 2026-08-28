@@ -2,6 +2,9 @@ import "./test-env.js";
 import assert from "node:assert/strict";
 import { test } from "node:test";
 
+import { Role } from "@a2a-js/sdk";
+
+import { connectorInvokeMessage } from "./a2a.js";
 import { actOnConfirmed } from "./act.js";
 import { mediaFromConnectorTask } from "./media-persist.js";
 
@@ -10,6 +13,15 @@ import { mediaFromConnectorTask } from "./media-persist.js";
  * "Yes" left the calendar empty, the draft unwritten, and the user with a
  * record of having agreed to something that never happened.
  */
+
+test("a connector invoke uses the numeric Role enum, not a string name", () => {
+  // The string "ROLE_USER" serialises as UNRECOGNIZED and the Python A2A
+  // server rejects the request with Invalid params before any tool runs.
+  const message = connectorInvokeMessage("m1", { connector: "media", tool: "generate_image" });
+  assert.equal(message.role, Role.ROLE_USER);
+  assert.notEqual(String(message.role), "ROLE_USER");
+  assert.equal(message.parts[0]?.content?.$case, "data");
+});
 
 test("a plan with no calls does nothing, and says so by doing nothing", async () => {
   const did = await actOnConfirmed({
@@ -71,6 +83,27 @@ test("media bytes are read from the connector result, not from the text slice", 
   });
   assert.equal(found.mimeType, "image/jpeg");
   assert.equal(found.model, "gemini-3.1-flash-lite-image");
+  assert.ok(found.body && found.body.equals(Buffer.alloc(90, 7)));
+});
+
+test("protobuf stringValue siblings are still a still", () => {
+  const jpeg = Buffer.alloc(90, 7).toString("base64");
+  const found = mediaFromConnectorTask({
+    artifacts: [
+      {
+        parts: [
+          {
+            data: {
+              content: { stringValue: jpeg },
+              mimeType: { stringValue: "image/jpeg" },
+              model: { stringValue: "gemini-3.1-flash-lite-image" },
+            },
+          },
+        ],
+      },
+    ],
+  });
+  assert.equal(found.mimeType, "image/jpeg");
   assert.ok(found.body && found.body.equals(Buffer.alloc(90, 7)));
 });
 

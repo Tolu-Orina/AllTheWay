@@ -217,6 +217,23 @@ def test_a_connector_process_inherits_no_other_credential(monkeypatch):
     assert "RESEND_API_KEY" not in env
 
 
+def test_media_receives_the_project_and_nothing_else(monkeypatch):
+    monkeypatch.setenv("GOOGLE_CLOUD_PROJECT", "alltheway-rinegan")
+    monkeypatch.setenv("RESEND_API_KEY", "should-not-be-visible")
+    monkeypatch.setenv("PATH", "/usr/bin")
+
+    env = mcp_client._connector_env(connector="media")
+
+    assert env["GOOGLE_CLOUD_PROJECT"] == "alltheway-rinegan"
+    assert "RESEND_API_KEY" not in env
+
+
+def test_a_google_connector_does_not_inherit_the_project(monkeypatch):
+    monkeypatch.setenv("GOOGLE_CLOUD_PROJECT", "alltheway-rinegan")
+    env = mcp_client._connector_env(connector="google_calendar")
+    assert "GOOGLE_CLOUD_PROJECT" not in env
+
+
 async def test_a_grant_that_is_missing_a_scope_is_not_treated_as_connected(client):
     # The user connected their account but unticked a permission on the consent
     # screen. Without checking, the first sign of this is a 403 from Google,

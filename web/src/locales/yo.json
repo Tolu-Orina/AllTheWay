@@ -125,7 +125,9 @@
     "irreversibleActionsExternalSendsPa": "Àwọn ìgbésẹ̀ tí a kò lè dá padà — ríránṣẹ́ síta, ìsanwó, pípa nǹkan rẹ́ — máa ń dánudúró láti béèrè lọ́wọ́ rẹ nígbà gbogbo. O kò lè dín ààbò yìí kù.",
     "youAreOffline": "O kò sí lórí ayélujára",
     "allthewayCouldNotReachTheNetwork": "AllTheWay kò lè bá nẹ́tíwọ́ọ̀kì pàdé. Àwọn àkókò rẹ wà ní ààbò — tún so pọ̀, ojú-ìwé yìí yóò sì tẹ̀síwájú láti ibi tí ó dádúró.",
-    "checkingSession": "À ń ṣàyẹ̀wò ìjókòó rẹ…"
+    "checkingSession": "À ń ṣàyẹ̀wò ìjókòó rẹ…",
+    "couldNotLoad": "A kò le kó èyí wọlé.",
+    "workSafe": "Kò sí ohun tí ó sọ nù."
   },
   "account": {
     "signOut": "Jáde"

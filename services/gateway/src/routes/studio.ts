@@ -92,13 +92,20 @@ studioRoutes.post("/generate", requireUser, async (req, res) => {
     if (!saved || !("artifact" in saved)) {
       return res.json({
         status: "failed",
-        message: "Could not reach the image model. Nothing was saved.",
+        message: "The still came back in a shape we could not save.",
       });
     }
 
     return res.json({ status: "ready", message: "", artifact: saved.artifact });
   } catch (err) {
-    console.warn(`[studio] generate failed: ${(err as Error).message}`);
+    const msg = (err as Error).message;
+    console.warn(`[studio] generate failed: ${msg}`);
+    if (/did not answer in time/i.test(msg)) {
+      return res.json({
+        status: "failed",
+        message: "The image model took too long. Nothing was saved.",
+      });
+    }
     return res.json({
       status: "failed",
       message: "Could not reach the image model. Nothing was saved.",

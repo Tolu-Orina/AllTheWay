@@ -131,7 +131,9 @@
     "irreversibleActionsExternalSendsPa": "Ações irreversíveis — envios externos, pagamentos, exclusões — sempre pedem confirmação, independente do limite do monitor. Essa regra de segurança não pode ser desativada.",
     "youAreOffline": "Você está offline",
     "allthewayCouldNotReachTheNetwork": "O AllTheWay não conseguiu se conectar. Suas sessões estão salvas — reconecte-se para continuar de onde parou.",
-    "checkingSession": "Verificando sessão…"
+    "checkingSession": "Verificando sessão…",
+    "couldNotLoad": "Não foi possível carregar isto.",
+    "workSafe": "Nada se perdeu."
   },
   "account": {
     "signOut": "Sair"

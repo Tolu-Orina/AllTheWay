@@ -1,6 +1,6 @@
 import { db } from "./firestore.js";
 import { env } from "./env.js";
-import { connectorClient } from "./a2a.js";
+import { connectorClient, connectorInvokeMessage } from "./a2a.js";
 import { getSession } from "./repos/sessions.js";
 import { MEDIA_TOOLS, persistGeneratedMedia } from "./media-persist.js";
 import {
@@ -168,24 +168,14 @@ export async function runConnectorTool(call: ConnectorCall): Promise<unknown> {
   return Promise.race([
     client.sendMessage({
       tenant: call.uid,
-      message: {
-        messageId: `act-${call.sessionId}-${Date.now().toString(36)}`,
-        role: "ROLE_USER" as never,
-        parts: [
-          {
-            data: {
-              data: {
-                connector: call.connector,
-                tool: call.tool,
-                arguments: call.arguments,
-                grant: enforcementGrant(call.connector, call.tool),
-                confirmed: call.confirmed ?? true,
-                costAcknowledged: call.costAcknowledged ?? false,
-              },
-            },
-          },
-        ] as never,
-      } as never,
+      message: connectorInvokeMessage(`act-${call.sessionId}-${Date.now().toString(36)}`, {
+        connector: call.connector,
+        tool: call.tool,
+        arguments: call.arguments,
+        grant: enforcementGrant(call.connector, call.tool),
+        confirmed: call.confirmed ?? true,
+        costAcknowledged: call.costAcknowledged ?? false,
+      }),
       configuration: undefined,
       metadata: undefined,
     }),

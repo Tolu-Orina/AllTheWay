@@ -10,11 +10,11 @@ import {
   DecisionResultSchema,
   DigestSchema,
   OnboardingSchema,
+  HomeSchema,
   SessionDetailSchema,
   SessionSchema,
   WatcherRunSchema,
   WatcherSchema,
-  type SessionDetail,
   type OnboardingJob,
   type LifeContext,
   UsageSchema,
@@ -153,6 +153,7 @@ export type UserDocument = z.infer<typeof DocumentSchema>;
 
 export const api = {
   sessions: () => apiGet("/sessions", z.array(SessionSchema)),
+  home: () => apiGet("/home", HomeSchema),
   session: (id: string) =>
     apiGet(`/sessions/${encodeURIComponent(id)}`, SessionDetailSchema.nullable()),
   createSession: () => apiPost("/sessions", {}, z.object({ id: z.string().min(1) })),
@@ -356,12 +357,4 @@ export const api = {
     apiPost(`/meetings/${meetingId}/extend`, { minutes }),
   optOutOfMeeting: (meetingId: string) =>
     apiPost(`/meetings/${meetingId}/opt-out`, { optedOut: true }),
-
-  /** Home needs the in-progress session; the list is already sorted by recency. */
-  homePlan: async (): Promise<SessionDetail | null> => {
-    const rows = await apiGet("/sessions", z.array(SessionSchema));
-    const inProgress = rows.find((s) => s.done < s.total) ?? rows[0];
-    if (!inProgress) return null;
-    return apiGet(`/sessions/${encodeURIComponent(inProgress.id)}`, SessionDetailSchema.nullable());
-  },
 };

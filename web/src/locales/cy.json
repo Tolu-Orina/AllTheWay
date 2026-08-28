@@ -140,7 +140,9 @@
     "irreversibleActionsExternalSendsPa": "Gweithredoedd na ellir eu dadwneud — anfon allanol, taliadau, dileu — yn gofyn bob amser, beth bynnag fo terfyn uchaf gwyliwr. Ni allwch ostwng y trothwy hwnnw.",
     "youAreOffline": "Rydych all-lein",
     "allthewayCouldNotReachTheNetwork": "Ni allai AllTheWay gyrraedd y rhwydwaith. Mae eich sesiynau'n ddiogel — ailgysylltwch a bydd y dudalen hon yn ailddechrau lle y gadawyd arni.",
-    "checkingSession": "Wrthi'n gwirio'ch sesiwn…"
+    "checkingSession": "Wrthi'n gwirio'ch sesiwn…",
+    "couldNotLoad": "Methu llwytho hyn.",
+    "workSafe": "Ni chollwyd dim."
   },
   "account": {
     "signOut": "Allgofnodi"

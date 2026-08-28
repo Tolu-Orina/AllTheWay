@@ -15,6 +15,10 @@ the content the manifest requires screening on, and the connector boundary is
 where it enters. Screening the trigger but not the tool response would leave the
 larger door open: an attacker who cannot reach your inbox may still be able to
 put a line in a shared calendar event.
+
+Generated media is the exception. The bytes are the model's JPEG or MP4, not
+prose, and screening that JSON as inbound text fails closed on size.
+
 """
 
 from __future__ import annotations
@@ -261,6 +265,21 @@ async def invoke(
         result = await call_tool(connector, tool, arguments, credentials)
     except ConnectorUnavailable as exc:
         return Outcome(False, reason=str(exc), trace=trace)
+
+    # Generated pixels are the model's JPEG/MP4, not a stranger's prose.
+    # Screening that JSON as inbound text fails closed on size or matches SDP
+    # on base64 noise, which is how a successful still never left this service.
+    if connector == "media" and tool in {"generate_image", "draft_video", "render_video"}:
+        data = result.json()
+        if "error" in data:
+            return Outcome(
+                False,
+                data=data,
+                reason=str(data.get("error") or "Could not generate."),
+                trace=trace,
+            )
+        trace.append(f"Called {connector}.{tool}")
+        return Outcome(True, data=data, reason=decision.reason, trace=trace)
 
     # What came back is untrusted external content, whatever the connector is.
     verdict = screen(result.text, "inbound")

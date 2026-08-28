@@ -1,10 +1,9 @@
 import { Timestamp } from "firebase-admin/firestore";
 
 import { env } from "../env.js";
-import { connectorClient } from "../a2a.js";
+import { authenticatingFetch, connectorClient, connectorInvokeMessage } from "../a2a.js";
 import { db, userDoc } from "../firestore.js";
 import { buildDigest } from "../repos/digest.js";
-import { authenticatingFetch } from "../a2a.js";
 import {
   connectorIsConnected,
   enforcementGrant,
@@ -168,22 +167,12 @@ async function connectorRead(
   const client = await connectorClient();
   const result = await client.sendMessage({
     tenant: uid,
-    message: {
-      messageId: `voice-${Date.now().toString(36)}`,
-      role: "ROLE_USER" as never,
-      parts: [
-        {
-          data: {
-            data: {
-              connector,
-              tool,
-              arguments: args,
-              grant: enforcementGrant(connector, tool),
-            },
-          },
-        },
-      ] as never,
-    } as never,
+    message: connectorInvokeMessage(`voice-${Date.now().toString(36)}`, {
+      connector,
+      tool,
+      arguments: args,
+      grant: enforcementGrant(connector, tool),
+    }),
     configuration: undefined,
     metadata: undefined,
   });

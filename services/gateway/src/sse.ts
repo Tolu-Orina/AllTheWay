@@ -14,9 +14,10 @@ import { env } from "./env.js";
  * buffer streaming responses entirely, though that claim is thinner — one
  * forum post, unrefreshed. The timeout alone is disqualifying.)
  *
- * So `/api/**` stays behind Hosting and the stream is served from the gateway's
- * own hostname. That split is deliberate, and it is why `env.webOrigins` and
- * the CORS handling below exist.
+ * So `/api/**` stays behind Hosting and the stream (and Studio generate, which
+ * can outlast that 60s bound) are served from the gateway's own hostname. That
+ * split is deliberate, and it is why `env.webOrigins` and the CORS handling
+ * below exist.
  *
  * ## Why the anti-buffering headers are still set
  *
@@ -43,7 +44,7 @@ export function applyCors(req: express.Request, res: express.Response): void {
   res.setHeader("access-control-allow-origin", origin);
   res.setHeader("access-control-allow-credentials", "true");
   res.setHeader("access-control-allow-headers", "authorization, content-type");
-  res.setHeader("access-control-allow-methods", "GET, OPTIONS");
+  res.setHeader("access-control-allow-methods", "GET, POST, OPTIONS");
   res.setHeader("vary", "origin");
 }
 

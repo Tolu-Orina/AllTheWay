@@ -131,7 +131,9 @@
     "irreversibleActionsExternalSendsPa": "Las acciones irreversibles (envíos externos, pagos, eliminaciones) siempre pedirán confirmación, independientemente del límite del observador. Ese mínimo no se puede reducir.",
     "youAreOffline": "Estás sin conexión",
     "allthewayCouldNotReachTheNetwork": "AllTheWay no pudo conectarse a la red. Tus sesiones están a salvo: reconéctate y la página continuará donde lo dejaste.",
-    "checkingSession": "Comprobando tu sesión…"
+    "checkingSession": "Comprobando tu sesión…",
+    "couldNotLoad": "No se pudo cargar esto.",
+    "workSafe": "No se ha perdido nada."
   },
   "account": {
     "signOut": "Cerrar sesión"

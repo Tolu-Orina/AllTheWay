@@ -9,6 +9,12 @@ import { firebaseAuth } from "@/auth/firebase";
  * Every request carries a fresh Firebase ID token, and every response is parsed
  * through the shared contract before it reaches a screen — so a server-side
  * rename fails loudly here rather than as an undefined three components deep.
+ *
+ * ## Why some paths go to a different origin
+ *
+ * Firebase Hosting rewrites die at 60 seconds. The turn stream and Studio
+ * generate both last longer than that, so they go to the gateway's own
+ * hostname (`VITE_STREAM_ORIGIN`). Everything else stays same-origin.
  */
 export class ApiError extends Error {
   readonly code: string;
@@ -53,8 +59,14 @@ export async function authHeader(): Promise<Record<string, string>> {
   return { authorization: `Bearer ${token}` };
 }
 
+const STREAM_ORIGIN = import.meta.env.VITE_STREAM_ORIGIN ?? "";
+
+function originFor(path: string): string {
+  return path.startsWith("/studio/") ? STREAM_ORIGIN : "";
+}
+
 async function request(path: string, init?: RequestInit): Promise<Response> {
-  const res = await fetch(`/api${path}`, {
+  const res = await fetch(`${originFor(path)}/api${path}`, {
     ...init,
     headers: {
       ...(init?.body ? { "content-type": "application/json" } : {}),

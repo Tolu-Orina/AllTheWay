@@ -1,3 +1,4 @@
+import { Role, type Message } from "@a2a-js/sdk";
 import {
   ClientFactory,
   DefaultAgentCardResolver,
@@ -116,3 +117,34 @@ export const orchestratorClient = () => agentClient(env.orchestratorUrl);
  * its own side regardless of who calls it.
  */
 export const connectorClient = () => agentClient(env.connectorGatewayUrl);
+
+/**
+ * A connector call as an A2A message.
+ *
+ * `Role` is a numeric protobuf enum in this SDK. Passing the string
+ * `"ROLE_USER"` serialises as `UNRECOGNIZED`, and the Python side rejects the
+ * whole JSON-RPC request with Invalid params — before the tool runs. Studio
+ * generate failed that way: the image model was never reached.
+ */
+export function connectorInvokeMessage(
+  messageId: string,
+  payload: Record<string, unknown>,
+): Message {
+  return {
+    messageId,
+    contextId: "",
+    taskId: "",
+    role: Role.ROLE_USER,
+    parts: [
+      {
+        content: { $case: "data", value: payload },
+        metadata: undefined,
+        filename: "",
+        mediaType: "application/json",
+      },
+    ],
+    metadata: undefined,
+    extensions: [],
+    referenceTaskIds: [],
+  };
+}

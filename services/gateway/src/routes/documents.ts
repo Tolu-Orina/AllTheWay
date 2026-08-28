@@ -1,5 +1,6 @@
 import express from "express";
 import { z } from "zod";
+import { HomeDocumentSchema, type HomeDocument } from "@alltheway/contracts";
 
 import { requireUser } from "../auth.js";
 import { authenticatingFetch } from "../a2a.js";
@@ -140,6 +141,22 @@ documentRoutes.get("/", requireUser, async (req, res) => {
     res.status(502).json({ code: "upstream_error", message: "The document service could not be reached." });
   }
 });
+
+/** Home's status row. Never blocks Today: empty if the librarian is slow. */
+const HOME_DOCS_TIMEOUT_MS = 2_500;
+
+export async function listHomeDocuments(uid: string): Promise<HomeDocument[]> {
+  if (!env.librarianUrl || !scopeTokenConfigured()) return [];
+  try {
+    const upstream = await callLibrarian(uid, "/documents", { method: "GET" }, HOME_DOCS_TIMEOUT_MS);
+    if (!upstream.ok) return [];
+    const body = (await upstream.json()) as { documents?: unknown };
+    const parsed = z.array(HomeDocumentSchema).safeParse(body.documents ?? []);
+    return parsed.success ? parsed.data : [];
+  } catch {
+    return [];
+  }
+}
 
 documentRoutes.post("/", requireUser, async (req, res) => {
   if (unavailable(res)) return;
