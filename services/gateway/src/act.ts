@@ -2,6 +2,7 @@ import { db } from "./firestore.js";
 import { env } from "./env.js";
 import { connectorClient } from "./a2a.js";
 import { getSession } from "./repos/sessions.js";
+import { MEDIA_TOOLS, persistGeneratedMedia } from "./media-persist.js";
 import {
   connectorIsConnected,
   enforcementGrant,
@@ -45,6 +46,8 @@ export type ActOutcome = {
 };
 
 const ACT_TIMEOUT_MS = 20_000;
+/** Image generation is a Vertex round-trip, not a calendar list. */
+const IMAGE_TIMEOUT_MS = 90_000;
 
 export type ActableStep = {
   label?: string;
@@ -101,41 +104,33 @@ export async function actOnConfirmed(opts: {
     }
 
     try {
-      const client = await connectorClient();
-      const task = await Promise.race([
-        client.sendMessage({
-          tenant: opts.uid,
-          message: {
-            messageId: `act-${opts.sessionId}-${outcomes.length}-${Date.now().toString(36)}`,
-            role: "ROLE_USER" as never,
-            parts: [
-              {
-                data: {
-                  data: {
-                    connector,
-                    tool,
-                    arguments: step.arguments ?? {},
-                    grant: enforcementGrant(connector, tool),
-                    // The person saw this step and said yes to it. That is what
-                    // this flag means, and it is the only reason it is set.
-                    confirmed: true,
-                  },
-                },
-              },
-            ] as never,
-          } as never,
-          configuration: undefined,
-          metadata: undefined,
-        }),
-        new Promise<never>((_, reject) =>
-          setTimeout(() => reject(new Error("the connector did not answer in time")), ACT_TIMEOUT_MS),
-        ),
-      ]);
+      const timeoutMs = tool === "generate_image" ? IMAGE_TIMEOUT_MS : ACT_TIMEOUT_MS;
+      const task = await runConnectorTool({
+        uid: opts.uid,
+        sessionId: opts.sessionId,
+        connector,
+        tool,
+        arguments: step.arguments ?? {},
+        confirmed: true,
+        timeoutMs,
+      });
 
-      const detail = textOf(task);
-      // A refusal is not a failure. The floor declining an action is the system
-      // working, and it reads to a person as a different thing from a crash.
-      const refused = /refus|not permitted|ceiling|blocked|policy/i.test(detail);
+      const refused = isRefusal(task);
+      let detail = readableDetail(task);
+      if (!refused && MEDIA_TOOLS.has(tool)) {
+        const saved = await persistGeneratedMedia({
+          uid: opts.uid,
+          sessionId: opts.sessionId,
+          tool,
+          prompt: typeof step.arguments?.prompt === "string" ? step.arguments.prompt : "",
+          task,
+        });
+        if (saved && "artifact" in saved) {
+          detail = `Saved as a ${saved.kind}. Open it in Studio or Canvas.`;
+        } else if (saved && "error" in saved) {
+          detail = saved.error;
+        }
+      }
       outcomes.push({ ...base, did: refused ? "refused" : "done", detail });
     } catch (err) {
       console.warn(`[act] ${connector}.${tool} failed: ${(err as Error).message}`);
@@ -150,19 +145,77 @@ export async function actOnConfirmed(opts: {
   return outcomes;
 }
 
-/** The readable text of whatever the agent sent back. */
-function textOf(task: unknown): string {
+export type ConnectorCall = {
+  uid: string;
+  sessionId: string;
+  connector: string;
+  tool: string;
+  arguments: Record<string, unknown>;
+  confirmed?: boolean;
+  costAcknowledged?: boolean;
+  timeoutMs?: number;
+};
+
+/**
+ * One call through the Agent Gateway, with confirmation already decided.
+ *
+ * Studio Generate is the same consent as Yes on a plan: the person typed the
+ * prompt and pressed the button. The floor still sees `confirmed: true`.
+ */
+export async function runConnectorTool(call: ConnectorCall): Promise<unknown> {
+  const client = await connectorClient();
+  const timeoutMs = call.timeoutMs ?? ACT_TIMEOUT_MS;
+  return Promise.race([
+    client.sendMessage({
+      tenant: call.uid,
+      message: {
+        messageId: `act-${call.sessionId}-${Date.now().toString(36)}`,
+        role: "ROLE_USER" as never,
+        parts: [
+          {
+            data: {
+              data: {
+                connector: call.connector,
+                tool: call.tool,
+                arguments: call.arguments,
+                grant: enforcementGrant(call.connector, call.tool),
+                confirmed: call.confirmed ?? true,
+                costAcknowledged: call.costAcknowledged ?? false,
+              },
+            },
+          },
+        ] as never,
+      } as never,
+      configuration: undefined,
+      metadata: undefined,
+    }),
+    new Promise<never>((_, reject) =>
+      setTimeout(() => reject(new Error("the connector did not answer in time")), timeoutMs),
+    ),
+  ]);
+}
+
+function isRefusal(task: unknown): boolean {
+  return /refus|not permitted|ceiling|blocked|policy|quota|allowance/i.test(readableDetail(task));
+}
+
+/** Short prose from a task. Skips base64 so a still cannot drown the note. */
+export function readableDetail(task: unknown): string {
   const parts: string[] = [];
-  const walk = (node: unknown): void => {
-    if (!node || typeof node !== "object") return;
+  const walk = (node: unknown, depth: number): void => {
+    if (!node || typeof node !== "object" || depth > 12) return;
     const rec = node as Record<string, unknown>;
-    if (typeof rec.text === "string" && rec.text.trim()) parts.push(rec.text.trim());
+    if (typeof rec.reason === "string" && rec.reason.trim()) parts.push(rec.reason.trim());
+    if (typeof rec.error === "string" && rec.error.trim()) parts.push(rec.error.trim());
+    if (typeof rec.text === "string" && rec.text.trim() && rec.text.length < 800) {
+      parts.push(rec.text.trim());
+    }
     for (const value of Object.values(rec)) {
-      if (Array.isArray(value)) value.forEach(walk);
-      else if (value && typeof value === "object") walk(value);
+      if (Array.isArray(value)) value.forEach((item) => walk(item, depth + 1));
+      else if (value && typeof value === "object") walk(value, depth + 1);
     }
   };
-  walk(task);
+  walk(task, 0);
   return parts.join(" ").slice(0, 2000);
 }
 

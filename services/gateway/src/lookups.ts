@@ -26,12 +26,36 @@ export type ReadCall = { name: string; args: Record<string, unknown> };
 
 const CALENDAR =
   /\b(calendar|schedule|timetable|agenda|free|busy|what'?s on|what have i got|later today|this (morning|afternoon|evening|week)|tomorrow)\b/i;
+const ABOUT_THE_DAY =
+  /\b(today|tonight|tomorrow|this (morning|afternoon|evening|week)|scheduled)\b/i;
+const MEETING_SLOT = /\b(meetings?|appointments?)\b/i;
+const DAY_WINDOW =
+  /\b(today|tonight|this (morning|afternoon|evening)|did i have|have i got)\b/i;
+const LATER_ONLY = /\b(later today|upcoming|what's next|whats next)\b/i;
 const DRIVE =
   /\b(drive|google drive|my files|find (the |a )?(file|doc|document|folder|spreadsheet|slide))\b/i;
 const WAITING =
   /\b(waiting( on me)?|needs? me|overnight|anything waiting|what happened|digest|catch me up)\b/i;
 const MEETINGS =
   /\b(what (did we|was) agree|meeting notes|last meeting|what we (said|agreed)|commitments?)\b/i;
+
+function wantsCalendar(text: string): boolean {
+  if (CALENDAR.test(text)) return true;
+  // "Did I have any meeting today?" is a calendar question. "What did we agree
+  // in the last meeting?" is notes, and must not steal the calendar read.
+  if (MEETINGS.test(text)) return false;
+  return MEETING_SLOT.test(text) && ABOUT_THE_DAY.test(text);
+}
+
+function wantsDayWindow(text: string): boolean {
+  return DAY_WINDOW.test(text) && !LATER_ONLY.test(text);
+}
+
+/** Start of the UTC day. Good enough until we store a timezone. */
+export function startOfUtcDay(now = new Date()): string {
+  const d = new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate()));
+  return d.toISOString().replace(/\.\d{3}Z$/, "Z");
+}
 
 /**
  * Which read tools this utterance is asking for.
@@ -45,7 +69,11 @@ export function selectReadTools(message: string): ReadCall[] {
   const text = message.trim();
   if (!text) return [];
   const out: ReadCall[] = [];
-  if (CALENDAR.test(text)) out.push({ name: "whats_on_my_calendar", args: { limit: 10 } });
+  if (wantsCalendar(text)) {
+    const args: Record<string, unknown> = { limit: 10 };
+    if (wantsDayWindow(text)) args.time_min = startOfUtcDay();
+    out.push({ name: "whats_on_my_calendar", args });
+  }
   if (DRIVE.test(text)) out.push({ name: "find_in_my_drive", args: { limit: 10 } });
   if (WAITING.test(text)) out.push({ name: "whats_waiting_for_me", args: {} });
   if (MEETINGS.test(text)) out.push({ name: "my_recent_meetings", args: { limit: 5 } });

@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Outlet } from "react-router";
+import { Outlet, useLocation } from "react-router";
 
 import { Ambient } from "@/components/blocks/ambient";
 import { Logo } from "@/components/primitives/logo";
@@ -24,8 +24,15 @@ import { cn } from "@/lib/utils";
  * over a flat fill has nothing to refract — it just looks muddy.
  */
 export function AppLayout() {
-  // Lifted so the work column can reclaim the width when the panel is closed.
-  const [companionOpen, setCompanionOpen] = useState(true);
+  const { pathname } = useLocation();
+  const studio = pathname.startsWith("/app/studio");
+  // Studio is a maker: the stage needs the width. Companion stays a quiet
+  // reopen, not a third column that interviews them.
+  const [companionOpen, setCompanionOpen] = useState(() => !studio);
+
+  useEffect(() => {
+    if (studio) setCompanionOpen(false);
+  }, [studio]);
 
   useEffect(() => {
     registerAppServiceWorker();
@@ -52,16 +59,20 @@ export function AppLayout() {
         {/* pb-28 clears the floating tab bar; dropped once the sidebar takes over. */}
         <main
           id="app-main"
-          className="flex-1 px-4 pt-5 pb-28 sm:px-6 lg:px-8 lg:pt-6 lg:pb-10"
+          className={cn(
+            "flex-1 px-4 pt-5 pb-28 sm:px-6 lg:px-8 lg:pt-6 lg:pb-10",
+            studio && "lg:pt-4",
+          )}
         >
-          <AppTopBar />
+          {studio ? null : <AppTopBar />}
           <div
             className={cn(
-              // Prefixed with `xl:` because that is where the docked column
-              // exists. Unprefixed, the work column was squeezed to make room
-              // on phones and tablets for a panel that is not rendered there.
-              "mx-auto w-full transition-[max-width] duration-200 max-w-5xl",
-              companionOpen ? "xl:max-w-3xl" : "xl:max-w-5xl",
+              "mx-auto w-full transition-[max-width] duration-200",
+              studio
+                ? "max-w-none"
+                : companionOpen
+                  ? "max-w-5xl xl:max-w-3xl"
+                  : "max-w-5xl",
             )}
           >
             <Outlet />

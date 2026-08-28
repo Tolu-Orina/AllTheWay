@@ -229,6 +229,42 @@ def test_a_short_image_follow_up_plans_generate_image_instead_of_clarifying():
     assert image.connector == "media"
 
 
+def test_calendar_lookups_do_not_leave_a_list_events_step():
+    """A leftover list_events card looks like a button and does nothing."""
+
+    class CalendarPlanner:
+        def structured(self, system, user, schema_hint):
+            return {
+                "decision": "plan",
+                "needsResearch": False,
+                "steps": [
+                    {
+                        "label": "Check Google Calendar for today's meetings",
+                        "action": "",
+                        "connector": "google_calendar",
+                        "tool": "list_events",
+                        "arguments": {"limit": 10},
+                    }
+                ],
+                "note": "You had Standup at 10.",
+            }
+
+    r = run_turn(
+        TurnRequest(
+            session_id="s1",
+            user_id="u1",
+            message="Did I have any meeting today?",
+            lookups=["whats_on_my_calendar: Standup at 10."],
+        ),
+        CalendarPlanner(),
+    )
+    assert r.decision == "plan"
+    assert r.clarify is None
+    assert all(s.tool != "list_events" for s in r.plan)
+    assert r.plan == []
+    assert "Standup" in r.note
+
+
 def test_three_words_without_a_thread_still_hit_the_clarify_gate():
     r = turn("Anime character illustration")
     assert r.decision == "clarify"

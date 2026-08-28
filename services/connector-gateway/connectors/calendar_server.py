@@ -61,8 +61,13 @@ _EVENTS: list[dict] = _seed()
 
 
 @mcp.tool()
-def list_events(limit: int = 10) -> str:
-    """List upcoming calendar events. Reads only; changes nothing."""
+def list_events(limit: int = 10, time_min: str = "") -> str:
+    """List calendar events. Reads only; changes nothing.
+
+    `time_min` is accepted so the Google connector and this stub share a
+    signature. The in-memory store has no clock, so it is ignored.
+    """
+    del time_min
     return json.dumps({"events": _EVENTS[:limit]})
 
 

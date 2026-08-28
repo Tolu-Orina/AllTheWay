@@ -59,7 +59,13 @@ export const READ_TOOLS = [
       properties: {
         limit: {
           type: "NUMBER",
-          description: "How many upcoming events to look at. Default 10.",
+          description: "How many events to look at. Default 10.",
+        },
+        time_min: {
+          type: "STRING",
+          description:
+            "RFC 3339 start of the window. Use the start of today when they ask " +
+            "whether they already had a meeting, not only what is upcoming.",
         },
       },
     },
@@ -231,10 +237,12 @@ export async function runReadTool(
 ): Promise<ToolResult> {
   try {
     switch (name) {
-      case "whats_on_my_calendar":
-        return await connectorRead(uid, "google_calendar", "list_events", {
-          limit: num(args.limit, 10, 25),
-        });
+      case "whats_on_my_calendar": {
+        const call: Record<string, unknown> = { limit: num(args.limit, 10, 25) };
+        const timeMin = typeof args.time_min === "string" ? args.time_min.trim() : "";
+        if (timeMin) call.time_min = timeMin;
+        return await connectorRead(uid, "google_calendar", "list_events", call);
+      }
 
       case "find_in_my_drive":
         return await connectorRead(uid, "google_drive", "list_files", {

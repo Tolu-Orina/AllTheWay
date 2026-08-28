@@ -80,8 +80,10 @@ SYSTEM = (
     # a read that is already answered there — that used to send the person
     # through confirm for 'what's on today', which voice never did.
     "When a LOOKUPS block is present, treat it as live data from the user's "
-    "connected accounts, fetched this turn. Answer from it. Do not plan a "
-    "read that is already in that block. Still name connector, tool and "
+    "connected accounts, fetched this turn. Answer from it: name the events "
+    "or files, or say there are none. Do not plan list_events or list_files "
+    "when that block already answered them — a numbered step looks like a "
+    "button and does nothing. Still name connector, tool and "
     "arguments for anything that would write, send, delete, or create. "
     # Passages are the same shape as LOOKUPS: already fetched, already the
     # user's. A document question that then sets needsResearch is the model
@@ -355,6 +357,23 @@ def _claimed_citations(document: dict) -> list[Citation]:
     return claimed
 
 
+_FETCHED_READS = frozenset({"list_events", "list_files"})
+
+
+def _without_fetched_reads(steps: list[PlanStep]) -> list[PlanStep]:
+    """Drop calendar/Drive list calls. Those are fetched before the turn.
+
+    A leftover list_events step renders as a numbered card that looks like a
+    CTA and does nothing — which is how 'any meetings today' read as broken
+    while the calendar was already connected.
+    """
+    return [s for s in steps if not _is_fetched_read(s)]
+
+
+def _is_fetched_read(step: PlanStep) -> bool:
+    return (step.tool or "") in _FETCHED_READS
+
+
 def _finish(
     request: TurnRequest,
     planned: list[PlanStep],
@@ -388,6 +407,8 @@ def _finish(
         yield TurnEvent(kind="trace", text=line)
 
     planned, corrections = validate(planned)
+    planned = _without_fetched_reads(planned)
+    emitted = len(planned)
     for correction in corrections:
         yield TurnEvent(kind="trace", text=correction)
 
@@ -495,6 +516,8 @@ def run_turn_stream(
             held.extend(first.new_steps(partial))
             if needs_research is False:
                 for step in held:
+                    if _is_fetched_read(step):
+                        continue
                     emitted += 1
                     planned.append(step)
                     yield TurnEvent(kind="step", step=step)
@@ -551,6 +574,8 @@ def run_turn_stream(
             note = finding.answer
             for event in _plan_only(provider, informed, request.message):
                 if event.kind == "step" and event.step:
+                    if _is_fetched_read(event.step):
+                        continue
                     second += 1
                     emitted += 1
                     planned.append(event.step)
@@ -572,14 +597,21 @@ def run_turn_stream(
             )
 
     for step in held:
+        if _is_fetched_read(step):
+            continue
         emitted += 1
         planned.append(step)
         yield TurnEvent(kind="step", step=step)
     held.clear()
 
+    note = (final.get("note") or "").strip()
     if emitted == 0:
-        # A plan with no steps is not a plan. Fall back to a question rather
-        # than returning something the UI would render as an empty checklist.
+        # A leftover list_events step is not a plan — LOOKUPS already answered.
+        # If the model wrote the answer (or we fetched it), the note is the
+        # turn. An empty checklist with no note is still not a plan.
+        if note or request.lookups:
+            yield from _finish(request, [], 0, note, final)
+            return
         yield TurnEvent(
             kind="trace", text="Planner returned nothing usable, falling back to a question"
         )
@@ -588,7 +620,7 @@ def run_turn_stream(
         )
         return
 
-    yield from _finish(request, planned, emitted, final.get("note") or "", final)
+    yield from _finish(request, planned, emitted, note, final)
 
 
 def run_turn(request: TurnRequest, provider: ModelProvider) -> TurnResponse:

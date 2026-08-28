@@ -385,6 +385,7 @@ export function CompanionPanel({
   onOpenChange: (open: boolean) => void;
 }) {
   const { pathname } = useLocation();
+  const studio = pathname.startsWith("/app/studio");
   const sessionId = pathname.match(/^\/app\/work\/([^/]+)$/)?.[1];
   const artifacts = useAsync(
     () => (sessionId ? api.artifacts(sessionId) : Promise.resolve([])),
@@ -454,7 +455,7 @@ export function CompanionPanel({
           <button
             type="button"
             onClick={() => onOpenChange(true)}
-            aria-label="Open companion panel"
+            aria-label="Ask AllTheWay"
             aria-expanded={false}
             className="grid size-9 place-items-center rounded-brand text-muted-foreground transition-colors hover:bg-muted hover:text-foreground"
           >
@@ -463,6 +464,7 @@ export function CompanionPanel({
         </div>
       )}
 
+      {studio ? null : (
       <button
         type="button"
         onClick={() => setSheetOpen(true)}
@@ -475,6 +477,7 @@ export function CompanionPanel({
       >
         <MessageCircle className="size-6" aria-hidden="true" />
       </button>
+      )}
 
       <Sheet open={sheetOpen} onOpenChange={setSheetOpen}>
         <SheetContent

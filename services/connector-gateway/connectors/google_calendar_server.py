@@ -56,12 +56,15 @@ def _request(method: str, path: str, **kwargs):
 
 
 @mcp.tool()
-def list_events(limit: int = 10) -> str:
-    """Upcoming events on the user's primary calendar. Reads only."""
-    # Bounded here as well as by the gateway: a connector that will happily
-    # return ten thousand events is one bad argument away from an enormous
-    # model prompt.
+def list_events(limit: int = 10, time_min: str = "") -> str:
+    """Events on the user's primary calendar. Reads only.
+
+    `time_min` is RFC 3339. Empty means upcoming from now — the default for
+    "what's next". A start-of-day value is what "did I have any meetings
+    today" needs, because now would skip everything that already happened.
+    """
     capped_limit = capped(limit)
+    window = time_min.strip() or _now_rfc3339()
 
     status, payload = _request(
         "GET",
@@ -70,7 +73,7 @@ def list_events(limit: int = 10) -> str:
             "maxResults": capped_limit,
             "singleEvents": "true",
             "orderBy": "startTime",
-            "timeMin": _now_rfc3339(),
+            "timeMin": window,
         },
     )
     if status != 200:

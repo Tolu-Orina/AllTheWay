@@ -11,6 +11,7 @@ import { artifactRoutes } from "./routes/artifacts.js";
 import { documentRoutes } from "./routes/documents.js";
 import { meetingRoutes } from "./routes/meetings.js";
 import { shareRoutes } from "./routes/shares.js";
+import { studioRoutes } from "./routes/studio.js";
 import { actOnConfirmed, storedSteps } from "./act.js";
 import {
   ensureSession,
@@ -773,6 +774,11 @@ api.post(
 // callback, because every route here requires a verified user — there is no
 // browser-redirect case to accommodate.
 api.use("/artifacts", artifactRoutes);
+
+// Studio Generate. Confirmed at the button, not via a stored plan — the
+// browser must not be able to name an arbitrary connector tool this way, so
+// the route only ever calls media.generate_image.
+api.use("/studio", studioRoutes);
 
 // Documents, proxied to the librarian with a signed scope token.
 api.use("/documents", documentRoutes);

@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Link } from "react-router";
+import { Link, useNavigate } from "react-router";
 import { useT } from "@/app/i18n";
 import { ArrowRight, Clapperboard, ExternalLink, FileText, Image, ListTodo, Loader2 } from "lucide-react";
 import type { LifeContext, OnboardingJob } from "@alltheway/contracts";
@@ -222,6 +222,7 @@ function HomeToday({
   job: OnboardingJob;
 }) {
   const t = useT();
+  const navigate = useNavigate();
   const { send, openCompanion } = useCompanionThread();
   const { state, reload } = useAsync<HomeData>(async () => {
     const [plan, runs, digest, docs] = await Promise.all([
@@ -272,14 +273,8 @@ function HomeToday({
               <Digest digest={digest} />
 
               <CapabilityGrid
-                onImage={() => {
-                  openCompanion();
-                  send("I want to generate an image.");
-                }}
-                onVideo={() => {
-                  openCompanion();
-                  send("I want to draft a short video.");
-                }}
+                onImage={() => navigate("/app/studio?mode=image")}
+                onVideo={() => navigate("/app/studio?mode=video")}
                 onPlan={() => openCompanion()}
                 onFile={() => setDocsOpen(true)}
               />

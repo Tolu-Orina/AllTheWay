@@ -44,6 +44,7 @@ const Profile = lazy(() => import("@/app/screens/Profile"));
 const ArtifactScreen = lazy(() =>
   import("@/app/Canvas").then((m) => ({ default: m.ArtifactScreen })),
 );
+const Studio = lazy(() => import("@/app/screens/Studio"));
 
 /**
  * Auth guard and the signed-in shell share one catalogue. RequireAuth calls
@@ -92,6 +93,7 @@ export default function App() {
             <Route path="you" element={<Profile />} />
             <Route path="you/running" element={<Agents />} />
             <Route path="artifacts/:id" element={<ArtifactScreen />} />
+            <Route path="studio" element={<Studio />} />
 
             <Route path="sessions" element={<RedirectKeepQuery to="/app/work" />} />
             <Route path="sessions/:id" element={<RedirectSessionToWork />} />

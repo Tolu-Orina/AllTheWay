@@ -130,6 +130,12 @@ export type Artifact = z.infer<typeof ArtifactSchema>;
 export type ArtifactDetail = z.infer<typeof ArtifactDetailSchema>;
 export type ArtifactVersion = z.infer<typeof ArtifactVersionSchema>;
 
+export const StudioGenerateSchema = z.object({
+  status: z.enum(["ready", "not_ready", "declined", "quota", "failed"]),
+  message: z.string(),
+  artifact: ArtifactDetailSchema.optional(),
+});
+
 export const DocumentSchema = z.object({
   id: z.string(),
   title: z.string(),
@@ -277,6 +283,17 @@ export const api = {
 
   artifactText: (id: string, version: number) =>
     apiText(`/artifacts/${encodeURIComponent(id)}/export?version=${version}`),
+
+  /**
+   * Studio Generate. Pressing the button is consent — confirmed on the
+   * gateway, no second Yes card.
+   */
+  studioGenerate: (body: {
+    prompt: string;
+    mode: "image" | "video";
+    seconds?: number;
+    artifactId?: string;
+  }) => apiPost("/studio/generate", body, StudioGenerateSchema),
 
   /** The agent registry, with each card's signature checked at read time. */
   agents: () => apiGet("/registry/agents", RegistrySchema),

@@ -10,7 +10,7 @@ import {
 } from "lucide-react";
 import type { PlanStep } from "@alltheway/contracts";
 
-import { ACTION_LABEL, describeCall, isSevere } from "@/app/plan-copy";
+import { ACTION_LABEL, describeCall, isFetchedRead, isSevere } from "@/app/plan-copy";
 import { cn } from "@/lib/utils";
 
 /**
@@ -129,16 +129,17 @@ export function PlanStack({
   steps: PlanStep[];
   live?: boolean;
 }) {
-  if (steps.length === 0) return null;
+  const shown = steps.filter((step) => !isFetchedRead(step));
+  if (shown.length === 0) return null;
   return (
     <ol className="relative flex flex-col">
-      {steps.map((step, i) => (
+      {shown.map((step, i) => (
         <PlanCard
           key={`${step.label}-${i}`}
           step={step}
           index={i}
           live={live}
-          total={steps.length}
+          total={shown.length}
         />
       ))}
     </ol>

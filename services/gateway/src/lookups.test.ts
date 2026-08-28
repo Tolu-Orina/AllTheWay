@@ -2,7 +2,7 @@ import "./test-env.js";
 import assert from "node:assert/strict";
 import { test } from "node:test";
 
-import { selectReadTools } from "./lookups.js";
+import { selectReadTools, startOfUtcDay } from "./lookups.js";
 
 test("a calendar question selects the calendar read and nothing else", () => {
   const calls = selectReadTools("What's on my calendar later today?");
@@ -22,6 +22,28 @@ test("a waiting/digest question selects the digest read", () => {
   assert.equal(calls[0]?.name, "whats_waiting_for_me");
 });
 
+test("a meeting-today question selects the calendar, not meeting notes", () => {
+  const calls = selectReadTools("Did I have any meeting today?");
+  assert.deepEqual(
+    calls.map((c) => c.name),
+    ["whats_on_my_calendar"],
+  );
+  assert.ok(
+    typeof calls[0]?.args.time_min === "string" && String(calls[0].args.time_min).endsWith("Z"),
+    "today includes this morning, so the window starts at the beginning of the day",
+  );
+});
+
+test("any meetings today also selects the calendar", () => {
+  assert.equal(selectReadTools("Do I have any meetings today?")[0]?.name, "whats_on_my_calendar");
+});
+
+test("later today stays upcoming and does not force a start-of-day window", () => {
+  const calls = selectReadTools("What's on my calendar later today?");
+  assert.equal(calls[0]?.name, "whats_on_my_calendar");
+  assert.equal(calls[0]?.args.time_min, undefined);
+});
+
 test("a meeting-notes question selects recent meetings, not the calendar", () => {
   const calls = selectReadTools("What did we agree in the last meeting?");
   assert.deepEqual(
@@ -36,4 +58,8 @@ test("a planning request that is not a lookup selects nothing", () => {
 
 test("blank input selects nothing", () => {
   assert.deepEqual(selectReadTools("   "), []);
+});
+
+test("startOfUtcDay is midnight Z", () => {
+  assert.equal(startOfUtcDay(new Date("2026-08-28T15:51:00.000Z")), "2026-08-28T00:00:00Z");
 });

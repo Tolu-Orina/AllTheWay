@@ -18,6 +18,16 @@ export function isSevere(action: string): boolean {
   return action === "send_external" || action === "make_payment" || action === "delete_data";
 }
 
+/**
+ * A live read the gateway already ran this turn (calendar, Drive).
+ *
+ * Shown as a numbered PlanStack card it looks like a button and does nothing.
+ * The answer belongs in the bubble, from LOOKUPS.
+ */
+export function isFetchedRead(step: PlanStep): boolean {
+  return step.tool === "list_events" || step.tool === "list_files";
+}
+
 function arg(step: PlanStep, key: string): string {
   const value = step.arguments?.[key];
   return typeof value === "string" ? value.trim() : "";

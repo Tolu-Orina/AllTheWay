@@ -3,6 +3,7 @@ import assert from "node:assert/strict";
 import { test } from "node:test";
 
 import { actOnConfirmed } from "./act.js";
+import { mediaFromConnectorTask } from "./media-persist.js";
 
 /**
  * The gap this closes: confirming a plan wrote a ledger row and nothing else.
@@ -46,4 +47,37 @@ test("acting never throws, whatever the connector does", async () => {
       steps: [{ label: "x", connector: "nonexistent", tool: "nope", arguments: {} }],
     }),
   );
+});
+
+test("media bytes are read from the connector result, not from the text slice", () => {
+  const jpeg = Buffer.alloc(90, 7).toString("base64");
+  const found = mediaFromConnectorTask({
+    artifacts: [
+      {
+        parts: [
+          {
+            data: {
+              data: {
+                content: jpeg,
+                mimeType: "image/jpeg",
+                model: "gemini-3.1-flash-lite-image",
+              },
+              trace: ["called media.generate_image"],
+            },
+          },
+        ],
+      },
+    ],
+  });
+  assert.equal(found.mimeType, "image/jpeg");
+  assert.equal(found.model, "gemini-3.1-flash-lite-image");
+  assert.ok(found.body && found.body.equals(Buffer.alloc(90, 7)));
+});
+
+test("a model error in the media payload is not treated as a still", () => {
+  const found = mediaFromConnectorTask({
+    data: { error: "Could not generate that image.", status: 400 },
+  });
+  assert.equal(found.error, "Could not generate that image.");
+  assert.equal(found.body, undefined);
 });
