@@ -177,24 +177,46 @@ def generate_image(prompt: str, style: str = "") -> str:
     return _fail("The model returned no image.")
 
 
-def _generate_video(prompt: str, rung: str, seconds: int) -> str:
+def _model_from_operation(operation: str) -> str:
+    """Vertex operation names include the model. Used when a poll arrives
+    without one, so the fetch URL can still be built."""
+    parts = operation.split("/")
+    try:
+        index = parts.index("models")
+        return parts[index + 1]
+    except (ValueError, IndexError):
+        return ""
+
+
+def _video_url(model: str) -> str:
+    return (
+        f"https://{_host()}.googleapis.com/v1/projects/{_project()}"
+        f"/locations/{LOCATION}/publishers/google/models/{model}"
+    )
+
+
+def _start_video(prompt: str, rung: str, seconds: int) -> str:
+    """Start a Veo long-running operation. Does not wait for the clip.
+
+    The connector-gateway Cloud Run timeout is 300s and Veo often takes
+    longer, so waiting here would be killed mid-generation. The gateway
+    stores the operation name and polls.
+    """
+    if not prompt.strip():
+        return _fail("Nothing to film.")
+
     model = VIDEO_MODELS.get(rung)
     if model is None:
         return _fail(f"Unknown video quality {rung!r}.")
 
-    base = (
-        f"https://{_host()}.googleapis.com/v1/projects/{_project()}"
-        f"/locations/{LOCATION}/publishers/google/models/{model}"
-    )
     headers = {"Authorization": f"Bearer {_token()}"}
-
     try:
         with httpx.Client(timeout=VIDEO_START_TIMEOUT) as http:
             started = http.post(
-                f"{base}:predictLongRunning",
+                f"{_video_url(model)}:predictLongRunning",
                 headers=headers,
                 json={
-                    "instances": [{"prompt": prompt}],
+                    "instances": [{"prompt": prompt.strip()}],
                     "parameters": {"durationSeconds": seconds, "sampleCount": 1},
                 },
             )
@@ -208,44 +230,98 @@ def _generate_video(prompt: str, rung: str, seconds: int) -> str:
     if not operation:
         return _fail("The video service returned no operation to wait on.")
 
-    # Polling, because generation takes minutes. The deadline is bounded: a
-    # request that never returns holds a Cloud Run instance until the platform
-    # gives up, and the user is told nothing in the meantime.
-    deadline = time.monotonic() + VIDEO_POLL_TIMEOUT
-    with httpx.Client(timeout=VIDEO_START_TIMEOUT) as http:
-        while time.monotonic() < deadline:
-            time.sleep(VIDEO_POLL_INTERVAL)
+    return json.dumps(
+        {
+            "operation": operation,
+            "model": model,
+            "seconds": seconds,
+            "started": True,
+        }
+    )
+
+
+def _bytes_from_poll(body: dict, model: str, seconds: int) -> str | None:
+    videos = (body.get("response") or {}).get("videos") or []
+    for video in videos:
+        data = video.get("bytesBase64Encoded")
+        if data:
+            return json.dumps(
+                {
+                    "content": data,
+                    "mimeType": video.get("mimeType", "video/mp4"),
+                    "model": model,
+                    "seconds": seconds,
+                    "generated": True,
+                    "done": True,
+                }
+            )
+    return None
+
+
+def _poll_video(operation: str, model: str = "", seconds: int = 0) -> str:
+    """One fetchPredictOperation. The caller decides whether to come back."""
+    if not operation.strip():
+        return _fail("No video operation to check.")
+
+    resolved = (model or _model_from_operation(operation)).strip()
+    if not resolved:
+        return _fail("Lost track of the video.")
+
+    headers = {"Authorization": f"Bearer {_token()}"}
+    try:
+        with httpx.Client(timeout=VIDEO_START_TIMEOUT) as http:
             poll = http.post(
-                f"{base}:fetchPredictOperation",
+                f"{_video_url(resolved)}:fetchPredictOperation",
                 headers=headers,
                 json={"operationName": operation},
             )
-            if poll.status_code != 200:
-                return _fail("Lost track of the video.", status=poll.status_code)
+    except httpx.HTTPError as exc:
+        return _fail(f"Lost track of the video ({type(exc).__name__}).")
 
-            body = poll.json()
-            if not body.get("done"):
-                continue
+    if poll.status_code != 200:
+        return _fail("Lost track of the video.", status=poll.status_code)
 
-            if "error" in body:
-                return _fail(str(body["error"].get("message", "Video generation failed."))[:200])
+    body = poll.json()
+    if not body.get("done"):
+        return json.dumps(
+            {"done": False, "operation": operation, "model": resolved}
+        )
 
-            for video in (body.get("response") or {}).get("videos", []):
-                data = video.get("bytesBase64Encoded")
-                if data:
-                    return json.dumps(
-                        {
-                            "content": data,
-                            "mimeType": video.get("mimeType", "video/mp4"),
-                            "model": model,
-                            "seconds": seconds,
-                            "generated": True,
-                        }
-                    )
+    if "error" in body:
+        err = body["error"] if isinstance(body["error"], dict) else {}
+        return _fail(str(err.get("message", "Video generation failed."))[:200])
+
+    found = _bytes_from_poll(body, resolved, seconds)
+    if found:
+        return found
+    return _fail("The video finished but returned nothing.")
+
+
+def _wait_for_video(prompt: str, rung: str, seconds: int) -> str:
+    """Blocking wait, used only by the final render until that path is async.
+
+    Bounded. A request that never returns holds a Cloud Run instance until
+    the platform gives up, and the user is told nothing in the meantime.
+    """
+    started = json.loads(_start_video(prompt, rung, seconds))
+    if started.get("error"):
+        return json.dumps(started)
+    operation = started.get("operation")
+    model = started.get("model") or ""
+    if not operation:
+        return _fail("The video service returned no operation to wait on.")
+
+    deadline = time.monotonic() + VIDEO_POLL_TIMEOUT
+    while time.monotonic() < deadline:
+        time.sleep(VIDEO_POLL_INTERVAL)
+        polled = json.loads(_poll_video(operation, model, seconds))
+        if polled.get("error"):
+            return json.dumps(polled)
+        if polled.get("done") and polled.get("content"):
+            return json.dumps(polled)
+        if polled.get("done"):
             return _fail("The video finished but returned nothing.")
 
-    # The generation is still billing whether or not we wait for it. Saying so
-    # is better than implying it was cancelled.
     return _fail(
         "That video is taking longer than expected. It may still complete; "
         "it has not been cancelled.",
@@ -255,8 +331,19 @@ def _generate_video(prompt: str, rung: str, seconds: int) -> str:
 
 @mcp.tool()
 def draft_video(prompt: str, seconds: int = 6) -> str:
-    """A cheap draft. Roughly $0.05 per second — for trying an idea."""
-    return _generate_video(prompt, "draft", max(1, min(int(seconds), 8)))
+    """A cheap draft. Roughly $0.05 per second — for trying an idea.
+
+    Starts the generation and returns immediately. Vertex bills when the
+    long-running operation starts, which is why the meter is on this call
+    and not on the poll that follows.
+    """
+    return _start_video(prompt, "draft", max(1, min(int(seconds), 8)))
+
+
+@mcp.tool()
+def poll_draft_video(operation: str, model: str = "", seconds: int = 0) -> str:
+    """One look at a draft already started. Unmetered: the start paid."""
+    return _poll_video(operation, model, max(0, int(seconds or 0)))
 
 
 @mcp.tool()
@@ -268,7 +355,7 @@ def render_video(prompt: str, seconds: int = 6) -> str:
     six dollars, and the autonomy floor should treat it exactly as it treats
     moving money.
     """
-    return _generate_video(prompt, "final", max(1, min(int(seconds), 8)))
+    return _wait_for_video(prompt, "final", max(1, min(int(seconds), 8)))
 
 
 if __name__ == "__main__":

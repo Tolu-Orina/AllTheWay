@@ -8,7 +8,10 @@
     "recents": "Récents",
     "today": "Aujourd’hui",
     "work": "Travail",
-    "you": "Vous"
+    "you": "Vous",
+    "studio": "Studio",
+    "expand": "Ouvrir la navigation",
+    "collapse": "Fermer la navigation"
   },
   "digest": {
     "heading": "Depuis hier",
@@ -166,14 +169,23 @@
     "draft": "Brouillon",
     "renderFinal": "Rendu final",
     "seconds": "Secondes",
-    "videoWait": "Un clip peut prendre plusieurs minutes. Cette attente n'est pas encore prête ici — rien ne sera facturé.",
+    "videoWait": "Un clip peut prendre plusieurs minutes. Vous pouvez quitter cette page.",
     "finalOnMax": "Le final est sur Max",
     "draftSecondsLeft": "{{count}} secondes de brouillon ce mois-ci",
     "finalCost": "Cela utilise environ {{n}} des {{m}} secondes finales qu'il vous reste.",
     "askCompanion": "Demander à AllTheWay",
     "seePlans": "Voir les offres",
     "emptyFrame": "L'image s'affichera ici.",
-    "version": "v{{n}}"
+    "emptyClip": "Le clip s'affichera ici.",
+    "version": "v{{n}}",
+    "library": "Votre travail",
+    "libraryEmpty": "Les images et clips que vous créez se trouveront ici.",
+    "filterAll": "Tout",
+    "newPiece": "Nouveau",
+    "rendering": "Création d'un clip…",
+    "queued": "En file. Cela peut prendre quelques minutes.",
+    "quotaVideoEmpty": "Plus de secondes de brouillon ce mois-ci.",
+    "jobLost": "Ce clip a été perdu de vue. Il peut encore se terminer ; il n'a pas été annulé."
   },
   "comments": {
     "comments": "Commentaires",

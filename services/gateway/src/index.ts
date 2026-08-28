@@ -791,7 +791,7 @@ api.use("/artifacts", artifactRoutes);
 
 // Studio Generate. Confirmed at the button, not via a stored plan — the
 // browser must not be able to name an arbitrary connector tool this way, so
-// the route only ever calls media.generate_image.
+// the route only ever calls the media image and draft-video tools.
 api.use("/studio", studioRoutes);
 
 // Documents, proxied to the librarian with a signed scope token.

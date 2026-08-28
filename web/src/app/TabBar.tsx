@@ -7,7 +7,7 @@ import { cn } from "@/lib/utils";
 
 /**
  * Mobile tab bar: a floating glass pill where only the active tab carries its
- * label, so four destinations fit without crowding.
+ * label, so five destinations fit without crowding.
  *
  * The label is always in the accessibility tree — inactive tabs hide it
  * visually with sr-only rather than dropping it, so an icon-only tab is never
@@ -24,7 +24,7 @@ export function TabBar() {
       className="fixed inset-x-0 bottom-0 z-50 px-3 lg:hidden"
       style={{ paddingBottom: "max(env(safe-area-inset-bottom), 0.75rem)" }}
     >
-      <div className="glass mx-auto flex max-w-md items-center gap-1 rounded-full p-1.5 shadow-e2">
+      <div className="glass mx-auto flex max-w-lg items-center gap-0.5 rounded-full p-1.5 shadow-e2">
         {NAV.map((item) => {
           // `end` on the index route only, or every child route would light it up.
           const active =
@@ -39,7 +39,7 @@ export function TabBar() {
               end={item.to === "/app"}
               aria-current={active ? "page" : undefined}
               className={cn(
-                "relative flex flex-1 items-center justify-center gap-2 rounded-full px-3 py-2.5",
+                "relative flex flex-1 items-center justify-center gap-1.5 rounded-full px-2 py-2.5 sm:px-3",
                 "text-[12px] font-semibold transition-colors",
                 active ? "text-foreground" : "text-muted-foreground",
               )}

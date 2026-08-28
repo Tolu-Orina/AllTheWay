@@ -8,7 +8,10 @@
     "recents": "Àwọn àìpẹ́",
     "today": "Òní",
     "work": "Iṣẹ́",
-    "you": "Ìwọ"
+    "you": "Ìwọ",
+    "studio": "Studio",
+    "expand": "Ṣí ìtọ́sọ́nà",
+    "collapse": "Tì ìtọ́sọ́nà"
   },
   "digest": {
     "heading": "Láti àná",
@@ -160,14 +163,23 @@
     "draft": "Àkọ́kọ́",
     "renderFinal": "Ìparí",
     "seconds": "Ìṣẹ́jú àáyá",
-    "videoWait": "Fídíò lè gba ọ̀pọ̀ ìṣẹ́jú. Ìdúró yẹn kò tíì ṣetán níbí — a kò ní gba owó.",
+    "videoWait": "Fídíò lè gba ọ̀pọ̀ ìṣẹ́jú. O lè kúrò lójú ewé yìí.",
     "finalOnMax": "Ìparí wà lórí Max",
     "draftSecondsLeft": "Ìṣẹ́jú àáyá àkọ́kọ́ {{count}} ló kù lóṣù yìí",
     "finalCost": "Èyí ń lo nǹkan bí {{n}} nínú {{m}} ìṣẹ́jú àáyá ìparí tó kù.",
     "askCompanion": "Béèrè lọ́wọ́ AllTheWay",
     "seePlans": "Wo àwọn ètò",
     "emptyFrame": "Àwòrán náà yóò wà níbí.",
-    "version": "v{{n}}"
+    "emptyClip": "Fídíò náà yóò wà níbí.",
+    "version": "v{{n}}",
+    "library": "Iṣẹ́ rẹ",
+    "libraryEmpty": "Àwọn àwòrán àti fídíò tí o ṣẹ̀dá yóò wà níbí.",
+    "filterAll": "Gbogbo",
+    "newPiece": "Tuntun",
+    "rendering": "Ń ṣẹ̀dá fídíò…",
+    "queued": "Ó wà ní ìlà. Èyí lè gba ìṣẹ́jú díẹ̀.",
+    "quotaVideoEmpty": "Kò sí ìṣẹ́jú àáyá àkọ́kọ́ tó kù lóṣù yìí.",
+    "jobLost": "A pàdánù fídíò yẹn. Ó ṣì lè parí; a kò fagilé rẹ̀."
   },
   "comments": {
     "comments": "Àwọn àfikún ọ̀rọ̀",

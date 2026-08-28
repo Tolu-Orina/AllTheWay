@@ -8,7 +8,10 @@
     "recents": "Diweddar",
     "today": "Heddiw",
     "work": "Gwaith",
-    "you": "Chi"
+    "you": "Chi",
+    "studio": "Stiwdio",
+    "expand": "Agor y llywio",
+    "collapse": "Cau'r llywio"
   },
   "digest": {
     "heading": "Ers ddoe",
@@ -175,14 +178,23 @@
     "draft": "Drafft",
     "renderFinal": "Render terfynol",
     "seconds": "Eiliadau",
-    "videoWait": "Gall drafftio clip gymryd sawl munud. Nid yw'r aros hwnnw'n barod yma eto — ni chodir tâl.",
+    "videoWait": "Gall drafftio clip gymryd sawl munud. Gallwch adael y dudalen hon.",
     "finalOnMax": "Mae terfynol ar Max",
     "draftSecondsLeft": "{{count}} eiliad drafft ar ôl y mis hwn",
     "finalCost": "Mae hyn yn defnyddio tua {{n}} o'r {{m}} eiliad terfynol sydd gennych ar ôl.",
     "askCompanion": "Gofyn i AllTheWay",
     "seePlans": "Gweld cynlluniau",
     "emptyFrame": "Bydd y ddelwedd yn eistedd yma.",
-    "version": "v{{n}}"
+    "emptyClip": "Bydd y clip yn eistedd yma.",
+    "version": "v{{n}}",
+    "library": "Eich gwaith",
+    "libraryEmpty": "Bydd delweddau a chlipiau a wnewch yn eistedd yma.",
+    "filterAll": "Popeth",
+    "newPiece": "Newydd",
+    "rendering": "Yn drafftio clip…",
+    "queued": "Yn y ciw. Gall hyn gymryd ychydig funudau.",
+    "quotaVideoEmpty": "Dim eiliadau drafft ar ôl y mis hwn.",
+    "jobLost": "Collwyd golwg ar y clip hwnnw. Efallai y bydd yn dal i orffen; nid yw wedi'i ganslo."
   },
   "comments": {
     "comments": "Sylwadau",

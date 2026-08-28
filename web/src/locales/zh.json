@@ -8,7 +8,10 @@
     "recents": "最近",
     "today": "今天",
     "work": "工作",
-    "you": "我的"
+    "you": "我的",
+    "studio": "创作",
+    "expand": "打开导航",
+    "collapse": "收起导航"
   },
   "digest": {
     "heading": "昨日至今",
@@ -160,14 +163,23 @@
     "draft": "草稿",
     "renderFinal": "成片",
     "seconds": "秒",
-    "videoWait": "生成短片可能需要几分钟。这里还不能等那么久，因此不会扣费。",
+    "videoWait": "生成短片可能需要几分钟。你可以离开此页面。",
     "finalOnMax": "成片在 Max 套餐",
     "draftSecondsLeft": "本月还剩 {{count}} 秒草稿",
     "finalCost": "这大约会用掉剩余 {{m}} 秒成片额度中的 {{n}} 秒。",
     "askCompanion": "问 AllTheWay",
     "seePlans": "查看套餐",
     "emptyFrame": "静图会显示在这里。",
-    "version": "v{{n}}"
+    "emptyClip": "短片会显示在这里。",
+    "version": "v{{n}}",
+    "library": "你的作品",
+    "libraryEmpty": "你生成的静图和短片会显示在这里。",
+    "filterAll": "全部",
+    "newPiece": "新建",
+    "rendering": "正在生成短片…",
+    "queued": "已排队。可能需要几分钟。",
+    "quotaVideoEmpty": "本月草稿秒数已用完。",
+    "jobLost": "跟丢了这段短片。它可能仍在生成，并未取消。"
   },
   "comments": {
     "comments": "评论",

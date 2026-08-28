@@ -6,6 +6,7 @@ import { Logo } from "@/components/primitives/logo";
 import { AccountMenu } from "@/app/AccountMenu";
 import { AppTopBar } from "@/app/AppTopBar";
 import { Sidebar } from "@/app/Sidebar";
+import { SidebarProvider } from "@/app/sidebar-state";
 import { TabBar } from "@/app/TabBar";
 import { CompanionPanel } from "@/app/CompanionPanel";
 import { CompanionThreadProvider } from "@/app/companion-thread";
@@ -41,6 +42,7 @@ export function AppLayout() {
   return (
     <VoiceProvider>
     <CompanionThreadProvider>
+    <SidebarProvider>
       <div className="relative isolate flex min-h-dvh flex-col bg-background lg:flex-row">
       <Ambient />
 
@@ -61,7 +63,7 @@ export function AppLayout() {
           id="app-main"
           className={cn(
             "flex-1 px-4 pt-5 pb-28 sm:px-6 lg:px-8 lg:pt-6 lg:pb-10",
-            studio && "lg:pt-4",
+            studio && "lg:px-5 lg:pt-4 lg:pb-6",
           )}
         >
           {studio ? null : <AppTopBar />}
@@ -86,6 +88,7 @@ export function AppLayout() {
 
       <TabBar />
       </div>
+    </SidebarProvider>
     </CompanionThreadProvider>
     </VoiceProvider>
   );

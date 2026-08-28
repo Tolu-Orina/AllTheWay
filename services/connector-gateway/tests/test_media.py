@@ -30,7 +30,7 @@ from app.subscription import InMemorySubscriptions, Subscription
 
 MEDIA = Grant(
     connector="media",
-    tools=frozenset({"generate_image", "draft_video", "render_video"}),
+    tools=frozenset({"generate_image", "draft_video", "poll_draft_video", "render_video"}),
     ceiling=Ceiling.SEND_AUTOMATICALLY,
 )
 
@@ -91,6 +91,7 @@ def test_a_final_render_is_classified_as_a_payment():
 def test_a_draft_and_an_image_sit_below_that():
     assert action_for("media", "draft_video") is Action.CREATE_TASK
     assert action_for("media", "generate_image") is Action.CREATE_TASK
+    assert action_for("media", "poll_draft_video") is None
 
 
 async def test_an_unconfirmed_render_never_reaches_the_model(connector):
@@ -379,3 +380,15 @@ async def test_acknowledging_the_cost_does_not_stand_in_for_confirming(connector
     assert not outcome.ok
     assert outcome.refusal is Refusal.NOT_CONFIRMED
     assert not connector.reached
+
+
+def test_polling_a_draft_is_unmetered():
+    assert meter_for("media", "poll_draft_video") is None
+
+
+async def test_polling_a_draft_does_not_need_confirmation(connector):
+    """The start already paid. A look at the operation is a read."""
+    outcome = await _call("poll_draft_video", {"operation": "ops/x"})
+
+    assert outcome.ok, outcome.reason
+    assert connector.calls == [("media", "poll_draft_video", {"operation": "ops/x"})]

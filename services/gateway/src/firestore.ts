@@ -129,3 +129,10 @@ export const comments = (ownerUid: string, artifactId: string) =>
   artifacts(ownerUid).doc(artifactId).collection("comments");
 export const artifactVersions = (uid: string, artifactId: string) =>
   artifacts(uid).doc(artifactId).collection("versions");
+
+/**
+ * Studio video jobs. Path-scoped like everything else: an operation name is
+ * a handle on a generation this user paid to start, and a root collection
+ * would be the same cross-tenant hazard as a flat artifacts list.
+ */
+export const studioJobs = (uid: string) => userDoc(uid).collection("studioJobs");

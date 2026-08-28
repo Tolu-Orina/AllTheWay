@@ -56,7 +56,10 @@ TOOL_ACTIONS: dict[str, dict[str, Action | None]] = {
         # Cheap enough to be conversational: ~$0.034 per thousand images.
         "generate_image": Action.CREATE_TASK,
         # ~$0.05/second. Confirmed, but not treated as irreversible.
+        # Starts the Veo LRO. The meter is on this call: Vertex bills then.
         "draft_video": Action.CREATE_TASK,
+        # A read of an operation the user already paid to start.
+        "poll_draft_video": None,
         # ~$0.75/second — an 8-second render is about six dollars.
         #
         # MAKE_PAYMENT is not a metaphor here. It is the highest rung of the

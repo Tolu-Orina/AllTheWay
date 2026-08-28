@@ -11,12 +11,32 @@ import { addVersion, createArtifact, getArtifact } from "./repos/artifacts.js";
  * need the object that was made.
  */
 
-export const MEDIA_TOOLS = new Set(["generate_image", "draft_video", "render_video"]);
+export const MEDIA_TOOLS = new Set([
+  "generate_image",
+  "draft_video",
+  "poll_draft_video",
+  "render_video",
+]);
 
 export const STUDIO_SESSION_ID = "studio";
 
 export type MediaPayload = {
   error?: string;
+  body?: Buffer;
+  mimeType?: string;
+  model?: string;
+};
+
+export type VideoStart = {
+  error?: string;
+  operation?: string;
+  model?: string;
+  seconds?: number;
+};
+
+export type VideoPoll = {
+  error?: string;
+  done: boolean;
   body?: Buffer;
   mimeType?: string;
   model?: string;
@@ -33,6 +53,24 @@ function asString(node: unknown): string {
     if (typeof rec.stringValue === "string") return rec.stringValue;
   }
   return "";
+}
+
+function asNumber(node: unknown): number | undefined {
+  if (typeof node === "number" && Number.isFinite(node)) return node;
+  if (node && typeof node === "object") {
+    const rec = node as Record<string, unknown>;
+    if (typeof rec.numberValue === "number") return rec.numberValue;
+  }
+  return undefined;
+}
+
+function asBool(node: unknown): boolean | undefined {
+  if (typeof node === "boolean") return node;
+  if (node && typeof node === "object") {
+    const rec = node as Record<string, unknown>;
+    if (typeof rec.boolValue === "boolean") return rec.boolValue;
+  }
+  return undefined;
 }
 
 /**
@@ -86,6 +124,79 @@ export function mediaFromConnectorTask(task: unknown): MediaPayload {
   return {};
 }
 
+/**
+ * A draft_video start: an operation name, not bytes. Vertex has begun billing
+ * once this is present.
+ */
+export function videoStartFromConnectorTask(task: unknown): VideoStart {
+  let error = "";
+  let operation = "";
+  let model = "";
+  let seconds: number | undefined;
+
+  const walk = (node: unknown, depth: number): void => {
+    if (!node || typeof node !== "object" || depth > 12) return;
+    const rec = node as Record<string, unknown>;
+    const err = (asString(rec.error) || asString(rec.reason)).trim();
+    if (err && !error) error = err;
+    const op = asString(rec.operation).trim();
+    if (op && !operation) operation = op;
+    const maybeModel = asString(rec.model).trim();
+    if (maybeModel && !model) model = maybeModel;
+    const sec = asNumber(rec.seconds);
+    if (sec !== undefined && seconds === undefined) seconds = sec;
+    const dataStr = asString(rec.data);
+    if (dataStr.startsWith("{")) {
+      try {
+        walk(JSON.parse(dataStr), depth + 1);
+      } catch {
+        /* not JSON */
+      }
+    }
+    for (const value of Object.values(rec)) {
+      if (Array.isArray(value)) value.forEach((item) => walk(item, depth + 1));
+      else if (value && typeof value === "object") walk(value, depth + 1);
+    }
+  };
+  walk(task, 0);
+
+  if (operation) return { operation, model, seconds };
+  if (error) return { error };
+  return {};
+}
+
+export function videoPollFromConnectorTask(task: unknown): VideoPoll {
+  const media = mediaFromConnectorTask(task);
+  if (media.body && media.mimeType) {
+    return { done: true, body: media.body, mimeType: media.mimeType, model: media.model };
+  }
+  if (media.error) return { done: true, error: media.error };
+
+  let done: boolean | undefined;
+  const walk = (node: unknown, depth: number): void => {
+    if (!node || typeof node !== "object" || depth > 12) return;
+    if (done !== undefined) return;
+    const rec = node as Record<string, unknown>;
+    const flag = asBool(rec.done);
+    if (flag !== undefined) done = flag;
+    const dataStr = asString(rec.data);
+    if (dataStr.startsWith("{")) {
+      try {
+        walk(JSON.parse(dataStr), depth + 1);
+      } catch {
+        /* not JSON */
+      }
+    }
+    for (const value of Object.values(rec)) {
+      if (Array.isArray(value)) value.forEach((item) => walk(item, depth + 1));
+      else if (value && typeof value === "object") walk(value, depth + 1);
+    }
+  };
+  walk(task, 0);
+
+  return { done: done === true };
+}
+
 function kindOf(mimeType: string, tool: string): ArtifactKind {
   if (mimeType.startsWith(VIDEO_PREFIX) || tool.includes("video")) return "video";
   return "image";
@@ -126,7 +237,14 @@ export async function persistGeneratedMedia(opts: {
         correction: "",
       });
       const artifact = await getArtifact(opts.uid, opts.artifactId);
-      if (!artifact) return { error: "The still was made but could not be opened." };
+      if (!artifact) {
+        return {
+          error:
+            kind === "video"
+              ? "The clip was made but could not be opened."
+              : "The still was made but could not be opened.",
+        };
+      }
       return { artifact, kind };
     }
 
@@ -147,6 +265,11 @@ export async function persistGeneratedMedia(opts: {
     return { artifact, kind };
   } catch (err) {
     console.warn(`[media] persist failed: ${(err as Error).message}`);
-    return { error: "The still was made but could not be saved." };
+    return {
+      error:
+        kind === "video"
+          ? "The clip finished but could not be saved."
+          : "The still was made but could not be saved.",
+    };
   }
 }

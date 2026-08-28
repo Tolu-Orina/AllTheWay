@@ -72,6 +72,9 @@ USER_OWNED = (
     "sharedWithMe",
     "recoveries",
     "pushTokens",
+    # Studio video jobs. An operation name is a handle on a generation this
+    # user paid to start.
+    "studioJobs",
 )
 
 #: Spans every user by definition. Permitted nowhere.

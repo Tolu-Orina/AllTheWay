@@ -8,7 +8,10 @@
     "recents": "Recentes",
     "today": "Hoje",
     "work": "Trabalho",
-    "you": "Você"
+    "you": "Você",
+    "studio": "Estúdio",
+    "expand": "Abrir navegação",
+    "collapse": "Fechar navegação"
   },
   "digest": {
     "heading": "Desde ontem",
@@ -166,14 +169,23 @@
     "draft": "Rascunho",
     "renderFinal": "Render final",
     "seconds": "Segundos",
-    "videoWait": "Um clipe pode levar vários minutos. Essa espera ainda não está pronta aqui — nada será cobrado.",
+    "videoWait": "Um clipe pode levar vários minutos. Você pode sair desta página.",
     "finalOnMax": "O final está no Max",
     "draftSecondsLeft": "{{count}} segundos de rascunho este mês",
     "finalCost": "Isso usa cerca de {{n}} dos {{m}} segundos finais que restam.",
     "askCompanion": "Perguntar ao AllTheWay",
     "seePlans": "Ver planos",
     "emptyFrame": "A imagem ficará aqui.",
-    "version": "v{{n}}"
+    "emptyClip": "O clipe ficará aqui.",
+    "version": "v{{n}}",
+    "library": "Seu trabalho",
+    "libraryEmpty": "As imagens e clipes que você fizer ficam aqui.",
+    "filterAll": "Tudo",
+    "newPiece": "Novo",
+    "rendering": "Criando um clipe…",
+    "queued": "Na fila. Isso pode levar alguns minutos.",
+    "quotaVideoEmpty": "Não restam segundos de rascunho este mês.",
+    "jobLost": "Perdemos o rastro desse clipe. Ele ainda pode terminar; não foi cancelado."
   },
   "comments": {
     "comments": "Comentários",

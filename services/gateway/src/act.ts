@@ -2,7 +2,8 @@ import { db } from "./firestore.js";
 import { env } from "./env.js";
 import { connectorClient, connectorInvokeMessage } from "./a2a.js";
 import { getSession } from "./repos/sessions.js";
-import { MEDIA_TOOLS, persistGeneratedMedia } from "./media-persist.js";
+import { MEDIA_TOOLS, persistGeneratedMedia, videoStartFromConnectorTask } from "./media-persist.js";
+import { createStudioJob } from "./repos/studio-jobs.js";
 import {
   connectorIsConnected,
   enforcementGrant,
@@ -104,7 +105,8 @@ export async function actOnConfirmed(opts: {
     }
 
     try {
-      const timeoutMs = tool === "generate_image" ? IMAGE_TIMEOUT_MS : ACT_TIMEOUT_MS;
+      const timeoutMs =
+        tool === "generate_image" || tool === "draft_video" ? IMAGE_TIMEOUT_MS : ACT_TIMEOUT_MS;
       const task = await runConnectorTool({
         uid: opts.uid,
         sessionId: opts.sessionId,
@@ -118,17 +120,33 @@ export async function actOnConfirmed(opts: {
       const refused = isRefusal(task);
       let detail = readableDetail(task);
       if (!refused && MEDIA_TOOLS.has(tool)) {
-        const saved = await persistGeneratedMedia({
-          uid: opts.uid,
-          sessionId: opts.sessionId,
-          tool,
-          prompt: typeof step.arguments?.prompt === "string" ? step.arguments.prompt : "",
-          task,
-        });
-        if (saved && "artifact" in saved) {
-          detail = `Saved as a ${saved.kind}. Open it in Studio or Canvas.`;
-        } else if (saved && "error" in saved) {
-          detail = saved.error;
+        if (tool === "draft_video") {
+          const started = videoStartFromConnectorTask(task);
+          if (started.operation) {
+            await createStudioJob({
+              uid: opts.uid,
+              operation: started.operation,
+              model: started.model ?? "",
+              prompt: typeof step.arguments?.prompt === "string" ? step.arguments.prompt : "",
+              seconds: typeof step.arguments?.seconds === "number" ? step.arguments.seconds : 6,
+            });
+            detail = "Drafting a clip. Open Studio — it can take a few minutes.";
+          } else if (started.error) {
+            detail = started.error;
+          }
+        } else if (tool !== "poll_draft_video") {
+          const saved = await persistGeneratedMedia({
+            uid: opts.uid,
+            sessionId: opts.sessionId,
+            tool,
+            prompt: typeof step.arguments?.prompt === "string" ? step.arguments.prompt : "",
+            task,
+          });
+          if (saved && "artifact" in saved) {
+            detail = `Saved as a ${saved.kind}. Open it in Studio or Canvas.`;
+          } else if (saved && "error" in saved) {
+            detail = saved.error;
+          }
         }
       }
       outcomes.push({ ...base, did: refused ? "refused" : "done", detail });

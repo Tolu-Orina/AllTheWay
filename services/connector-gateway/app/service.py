@@ -145,7 +145,10 @@ async def invoke(
         meter=Meter.CONNECTOR_CALLS,
         used=subscription.usage(Meter.CONNECTOR_CALLS),
     )
-    if not allowance.allowed:
+    # A poll is a look at a video already started and metered. Charging it as
+    # another connector call would spend the monthly budget on waiting.
+    skip_call_meter = connector == "media" and tool == "poll_draft_video"
+    if not skip_call_meter and not allowance.allowed:
         trace.append(allowance.summary())
         return Outcome(
             False,
@@ -269,7 +272,12 @@ async def invoke(
     # Generated pixels are the model's JPEG/MP4, not a stranger's prose.
     # Screening that JSON as inbound text fails closed on size or matches SDP
     # on base64 noise, which is how a successful still never left this service.
-    if connector == "media" and tool in {"generate_image", "draft_video", "render_video"}:
+    if connector == "media" and tool in {
+        "generate_image",
+        "draft_video",
+        "poll_draft_video",
+        "render_video",
+    }:
         data = result.json()
         if "error" in data:
             return Outcome(

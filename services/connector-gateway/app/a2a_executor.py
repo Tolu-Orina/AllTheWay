@@ -214,13 +214,14 @@ class ConnectorExecutor(AgentExecutor):
             # quota above: charging for refused calls would let a caller
             # exhaust its own allowance by being denied.
             if self._subscriptions is not None:
-                self._subscriptions.record(user, Meter.CONNECTOR_CALLS, 1)
+                specific = meter_for(connector, tool)
+                if not (connector == "media" and tool == "poll_draft_video"):
+                    self._subscriptions.record(user, Meter.CONNECTOR_CALLS, 1)
 
                 # A tool with its own meter also charges that. Video charges
                 # per second, because a six-second draft and a six-second final
                 # differ by fifteen times in cost and the meter has to reflect
                 # what was actually spent.
-                specific = meter_for(connector, tool)
                 if specific is not None:
                     seconds = int((payload.get("arguments") or {}).get("seconds", 1))
                     amount = max(seconds, 1) if "video" in tool else 1

@@ -6,7 +6,7 @@ import { Role } from "@a2a-js/sdk";
 
 import { connectorInvokeMessage } from "./a2a.js";
 import { actOnConfirmed } from "./act.js";
-import { mediaFromConnectorTask } from "./media-persist.js";
+import { mediaFromConnectorTask, videoPollFromConnectorTask, videoStartFromConnectorTask } from "./media-persist.js";
 
 /**
  * The gap this closes: confirming a plan wrote a ledger row and nothing else.
@@ -135,4 +135,38 @@ test("a refusal reason is a failed still, not an unreadable shape", () => {
   });
   assert.equal(found.error, "The image model refused the call (403).");
   assert.equal(found.body, undefined);
+});
+
+test("a video start is an operation name, not bytes", () => {
+  const found = videoStartFromConnectorTask({
+    artifacts: [
+      {
+        parts: [
+          {
+            data: {
+              data: {
+                operation: "projects/p/locations/global/publishers/google/models/veo-3.1-lite-generate-001/operations/abc",
+                model: "veo-3.1-lite-generate-001",
+                seconds: 6,
+                started: true,
+              },
+            },
+          },
+        ],
+      },
+    ],
+  });
+  assert.equal(found.operation?.endsWith("/operations/abc"), true);
+  assert.equal(found.model, "veo-3.1-lite-generate-001");
+  assert.equal(found.seconds, 6);
+  assert.equal(found.error, undefined);
+});
+
+test("a video poll that is not done is not treated as a clip", () => {
+  const found = videoPollFromConnectorTask({
+    data: { done: false, operation: "ops/abc", model: "veo-3.1-lite-generate-001" },
+  });
+  assert.equal(found.done, false);
+  assert.equal(found.body, undefined);
+  assert.equal(found.error, undefined);
 });

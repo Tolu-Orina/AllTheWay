@@ -131,9 +131,10 @@ export type ArtifactDetail = z.infer<typeof ArtifactDetailSchema>;
 export type ArtifactVersion = z.infer<typeof ArtifactVersionSchema>;
 
 export const StudioGenerateSchema = z.object({
-  status: z.enum(["ready", "not_ready", "declined", "quota", "failed"]),
+  status: z.enum(["ready", "queued", "rendering", "not_ready", "declined", "quota", "failed"]),
   message: z.string(),
   artifact: ArtifactDetailSchema.optional(),
+  jobId: z.string().optional(),
 });
 
 export const DocumentSchema = z.object({
@@ -295,6 +296,22 @@ export const api = {
     seconds?: number;
     artifactId?: string;
   }) => apiPost("/studio/generate", body, StudioGenerateSchema),
+
+  studioJob: (id: string) =>
+    apiGet(`/studio/jobs/${encodeURIComponent(id)}`, StudioGenerateSchema),
+
+  studioOpenJobs: () =>
+    apiGet(
+      "/studio/jobs",
+      z.array(
+        z.object({
+          jobId: z.string(),
+          status: z.enum(["queued", "rendering"]),
+          prompt: z.string(),
+          seconds: z.number(),
+        }),
+      ),
+    ),
 
   /** The agent registry, with each card's signature checked at read time. */
   agents: () => apiGet("/registry/agents", RegistrySchema),

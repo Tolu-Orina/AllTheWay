@@ -8,7 +8,10 @@
     "agents": "Agents",
     "profile": "Profile",
     "you": "You",
-    "recents": "Recents"
+    "studio": "Studio",
+    "recents": "Recents",
+    "expand": "Open navigation",
+    "collapse": "Close navigation"
   },
   "digest": {
     "heading": "Since yesterday",
@@ -163,14 +166,23 @@
     "draft": "Draft",
     "renderFinal": "Render final",
     "seconds": "Seconds",
-    "videoWait": "Drafting a clip can take several minutes. That wait is not ready here yet — nothing will be charged.",
+    "videoWait": "Drafting a clip can take several minutes. You can leave this page.",
     "finalOnMax": "Final is on Max",
     "draftSecondsLeft": "{{count}} draft seconds left this month",
     "finalCost": "This uses about {{n}} of the {{m}} final seconds you have left.",
     "askCompanion": "Ask AllTheWay",
     "seePlans": "See plans",
     "emptyFrame": "The still will sit here.",
-    "version": "v{{n}}"
+    "emptyClip": "The clip will sit here.",
+    "version": "v{{n}}",
+    "library": "Your work",
+    "libraryEmpty": "Stills and clips you make will sit here.",
+    "filterAll": "All",
+    "newPiece": "New",
+    "rendering": "Drafting a clip…",
+    "queued": "Queued. This can take a few minutes.",
+    "quotaVideoEmpty": "No draft seconds left this month.",
+    "jobLost": "Lost track of that clip. It may still complete; it has not been cancelled."
   },
   "comments": {
     "comments": "Comments",
