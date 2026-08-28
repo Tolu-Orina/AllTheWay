@@ -2,6 +2,12 @@ import { db } from "./firestore.js";
 import { env } from "./env.js";
 import { connectorClient } from "./a2a.js";
 import { getSession } from "./repos/sessions.js";
+import {
+  connectorIsConnected,
+  enforcementGrant,
+  googleGrantId,
+  isGoogleConnector,
+} from "./google-scopes.js";
 
 /**
  * Doing what the person said yes to.
@@ -81,15 +87,17 @@ export async function actOnConfirmed(opts: {
     const tool = step.tool as string;
     const base = { label: step.label ?? "", connector, tool };
 
-    const grant = await db.collection("connectorGrants").doc(`${opts.uid}:${connector}`).get();
-    if (!grant.exists) {
-      outcomes.push({
-        ...base,
-        did: "skipped",
-        // Named, and actionable: the one thing that would make this work.
-        detail: `${connector} is not connected. It can be connected from Profile.`,
-      });
-      continue;
+    if (isGoogleConnector(connector)) {
+      const grant = await db.collection("connectorGrants").doc(googleGrantId(opts.uid)).get();
+      const scopes: string[] = grant.exists ? (grant.get("scopes") ?? []) : [];
+      if (!grant.exists || !connectorIsConnected(connector, scopes)) {
+        outcomes.push({
+          ...base,
+          did: "skipped",
+          detail: `${connector} is not connected. It can be connected from Profile.`,
+        });
+        continue;
+      }
     }
 
     try {
@@ -107,7 +115,7 @@ export async function actOnConfirmed(opts: {
                     connector,
                     tool,
                     arguments: step.arguments ?? {},
-                    grant: grant.data() ?? {},
+                    grant: enforcementGrant(connector, tool),
                     // The person saw this step and said yes to it. That is what
                     // this flag means, and it is the only reason it is set.
                     confirmed: true,

@@ -5,6 +5,12 @@ import { randomBytes } from "node:crypto";
 import { env } from "../env.js";
 import { db } from "../firestore.js";
 import { requireUser } from "../auth.js";
+import {
+  GOOGLE_CONNECTOR_IDS,
+  googleGrantId,
+  listedGoogleConnectors,
+  scopesToRequest,
+} from "../google-scopes.js";
 
 /**
  * Connecting a Google account.
@@ -31,61 +37,22 @@ import { requireUser } from "../auth.js";
  *
  * It is single-use and short-lived, for the same reason a verification code is.
  *
- * ## Scopes are asked for as a union, once
+ * ## Scopes are asked for per connector, then kept additive
  *
- * Google issues one refresh token per (client, user), and a later
- * authorisation supersedes an earlier one. Asking for Calendar now and Gmail
- * later — as separate requests — leaves a grant that covers only the later.
- * Requesting the union with `include_granted_scopes` makes connecting a second
- * connector additive rather than destructive.
+ * Google issues one refresh token per (client, user). Requesting Calendar
+ * now and Gmail later as separate *full-union* requests is what made every
+ * Google row look connected after a single tap — the consent screen asked for
+ * everything, and the listing treated "a Google grant exists" as "every Google
+ * connector is connected".
+ *
+ * Each tap now asks only for that connector's scopes. `include_granted_scopes`
+ * keeps earlier grants when a second connector is added, so connecting Gmail
+ * after Calendar adds Gmail rather than replacing Calendar.
  */
 
 export const connectorRoutes = express.Router();
 
 const STATE_TTL_MS = 10 * 60_000;
-
-/**
- * What the consent screen asks for.
- *
- * The authority on which scopes a *call* requires is the connector gateway's
- * `catalogue.py`; this is the request side. The two are declared separately
- * because the browser-facing service has no IAM path to the connector gateway
- * and should not be given one just to read a list.
- *
- * That split is safe in the direction it can fail: if this asks for too little,
- * enforcement refuses the call with "you have not granted this", which the user
- * can act on. It cannot silently allow anything, because nothing here decides
- * what a call is permitted to do.
- *
- * Restricted scopes are deliberately absent — `gmail.readonly` and
- * `gmail.compose` need a CASA security assessment, and including one makes the
- * whole consent screen fail rather than just that scope.
- */
-const GOOGLE_SCOPES = [
-  // Meetings, read-only. Tier 1 reads a conference record and its transcript
-  // after the call; nothing here can start, join or alter a meeting.
-  "https://www.googleapis.com/auth/meetings.space.readonly",
-  "https://www.googleapis.com/auth/meetings.space.created",
-  "https://www.googleapis.com/auth/calendar.events",
-  "https://www.googleapis.com/auth/gmail.send",
-  "https://www.googleapis.com/auth/drive.file",
-  "https://www.googleapis.com/auth/documents",
-] as const;
-
-/**
- * Restricted, and therefore requested only when the user explicitly asks.
- *
- * `gmail.compose` is what `users.drafts.create` needs — there is no narrower
- * scope for drafting, which is awkward given a draft is the *safest* thing this
- * connector does and is exactly what a DRAFT_ONLY ceiling wants.
- *
- * It is usable today: an app in Testing mode may request restricted scopes for
- * its listed test users with no verification. The bill arrives at publication,
- * as verification plus an annual CASA assessment. Keeping it opt-in means that
- * bill is a decision rather than a surprise, and that users who only want
- * sending are never shown a scarier consent screen than they need.
- */
-const GMAIL_DRAFTS_SCOPE = "https://www.googleapis.com/auth/gmail.compose";
 
 const AUTH_ENDPOINT = "https://accounts.google.com/o/oauth2/v2/auth";
 const TOKEN_ENDPOINT = "https://oauth2.googleapis.com/token";
@@ -96,6 +63,7 @@ const CATALOGUE = [
   { id: "google_gmail", label: "Gmail", provider: "google", status: "available" },
   { id: "google_drive", label: "Google Drive", provider: "google", status: "available" },
   { id: "google_docs", label: "Google Docs", provider: "google", status: "available" },
+  { id: "google_meet", label: "Google Meet", provider: "google", status: "available" },
   { id: "github", label: "GitHub", provider: "github", status: "coming_soon" },
   { id: "notion", label: "Notion", provider: "notion", status: "coming_soon" },
   { id: "slack", label: "Slack", provider: "slack", status: "coming_soon" },
@@ -124,15 +92,18 @@ function redirectUri(): string {
  * ------------------------------------------------------------------ */
 
 connectorRoutes.get("/", requireUser, async (req, res) => {
-  const doc = await grants().doc(`${req.uid!}::google`).get();
+  const doc = await grants().doc(googleGrantId(req.uid!)).get();
   const scopes: string[] = doc.exists ? (doc.get("scopes") ?? []) : [];
+  const declared = doc.exists ? (doc.get("connectors") as string[] | undefined) : undefined;
+  const listed = new Set(listedGoogleConnectors(scopes, declared));
 
   res.json({
     connectors: CATALOGUE.map((c) => ({
       ...c,
-      // Only providers we actually support can be connected; the rest report
-      // false rather than being absent, so the UI has one shape to render.
-      connected: c.provider === "google" && doc.exists,
+      // Per connector they actually connected. Extra scopes on the token
+      // (an older union request, or include_granted_scopes) must not tick
+      // a row they never tapped.
+      connected: listed.has(c.id),
     })),
     grantedScopes: scopes,
   });
@@ -158,7 +129,15 @@ connectorRoutes.post("/google/connect", requireUser, async (req, res) => {
   const state = randomBytes(32).toString("base64url");
   const connector = typeof req.body?.connector === "string" ? req.body.connector : "";
   const wantsDrafts = req.body?.drafts === true;
-  const scopes = wantsDrafts ? [...GOOGLE_SCOPES, GMAIL_DRAFTS_SCOPE] : [...GOOGLE_SCOPES];
+
+  if (!GOOGLE_CONNECTOR_IDS.includes(connector)) {
+    return res.status(400).json({
+      code: "invalid_request",
+      message: "Choose which Google account to connect.",
+    });
+  }
+
+  const scopes = scopesToRequest(connector, wantsDrafts);
 
   await states().doc(state).set({
     uid: req.uid,
@@ -212,6 +191,11 @@ connectorRoutes.get("/google/callback", async (req, res) => {
 
   const uid = stateDoc.get("uid");
   if (typeof uid !== "string" || !uid) return done("failed");
+  const requested = stateDoc.get("connector");
+  const connectedId =
+    typeof requested === "string" && GOOGLE_CONNECTOR_IDS.includes(requested)
+      ? requested
+      : "google";
 
   const { googleOAuthClientId: clientId, googleOAuthClientSecret: clientSecret } = env;
   if (!clientId || !clientSecret) return done("failed");
@@ -239,22 +223,50 @@ connectorRoutes.get("/google/callback", async (req, res) => {
     scope?: string;
   };
 
-  if (!payload.refresh_token) {
+  const grantRef = grants().doc(googleGrantId(uid));
+  const existing = await grantRef.get();
+  const previousToken = existing.exists
+    ? (existing.get("refreshToken") as string | undefined)
+    : undefined;
+  const refreshToken = payload.refresh_token ?? previousToken;
+
+  if (!refreshToken) {
     // Google omits it when a grant already exists and `prompt=consent` was not
-    // honoured. Without it there is nothing durable to store, and pretending
-    // otherwise would produce a connector that works for an hour.
+    // honoured. A first connect has nothing durable to store. A second connector
+    // can keep the token already on the grant and still record the new scopes.
     console.warn("[connectors] no refresh token returned; grant not stored");
     return done("retry");
   }
 
-  await grants().doc(`${uid}::google`).set({
-    refreshToken: payload.refresh_token,
+  const previous = existing.exists
+    ? ((existing.get("scopes") as string[] | undefined) ?? [])
+    : [];
+  const incoming = (payload.scope ?? "").split(" ").filter(Boolean);
+  const scopes = [...new Set([...previous, ...incoming])];
+  const previousDeclared = existing.exists
+    ? ((existing.get("connectors") as string[] | undefined) ?? undefined)
+    : undefined;
+  // First write of this field is only the connector they just connected — not
+  // inferred from scopes. Inferring would re-tick every Google row for anyone
+  // whose earlier consent asked for the union.
+  const connectors =
+    connectedId === "google"
+      ? previousDeclared
+      : [...new Set([...(Array.isArray(previousDeclared) ? previousDeclared : []), connectedId])];
+
+  await grantRef.set({
+    refreshToken,
     // Recorded because a user can untick a scope on the consent screen. Without
     // this, the first sign is a 403 from Google, which reads as a broken
     // connector rather than as a permission they declined.
-    scopes: (payload.scope ?? "").split(" ").filter(Boolean),
+    //
+    // Unioned with what was already stored: `include_granted_scopes` should
+    // return the full set, but a missing scope on the token response must not
+    // silently un-tick a connector that was connected last week.
+    scopes,
+    ...(Array.isArray(connectors) ? { connectors } : {}),
     updatedAt: FieldValue.serverTimestamp(),
   });
 
-  done("google");
+  done(connectedId);
 });

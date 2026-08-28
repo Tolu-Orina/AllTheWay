@@ -28,6 +28,7 @@ controls are how you survive that.
 
 from __future__ import annotations
 
+import logging
 import os
 from dataclasses import dataclass
 from datetime import datetime, timezone
@@ -37,6 +38,8 @@ from google.cloud.firestore_v1.base_vector_query import DistanceMeasure
 from google.cloud.firestore_v1.vector import Vector
 
 PROJECT = os.environ.get("GOOGLE_CLOUD_PROJECT", "alltheway-local")
+
+log = logging.getLogger("librarian.store")
 
 db = firestore.Client(project=PROJECT)
 
@@ -157,21 +160,40 @@ def retrieve(user: str, query_vector: list[float], *, limit: int = 6) -> list[Pa
     Three of the seven layers are visible in these few lines, and the ordering
     matters: the collection is already scoped before any filter is applied, so
     the filter is redundancy rather than the control.
+
+    Nearest-neighbour on `embedding` needs a composite vector index. Writes
+    do not. If that index is missing (or the emulator cannot serve the query),
+    `find_nearest` raises and the gateway used to swallow that into "no
+    passages" — so a document that uploaded fine could not be asked about.
+    An empty nearest-neighbour result is a real answer and must not fall back.
     """
-    query = (
-        chunks(user)  # layer 1: the path is the scope
-        .where(filter=firestore.FieldFilter("ownerUid", "==", user))  # layer 3
-        .find_nearest(
-            vector_field="embedding",
-            query_vector=Vector(query_vector),
-            distance_measure=DistanceMeasure.COSINE,
-            limit=limit,
-            distance_result_field="_distance",
+    try:
+        docs = (
+            chunks(user)  # layer 1: the path is the scope
+            .where(filter=firestore.FieldFilter("ownerUid", "==", user))  # layer 3
+            .find_nearest(
+                vector_field="embedding",
+                query_vector=Vector(query_vector),
+                distance_measure=DistanceMeasure.COSINE,
+                limit=limit,
+                distance_result_field="_distance",
+            )
+            .get()
         )
-    )
+    except Exception as exc:
+        # Path-scoped recent chunks. No extra index: createdAt is a single
+        # field on an already-scoped collection. Empty nearest-neighbour is
+        # not this path — only a failed query is.
+        log.warning("nearest-neighbour read failed; using recent chunks: %s", exc)
+        docs = (
+            chunks(user)
+            .order_by("createdAt", direction=firestore.Query.DESCENDING)
+            .limit(limit)
+            .get()
+        )
 
     passages: list[Passage] = []
-    for doc in query.get():
+    for doc in docs:
         data = doc.to_dict() or {}
 
         assert_owner(data, user, doc.id)

@@ -40,8 +40,8 @@ const DOCKED_FROM = "(min-width: 80rem)";
 /**
  * The conversation itself, with no opinion about what contains it.
  *
- * Extracted so the docked column, the sheet, and Home's on-page composer
- * render the same thread rather than two implementations that drift.
+ * Extracted so the docked column and the sheet render the same thread
+ * rather than two implementations that drift.
  */
 export function CompanionConversation({ autoFocus = false }: { autoFocus?: boolean }) {
   const { messages, send, working, steps, decide, decisionStatus } = useCompanionThread();
@@ -373,8 +373,9 @@ export function CompanionComposer({ autoFocus = false }: { autoFocus?: boolean }
  *    work, with the page behind it blurred. Full-bleed on a phone, a
  *    right-anchored sheet on a tablet.
  *
- * On Home below `lg` the composer lives on the page, so the FAB is hidden
- * there. It stays on Watchers and You, where there is no on-page composer.
+ * On Home the FAB is the way in below xl. An on-page composer used to sit
+ * under the digest as well; that was a second chat box on a phone, and the
+ * FAB already opened this same thread.
  */
 export function CompanionPanel({
   open,
@@ -391,6 +392,8 @@ export function CompanionPanel({
   );
   const [sheetOpen, setSheetOpen] = useState(false);
   const [mode, setMode] = useState<"chat" | "work">("chat");
+  const { companionOpenNonce } = useCompanionThread();
+  const seenOpenNonce = useRef(0);
 
   useEffect(() => {
     if (!sessionId) {
@@ -411,6 +414,18 @@ export function CompanionPanel({
     mq.addEventListener("change", sync);
     return () => mq.removeEventListener("change", sync);
   }, []);
+
+  useEffect(() => {
+    if (companionOpenNonce === 0 || companionOpenNonce === seenOpenNonce.current) return;
+    seenOpenNonce.current = companionOpenNonce;
+    const docked = window.matchMedia(DOCKED_FROM).matches;
+    if (docked) {
+      onOpenChange(true);
+    } else {
+      setMode("chat");
+      setSheetOpen(true);
+    }
+  }, [companionOpenNonce, onOpenChange]);
 
   return (
     <>
@@ -455,13 +470,6 @@ export function CompanionPanel({
         aria-expanded={sheetOpen}
         className={cn(
           "fixed right-4 bottom-[5.75rem] z-40 grid size-14 place-items-center rounded-full bg-primary text-primary-foreground shadow-e2 transition-transform hover:scale-105 active:scale-95 motion-reduce:transition-none motion-reduce:hover:scale-100 lg:right-6 lg:bottom-6 xl:hidden",
-          // Deliberately shown on Home too, below lg.
-          //
-          // It was hidden there because Home has its own composer -- but that
-          // composer sits below the digest and the chips, which on a phone is
-          // below the fold. The affordance did not move, it disappeared, and
-          // "the companion button is gone and I do not know why" is what that
-          // costs. A redundant way in is cheaper than a missing one.
         )}
         style={{ marginBottom: "env(safe-area-inset-bottom, 0px)" }}
       >
@@ -488,7 +496,7 @@ export function CompanionPanel({
             </button>
           </div>
 
-          {mode === "chat" ? <CompanionConversation /> : <CanvasPane key={sessionId ?? "all"} sessionId={sessionId} />}
+          {mode === "chat" ? <CompanionConversation autoFocus={sheetOpen} /> : <CanvasPane key={sessionId ?? "all"} sessionId={sessionId} />}
         </SheetContent>
       </Sheet>
     </>

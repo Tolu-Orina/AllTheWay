@@ -124,3 +124,45 @@ def test_lookups_are_in_the_system_context_not_the_user_message():
     assert "Standup at 10." not in spy.user
     assert "What's on today" in spy.user
 
+
+def test_passages_are_in_the_system_context_and_are_not_research():
+    class Spy:
+        def __init__(self):
+            self.system = ""
+            self.user = ""
+
+        def structured(self, system, user, schema_hint):
+            self.system = system
+            self.user = user
+            return {
+                "decision": "plan",
+                "needsResearch": False,
+                "steps": [{"label": "Answer from the file", "done": False}],
+                "note": "The indemnity is capped at two million pounds.",
+                "citations": [{"chunkId": "c1"}],
+            }
+
+    spy = Spy()
+    run_turn(
+        TurnRequest(
+            session_id="s1",
+            user_id="u1",
+            message="What does the supply agreement say about indemnity caps",
+            passages=[
+                Passage(
+                    chunk_id="c1",
+                    document_id="d1",
+                    title="Supply agreement",
+                    page=12,
+                    text="The indemnity is capped at two million pounds.",
+                )
+            ],
+        ),
+        spy,
+    )
+    assert "Passages retrieved from the user's own documents" in spy.system
+    assert "not needsResearch" in spy.system
+    assert "The indemnity is capped at two million pounds." in spy.system
+    assert "The indemnity is capped at two million pounds." not in spy.user
+    assert "What does the supply agreement say" in spy.user
+

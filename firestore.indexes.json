@@ -2,11 +2,10 @@
   "//": [
     "Firestore indexes, as code.",
     "",
-    "Every query the app makes today is a single-field orderBy on a subcollection,",
-    "which Firestore indexes automatically — so nothing here is required to make",
-    "the current product work. This file exists so that the first query that DOES",
-    "need an index arrives with the index in the same commit, rather than as a",
-    "production error telling someone to click a link in a console.",
+    "Most queries are a single-field orderBy on a subcollection, which Firestore",
+    "indexes automatically. Composite and vector indexes are not automatic — a",
+    "missing one fails at read time, not at write time, which is how a document",
+    "can upload cleanly and then be un-askable.",
     "",
     "Timing matters more than it looks: building a composite index backfills the",
     "whole collection. Declaring one now, while these collections are empty, is",
@@ -52,6 +51,27 @@
       "fields": [
         { "fieldPath": "running", "order": "ASCENDING" },
         { "fieldPath": "nextRunAt", "order": "ASCENDING" }
+      ]
+    },
+    {
+      "//": [
+        "Document Q&A: find_nearest on documentChunks.embedding, filtered by",
+        "ownerUid. Writes do not need this; nearest-neighbour reads do. queryScope",
+        "is COLLECTION because retrieval is always path-scoped to one user —",
+        "never a collection-group query across users."
+      ],
+      "collectionGroup": "documentChunks",
+      "queryScope": "COLLECTION",
+      "fields": [
+        { "fieldPath": "ownerUid", "order": "ASCENDING" },
+        { "fieldPath": "__name__", "order": "ASCENDING" },
+        {
+          "fieldPath": "embedding",
+          "vectorConfig": {
+            "dimension": 1536,
+            "flat": {}
+          }
+        }
       ]
     }
   ],

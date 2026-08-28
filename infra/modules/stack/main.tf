@@ -794,3 +794,32 @@ resource "google_firestore_index" "watcher_schedule_due" {
     order      = "ASCENDING"
   }
 }
+
+# documentChunks.find_nearest(embedding) filtered by ownerUid. Writes succeed
+# without this; asking about an uploaded document does not. Identical to the
+# vector entry in firestore.indexes.json. query_scope is COLLECTION — retrieval
+# is always path-scoped to one user, never a collection group.
+resource "google_firestore_index" "document_chunks_nearest" {
+  project     = var.project_id
+  database    = google_firestore_database.this.name
+  collection  = "documentChunks"
+  query_scope = "COLLECTION"
+
+  fields {
+    field_path = "ownerUid"
+    order      = "ASCENDING"
+  }
+
+  fields {
+    field_path = "__name__"
+    order      = "ASCENDING"
+  }
+
+  fields {
+    field_path = "embedding"
+    vector_config {
+      dimension = 1536
+      flat {}
+    }
+  }
+}

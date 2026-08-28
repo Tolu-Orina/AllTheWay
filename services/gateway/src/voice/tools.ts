@@ -5,6 +5,11 @@ import { connectorClient } from "../a2a.js";
 import { db, userDoc } from "../firestore.js";
 import { buildDigest } from "../repos/digest.js";
 import { authenticatingFetch } from "../a2a.js";
+import {
+  connectorIsConnected,
+  enforcementGrant,
+  googleGrantId,
+} from "../google-scopes.js";
 
 /**
  * What a voice session may look up for itself.
@@ -145,10 +150,9 @@ async function connectorRead(
     return { cannot: "Connections are not available in this environment." };
   }
 
-  const grant = await db.collection("connectorGrants").doc(`${uid}:${connector}`).get();
-  if (!grant.exists) {
-    // Named, and actionable. "I could not do that" would leave the user with
-    // nowhere to go; this tells them the one thing that fixes it.
+  const grant = await db.collection("connectorGrants").doc(googleGrantId(uid)).get();
+  const scopes: string[] = grant.exists ? (grant.get("scopes") ?? []) : [];
+  if (!grant.exists || !connectorIsConnected(connector, scopes)) {
     return {
       cannot: `Your ${connector} account is not connected yet. It can be connected from Profile.`,
       connector,
@@ -168,7 +172,7 @@ async function connectorRead(
               connector,
               tool,
               arguments: args,
-              grant: grant.data() ?? {},
+              grant: enforcementGrant(connector, tool),
             },
           },
         },

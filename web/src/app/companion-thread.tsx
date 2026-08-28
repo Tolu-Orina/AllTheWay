@@ -34,6 +34,9 @@ type CompanionThread = {
   draft: string;
   setDraft: (text: string) => void;
   send: (text: string) => void;
+  /** Opens the companion: docked column on xl, sheet everywhere else. */
+  openCompanion: () => void;
+  companionOpenNonce: number;
   working: boolean;
   trace: string[];
   steps: PlanStep[];
@@ -72,9 +75,8 @@ function fromStored(thread: ThreadMessage[]): CompanionMessage[] {
 /**
  * One companion thread for the shell.
  *
- * Home's on-page composer and the panel/sheet must share send, draft and
- * history. Two `useTurn("companion")` hooks would fork the conversation the
- * moment someone typed on a phone.
+ * Home used to host its own composer. That forked the thread. Send, draft
+ * and history live here so the docked column and the sheet stay one conversation.
  */
 export function CompanionThreadProvider({ children }: { children: React.ReactNode }) {
   const t = useT();
@@ -96,6 +98,7 @@ export function CompanionThreadProvider({ children }: { children: React.ReactNod
     { id: 1, role: "agent", text: welcome },
   ]);
   const [draft, setDraft] = useState("");
+  const [companionOpenNonce, setCompanionOpenNonce] = useState(0);
   const settled = useRef<string>("");
   const hydrated = useRef(false);
 
@@ -190,12 +193,18 @@ export function CompanionThreadProvider({ children }: { children: React.ReactNod
     [runTurn, turn.phase, resetDecision],
   );
 
+  const openCompanion = useCallback(() => {
+    setCompanionOpenNonce((n) => n + 1);
+  }, []);
+
   const value = useMemo<CompanionThread>(
     () => ({
       messages: history,
       draft,
       setDraft,
       send,
+      openCompanion,
+      companionOpenNonce,
       working: turn.phase === "working",
       trace: turn.trace,
       steps: turn.steps,
@@ -204,7 +213,7 @@ export function CompanionThreadProvider({ children }: { children: React.ReactNod
       decide,
       decisionStatus,
     }),
-    [history, draft, send, turn.phase, turn.trace, turn.steps, job, refreshOnboarding, decide, decisionStatus],
+    [history, draft, send, openCompanion, companionOpenNonce, turn.phase, turn.trace, turn.steps, job, refreshOnboarding, decide, decisionStatus],
   );
 
   return <Context.Provider value={value}>{children}</Context.Provider>;

@@ -24,6 +24,11 @@ import { cn } from "@/lib/utils";
 /** What Google sent us back with, as a sentence rather than a status code. */
 const OUTCOMES: Record<string, { tone: "good" | "bad"; text: string }> = {
   google: { tone: "good", text: "Your Google account is connected." },
+  google_calendar: { tone: "good", text: "Google Calendar is connected." },
+  google_gmail: { tone: "good", text: "Gmail is connected." },
+  google_drive: { tone: "good", text: "Google Drive is connected." },
+  google_docs: { tone: "good", text: "Google Docs is connected." },
+  google_meet: { tone: "good", text: "Google Meet is connected." },
   expired: {
     tone: "bad",
     text: "That took too long and the request expired. Try connecting again.",
@@ -59,11 +64,11 @@ export function Connections() {
     return value ? OUTCOMES[value] : undefined;
   });
 
-  async function connect(provider: string) {
-    setStarting(provider);
+  async function connect(connectorId: string) {
+    setStarting(connectorId);
     setError(null);
     try {
-      const { url } = await api.connectGoogle({ drafts });
+      const { url } = await api.connectGoogle({ connector: connectorId, drafts });
       // A full navigation, not a popup: Google's consent screen refuses to
       // render in an iframe, and a popup is the thing mobile browsers block.
       window.location.assign(url);
@@ -127,8 +132,8 @@ export function Connections() {
               <ConnectorRow
                 key={c.id}
                 connector={c}
-                busy={starting === c.provider}
-                onConnect={() => connect(c.provider)}
+                busy={starting === c.id}
+                onConnect={() => connect(c.id)}
               />
             ))}
           </ul>

@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { Link } from "react-router";
 import { useT } from "@/app/i18n";
-import { ArrowRight, ExternalLink, Loader2 } from "lucide-react";
+import { ArrowRight, Clapperboard, ExternalLink, FileText, Image, ListTodo, Loader2 } from "lucide-react";
 import type { LifeContext, OnboardingJob } from "@alltheway/contracts";
 
 import { Button } from "@/components/ui/button";
@@ -29,9 +29,8 @@ import { useAuth } from "@/auth/useAuth";
 import { Meetings } from "@/app/Meetings";
 import { cn } from "@/lib/utils";
 import { VoiceControl } from "@/app/VoiceControl";
-import { Digest, digestIsQuiet } from "@/app/Digest";
+import { Digest } from "@/app/Digest";
 import { LanguageOffer } from "@/app/LanguageChoice";
-import { CompanionConversation } from "@/app/CompanionPanel";
 import { useCompanionThread } from "@/app/companion-thread";
 import { DocumentPickup, askAboutAdded } from "@/app/Documents";
 import { PlanStack } from "@/app/PlanStack";
@@ -86,7 +85,7 @@ export default function Home() {
         onboarding.job === null ? (
           <FirstRun onSaved={reload} />
         ) : (
-          <HomeToday job={onboarding.job} lifeContext={onboarding.lifeContext} />
+          <HomeToday job={onboarding.job} />
         )
       }
     </Async>
@@ -219,13 +218,11 @@ function FirstRun({ onSaved }: { onSaved: () => void }) {
 
 function HomeToday({
   job,
-  lifeContext,
 }: {
   job: OnboardingJob;
-  lifeContext: LifeContext | null;
 }) {
   const t = useT();
-  const { send } = useCompanionThread();
+  const { send, openCompanion } = useCompanionThread();
   const { state, reload } = useAsync<HomeData>(async () => {
     const [plan, runs, digest, docs] = await Promise.all([
       api.homePlan(),
@@ -254,8 +251,6 @@ function HomeToday({
       return true;
     }
   });
-  const [showMeetings, setShowMeetings] = useState(job === "meetings");
-  const [focusComposer, setFocusComposer] = useState(job === "talk");
 
   return (
     <div className="flex flex-col gap-6">
@@ -265,7 +260,6 @@ function HomeToday({
 
       <Async state={state} reload={reload} skeleton={<HomeSkeleton />}>
         {({ plan, runs, digest, documents }) => {
-          const quiet = digestIsQuiet(digest);
           const firstWin = plan !== null || documents.length > 0;
           const indexing = documents.find(
             (d) => d.status === "indexing" || d.status === "screening",
@@ -277,29 +271,28 @@ function HomeToday({
 
               <Digest digest={digest} />
 
+              <CapabilityGrid
+                onImage={() => {
+                  openCompanion();
+                  send("I want to generate an image.");
+                }}
+                onVideo={() => {
+                  openCompanion();
+                  send("I want to draft a short video.");
+                }}
+                onPlan={() => openCompanion()}
+                onFile={() => setDocsOpen(true)}
+              />
+
               {indexing ? (
                 <p role="status" className="text-[13px] text-muted-foreground">
                   {t("today.indexing", { name: indexing.title })}
                 </p>
               ) : null}
 
-              {plan && !quiet ? (
-                <ContinueCard plan={plan} />
-              ) : null}
+              {plan ? <ContinueCard plan={plan} /> : null}
 
-              {quiet ? (
-                <StarterChips
-                  plan={plan}
-                  life={lifeContext}
-                  onTalk={() => setFocusComposer(true)}
-                  onDocument={() => setDocsOpen(true)}
-                  onMeetings={() => setShowMeetings(true)}
-                />
-              ) : null}
-
-              {plan && quiet ? <ContinueCard plan={plan} /> : null}
-
-              {showMeetings ? (
+              {job === "meetings" ? (
                 <>
                   <MeetingsJobCard />
                   <Meetings />
@@ -325,13 +318,6 @@ function HomeToday({
               ) : null}
 
               <Overnight runs={runs} />
-
-              <section
-                aria-label={t("common.messageTheCompanion")}
-                className="flex max-h-[min(24rem,50dvh)] flex-col overflow-hidden rounded-brand-lg border bg-card shadow-e1 lg:hidden"
-              >
-                <CompanionConversation autoFocus={focusComposer} />
-              </section>
             </>
           );
         }}
@@ -346,6 +332,7 @@ function HomeToday({
           <DocumentPickup
             onUploaded={(name) => {
               reload();
+              openCompanion();
               send(askAboutAdded(name));
               setDocsOpen(false);
             }}
@@ -394,47 +381,46 @@ function ContinueCard({ plan }: { plan: SessionDetail }) {
   );
 }
 
-function StarterChips({
-  plan,
-  life,
-  onTalk,
-  onDocument,
-  onMeetings,
+function CapabilityGrid({
+  onImage,
+  onVideo,
+  onPlan,
+  onFile,
 }: {
-  plan: SessionDetail | null;
-  life: LifeContext | null;
-  onTalk: () => void;
-  onDocument: () => void;
-  onMeetings: () => void;
+  onImage: () => void;
+  onVideo: () => void;
+  onPlan: () => void;
+  onFile: () => void;
 }) {
   const t = useT();
-  const actions: Record<ActivationJob, () => void> = {
-    talk: onTalk,
-    document: onDocument,
-    meetings: onMeetings,
-  };
+  const cards = [
+    { key: "image", icon: Image, title: t("today.capabilityImage"), hint: t("today.capabilityImageHint"), onClick: onImage },
+    { key: "video", icon: Clapperboard, title: t("today.capabilityVideo"), hint: t("today.capabilityVideoHint"), onClick: onVideo },
+    { key: "plan", icon: ListTodo, title: t("today.capabilityPlan"), hint: t("today.capabilityPlanHint"), onClick: onPlan },
+    { key: "file", icon: FileText, title: t("today.capabilityFile"), hint: t("today.capabilityFileHint"), onClick: onFile },
+  ] as const;
 
   return (
-    <div className="flex flex-wrap gap-2">
-      {orderJobs(life).map((job) => (
-        <button
-          key={job}
-          type="button"
-          onClick={actions[job]}
-          className="rounded-full border bg-card px-3.5 py-2 text-[13px] transition-colors hover:border-primary/40"
-        >
-          {t(`today.chip${job[0].toUpperCase()}${job.slice(1)}`)}
-        </button>
-      ))}
-      {plan ? (
-        <Link
-          to={`/app/work/${plan.id}`}
-          className="rounded-full border border-primary bg-primary/10 px-3.5 py-2 text-[13px]"
-        >
-          {t("common.continue")}
-        </Link>
-      ) : null}
-    </div>
+    <section aria-labelledby="capability-heading">
+      <h2 id="capability-heading" className="mb-3 text-[16px] font-semibold">
+        {t("today.capabilityHeading")}
+      </h2>
+      <ul className="grid grid-cols-2 gap-4 xl:grid-cols-4">
+        {cards.map((card) => (
+          <li key={card.key}>
+            <button
+              type="button"
+              onClick={card.onClick}
+              className="flex h-full w-full flex-col items-start gap-2 rounded-brand-lg border bg-card px-4 py-4 text-left shadow-e1 transition-colors hover:border-primary/40"
+            >
+              <card.icon className="size-6 shrink-0" aria-hidden="true" />
+              <span className="text-[16px] font-semibold leading-snug">{card.title}</span>
+              <span className="text-[13.5px] leading-relaxed text-muted-foreground">{card.hint}</span>
+            </button>
+          </li>
+        ))}
+      </ul>
+    </section>
   );
 }
 
@@ -445,14 +431,19 @@ function MeetingsJobCard() {
   const [error, setError] = useState<string | null>(null);
 
   const google = state.status === "ready"
-    ? state.data.connectors.find((c) => c.provider === "google")
+    ? {
+        meet: state.data.connectors.find((c) => c.id === "google_meet"),
+        calendar: state.data.connectors.find((c) => c.id === "google_calendar"),
+      }
     : undefined;
+  const connected = Boolean(google?.meet?.connected || google?.calendar?.connected);
 
   async function connect() {
     setStarting(true);
     setError(null);
     try {
-      const { url } = await api.connectGoogle({ drafts: false });
+      const target = google?.meet?.connected ? "google_calendar" : "google_meet";
+      const { url } = await api.connectGoogle({ connector: target, drafts: false });
       window.location.assign(url);
     } catch {
       setStarting(false);
@@ -479,7 +470,7 @@ function MeetingsJobCard() {
         </p>
       ) : null}
 
-      {google?.connected ? (
+      {connected ? (
         <p className="mt-4 text-[13px]">{t("today.googleConnected")}</p>
       ) : (
         <Button
