@@ -131,10 +131,12 @@ export type ArtifactDetail = z.infer<typeof ArtifactDetailSchema>;
 export type ArtifactVersion = z.infer<typeof ArtifactVersionSchema>;
 
 export const StudioGenerateSchema = z.object({
-  status: z.enum(["ready", "queued", "rendering", "not_ready", "declined", "quota", "failed"]),
+  status: z.enum(["ready", "queued", "rendering", "joining", "not_ready", "declined", "quota", "failed"]),
   message: z.string(),
   artifact: ArtifactDetailSchema.optional(),
   jobId: z.string().optional(),
+  shotIndex: z.number().optional(),
+  shotCount: z.number().optional(),
 });
 
 export const DocumentSchema = z.object({
@@ -306,9 +308,11 @@ export const api = {
       z.array(
         z.object({
           jobId: z.string(),
-          status: z.enum(["queued", "rendering"]),
+          status: z.enum(["queued", "rendering", "joining"]),
           prompt: z.string(),
           seconds: z.number(),
+          shotIndex: z.number().optional(),
+          shotCount: z.number().optional(),
         }),
       ),
     ),

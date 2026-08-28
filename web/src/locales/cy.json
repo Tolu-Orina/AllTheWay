@@ -194,7 +194,12 @@
     "rendering": "Yn drafftio clip…",
     "queued": "Yn y ciw. Gall hyn gymryd ychydig funudau.",
     "quotaVideoEmpty": "Dim eiliadau drafft ar ôl y mis hwn.",
-    "jobLost": "Collwyd golwg ar y clip hwnnw. Efallai y bydd yn dal i orffen; nid yw wedi'i ganslo."
+    "jobLost": "Collwyd golwg ar y clip hwnnw. Efallai y bydd yn dal i orffen; nid yw wedi'i ganslo.",
+    "joining": "Yn uno'r shotiau…",
+    "shotProgress": "Shot {{n}} o {{m}}",
+    "shotHint": "Mae pob cenhedlaeth yn 8 eiliad. Mae clipiau hirach yn cael eu cynllunio fel shotiau olynol ac yna eu huno.",
+    "shotCountPreview": "{{count}} shot o hyd at 8 eiliad, yna wedi'u huno.",
+    "assembled": "Wedi'i ymgynnull o {{count}} shot. Nid yw cymwysterau cynnwys pob shot ar y ffeil hon."
   },
   "comments": {
     "comments": "Sylwadau",

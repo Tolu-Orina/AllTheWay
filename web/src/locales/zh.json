@@ -179,7 +179,12 @@
     "rendering": "正在生成短片…",
     "queued": "已排队。可能需要几分钟。",
     "quotaVideoEmpty": "本月草稿秒数已用完。",
-    "jobLost": "跟丢了这段短片。它可能仍在生成，并未取消。"
+    "jobLost": "跟丢了这段短片。它可能仍在生成，并未取消。",
+    "joining": "正在拼接镜头…",
+    "shotProgress": "第 {{n}} 镜，共 {{m}} 镜",
+    "shotHint": "每次生成最长 8 秒。更长的短片会先规划成连续镜头，再拼接。",
+    "shotCountPreview": "{{count}} 个最长 8 秒的镜头，然后拼接。",
+    "assembled": "由 {{count}} 个镜头拼接而成。各镜头的内容凭证不会保留在此文件上。"
   },
   "comments": {
     "comments": "评论",

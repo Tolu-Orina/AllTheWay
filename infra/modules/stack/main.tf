@@ -477,6 +477,11 @@ module "service" {
   # number that can be raised.
   timeout_seconds = contains(["gateway", "scribe"], each.key) ? 3600 : 300
 
+  # Studio can join up to two minutes of Veo shots in /tmp. Those files live
+  # in memory on Cloud Run, and 512Mi is not enough once fifteen clips and
+  # the joined output are on disk at once.
+  memory = each.key == "gateway" ? "1Gi" : "512Mi"
+
   # Concurrency, set for the pinned case rather than for today's traffic.
   #
   # Tier 2 is refused for every meeting right now — the preview is not enrolled

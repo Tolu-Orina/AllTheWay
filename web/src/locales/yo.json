@@ -179,7 +179,12 @@
     "rendering": "Ń ṣẹ̀dá fídíò…",
     "queued": "Ó wà ní ìlà. Èyí lè gba ìṣẹ́jú díẹ̀.",
     "quotaVideoEmpty": "Kò sí ìṣẹ́jú àáyá àkọ́kọ́ tó kù lóṣù yìí.",
-    "jobLost": "A pàdánù fídíò yẹn. Ó ṣì lè parí; a kò fagilé rẹ̀."
+    "jobLost": "A pàdánù fídíò yẹn. Ó ṣì lè parí; a kò fagilé rẹ̀.",
+    "joining": "Ń so àwọn ìṣẹ̀kí pọ̀…",
+    "shotProgress": "Ìṣẹ̀kí {{n}} nínú {{m}}",
+    "shotHint": "Ìṣẹ̀dá kọ̀ọ̀kan jẹ́ ìṣẹ́jú àáyá 8. Fídíò tó gùn ju bẹ́ẹ̀ lọ ni a máa pète sí ìṣẹ̀kí tẹ̀léra, kí a sì so wọ́n pọ̀.",
+    "shotCountPreview": "Ìṣẹ̀kí {{count}} tó tó ìṣẹ́jú àáyá 8, lẹ́yìn náà a so wọ́n pọ̀.",
+    "assembled": "A so ìṣẹ̀kí {{count}} pọ̀. Ìwé-ẹ̀rí àkóónú ìṣẹ̀kí kọ̀ọ̀kan kò sí lórí fáìlì yìí."
   },
   "comments": {
     "comments": "Àwọn àfikún ọ̀rọ̀",

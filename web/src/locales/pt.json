@@ -185,7 +185,12 @@
     "rendering": "Criando um clipe…",
     "queued": "Na fila. Isso pode levar alguns minutos.",
     "quotaVideoEmpty": "Não restam segundos de rascunho este mês.",
-    "jobLost": "Perdemos o rastro desse clipe. Ele ainda pode terminar; não foi cancelado."
+    "jobLost": "Perdemos o rastro desse clipe. Ele ainda pode terminar; não foi cancelado.",
+    "joining": "Juntando os planos…",
+    "shotProgress": "Plano {{n}} de {{m}}",
+    "shotHint": "Cada geração dura 8 segundos. Clipe mais longos são planejados como planos consecutivos e depois unidos.",
+    "shotCountPreview": "{{count}} planos de até 8 segundos, depois unidos.",
+    "assembled": "Montado a partir de {{count}} planos. As credenciais de conteúdo de cada plano não estão neste arquivo."
   },
   "comments": {
     "comments": "Comentários",

@@ -7,7 +7,6 @@ import { runConnectorTool, readableDetail } from "../act.js";
 import {
   persistGeneratedMedia,
   STUDIO_SESSION_ID,
-  videoPollFromConnectorTask,
   videoStartFromConnectorTask,
 } from "../media-persist.js";
 import { getArtifact } from "../repos/artifacts.js";
@@ -15,8 +14,9 @@ import {
   createStudioJob,
   getStudioJob,
   listOpenStudioJobs,
-  updateStudioJob,
 } from "../repos/studio-jobs.js";
+import { SEQUENCE_CAP_SECONDS, SHOT_MAX_SECONDS } from "../studio-shots.js";
+import { advanceStudioJob, RENDERING } from "../studio-advance.js";
 
 /**
  * Studio Generate is consent.
@@ -29,6 +29,11 @@ import {
  * connector-gateway's 300s timeout, and Firebase Hosting dies at 60s.
  * Starting the long-running operation and polling it is the only shape that
  * can tell the truth about wait and cost.
+ *
+ * Veo itself stops at eight seconds. A longer request is a sequence: Flash
+ * expands the brief, each shot is billed as its own draft, and ffmpeg joins
+ * the files. The joined file is an assembly — it does not inherit content
+ * credentials from the shots.
  */
 
 export const studioRoutes = express.Router();
@@ -36,17 +41,13 @@ export const studioRoutes = express.Router();
 const GenerateSchema = z.object({
   prompt: z.string().min(1).max(4000),
   mode: z.enum(["image", "video"]),
-  seconds: z.number().int().min(1).max(8).optional(),
+  seconds: z.number().int().min(1).max(SEQUENCE_CAP_SECONDS).optional(),
   artifactId: z.string().max(128).optional(),
   costAcknowledged: z.boolean().optional(),
 });
 
 const IMAGE_TIMEOUT_MS = 90_000;
 const VIDEO_START_TIMEOUT_MS = 90_000;
-const VIDEO_POLL_TIMEOUT_MS = 20_000;
-
-const RENDERING =
-  "Drafting a clip can take several minutes. You can leave this page.";
 
 studioRoutes.post("/generate", requireUser, async (req, res) => {
   const body = GenerateSchema.safeParse(req.body);
@@ -145,6 +146,8 @@ studioRoutes.get("/jobs", requireUser, async (req, res) => {
       status: job.status,
       prompt: job.prompt,
       seconds: job.seconds,
+      shotIndex: job.shots.length ? job.shotIndex : undefined,
+      shotCount: job.shots.length || undefined,
     })),
   );
 });
@@ -169,6 +172,8 @@ studioRoutes.get("/jobs/:id", requireUser, async (req, res) => {
       message: "",
       jobId: job.id,
       artifact: artifact ?? undefined,
+      shotIndex: job.shots.length ? job.shotIndex : undefined,
+      shotCount: job.shots.length || undefined,
     });
   }
 
@@ -180,79 +185,8 @@ studioRoutes.get("/jobs/:id", requireUser, async (req, res) => {
     });
   }
 
-  if (!env.connectorGatewayUrl) {
-    return res.status(503).json({
-      code: "not_configured",
-      message: "Video generation is not available in this environment.",
-    });
-  }
-
-  try {
-    const task = await runConnectorTool({
-      uid,
-      sessionId: STUDIO_SESSION_ID,
-      connector: "media",
-      tool: "poll_draft_video",
-      arguments: {
-        operation: job.operation,
-        model: job.model,
-        seconds: job.seconds,
-      },
-      confirmed: true,
-      timeoutMs: VIDEO_POLL_TIMEOUT_MS,
-    });
-
-    const poll = videoPollFromConnectorTask(task);
-    if (poll.error && !poll.body) {
-      await updateStudioJob(uid, job.id, { status: "failed", error: poll.error });
-      return res.json({ status: "failed", message: poll.error, jobId: job.id });
-    }
-
-    if (!poll.done) {
-      if (job.status !== "rendering") {
-        await updateStudioJob(uid, job.id, { status: "rendering" });
-      }
-      return res.json({ status: "rendering", message: RENDERING, jobId: job.id });
-    }
-
-    const saved = await persistGeneratedMedia({
-      uid,
-      sessionId: STUDIO_SESSION_ID,
-      tool: "draft_video",
-      prompt: job.prompt,
-      task,
-      artifactId: job.artifactId || undefined,
-    });
-
-    if (saved && "error" in saved) {
-      await updateStudioJob(uid, job.id, { status: "failed", error: saved.error });
-      return res.json({ status: "failed", message: saved.error, jobId: job.id });
-    }
-    if (!saved || !("artifact" in saved)) {
-      const message = "The clip finished but could not be saved.";
-      await updateStudioJob(uid, job.id, { status: "failed", error: message });
-      return res.json({ status: "failed", message, jobId: job.id });
-    }
-
-    await updateStudioJob(uid, job.id, {
-      status: "ready",
-      resultArtifactId: saved.artifact.id,
-    });
-    return res.json({
-      status: "ready",
-      message: "",
-      jobId: job.id,
-      artifact: saved.artifact,
-    });
-  } catch (err) {
-    const msg = (err as Error).message;
-    console.warn(`[studio] poll failed: ${msg}`);
-    return res.json({
-      status: "rendering",
-      message: RENDERING,
-      jobId: job.id,
-    });
-  }
+  const result = await advanceStudioJob(uid, job);
+  return res.json(result);
 });
 
 async function startVideo(
@@ -260,13 +194,31 @@ async function startVideo(
   res: express.Response,
   opts: { uid: string; prompt: string; seconds: number; artifactId?: string },
 ) {
+  const seconds = Math.max(1, Math.min(SEQUENCE_CAP_SECONDS, Math.floor(opts.seconds)));
+
+  if (seconds > SHOT_MAX_SECONDS) {
+    const job = await createStudioJob({
+      uid: opts.uid,
+      operation: "",
+      model: "",
+      prompt: opts.prompt,
+      seconds,
+      artifactId: opts.artifactId,
+    });
+    return res.json({
+      status: "queued",
+      message: RENDERING,
+      jobId: job.id,
+    });
+  }
+
   try {
     const task = await runConnectorTool({
       uid: opts.uid,
       sessionId: STUDIO_SESSION_ID,
       connector: "media",
       tool: "draft_video",
-      arguments: { prompt: opts.prompt, seconds: opts.seconds },
+      arguments: { prompt: opts.prompt, seconds },
       confirmed: true,
       timeoutMs: VIDEO_START_TIMEOUT_MS,
     });
@@ -295,7 +247,7 @@ async function startVideo(
       operation: started.operation,
       model: started.model ?? "",
       prompt: opts.prompt,
-      seconds: opts.seconds,
+      seconds,
       artifactId: opts.artifactId,
     });
 

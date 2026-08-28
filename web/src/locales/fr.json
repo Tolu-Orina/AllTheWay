@@ -185,7 +185,12 @@
     "rendering": "Création d'un clip…",
     "queued": "En file. Cela peut prendre quelques minutes.",
     "quotaVideoEmpty": "Plus de secondes de brouillon ce mois-ci.",
-    "jobLost": "Ce clip a été perdu de vue. Il peut encore se terminer ; il n'a pas été annulé."
+    "jobLost": "Ce clip a été perdu de vue. Il peut encore se terminer ; il n'a pas été annulé.",
+    "joining": "Assemblage des plans…",
+    "shotProgress": "Plan {{n}} sur {{m}}",
+    "shotHint": "Chaque génération dure 8 secondes. Les clips plus longs sont planifiés en plans consécutifs, puis assemblés.",
+    "shotCountPreview": "{{count}} plans de 8 secondes maximum, puis assemblés.",
+    "assembled": "Assemblé à partir de {{count}} plans. Les identifiants de contenu de chaque plan ne sont pas sur ce fichier."
   },
   "comments": {
     "comments": "Commentaires",

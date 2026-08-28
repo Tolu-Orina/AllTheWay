@@ -113,6 +113,11 @@ RUN java -jar /opt/firestore-emulator.jar --host=127.0.0.1 --port=8081 & \
  && npm --workspace @alltheway/contracts test \
  && npm --workspace @alltheway/gateway test
 
+# distroless has no shell and no package manager, so ffmpeg has to arrive as a
+# static binary. npm's ffmpeg-static is not an option: this image runs
+# `npm ci --ignore-scripts`.
+FROM mwader/static-ffmpeg:7.1 AS ffmpeg
+
 # --------------------------------------------------------------------- final
 FROM gcr.io/distroless/nodejs22-debian12:nonroot AS final
 WORKDIR /repo
@@ -141,7 +146,14 @@ COPY --from=build /repo/services/gateway/dist ./services/gateway/dist
 # bump. Copying the directory is what makes that reshuffling harmless.
 COPY --from=build /repo/services/gateway/node_modules ./services/gateway/node_modules
 
+# ffmpeg is a static binary, not an npm package. The image is distroless and
+# `npm ci --ignore-scripts`, so ffmpeg-static's postinstall never runs. A
+# longer Studio clip is several eight-second Veo shots concatenated with
+# `-c copy`; without this binary that join cannot happen.
+COPY --from=ffmpeg /ffmpeg /repo/ffmpeg
+
 ENV NODE_ENV=production
+ENV FFMPEG_PATH=/repo/ffmpeg
 
 # The distroless nodejs entrypoint is already `node`, so this is arguments to
 # it, not a command. No shell means no $PORT expansion: the port is fixed, and

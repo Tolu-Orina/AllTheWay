@@ -212,26 +212,25 @@ function titleFrom(prompt: string): string {
  * Write the bytes as v1 of a new artifact, or as the next version of one
  * the user is iterating on.
  */
-export async function persistGeneratedMedia(opts: {
+export async function persistMediaBytes(opts: {
   uid: string;
   sessionId: string;
-  tool: string;
   prompt: string;
-  task: unknown;
+  body: Buffer;
+  mimeType: string;
+  kind: ArtifactKind;
+  model?: string;
   artifactId?: string;
-}): Promise<{ artifact: ArtifactDetail; kind: ArtifactKind } | { error: string } | null> {
-  const payload = mediaFromConnectorTask(opts.task);
-  if (payload.error && !payload.body) return { error: payload.error };
-  if (!payload.body || !payload.mimeType) return null;
-
-  const kind = kindOf(payload.mimeType, opts.tool);
+  sources?: string[];
+}): Promise<{ artifact: ArtifactDetail; kind: ArtifactKind } | { error: string }> {
   const prompt = opts.prompt.trim();
+  const kind = opts.kind;
 
   try {
     if (opts.artifactId) {
       await addVersion(opts.uid, opts.artifactId, {
-        body: payload.body,
-        mimeType: payload.mimeType,
+        body: opts.body,
+        mimeType: opts.mimeType,
         producedBy: "agent",
         prompt,
         correction: "",
@@ -252,14 +251,14 @@ export async function persistGeneratedMedia(opts: {
       kind,
       title: titleFrom(prompt),
       sessionId: opts.sessionId || STUDIO_SESSION_ID,
-      body: payload.body,
-      mimeType: payload.mimeType,
+      body: opts.body,
+      mimeType: opts.mimeType,
       prompt,
       provenance: {
         agentId: "media",
         cardVersion: "1.0.0",
-        model: payload.model ?? "",
-        sources: [],
+        model: opts.model ?? "",
+        sources: opts.sources ?? [],
       },
     });
     return { artifact, kind };
@@ -272,4 +271,32 @@ export async function persistGeneratedMedia(opts: {
           : "The still was made but could not be saved.",
     };
   }
+}
+
+/**
+ * Write the bytes as v1 of a new artifact, or as the next version of one
+ * the user is iterating on.
+ */
+export async function persistGeneratedMedia(opts: {
+  uid: string;
+  sessionId: string;
+  tool: string;
+  prompt: string;
+  task: unknown;
+  artifactId?: string;
+}): Promise<{ artifact: ArtifactDetail; kind: ArtifactKind } | { error: string } | null> {
+  const payload = mediaFromConnectorTask(opts.task);
+  if (payload.error && !payload.body) return { error: payload.error };
+  if (!payload.body || !payload.mimeType) return null;
+
+  return persistMediaBytes({
+    uid: opts.uid,
+    sessionId: opts.sessionId,
+    prompt: opts.prompt,
+    body: payload.body,
+    mimeType: payload.mimeType,
+    kind: kindOf(payload.mimeType, opts.tool),
+    model: payload.model,
+    artifactId: opts.artifactId,
+  });
 }

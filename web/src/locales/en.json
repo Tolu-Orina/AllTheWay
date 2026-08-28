@@ -182,7 +182,12 @@
     "rendering": "Drafting a clip…",
     "queued": "Queued. This can take a few minutes.",
     "quotaVideoEmpty": "No draft seconds left this month.",
-    "jobLost": "Lost track of that clip. It may still complete; it has not been cancelled."
+    "jobLost": "Lost track of that clip. It may still complete; it has not been cancelled.",
+    "joining": "Joining the shots…",
+    "shotProgress": "Shot {{n}} of {{m}}",
+    "shotHint": "Each generation is 8 seconds. Longer clips are planned as consecutive shots and joined.",
+    "shotCountPreview": "{{count}} shots of up to 8 seconds, then joined.",
+    "assembled": "Assembled from {{count}} shots. Content credentials from each shot are not on this file."
   },
   "comments": {
     "comments": "Comments",

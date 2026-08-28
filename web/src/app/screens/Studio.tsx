@@ -14,16 +14,27 @@ import { cn } from "@/lib/utils";
 import { ApiError } from "@/lib/api";
 
 type Mode = "image" | "video";
-type Stage = "empty" | "generating" | "queued" | "rendering" | "ready" | "error";
+type Stage = "empty" | "generating" | "queued" | "rendering" | "joining" | "ready" | "error";
 
 const STUDIO_SESSION = "studio";
 const JOB_KEY = "alltheway.studioJob";
+const MAX_VIDEO_SECONDS = 120;
+const SHOT_MAX_SECONDS = 8;
 
 type StoredJob = {
   jobId: string;
   prompt: string;
   seconds: number;
 };
+
+function nextPollDelay(previousMs: number): number {
+  if (previousMs <= 0) return 8_000;
+  return Math.min(20_000, Math.round(previousMs * 1.4));
+}
+
+function shotCountFor(seconds: number): number {
+  return Math.max(1, Math.ceil(Math.min(MAX_VIDEO_SECONDS, seconds) / SHOT_MAX_SECONDS));
+}
 
 function meter(usage: Usage | undefined, name: Usage["meters"][number]["meter"]) {
   return usage?.meters.find((m) => m.meter === name);
@@ -71,6 +82,8 @@ export default function Studio() {
   const [error, setError] = useState<string | null>(null);
   const [blobUrl, setBlobUrl] = useState<string | null>(null);
   const [jobId, setJobId] = useState<string | null>(null);
+  const [shotIndex, setShotIndex] = useState<number | null>(null);
+  const [shotCount, setShotCount] = useState<number | null>(null);
   const [filter, setFilter] = useState<LibraryFilter>("all");
   const resumed = useRef(false);
 
@@ -82,6 +95,14 @@ export default function Studio() {
   const finalLeft = finals?.remaining ?? 0;
   const hasLook = prefs.state.status === "ready" && prefs.state.data.length > 0;
   const version = artifact?.versions.find((v) => v.n === (viewing ?? artifact.currentVersion));
+  const assembledCount = useMemo(() => {
+    const row = artifact?.provenance.sources.find((s) => /assembled from (\d+)/i.test(s));
+    if (row) {
+      const match = row.match(/assembled from (\d+)/i);
+      return match ? Number(match[1]) : null;
+    }
+    return shotCount && shotCount > 1 ? shotCount : null;
+  }, [artifact, shotCount]);
 
   const mediaItems = useMemo(() => {
     if (library.state.status !== "ready") return [];
@@ -148,6 +169,9 @@ export default function Studio() {
       setPrompt(stored.prompt);
       setSeconds(stored.seconds);
       setStage("rendering");
+      if (stored.seconds > SHOT_MAX_SECONDS) {
+        setShotCount(shotCountFor(stored.seconds));
+      }
       setSearchParams((current) => {
         const next = new URLSearchParams(current);
         next.set("mode", "video");
@@ -162,6 +186,8 @@ export default function Studio() {
       setPrompt(open.prompt);
       setSeconds(open.seconds);
       setStage(open.status);
+      setShotIndex(open.shotIndex ?? null);
+      setShotCount(open.shotCount ?? (open.seconds > SHOT_MAX_SECONDS ? shotCountFor(open.seconds) : null));
       writeStoredJob({ jobId: open.jobId, prompt: open.prompt, seconds: open.seconds });
       setSearchParams((current) => {
         const next = new URLSearchParams(current);
@@ -174,12 +200,17 @@ export default function Studio() {
   }, [setSearchParams]);
 
   useEffect(() => {
-    if (!jobId || (stage !== "queued" && stage !== "rendering")) return;
+    if (!jobId) return;
     let live = true;
+    let handle = 0;
+    let delay = 0;
     async function tick() {
+      if (!live) return;
       try {
         const result = await api.studioJob(jobId!);
         if (!live) return;
+        if (typeof result.shotIndex === "number") setShotIndex(result.shotIndex);
+        if (typeof result.shotCount === "number") setShotCount(result.shotCount);
         if (result.status === "ready" && result.artifact) {
           writeStoredJob(null);
           setJobId(null);
@@ -197,30 +228,40 @@ export default function Studio() {
           setStage("error");
           setError(
             result.status === "quota"
-              ? t("studio.quotaVideoEmpty")
+              ? result.message || t("studio.quotaVideoEmpty")
               : result.message || t("studio.jobLost"),
           );
           return;
         }
-        if (result.status === "queued" || result.status === "rendering") {
+        if (
+          result.status === "queued" ||
+          result.status === "rendering" ||
+          result.status === "joining"
+        ) {
           setStage(result.status);
         }
       } catch {
         /* a missed poll is retried; the job is still running */
       }
+      if (!live) return;
+      delay = nextPollDelay(delay);
+      handle = window.setTimeout(() => void tick(), delay);
     }
     void tick();
-    const handle = window.setInterval(() => void tick(), 3000);
     return () => {
       live = false;
-      window.clearInterval(handle);
+      window.clearTimeout(handle);
     };
-  }, [jobId, stage, library, usage, setSearchParams, t]);
+  }, [jobId, library, usage, setSearchParams, t]);
 
   const quotaEmpty = mode === "image" && imagesLeft === 0;
   const quotaVideoEmpty =
     mode === "video" && draftLeft !== null && draftLeft < seconds;
-  const busy = stage === "generating" || stage === "queued" || stage === "rendering";
+  const busy =
+    stage === "generating" ||
+    stage === "queued" ||
+    stage === "rendering" ||
+    stage === "joining";
   const canGenerate =
     mode === "image" && prompt.trim().length > 0 && !busy && !quotaEmpty;
   const canDraft =
@@ -238,6 +279,8 @@ export default function Studio() {
     setStage("empty");
     setError(null);
     setJobId(null);
+    setShotIndex(null);
+    setShotCount(null);
     writeStoredJob(null);
     setSearchParams({ mode }, { replace: true });
   }
@@ -302,6 +345,8 @@ export default function Studio() {
       if ((result.status === "queued" || result.status === "rendering") && result.jobId) {
         setJobId(result.jobId);
         setStage(result.status);
+        setShotCount(seconds > SHOT_MAX_SECONDS ? shotCountFor(seconds) : null);
+        setShotIndex(0);
         writeStoredJob({ jobId: result.jobId, prompt: prompt.trim(), seconds });
         return;
       }
@@ -321,9 +366,10 @@ export default function Studio() {
     }
   }
 
-  const waiting = stage === "queued" || stage === "rendering";
+  const waiting = stage === "queued" || stage === "rendering" || stage === "joining";
   const frameLabel = useMemo(() => {
     if (stage === "generating") return t("studio.generating");
+    if (stage === "joining") return t("studio.joining");
     if (waiting) return stage === "queued" ? t("studio.queued") : t("studio.rendering");
     if (stage === "error" && error) return error;
     if (stage === "ready") return prompt.trim() || t("studio.emptyFrame");
@@ -435,8 +481,18 @@ export default function Studio() {
                       ? t("studio.generating")
                       : stage === "queued"
                         ? t("studio.queued")
-                        : t("studio.rendering")}
+                        : stage === "joining"
+                          ? t("studio.joining")
+                          : t("studio.rendering")}
                   </span>
+                  {waiting && shotCount && shotCount > 1 && stage !== "joining" ? (
+                    <span className="text-[12.5px] text-muted-foreground">
+                      {t("studio.shotProgress", {
+                        n: Math.min((shotIndex ?? 0) + 1, shotCount),
+                        m: shotCount,
+                      })}
+                    </span>
+                  ) : null}
                   {waiting ? (
                     <span className="text-[12.5px] text-muted-foreground">{t("studio.videoWait")}</span>
                   ) : null}
@@ -488,7 +544,14 @@ export default function Studio() {
           </section>
 
           {artifact ? (
-            <div className="flex flex-wrap items-center justify-end gap-2">
+            <div className="flex flex-wrap items-center justify-between gap-2">
+              {assembledCount && assembledCount > 1 ? (
+                <p className="text-[12.5px] text-muted-foreground">
+                  {t("studio.assembled", { count: assembledCount })}
+                </p>
+              ) : (
+                <span />
+              )}
               <Button render={<Link to={`/app/artifacts/${artifact.id}`} />} variant="outline" size="sm">
                 {t("studio.openCanvas")}
               </Button>
@@ -521,19 +584,28 @@ export default function Studio() {
             <p className="text-[12.5px] text-muted-foreground">{t("studio.yourLook")}</p>
           ) : null}
           {mode === "video" ? (
-            <label className="flex items-center gap-2 text-[13px] text-muted-foreground">
-              {t("studio.seconds")}
-              <input
-                type="number"
-                min={1}
-                max={8}
-                value={seconds}
-                onChange={(event) =>
-                  setSeconds(Math.min(8, Math.max(1, Number(event.target.value) || 1)))
-                }
-                className="w-14 rounded-brand border bg-background px-2 py-1 text-[13px] tabular-nums outline-none"
-              />
-            </label>
+            <div className="flex min-w-0 flex-col gap-1">
+              <label className="flex items-center gap-2 text-[13px] text-muted-foreground">
+                {t("studio.seconds")}
+                <input
+                  type="number"
+                  min={1}
+                  max={MAX_VIDEO_SECONDS}
+                  value={seconds}
+                  onChange={(event) =>
+                    setSeconds(
+                      Math.min(MAX_VIDEO_SECONDS, Math.max(1, Number(event.target.value) || 1)),
+                    )
+                  }
+                  className="w-16 rounded-brand border bg-background px-2 py-1 text-[13px] tabular-nums outline-none"
+                />
+              </label>
+              <p className="max-w-sm text-[12.5px] leading-relaxed text-muted-foreground">
+                {seconds > SHOT_MAX_SECONDS
+                  ? t("studio.shotCountPreview", { count: shotCountFor(seconds) })
+                  : t("studio.shotHint")}
+              </p>
+            </div>
           ) : null}
           <div className="ml-auto flex flex-wrap items-center justify-end gap-2">
             {mode === "image" ? (
