@@ -60,13 +60,20 @@ def chunks(user: str):
     return _user_doc(user).collection("documentChunks")
 
 
-def concepts(user: str):
-    """The struggle model — what this user finds hard. See the plan, Phase B."""
-    return _user_doc(user).collection("concepts")
-
-
 def now_iso() -> str:
     return datetime.now(timezone.utc).isoformat().replace("+00:00", "Z")
+
+
+def applies_hat(stored: str | None, active: str | None) -> bool:
+    """Unlabelled documents always retrieve. A labelled one only when the hat matches.
+
+    Inferring a hat from a filename is the contamination this exists to prevent.
+    """
+    if not stored:
+        return True
+    if not active:
+        return True
+    return stored == active
 
 
 def count_documents(user: str) -> int:
@@ -84,24 +91,30 @@ class Passage:
     page: int
     text: str
     distance: float
+    hat: str | None = None
 
 
 # ------------------------------------------------------------------ writing
 
 
-def create_document(user: str, *, title: str, mime_type: str, pages: int) -> str:
+def create_document(
+    user: str, *, title: str, mime_type: str, pages: int, hat: str | None = None
+) -> str:
     ref = documents(user).document()
-    ref.set(
-        {
-            # Redundant with the path (layer 3), on purpose.
-            "ownerUid": user,
-            "title": title,
-            "mimeType": mime_type,
-            "pages": pages,
-            "status": "screening",
-            "createdAt": now_iso(),
-        }
-    )
+    payload: dict = {
+        # Redundant with the path (layer 3), on purpose.
+        "ownerUid": user,
+        "title": title,
+        "mimeType": mime_type,
+        "pages": pages,
+        "status": "screening",
+        "createdAt": now_iso(),
+    }
+    # Unlabelled is absence, not a guessed "home". A school policy uploaded
+    # from Work with no picker must not become a home document.
+    if hat:
+        payload["hat"] = hat
+    ref.set(payload)
     return ref.id
 
 
@@ -115,6 +128,7 @@ def write_chunks(
     title: str,
     pieces: list[tuple[int, int, str]],
     embeddings: list[list[float]],
+    hat: str | None = None,
 ) -> int:
     """Write chunks and their embeddings. Returns how many landed.
 
@@ -128,19 +142,19 @@ def write_chunks(
     batch = db.batch()
     for index, ((page, ordinal, text), vector) in enumerate(zip(pieces, embeddings)):
         ref = chunks(user).document()
-        batch.set(
-            ref,
-            {
-                "ownerUid": user,
-                "documentId": document_id,
-                "title": title,
-                "page": page,
-                "ordinal": ordinal,
-                "text": text,
-                "embedding": Vector(vector),
-                "createdAt": now_iso(),
-            },
-        )
+        payload = {
+            "ownerUid": user,
+            "documentId": document_id,
+            "title": title,
+            "page": page,
+            "ordinal": ordinal,
+            "text": text,
+            "embedding": Vector(vector),
+            "createdAt": now_iso(),
+        }
+        if hat:
+            payload["hat"] = hat
+        batch.set(ref, payload)
         written += 1
         # 500 is Firestore's per-batch write limit.
         if (index + 1) % 400 == 0:
@@ -154,19 +168,25 @@ def write_chunks(
 # ------------------------------------------------------------------ reading
 
 
-def retrieve(user: str, query_vector: list[float], *, limit: int = 6) -> list[Passage]:
+def retrieve(
+    user: str,
+    query_vector: list[float],
+    *,
+    limit: int = 6,
+    hat: str | None = None,
+) -> list[Passage]:
     """The nearest chunks to a query, for exactly this user.
 
     Three of the seven layers are visible in these few lines, and the ordering
     matters: the collection is already scoped before any filter is applied, so
     the filter is redundancy rather than the control.
 
-    Nearest-neighbour on `embedding` needs a composite vector index. Writes
-    do not. If that index is missing (or the emulator cannot serve the query),
-    `find_nearest` raises and the gateway used to swallow that into "no
-    passages" — so a document that uploaded fine could not be asked about.
-    An empty nearest-neighbour result is a real answer and must not fall back.
+    Hat is a post-filter, not a Firestore `where`. Unlabelled chunks must
+    still retrieve when Today is on home, and an OR of `hat == null OR hat ==
+    home` is not something `find_nearest` can carry. Fetch a few extra, then
+    keep unlabeled plus the active hat. Never infer a hat from the title.
     """
+    fetch = limit * 3 if hat else limit
     try:
         docs = (
             chunks(user)  # layer 1: the path is the scope
@@ -175,7 +195,7 @@ def retrieve(user: str, query_vector: list[float], *, limit: int = 6) -> list[Pa
                 vector_field="embedding",
                 query_vector=Vector(query_vector),
                 distance_measure=DistanceMeasure.COSINE,
-                limit=limit,
+                limit=fetch,
                 distance_result_field="_distance",
             )
             .get()
@@ -188,7 +208,7 @@ def retrieve(user: str, query_vector: list[float], *, limit: int = 6) -> list[Pa
         docs = (
             chunks(user)
             .order_by("createdAt", direction=firestore.Query.DESCENDING)
-            .limit(limit)
+            .limit(fetch)
             .get()
         )
 
@@ -198,6 +218,10 @@ def retrieve(user: str, query_vector: list[float], *, limit: int = 6) -> list[Pa
 
         assert_owner(data, user, doc.id)
 
+        stored_hat = data.get("hat") or None
+        if not applies_hat(stored_hat if isinstance(stored_hat, str) else None, hat):
+            continue
+
         passages.append(
             Passage(
                 chunk_id=doc.id,
@@ -206,8 +230,11 @@ def retrieve(user: str, query_vector: list[float], *, limit: int = 6) -> list[Pa
                 page=int(data.get("page", 0)),
                 text=data.get("text", ""),
                 distance=float(data.get("_distance", 0.0)),
+                hat=stored_hat if isinstance(stored_hat, str) else None,
             )
         )
+        if len(passages) >= limit:
+            break
 
     return passages
 

@@ -31,7 +31,7 @@ from google.protobuf import json_format, struct_pb2
 
 from .aio import iter_in_thread
 from .graph import run_turn_stream
-from .models import Citation, Passage, TurnRequest
+from .models import Citation, Passage, Struggle, TurnRequest
 from .providers import ModelProvider
 
 #: Key under which the caller passes what the profile already knows.
@@ -42,6 +42,7 @@ PREFERENCES_KEY = "knownPreferences"
 PASSAGES_KEY = "passages"
 LOOKUPS_KEY = "lookups"
 THREAD_KEY = "thread"
+STRUGGLES_KEY = "struggles"
 
 #: Stable ids, so appended chunks land on one artifact rather than becoming
 #: N single-part artifacts. TaskUpdater mints a fresh uuid when not told one.
@@ -152,6 +153,38 @@ def _thread_from(context: RequestContext) -> list[str]:
     return [str(item) for item in raw if str(item).strip()]
 
 
+def _struggles_from(context: RequestContext) -> list[Struggle]:
+    """Struggle model from metadata. Empty until they reasked or missed."""
+    message = getattr(context, "message", None)
+    metadata = getattr(message, "metadata", None)
+    if metadata is None:
+        return []
+    try:
+        raw = json_format.MessageToDict(metadata).get(STRUGGLES_KEY, [])
+    except Exception:
+        return []
+    if not isinstance(raw, list):
+        return []
+    out: list[Struggle] = []
+    for item in raw:
+        if not isinstance(item, dict):
+            continue
+        label = item.get("label")
+        if not isinstance(label, str) or not label.strip():
+            continue
+        reasked = item.get("reasked", 0)
+        confidence = item.get("confidence", 0.5)
+        out.append(
+            Struggle(
+                label=label,
+                document_id=str(item.get("documentId", item.get("document_id", ""))),
+                reasked=int(reasked) if isinstance(reasked, (int, float)) else 0,
+                confidence=float(confidence) if isinstance(confidence, (int, float)) else 0.5,
+            )
+        )
+    return out
+
+
 def _citation_wire(citation: Citation) -> dict:
     """CamelCase payload the gateway maps to SSE. No uid."""
     return {
@@ -191,6 +224,7 @@ class OrchestratorExecutor(AgentExecutor):
             passages=_passages_from(context),
             lookups=_lookups_from(context),
             recent_thread=_thread_from(context),
+            struggles=_struggles_from(context),
         )
 
         trace: list[str] = []

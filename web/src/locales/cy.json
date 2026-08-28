@@ -148,7 +148,10 @@
     "allthewayCouldNotReachTheNetwork": "Ni allai AllTheWay gyrraedd y rhwydwaith. Mae eich sesiynau'n ddiogel — ailgysylltwch a bydd y dudalen hon yn ailddechrau lle y gadawyd arni.",
     "checkingSession": "Wrthi'n gwirio'ch sesiwn…",
     "couldNotLoad": "Methu llwytho hyn.",
-    "workSafe": "Ni chollwyd dim."
+    "workSafe": "Ni chollwyd dim.",
+    "notQuite": "Nid yn hollol",
+    "insteadPlaceholder": "Beth ddylai fod wedi bod?",
+    "rememberThis": "Cofiwch hyn"
   },
   "account": {
     "signOut": "Allgofnodi"
@@ -428,5 +431,23 @@
     "openYou": "Agor Chi",
     "dayEmpty": "Nothing in the next twelve hours for this hat.",
     "proposeFailed": "Dates could not be read from that file. Nothing was added to the calendar."
+  },
+  "memory": {
+    "everywhere": "Ym mhob lle",
+    "documentHat": "I ba ran o fywyd yw hwn?",
+    "documentHatHint": "Gadewch fel ym mhob lle oni bai y dylai aros allan o'r hetiau eraill. Nid yw enw'r ffeil yn cael ei ddefnyddio i ddyfalu.",
+    "struggles": "Yr hyn sy'n anodd i chi",
+    "strugglesHint": "Dim ond pan ofynnwch i glywed eto, neu fethu gwiriad. Byth o ba mor hir y gwylioch.",
+    "strugglesEmpty": "Dim eto",
+    "explainAgain": "Eglurwch eto",
+    "thatLanded": "Deallais hynny",
+    "didNotGetIt": "Doeddwn i ddim yn dilyn",
+    "recordedLanded": "Wedi'i gofnodi fel deall. Dim byd arall wedi newid.",
+    "recordedMiss": "Wedi'i gofnodi. Rhaid i'r esboniad nesaf o hyn fod yn wahanol.",
+    "couldNotRecord": "Methu cofnodi. Dim byd wedi newid.",
+    "suggested": "Awgrym",
+    "acceptSuggestion": "Defnyddio hwn",
+    "reaskedCount": "Wedi clywed eto: {{count}}",
+    "revert": "Dadwneud"
   }
 }

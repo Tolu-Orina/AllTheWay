@@ -196,6 +196,30 @@ def _thread_block(request: TurnRequest) -> str:
     return chr(10).join(lines)
 
 
+def _struggles_block(request: TurnRequest) -> str:
+    """What they have asked to hear again. The third explanation must differ.
+
+    Same injection rule as preferences: system context, never concatenated
+    into the user's message. Empty until a writer has fired.
+    """
+    if not request.struggles:
+        return ""
+
+    lines = [
+        "STRUGGLES: concepts this person has asked to hear again or missed a "
+        "check on. These are not guesses from how long they looked. When "
+        "explaining one of these, the third explanation must differ from the "
+        "first — a different analogy, a shorter cut, or a worked example. "
+        "Do not restate the first explanation.",
+    ]
+    for s in request.struggles:
+        lines.append(
+            f"{s.label} (document {s.document_id}; asked again {s.reasked} "
+            f"times; confidence {s.confidence:.2f})"
+        )
+    return chr(10).join(lines)
+
+
 def _system_for(request: TurnRequest) -> tuple[str, bool]:
     prefs = "; ".join(request.known_preferences)
     passages = _passages_block(request)
@@ -209,6 +233,9 @@ def _system_for(request: TurnRequest) -> tuple[str, bool]:
     thread = _thread_block(request)
     if thread:
         system += "\n\n" + thread
+    struggles = _struggles_block(request)
+    if struggles:
+        system += "\n\n" + struggles
 
     if not prefs:
         return system, False

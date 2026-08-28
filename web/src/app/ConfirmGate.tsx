@@ -1,11 +1,17 @@
+import { useState } from "react";
 import { ShieldAlert } from "lucide-react";
 
+import { useT } from "@/app/i18n";
+
 /**
- * The stop before a standing instruction is created.
+ * The stop before something with a side effect happens.
  *
- * Same shape as the session confirm gate, extracted here so Watchers can use
- * it without pulling SessionDetail apart. A live region, because the whole
- * point is that a person notices before agreeing.
+ * Same shape for Watchers, meetings, and session Yes. A live region, because
+ * the whole point is that a person notices before agreeing.
+ *
+ * `onCorrect` is optional on purpose: creating a Watcher is not a preference
+ * about how to do the work, and a third button there would invent a learning
+ * signal that does not exist. Session and voice pass it; Watchers do not.
  */
 export function ConfirmGate({
   summary,
@@ -17,6 +23,7 @@ export function ConfirmGate({
   dialogLabel = "Confirm before acting",
   onConfirm,
   onDecline,
+  onCorrect,
 }: {
   summary: string;
   actions: { label: string; reason: string }[];
@@ -27,7 +34,12 @@ export function ConfirmGate({
   dialogLabel?: string;
   onConfirm: () => void;
   onDecline: () => void;
+  onCorrect?: (now: string) => void;
 }) {
+  const t = useT();
+  const [amending, setAmending] = useState(false);
+  const [instead, setInstead] = useState("");
+
   return (
     <div
       role="alertdialog"
@@ -72,7 +84,50 @@ export function ConfirmGate({
             >
               {declineLabel}
             </button>
+            {onCorrect && !amending ? (
+              <button
+                type="button"
+                disabled={busy}
+                onClick={() => setAmending(true)}
+                className="rounded-full border px-4 py-1.5 text-[13px] font-medium transition-colors hover:bg-accent hover:text-accent-foreground disabled:opacity-50"
+              >
+                {t("common.notQuite")}
+              </button>
+            ) : null}
           </div>
+
+          {onCorrect && amending ? (
+            <form
+              className="mt-3 flex items-center gap-2"
+              onSubmit={(e) => {
+                e.preventDefault();
+                const next = instead.trim();
+                if (!next || busy) return;
+                onCorrect(next);
+                setInstead("");
+                setAmending(false);
+              }}
+            >
+              <label htmlFor="confirm-instead" className="sr-only">
+                {t("common.insteadPlaceholder")}
+              </label>
+              <input
+                id="confirm-instead"
+                value={instead}
+                onChange={(e) => setInstead(e.target.value)}
+                disabled={busy}
+                placeholder={t("common.insteadPlaceholder")}
+                className="min-w-0 flex-1 rounded-full border bg-background px-3 py-1.5 text-[13px] outline-none placeholder:text-muted-foreground disabled:opacity-60"
+              />
+              <button
+                type="submit"
+                disabled={!instead.trim() || busy}
+                className="rounded-full bg-primary px-3 py-1.5 text-[13px] font-semibold text-primary-foreground disabled:opacity-50"
+              >
+                {t("common.rememberThis")}
+              </button>
+            </form>
+          ) : null}
 
           {status ? (
             <p role="status" className="mt-2.5 text-[13px] text-muted-foreground">

@@ -13,7 +13,7 @@ import type { ProposedAction } from "@/app/use-turn";
  * to look like confirmation and run nothing.
  */
 export function useDecision(sessionId: string) {
-  const [decision, setDecision] = useState<"confirmed" | "declined" | null>(null);
+  const [decision, setDecision] = useState<"confirmed" | "declined" | "corrected" | null>(null);
   const [recorded, setRecorded] = useState<"pending" | "ok" | "failed">("pending");
   const [did, setDid] = useState<ActOutcome[]>([]);
 
@@ -25,11 +25,12 @@ export function useDecision(sessionId: string) {
 
   const decide = useCallback(
     async (
-      kind: "confirmed" | "declined",
+      kind: "confirmed" | "declined" | "corrected",
       body: {
         summary: string;
         actions: ProposedAction[];
         modality?: "voice" | "text";
+        now?: string;
       },
     ) => {
       setDecision(kind);
@@ -41,6 +42,7 @@ export function useDecision(sessionId: string) {
           summary: body.summary,
           actions: body.actions,
           modality: body.modality ?? "text",
+          now: body.now,
         });
         setDid(result.did);
         setRecorded("ok");

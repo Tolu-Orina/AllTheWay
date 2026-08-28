@@ -210,6 +210,35 @@ def test_recent_thread_is_in_the_system_context_not_the_user_message():
     assert spy.user == "Anime character illustration"
 
 
+def test_struggles_are_in_the_system_context_not_the_user_message():
+    from app.models import Struggle
+
+    class Spy:
+        def __init__(self):
+            self.system = ""
+            self.user = ""
+
+        def structured(self, system, user, schema_hint):
+            self.system = system
+            self.user = user
+            return {"decision": "plan", "needsResearch": False, "steps": [], "note": "ok"}
+
+    spy = Spy()
+    run_turn(
+        TurnRequest(
+            session_id="s1",
+            user_id="u1",
+            message="Explain the indemnity clause again",
+            struggles=[Struggle(label="Indemnity", document_id="d1", reasked=2, confidence=0.3)],
+        ),
+        spy,
+    )
+    assert "STRUGGLES" in spy.system
+    assert "Indemnity" in spy.system
+    assert "third explanation" in spy.system
+    assert "Indemnity" not in spy.user
+
+
 def test_a_short_image_follow_up_plans_generate_image_instead_of_clarifying():
     r = run_turn(
         TurnRequest(

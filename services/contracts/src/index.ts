@@ -149,9 +149,18 @@ export const SessionSchema = z.object({
   total: z.number().int().positive(),
 });
 
+/**
+ * Work / home / church. One companion, optional scope on a memory row.
+ * `null` means the fact applies everywhere — today's behaviour, and the
+ * default until a correction is made while Today is filtered.
+ */
+export const HatSchema = z.enum(["work", "home", "church"]);
+
 export const CorrectionSchema = z.object({
   was: z.string(),
   now: z.string(),
+  /** Absent or null: the fact applies under every hat. */
+  hat: HatSchema.nullable().optional(),
 });
 
 /**
@@ -282,6 +291,33 @@ export const LearnedPreferenceSchema = z.object({
   was: z.string(),
   now: z.string(),
   evidence: z.string(),
+  revertedAt: z.string().datetime().nullable(),
+  /** Absent or null: applies under every hat. */
+  hat: HatSchema.nullable().optional(),
+  source: z.enum(["session", "synth"]).optional(),
+  /**
+   * Sleep-time proposals only. A human correction has no score: it happened.
+   * Below the activation bar the row is `proposed` and is not injected.
+   */
+  confidence: z.number().min(0).max(1).optional(),
+  proposed: z.boolean().optional().default(false),
+});
+
+/**
+ * What this person finds hard, per concept. Not a prompt instruction.
+ *
+ * Written only when they ask to hear a cited passage again, or miss a
+ * check. Never from how long they looked.
+ */
+export const ConceptSchema = z.object({
+  id: z.string(),
+  label: z.string(),
+  documentId: z.string(),
+  encountered: z.number().int().nonnegative(),
+  reasked: z.number().int().nonnegative(),
+  reexplained: z.number().int().nonnegative(),
+  confidence: z.number().min(0).max(1),
+  lastSeenAt: z.string().datetime(),
   revertedAt: z.string().datetime().nullable(),
 });
 
@@ -503,6 +539,7 @@ export type WatcherTriggerKind = z.infer<typeof WatcherTriggerKindSchema>;
 export type CreateWatcher = z.infer<typeof CreateWatcherSchema>;
 export type WatcherRun = z.infer<typeof WatcherRunSchema>;
 export type LearnedPreference = z.infer<typeof LearnedPreferenceSchema>;
+export type Concept = z.infer<typeof ConceptSchema>;
 export type VisualPreference = z.infer<typeof VisualPreferenceSchema>;
 export type Meeting = z.infer<typeof MeetingSchema>;
 export type Commitment = z.infer<typeof CommitmentSchema>;
@@ -525,6 +562,8 @@ export const HomeDocumentSchema = z.object({
   status: z.enum(["screening", "indexing", "ready", "blocked"]),
   blockedReason: z.string().optional().default(""),
   createdAt: z.string().optional().default(""),
+  /** Absent or null: unlabeled. Retrieval must not infer a hat from the title. */
+  hat: HatSchema.nullable().optional(),
 });
 
 /**
@@ -533,7 +572,6 @@ export const HomeDocumentSchema = z.object({
  * Hats are filters over one companion, not three products. Google Calendar
  * remains the clock; these objects are anticipation — who, where, when to leave.
  */
-export const HatSchema = z.enum(["work", "home", "church"]);
 
 export const DayItemSchema = z.object({
   id: z.string(),
@@ -616,6 +654,8 @@ export const HomeSchema = z.object({
   people: z.array(PersonSchema),
   places: z.array(PlaceSchema),
   rhythms: z.array(RhythmSchema),
+  /** Today's hat filter. null is All — inject and retrieve without a hat cut. */
+  hat: HatSchema.nullable(),
 });
 
 export type HomeDocument = z.infer<typeof HomeDocumentSchema>;
@@ -646,6 +686,15 @@ export const RUN_STATE_LABELS: Record<WatcherRun["state"], string> = {
 /** Request bodies. */
 export const ToggleWatcherSchema = z.object({ running: z.boolean() });
 export const RevertPreferenceSchema = z.object({ id: z.string() });
+export const AcceptPreferenceSchema = z.object({ id: z.string() });
+export const SetHatSchema = z.object({
+  hat: HatSchema.nullable(),
+});
+export const ConceptEventSchema = z.object({
+  documentId: z.string().min(1).max(200),
+  label: z.string().min(1).max(300),
+});
+export const RevertConceptSchema = z.object({ id: z.string() });
 
 /* ------------------------------------------------------------------ *
  * Artifacts (v3 Phase A)

@@ -78,6 +78,9 @@ class TurnRequest(BaseModel):
     #: as if it were the whole request, and the clarify gate interviews forever.
     recent_thread: list[str] = Field(default_factory=list)
 
+    #: Concepts the person has asked to hear again or missed a check on.
+    struggles: list["Struggle"] = Field(default_factory=list)
+
 
 class Passage(BaseModel):
     """One retrieved chunk. `chunk_id` is what a citation points at."""
@@ -87,6 +90,15 @@ class Passage(BaseModel):
     title: str = ""
     page: int = 0
     text: str = ""
+
+
+class Struggle(BaseModel):
+    """One concept they have asked to hear again or missed a check on."""
+
+    label: str = ""
+    document_id: str = ""
+    reasked: int = 0
+    confidence: float = 0.5
 
 
 class Citation(BaseModel):

@@ -203,6 +203,14 @@ export function VoiceCaptions({
                   modality: "voice",
                 })
               }
+              onCorrect={(now) =>
+                void decide("corrected", {
+                  summary: voice.turn?.summary ?? "Should I go ahead?",
+                  actions: voice.turn?.actions ?? [],
+                  modality: "voice",
+                  now,
+                })
+              }
             />
           </div>
         ) : null}

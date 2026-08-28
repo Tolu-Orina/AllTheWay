@@ -2,6 +2,7 @@ import { HomeSchema, type Home } from "@alltheway/contracts";
 
 import { buildDay } from "../calendar-day.js";
 import { getOnboarding } from "./onboarding.js";
+import { getActiveHat } from "./hat.js";
 import { buildDigest } from "./digest.js";
 import { getSession, listSessions } from "./sessions.js";
 import { listRuns } from "./watchers.js";
@@ -15,7 +16,7 @@ import { listPeople, listPlaces, listProposed, listReminders, listRhythms, ensur
  * continue card and overnight do.
  */
 export async function buildHome(uid: string): Promise<Home> {
-  const [onboarding, digest, sessions, runs, documents, day, proposed, people, places, rhythms] =
+  const [onboarding, digest, sessions, runs, documents, day, proposed, people, places, rhythms, hat] =
     await Promise.all([
       getOnboarding(uid),
       buildDigest(uid),
@@ -27,6 +28,7 @@ export async function buildHome(uid: string): Promise<Home> {
       listPeople(uid),
       listPlaces(uid),
       listRhythms(uid),
+      getActiveHat(uid),
     ]);
 
   const row = sessions.find((s) => s.done < s.total) ?? sessions[0];
@@ -49,5 +51,6 @@ export async function buildHome(uid: string): Promise<Home> {
     people,
     places,
     rhythms,
+    hat,
   });
 }

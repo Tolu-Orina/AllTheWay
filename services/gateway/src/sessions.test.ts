@@ -11,6 +11,7 @@ import {
   touchSession,
   appendThread,
   conversationContext,
+  setCorrection,
   VOICE_TITLE,
 } from "./repos/sessions.js";
 
@@ -180,4 +181,17 @@ test("appended thread messages survive a later touch", emulated, async () => {
   assert.equal(detail?.thread.length, 2);
   assert.equal(detail?.thread[0]?.role, "user");
   assert.equal(detail?.thread[1]?.text, "You have standup at 10.");
+});
+
+test("a correction lands on the session and survives a later touch", emulated, async () => {
+  const id = `corr-${Date.now()}`;
+  await touchSession(UID, id, { utterance: "Draft the nav" });
+  assert.equal(await setCorrection(UID, id, { was: "six items", now: "four items" }), "ok");
+  assert.equal(await setCorrection(UID, "no-such-session", { was: "a", now: "b" }), "missing");
+  assert.equal(await setCorrection(UID, id, { was: "same", now: "same" }), "noop");
+
+  await touchSession(UID, id, { utterance: "and the footer" });
+  const detail = await getSession(UID, id);
+  assert.equal(detail?.correction?.was, "six items");
+  assert.equal(detail?.correction?.now, "four items");
 });

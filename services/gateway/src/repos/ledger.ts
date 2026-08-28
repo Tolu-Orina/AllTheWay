@@ -37,6 +37,8 @@ export type LedgerEntry = {
   modality: "voice" | "text";
   /** Transcriber confidence, when the turn was spoken. */
   confidence?: number;
+  /** What they said to do instead. Only on `corrected`. */
+  now?: string;
 };
 
 export async function record(uid: string, entry: LedgerEntry): Promise<string> {

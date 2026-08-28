@@ -80,6 +80,18 @@ export default function SessionDetailScreen() {
     if (!trimmed || working) return;
     hadTurn.current = true;
     setDraft("");
+    if (turn.phase === "confirm" && turn.summary) {
+      void (async () => {
+        await decide("corrected", {
+          summary: turn.summary,
+          actions: turn.actions,
+          now: trimmed,
+        });
+        resetDecision();
+        void send(trimmed);
+      })();
+      return;
+    }
     resetDecision();
     void send(trimmed);
   };
@@ -165,7 +177,7 @@ export default function SessionDetailScreen() {
                     {turn.citations.length ? (
                       <div className="mt-2 flex flex-wrap gap-1.5">
                         {turn.citations.map((c) => (
-                          <CitationChip key={c.chunkId} citation={c} />
+                          <CitationChip key={c.chunkId} citation={c} onExplain={submit} />
                         ))}
                       </div>
                     ) : null}
@@ -248,6 +260,7 @@ export default function SessionDetailScreen() {
                         actions: turn.actions,
                       });
                     }}
+                    onCorrect={(now) => submit(now)}
                   />
                 ) : null}
 

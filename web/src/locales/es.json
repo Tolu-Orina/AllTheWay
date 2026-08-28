@@ -139,7 +139,10 @@
     "allthewayCouldNotReachTheNetwork": "AllTheWay no pudo conectarse a la red. Tus sesiones están a salvo: reconéctate y la página continuará donde lo dejaste.",
     "checkingSession": "Comprobando tu sesión…",
     "couldNotLoad": "No se pudo cargar esto.",
-    "workSafe": "No se ha perdido nada."
+    "workSafe": "No se ha perdido nada.",
+    "notQuite": "No del todo",
+    "insteadPlaceholder": "¿Qué tendría que haber sido?",
+    "rememberThis": "Recordar esto"
   },
   "account": {
     "signOut": "Cerrar sesión"
@@ -419,5 +422,23 @@
     "openYou": "Abrir Tú",
     "dayEmpty": "Nada en las próximas doce horas para este sombrero.",
     "proposeFailed": "No se leyeron fechas en ese archivo. No se añadió nada al calendario."
+  },
+  "memory": {
+    "everywhere": "En todas partes",
+    "documentHat": "¿Para qué parte de la vida es esto?",
+    "documentHatHint": "Déjalo en todas partes salvo que deba quedar fuera de los otros sombreros. El nombre del archivo no se usa para adivinar.",
+    "struggles": "Lo que te cuesta",
+    "strugglesHint": "Solo se escribe cuando pides oírlo otra vez, o fallas una comprobación. Nunca por cuánto rato miraste.",
+    "strugglesEmpty": "Nada registrado aún",
+    "explainAgain": "Explícalo otra vez",
+    "thatLanded": "Eso quedó claro",
+    "didNotGetIt": "No lo seguí",
+    "recordedLanded": "Registrado como claro. Nada más cambió.",
+    "recordedMiss": "Registrado. La próxima explicación de esto debe ser distinta.",
+    "couldNotRecord": "No se pudo registrar. Nada cambió.",
+    "suggested": "Sugerido",
+    "acceptSuggestion": "Usar esto",
+    "reaskedCount": "Oído de nuevo: {{count}}",
+    "revert": "Revertir"
   }
 }

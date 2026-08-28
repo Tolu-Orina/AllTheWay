@@ -139,7 +139,10 @@
     "allthewayCouldNotReachTheNetwork": "AllTheWay n'a pas pu accéder au réseau. Vos sessions sont en sécurité — reconnectez-vous pour reprendre là où vous en étiez.",
     "checkingSession": "Vérification de la session…",
     "couldNotLoad": "Impossible de charger ceci.",
-    "workSafe": "Rien n'a été perdu."
+    "workSafe": "Rien n'a été perdu.",
+    "notQuite": "Pas tout à fait",
+    "insteadPlaceholder": "Qu'est-ce que ça aurait dû être ?",
+    "rememberThis": "S'en souvenir"
   },
   "account": {
     "signOut": "Se déconnecter"
@@ -419,5 +422,23 @@
     "openYou": "Ouvrir Vous",
     "dayEmpty": "Rien dans les douze prochaines heures pour ce chapeau.",
     "proposeFailed": "Aucune date lue dans ce fichier. Rien n'a été ajouté au calendrier."
+  },
+  "memory": {
+    "everywhere": "Partout",
+    "documentHat": "Pour quelle part de la vie est-ce ?",
+    "documentHatHint": "Laissez « partout » sauf s'il doit rester hors des autres casquettes. Le nom du fichier ne sert pas à deviner.",
+    "struggles": "Ce que vous trouvez difficile",
+    "strugglesHint": "Écrit seulement quand vous redemandez une explication, ou ratez une vérif. Jamais d'après le temps passé à regarder.",
+    "strugglesEmpty": "Rien d'enregistré encore",
+    "explainAgain": "Expliquez encore",
+    "thatLanded": "C'est compris",
+    "didNotGetIt": "Je n'ai pas suivi",
+    "recordedLanded": "Enregistré comme compris. Rien d'autre n'a changé.",
+    "recordedMiss": "Enregistré. La prochaine explication de ceci devra différer.",
+    "couldNotRecord": "Impossible d'enregistrer. Rien n'a changé.",
+    "suggested": "Suggéré",
+    "acceptSuggestion": "Utiliser ceci",
+    "reaskedCount": "Réentendu : {{count}}",
+    "revert": "Annuler"
   }
 }

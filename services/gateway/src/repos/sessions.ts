@@ -11,6 +11,7 @@ import {
 } from "@alltheway/contracts";
 
 import { db, sessions } from "../firestore.js";
+import type { ActiveHat } from "../hat.js";
 
 /**
  * A session parent document that list queries can see.
@@ -202,6 +203,54 @@ export async function appendThread(
       { merge: true },
     );
   });
+}
+
+/**
+ * Whether a decision is a learning signal, before anything is written.
+ *
+ * `missing_now` is the HTTP 400 "a correction needs what it should have been."
+ * `noop` is the same words twice: agreement is not a correction.
+ */
+export function correctionFields(
+  summary: string,
+  now: string | undefined,
+): { ok: true; was: string; now: string } | { ok: false; reason: "missing_now" | "noop" } {
+  const was = summary.trim();
+  const next = now?.trim() ?? "";
+  if (!next) return { ok: false, reason: "missing_now" };
+  if (!was || was === next) return { ok: false, reason: "noop" };
+  return { ok: true, was, now: next };
+}
+
+/**
+ * The learning signal for this session.
+ *
+ * Last write wins: one session produces one preference document
+ * (`session-{id}`), so a second correction in the same thread replaces the
+ * first rather than queuing two facts the synthesizer cannot both own.
+ */
+export async function setCorrection(
+  uid: string,
+  id: string,
+  correction: { was: string; now: string; hat?: ActiveHat },
+): Promise<"ok" | "missing" | "noop"> {
+  const parsed = correctionFields(correction.was, correction.now);
+  if (!parsed.ok) return "noop";
+  const ref = sessions(uid).doc(id);
+  const snap = await ref.get();
+  if (!snap.exists) return "missing";
+  await ref.set(
+    {
+      correction: {
+        was: parsed.was,
+        now: parsed.now,
+        hat: correction.hat ?? null,
+      },
+      updatedAt: FieldValue.serverTimestamp(),
+    },
+    { merge: true },
+  );
+  return "ok";
 }
 
 /** Stub for Cut 1b: a confirmed plan is stored on the session, then cleared. */

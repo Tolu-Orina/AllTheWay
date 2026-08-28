@@ -9,7 +9,7 @@ const BUILT_ON = [
   "Agent Development Kit",
   "Genkit",
   "Cloud Run",
-  "Vertex AI Memory Bank",
+  "Firestore",
 ];
 
 export function Foundations() {

@@ -1,6 +1,14 @@
 import { createServer } from "node:http";
 import express from "express";
-import { RevertPreferenceSchema, ToggleWatcherSchema, CreateWatcherSchema } from "@alltheway/contracts";
+import {
+  RevertPreferenceSchema,
+  AcceptPreferenceSchema,
+  SetHatSchema,
+  ConceptEventSchema,
+  RevertConceptSchema,
+  ToggleWatcherSchema,
+  CreateWatcherSchema,
+} from "@alltheway/contracts";
 
 import { env } from "./env.js";
 import { requireUser } from "./auth.js";
@@ -20,10 +28,13 @@ import {
   listSessions,
   touchSession,
   appendThread,
-  conversationContext,
+  setCorrection,
+  correctionFields,
 } from "./repos/sessions.js";
-import { listPreferences, revertPreference } from "./repos/preferences.js";
+import { listPreferences, revertPreference, acceptPreference } from "./repos/preferences.js";
 import { listVisualPreferences, revertVisualPreference } from "./repos/visual.js";
+import { listConcepts, recordConcept, revertConcept } from "./repos/concepts.js";
+import { getActiveHat, setActiveHat } from "./repos/hat.js";
 import {
   createWatcher,
   listRuns,
@@ -31,6 +42,7 @@ import {
   setWatcherRunning,
 } from "./repos/watchers.js";
 import { runTurn, streamTurn } from "./orchestrator.js";
+import { loadTurnContext } from "./turn-context.js";
 import { listRecent, record } from "./repos/ledger.js";
 import { readUsage } from "./repos/usage.js";
 import { buildDigest } from "./repos/digest.js";
@@ -52,8 +64,6 @@ import {
   type ThreadMessage,
 } from "@alltheway/contracts";
 import { getOnboarding, setOnboarding } from "./repos/onboarding.js";
-import { retrieve } from "./repos/retrieval.js";
-import { connectedLookups } from "./lookups.js";
 import { attachVoice } from "./voice/relay.js";
 import { attachCapture } from "./meetings/capture.js";
 import { openLiveTranscriber } from "./meetings/live-transcriber.js";
@@ -310,6 +320,7 @@ api.post(
       .object({
         kind: z.enum(["confirmed", "declined", "corrected"]),
         summary: z.string().min(1).max(2000),
+        now: z.string().max(2000).optional(),
         actions: z
           .array(z.object({ label: z.string(), action: z.string(), reason: z.string() }))
           .default([]),
@@ -324,6 +335,42 @@ api.post(
     }
 
     const sessionId = param(req, "id");
+
+    if (body.data.kind === "corrected") {
+      // Written before the ledger so a learning signal cannot exist without
+      // the fact it learned from. Publishing session-ended here (not only
+      // on leave) is what lets the next turn in this same session see it.
+      const parsed = correctionFields(body.data.summary, body.data.now);
+      if (!parsed.ok) {
+        res.status(400).json({
+          code: "invalid_request",
+          message:
+            parsed.reason === "missing_now"
+              ? "A correction needs what it should have been."
+              : "That correction does not change anything.",
+        });
+        return;
+      }
+      const hat = await getActiveHat(req.uid!);
+      const written = await setCorrection(req.uid!, sessionId, { ...parsed, hat });
+      if (written === "missing") {
+        res.status(404).json({ code: "not_found", message: "That session is not here." });
+        return;
+      }
+      const id = await record(req.uid!, {
+        sessionId,
+        kind: "corrected",
+        summary: parsed.was,
+        now: parsed.now,
+        actions: body.data.actions,
+        modality: body.data.modality,
+        confidence: body.data.confidence,
+      });
+      await publish(TOPICS.sessionEnded, { userId: req.uid, sessionId });
+      res.status(201).json({ id, did: [] });
+      return;
+    }
+
     const id = await record(req.uid!, { sessionId, ...body.data });
 
     // Recorded first, then acted on.
@@ -371,12 +418,7 @@ api.get(
     // for itself — it is stateless, and only this service can scope a request
     // to a user. Fetched together so a turn makes one round of reads.
     const sessionId = param(req, "id");
-    const [prefs, passages, lookups, session] = await Promise.all([
-      listPreferences(req.uid!),
-      retrieve(req.uid!, message),
-      connectedLookups(req.uid!, message),
-      getSession(req.uid!, sessionId),
-    ]);
+    const context = await loadTurnContext(req.uid!, sessionId, message);
     const stream = openStream(req, res);
     const steps: PlanStep[] = [];
     let note = "";
@@ -393,15 +435,7 @@ api.get(
         { role: "user", text: message, at: isoNow() },
       ]);
 
-      for await (const event of streamTurn({
-        sessionId,
-        userId: req.uid!,
-        message,
-        knownPreferences: prefs.map((p) => p.now),
-        passages,
-        lookups,
-        thread: conversationContext(session?.thread ?? []),
-      })) {
+      for await (const event of streamTurn(context)) {
         if (event.kind === "step") steps.push(event.step);
         if (event.kind === "done") {
           note = event.note;
@@ -476,27 +510,14 @@ api.post(
     // for itself — it is stateless, and only this service can scope a request
     // to a user. Fetched together so a turn makes one round of reads.
     const sessionId = param(req, "id");
-    const [prefs, passages, lookups, session] = await Promise.all([
-      listPreferences(req.uid!),
-      retrieve(req.uid!, body.data.message),
-      connectedLookups(req.uid!, body.data.message),
-      getSession(req.uid!, sessionId),
-    ]);
+    const context = await loadTurnContext(req.uid!, sessionId, body.data.message);
 
     await rememberWork(req.uid!, sessionId, { utterance: body.data.message });
     await rememberThread(req.uid!, sessionId, [
       { role: "user", text: body.data.message, at: isoNow() },
     ]);
 
-    const result = await runTurn({
-      sessionId,
-      userId: req.uid!,
-      message: body.data.message,
-      knownPreferences: prefs.map((p) => p.now),
-      passages,
-      lookups,
-      thread: conversationContext(session?.thread ?? []),
-    });
+    const result = await runTurn(context);
 
     const companionNote =
       result.note || result.confirm?.summary || result.clarify?.question || undefined;
@@ -569,6 +590,98 @@ api.post(
       return;
     }
     res.status(204).end();
+  }),
+);
+
+api.post(
+  "/preferences/accept",
+  handle(async (req, res) => {
+    const body = AcceptPreferenceSchema.safeParse(req.body);
+    if (!body.success) {
+      res.status(400).json({ code: "invalid_request", message: "Expected { id: string }." });
+      return;
+    }
+    const ok = await acceptPreference(req.uid!, body.data.id);
+    if (!ok) {
+      res.status(404).json({ code: "not_found", message: "That preference is not here." });
+      return;
+    }
+    res.status(204).end();
+  }),
+);
+
+api.get(
+  "/concepts",
+  handle(async (req, res) => {
+    res.json(await listConcepts(req.uid!));
+  }),
+);
+
+api.post(
+  "/concepts/reask",
+  handle(async (req, res) => {
+    const body = ConceptEventSchema.safeParse(req.body);
+    if (!body.success) {
+      res.status(400).json({ code: "invalid_request", message: "Expected a document and a label." });
+      return;
+    }
+    const row = await recordConcept(req.uid!, { ...body.data, kind: "reask" });
+    res.status(201).json(row);
+  }),
+);
+
+api.post(
+  "/concepts/miss",
+  handle(async (req, res) => {
+    const body = ConceptEventSchema.safeParse(req.body);
+    if (!body.success) {
+      res.status(400).json({ code: "invalid_request", message: "Expected a document and a label." });
+      return;
+    }
+    const row = await recordConcept(req.uid!, { ...body.data, kind: "miss" });
+    res.status(201).json(row);
+  }),
+);
+
+api.post(
+  "/concepts/hit",
+  handle(async (req, res) => {
+    const body = ConceptEventSchema.safeParse(req.body);
+    if (!body.success) {
+      res.status(400).json({ code: "invalid_request", message: "Expected a document and a label." });
+      return;
+    }
+    const row = await recordConcept(req.uid!, { ...body.data, kind: "hit" });
+    res.json(row);
+  }),
+);
+
+api.post(
+  "/concepts/revert",
+  handle(async (req, res) => {
+    const body = RevertConceptSchema.safeParse(req.body);
+    if (!body.success) {
+      res.status(400).json({ code: "invalid_request", message: "Expected { id: string }." });
+      return;
+    }
+    const ok = await revertConcept(req.uid!, body.data.id);
+    if (!ok) {
+      res.status(404).json({ code: "not_found", message: "That concept is not here." });
+      return;
+    }
+    res.status(204).end();
+  }),
+);
+
+api.post(
+  "/hat",
+  handle(async (req, res) => {
+    const body = SetHatSchema.safeParse(req.body);
+    if (!body.success) {
+      res.status(400).json({ code: "invalid_request", message: "Expected a hat, or null for all." });
+      return;
+    }
+    res.json({ hat: await setActiveHat(req.uid!, body.data.hat) });
   }),
 );
 

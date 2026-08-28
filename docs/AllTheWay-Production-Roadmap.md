@@ -62,6 +62,8 @@ The Clarify → Plan → Feedback loop works for open-ended goals, survives cont
 ### What's new in v2
 - Memory scoping now has to account for **three memory-writing sources**, not one: live text/voice sessions, and Watcher runs. A Watcher acting on an inbox shouldn't silently write profile-shaping memories with the same weight as a deliberate, user-confirmed correction in a live session — the Profile Synthesizer's signal-weighting needs a source-aware dimension added in this phase, not patched in later once Watchers exist.
 
+**Amendment (2026-08-28):** Watchers do not write the Cognitive Profile. The source-aware dimension is an absence of a watcher writer, not a score. Preference memory is the Firestore ledger, not Vertex AI Memory Bank. See [Memory Layer Plan](AllTheWay-Memory-Layer-Plan.md).
+
 ### Exit criterion
 Unchanged: a test-user panel rates the Cognitive Profile as accurate and non-creepy at a defined bar (e.g., >85% confirmed-accurate, <5% overreach), with full view/edit/delete and verified propagation — now validated across all three memory-writing sources, not just live sessions.
 
@@ -75,7 +77,7 @@ Unchanged: a test-user panel rates the Cognitive Profile as accurate and non-cre
 - **Gemini Live API integration**: 3.1 Flash Live via the Live API, audio-to-audio, wired into the Orchestrator's tool-calling surface so spoken requests trigger the same function calls a text request would — not a separate voice-only code path.
 - **Confirm-summary UX**: the spoken equivalent of the Plan Panel — every action with a real-world side effect gets a summarized spoken confirmation before execution, with tested, deliberately-chosen microcopy (the difference between "confirmed," "saved," and "I'll verify that" is a real UX decision, not filler).
 - **Graceful degradation**: low-confidence transcription routes to a clarifying follow-up or a text fallback rather than acting on a guess.
-- **Session continuity**: voice sessions read/write the same Firestore session state and Memory Bank profile as text sessions — a user can start a request by voice and finish reviewing it as text without repeating context.
+- **Session continuity**: voice sessions read/write the same Firestore session state and the same Firestore preference ledger as text sessions — a user can start a request by voice and finish reviewing it as text without repeating context. See [Memory Layer Plan](AllTheWay-Memory-Layer-Plan.md).
 - **Architecture constraint handled explicitly**: current Live models don't reliably support live hand-offs between differently-instructed sub-agents mid-call. Voice sessions route through a single Orchestrator context with tool-calling; anything that would need Research Cell-style multi-agent work gets queued as a visible, approvable Plan Panel step instead of attempted as an invisible mid-call delegation. Re-evaluate this constraint each time the Live API model generation updates.
 - **Voice-specific Feedback Ledger events**: confirmations, corrections, and declines from voice turns are logged with the same structure as text events, not a separate log.
 
@@ -109,7 +111,7 @@ A Watcher runs unattended for a real multi-day scenario (e.g., watch an inbox, d
 - **Mobile (iOS + Android)**: capture-first flows, push notifications for Watcher clarifications and long-running-node completions, condensed Plan Panel, and now **voice as a primary input mode**, not just typed capture.
 - **Browser extension (Manifest V3)**: side-panel architecture, explicit page-content consent gate.
 - **Desktop companion**: local file-aware watcher (structured events only), and now the second surface (with mobile) carrying voice conversation.
-- **Identity/session continuity**: one Firebase Auth identity, one Memory Bank instance, verified across text, voice, and Watcher-originated sessions on every surface.
+- **Identity/session continuity**: one Firebase Auth identity, one Firestore Cognitive Profile, verified across text, voice, and Watcher-originated sessions on every surface. Watchers read the profile; they do not write it.
 
 ### Exit criterion
 A single test account can move a session across all four surfaces mid-task — including switching from a voice turn on mobile to reviewing the same Plan Panel on web — without re-explaining context, and each surface passes its own accessibility review (WCAG AA minimum).
@@ -170,7 +172,7 @@ A user can subscribe and be correctly billed and rate-limited across all metered
 ### Workstreams
 - Load testing across all four traffic shapes: text sessions, voice sessions, Research Cell fanout, and Watcher trigger bursts.
 - SLOs instrumented and alerted (p95 Clarify Gate response, p99 Plan Panel generation, voice round-trip latency, Watcher trigger-to-first-action latency).
-- Multi-region DR posture: Firestore backup/restore tested, Memory Bank region failover understood, Live API regional availability accounted for in the DR plan.
+- Multi-region DR posture: Firestore backup/restore tested, Live API regional availability accounted for in the DR plan. Memory Bank region failover is relevant only if `MEMORY_BANK_RESOURCE` is set in production.
 - Cost-per-active-user tracking, now broken out by pillar (text session cost, voice-minute cost, Watcher-run cost) so the Phase 8 pricing model can be validated against real infrastructure spend per capability, not just in aggregate.
 
 ### Exit criterion
@@ -200,7 +202,7 @@ The original 6–9 person estimate was sized for the three-pillar (Collaborative
 ## 13. Cross-Cutting Workstreams (run throughout, not phase-bound)
 
 - **Security review**: gated at the end of Phase 1 (identity foundations), Phase 4 (Watcher guardrails, first adversarial pass), Phase 6 (connector OAuth), and Phase 7 (formal enterprise review) — four checkpoints, not one.
-- **Data privacy/legal**: PII handling in Memory Bank, voice-recording/transcript retention policy (new in v2 — voice data has its own regulatory profile in many jurisdictions), browser-extension page-content consent, desktop file-access scoping, Watcher-triggered external-communication policy, and Team-tier admin visibility model — each reviewed before its respective phase ships.
+- **Data privacy/legal**: PII handling in the Firestore Cognitive Profile, voice-recording/transcript retention policy (new in v2 — voice data has its own regulatory profile in many jurisdictions), browser-extension page-content consent, desktop file-access scoping, Watcher-triggered external-communication policy, and Team-tier admin visibility model — each reviewed before its respective phase ships.
 - **QA**: an eval harness for agent behavior (not just unit/integration tests) from Phase 1 onward, extended in Phase 3 to voice-specific eval (transcription accuracy, confirm-summary correctness) and in Phase 4 to Watcher eval (did it stay within its autonomy ceiling, every time, under adversarial input).
 - **SRE/on-call**: a real rotation and incident process by Phase 5 at the latest — voice and Watchers both mean real users depend on uptime in ways a text-only MVP doesn't.
 

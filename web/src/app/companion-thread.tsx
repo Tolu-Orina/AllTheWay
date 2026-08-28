@@ -48,8 +48,8 @@ type CompanionThread = {
   job: OnboardingJob | null;
   refreshOnboarding: () => void;
   decide: (
-    kind: "confirmed" | "declined",
-    body: { summary: string; actions: ProposedAction[] },
+    kind: "confirmed" | "declined" | "corrected",
+    body: { summary: string; actions: ProposedAction[]; now?: string; modality?: "voice" | "text" },
   ) => Promise<void>;
   decisionStatus: string | null;
 };
@@ -217,6 +217,18 @@ export function CompanionThreadProvider({ children }: { children: React.ReactNod
         { id: prev.length + 1, role: "user", text: trimmed },
       ]);
       setDraft("");
+      if (lastAgent?.phase === "confirm") {
+        void (async () => {
+          await decide("corrected", {
+            summary: lastAgent.text,
+            actions: lastAgent.actions ?? [],
+            now: trimmed,
+          });
+          resetDecision();
+          void runTurn(trimmed);
+        })();
+        return;
+      }
       resetDecision();
       void runTurn(trimmed);
     },

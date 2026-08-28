@@ -1,6 +1,7 @@
 import { useCallback, useRef, useState } from "react";
 import { useT } from "@/app/i18n";
 import { Camera, Loader2, ShieldAlert, Trash2, Upload } from "lucide-react";
+import type { Hat } from "@alltheway/contracts";
 
 import { Async } from "@/app/async";
 import { useAsync } from "@/app/use-async";
@@ -75,6 +76,7 @@ export function DocumentPickup({ onUploaded }: { onUploaded?: (name: string, doc
   const [busy, setBusy] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [dragging, setDragging] = useState(false);
+  const [hat, setHat] = useState<Hat | null>(null);
   const input = useRef<HTMLInputElement>(null);
   const camera = useRef<HTMLInputElement>(null);
 
@@ -91,7 +93,12 @@ export function DocumentPickup({ onUploaded }: { onUploaded?: (name: string, doc
       setError(null);
       setBusy(file.name);
       try {
-        const result = await api.uploadDocument(file.name, await toBase64(file), file.type || "text/plain");
+        const result = await api.uploadDocument(
+          file.name,
+          await toBase64(file),
+          file.type || "text/plain",
+          hat,
+        );
         onUploaded?.(file.name, result.documentId);
       } catch (err) {
         const message = (err as { message?: string }).message;
@@ -100,7 +107,7 @@ export function DocumentPickup({ onUploaded }: { onUploaded?: (name: string, doc
         setBusy(null);
       }
     },
-    [onUploaded],
+    [onUploaded, hat],
   );
 
   return (
@@ -133,6 +140,24 @@ export function DocumentPickup({ onUploaded }: { onUploaded?: (name: string, doc
           </button>
         </p>
         <p className="text-[12px] text-muted-foreground">{t("documents.types")}</p>
+        <p className="text-[12px] text-muted-foreground">{t("memory.documentHatHint")}</p>
+        <div className="flex flex-wrap justify-center gap-1.5" role="group" aria-label={t("memory.documentHat")}>
+          {([null, "work", "home", "church"] as const).map((value) => (
+            <button
+              key={value ?? "all"}
+              type="button"
+              onClick={() => setHat(value)}
+              className={cn(
+                "rounded-full px-3 py-1 text-[12px] font-medium transition-colors",
+                hat === value
+                  ? "bg-primary text-primary-foreground"
+                  : "bg-muted text-muted-foreground hover:text-foreground",
+              )}
+            >
+              {value ? t(`life.hat${value[0]!.toUpperCase()}${value.slice(1)}`) : t("memory.everywhere")}
+            </button>
+          ))}
+        </div>
         <input
           ref={input}
           type="file"

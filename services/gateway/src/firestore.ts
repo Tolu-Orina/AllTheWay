@@ -37,6 +37,7 @@ export const preferences = (uid: string) => userDoc(uid).collection("preferences
 // collection here would be the same cross-tenant hazard in a prettier form.
 export const visualPreferences = (uid: string) =>
   userDoc(uid).collection("visualPreferences");
+export const concepts = (uid: string) => userDoc(uid).collection("concepts");
 /** The Feedback Ledger. One collection for spoken and typed turns alike —
  *  the manifest is explicit that there is no separate "voice memory". */
 export const ledger = (uid: string) => userDoc(uid).collection("ledger");

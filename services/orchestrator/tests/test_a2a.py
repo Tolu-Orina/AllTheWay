@@ -213,6 +213,19 @@ def test_citations_on_the_closing_artifact_carry_the_retrieved_passage():
     assert closing["grounded"] is True
 
 
+def test_citation_wire_is_a_named_function_and_carries_no_uid():
+    from app.a2a_executor import _citation_wire
+    from app.models import Citation
+
+    payload = _citation_wire(
+        Citation(chunk_id="c1", document_id="d1", page=2, title="T", text="body")
+    )
+    assert payload["documentId"] == "d1"
+    assert payload["chunkId"] == "c1"
+    assert "uid" not in payload
+
+
+
 def test_provider_failure_becomes_a_failed_task_not_an_exception():
     class Exploding:
         def structured(self, system, user, schema_hint):

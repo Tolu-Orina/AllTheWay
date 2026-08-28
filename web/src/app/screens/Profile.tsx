@@ -30,6 +30,7 @@ export default function Profile() {
   const { state, reload } = useAsync<LearnedPreference[]>(() =>
     api.preferences(),
   );
+  const concepts = useAsync(() => api.concepts(), []);
 
   // Reverted ids only; the list is derived during render.
   const [revertedIds, setRevertedIds] = useState<string[]>([]);
@@ -121,15 +122,30 @@ export default function Profile() {
                   <div className="flex items-start justify-between gap-4">
                     <h3 className="text-[12px] font-semibold tracking-[0.08em] text-blue-deep uppercase dark:text-blue-bright">
                       {item.area}
+                      {item.hat ? ` · ${t(`life.hat${item.hat[0]!.toUpperCase()}${item.hat.slice(1)}`)}` : ""}
+                      {item.proposed ? ` · ${t("memory.suggested")}` : ""}
                     </h3>
-                    <button
-                      type="button"
-                      onClick={() => revert(item)}
-                      className="inline-flex shrink-0 items-center gap-1.5 rounded-full border px-2.5 py-1 text-[12px] text-muted-foreground transition-colors hover:text-foreground"
-                    >
-                      <Undo2 className="size-3.5" aria-hidden="true" />
-                      Revert
-                    </button>
+                    <div className="flex shrink-0 gap-1.5">
+                      {item.proposed ? (
+                        <button
+                          type="button"
+                          onClick={() => {
+                            void api.acceptPreference(item.id).then(() => reload());
+                          }}
+                          className="inline-flex items-center gap-1.5 rounded-full border px-2.5 py-1 text-[12px] text-muted-foreground transition-colors hover:text-foreground"
+                        >
+                          {t("memory.acceptSuggestion")}
+                        </button>
+                      ) : null}
+                      <button
+                        type="button"
+                        onClick={() => revert(item)}
+                        className="inline-flex shrink-0 items-center gap-1.5 rounded-full border px-2.5 py-1 text-[12px] text-muted-foreground transition-colors hover:text-foreground"
+                      >
+                        <Undo2 className="size-3.5" aria-hidden="true" />
+                        {t("memory.revert")}
+                      </button>
+                    </div>
                   </div>
 
                   <p className="mt-3 text-[14px] text-muted-foreground line-through decoration-destructive/60">
@@ -148,6 +164,52 @@ export default function Profile() {
         </Async>
 
         <VisualPreferences />
+
+        <h2 className="mt-2 text-[12px] font-semibold tracking-[0.08em] text-blue-deep uppercase dark:text-blue-bright">
+          {t("memory.struggles")}
+        </h2>
+        <p className="text-[13.5px] leading-relaxed text-muted-foreground">
+          {t("memory.strugglesHint")}
+        </p>
+        <Async
+          state={concepts.state}
+          reload={concepts.reload}
+          isEmpty={(rows) => rows.length === 0}
+          empty={
+            <EmptyState
+              title={t("memory.strugglesEmpty")}
+              body={t("memory.strugglesHint")}
+            />
+          }
+        >
+          {(rows) => (
+            <ul className="flex flex-col gap-3">
+              {rows.map((item) => (
+                <li
+                  key={item.id}
+                  className="rounded-brand-lg border bg-card p-4 shadow-e1 sm:p-5"
+                >
+                  <div className="flex items-start justify-between gap-4">
+                    <h3 className="text-[14px] font-medium">{item.label}</h3>
+                    <button
+                      type="button"
+                      onClick={() => {
+                        void api.revertConcept(item.id).then(() => concepts.reload());
+                      }}
+                      className="inline-flex shrink-0 items-center gap-1.5 rounded-full border px-2.5 py-1 text-[12px] text-muted-foreground transition-colors hover:text-foreground"
+                    >
+                      <Undo2 className="size-3.5" aria-hidden="true" />
+                      {t("memory.revert")}
+                    </button>
+                  </div>
+                  <p className="mt-2 text-[13px] text-muted-foreground">
+                    {t("memory.reaskedCount", { count: String(item.reasked) })}
+                  </p>
+                </li>
+              ))}
+            </ul>
+          )}
+        </Async>
       </section>
 
       <section className="flex flex-col gap-3">

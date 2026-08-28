@@ -139,7 +139,10 @@
     "allthewayCouldNotReachTheNetwork": "O AllTheWay não conseguiu se conectar. Suas sessões estão salvas — reconecte-se para continuar de onde parou.",
     "checkingSession": "Verificando sessão…",
     "couldNotLoad": "Não foi possível carregar isto.",
-    "workSafe": "Nada se perdeu."
+    "workSafe": "Nada se perdeu.",
+    "notQuite": "Não exatamente",
+    "insteadPlaceholder": "O que deveria ter sido?",
+    "rememberThis": "Lembrar disto"
   },
   "account": {
     "signOut": "Sair"
@@ -419,5 +422,23 @@
     "openYou": "Abrir Você",
     "dayEmpty": "Nada nas próximas doze horas para este chapéu.",
     "proposeFailed": "Não se leram datas nesse ficheiro. Nada foi adicionado ao calendário."
+  },
+  "memory": {
+    "everywhere": "Em todo o lado",
+    "documentHat": "Para que parte da vida é isto?",
+    "documentHatHint": "Deixe em todo o lado salvo se deve ficar fora dos outros chapéus. O nome do ficheiro não serve para adivinhar.",
+    "struggles": "O que lhe custa",
+    "strugglesHint": "Só se escreve quando pede para ouvir de novo, ou falha uma verificação. Nunca pelo tempo a olhar.",
+    "strugglesEmpty": "Nada registado ainda",
+    "explainAgain": "Explique outra vez",
+    "thatLanded": "Isso ficou claro",
+    "didNotGetIt": "Não acompanhei",
+    "recordedLanded": "Registado como claro. Mais nada mudou.",
+    "recordedMiss": "Registado. A próxima explicação disto deve ser diferente.",
+    "couldNotRecord": "Não foi possível registar. Nada mudou.",
+    "suggested": "Sugerido",
+    "acceptSuggestion": "Usar isto",
+    "reaskedCount": "Ouvido de novo: {{count}}",
+    "revert": "Reverter"
   }
 }

@@ -84,6 +84,17 @@ export type TurnInput = {
    * if it were the whole request, and generate-an-image interviews forever.
    */
   thread?: string[];
+  /**
+   * Concepts this person has asked to hear again or missed a check on.
+   * The third explanation must differ from the first. Empty until they
+   * have done one of those two things — looking is not a writer.
+   */
+  struggles?: {
+    label: string;
+    documentId: string;
+    reasked: number;
+    confidence: number;
+  }[];
 };
 
 /** Parts are a tagged union; pull out the structured `data` payloads. */
@@ -133,7 +144,7 @@ function citationsOf(payloads: Record<string, unknown>[]): Citation[] {
   return out;
 }
 
-function buildMessage(input: TurnInput): Message {
+export function buildMessage(input: TurnInput): Message {
   return {
     messageId: `${input.sessionId}-${Date.now()}`,
     contextId: input.sessionId,
@@ -158,6 +169,7 @@ function buildMessage(input: TurnInput): Message {
       passages: input.passages ?? [],
       lookups: input.lookups ?? [],
       thread: input.thread ?? [],
+      struggles: input.struggles ?? [],
     },
     extensions: [],
     referenceTaskIds: [],

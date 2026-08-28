@@ -1,5 +1,6 @@
 import { authenticatingFetch } from "../a2a.js";
 import { env } from "../env.js";
+import type { ActiveHat } from "../hat.js";
 import { scopeHeader, scopeTokenConfigured } from "../scope.js";
 
 /**
@@ -54,8 +55,9 @@ export const retrievalConfigured = (): boolean =>
 export async function retrieve(
   uid: string,
   query: string,
-  limit = DEFAULT_LIMIT,
+  opts: { limit?: number; hat?: ActiveHat } = {},
 ): Promise<Passage[]> {
+  const limit = opts.limit ?? DEFAULT_LIMIT;
   if (!retrievalConfigured() || !query.trim()) return [];
 
   try {
@@ -68,7 +70,11 @@ export async function retrieve(
         // librarian reads it from there.
         ...scopeHeader(uid, AUDIENCE),
       },
-      body: JSON.stringify({ query, limit }),
+      body: JSON.stringify({
+        query,
+        limit,
+        ...(opts.hat ? { hat: opts.hat } : {}),
+      }),
       signal: AbortSignal.timeout(TIMEOUT_MS),
     });
 

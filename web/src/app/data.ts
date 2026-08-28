@@ -1,6 +1,7 @@
 import {
   LearnedPreferenceSchema,
   VisualPreferenceSchema,
+  ConceptSchema,
   MeetingSchema,
   InsightSchema,
   CommitmentSchema,
@@ -39,6 +40,7 @@ import { apiBlob, apiDelete, apiGet, apiPost, apiText } from "@/lib/api";
 export type {
   LearnedPreference,
   VisualPreference,
+  Concept,
   Meeting,
   Insight,
   Commitment,
@@ -172,6 +174,7 @@ export const DocumentSchema = z.object({
   status: z.enum(["screening", "indexing", "ready", "blocked"]),
   blockedReason: z.string().optional().default(""),
   createdAt: z.string().optional().default(""),
+  hat: z.enum(["work", "home", "church"]).nullable().optional(),
 });
 
 export const DocumentListSchema = z.object({ documents: z.array(DocumentSchema) });
@@ -232,6 +235,7 @@ export const api = {
       actions: { label: string; action: string; reason: string }[];
       modality?: "voice" | "text";
       confidence?: number;
+      now?: string;
     },
   ) => apiPost(`/sessions/${encodeURIComponent(sessionId)}/decision`, body, DecisionResultSchema),
 
@@ -267,8 +271,17 @@ export const api = {
    * Base64 rather than multipart: JSON is the transport for the rest of this
    * API, and a second parsing path would be a second thing to keep correct.
    */
-  uploadDocument: (title: string, content: string, mimeType: string) =>
-    apiPost("/documents", { title, content, mimeType }, z.object({ documentId: z.string().optional() })),
+  uploadDocument: (
+    title: string,
+    content: string,
+    mimeType: string,
+    hat?: "work" | "home" | "church" | null,
+  ) =>
+    apiPost(
+      "/documents",
+      { title, content, mimeType, hat: hat ?? null },
+      z.object({ documentId: z.string().optional() }),
+    ),
 
   deleteDocument: (id: string) =>
     apiDelete(`/documents/${encodeURIComponent(id)}`),
@@ -361,6 +374,17 @@ export const api = {
   setWatcherRunning: (id: string, running: boolean) =>
     apiPost(`/watchers/${encodeURIComponent(id)}/running`, { running }, WatcherSchema),
   revertPreference: (id: string) => apiPost("/preferences/revert", { id }),
+  acceptPreference: (id: string) => apiPost("/preferences/accept", { id }),
+  setHat: (hat: "work" | "home" | "church" | null) =>
+    apiPost("/hat", { hat }, z.object({ hat: z.enum(["work", "home", "church"]).nullable() })),
+  concepts: () => apiGet("/concepts", z.array(ConceptSchema)),
+  conceptReask: (documentId: string, label: string) =>
+    apiPost("/concepts/reask", { documentId, label }, ConceptSchema.nullable()),
+  conceptMiss: (documentId: string, label: string) =>
+    apiPost("/concepts/miss", { documentId, label }, ConceptSchema.nullable()),
+  conceptHit: (documentId: string, label: string) =>
+    apiPost("/concepts/hit", { documentId, label }, ConceptSchema.nullable()),
+  revertConcept: (id: string) => apiPost("/concepts/revert", { id }),
   revertVisualPreference: (id: string) =>
     apiPost("/visual-preferences/revert", { id }),
   // Confirming a commitment is what sends it through the autonomy floor.

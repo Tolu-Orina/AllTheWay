@@ -136,7 +136,10 @@
     "allthewayCouldNotReachTheNetwork": "AllTheWay could not reach the network. Your sessions are safe — reconnect and this page will pick up where it left off.",
     "checkingSession": "Checking your session…",
     "couldNotLoad": "We could not load this.",
-    "workSafe": "Nothing was lost."
+    "workSafe": "Nothing was lost.",
+    "notQuite": "Not quite",
+    "insteadPlaceholder": "What should it have been?",
+    "rememberThis": "Remember this"
   },
   "account": {
     "signOut": "Sign out"
@@ -416,5 +419,23 @@
     "openYou": "Open You",
     "dayEmpty": "Nothing in the next twelve hours for this hat.",
     "proposeFailed": "Dates could not be read from that file. Nothing was added to the calendar."
+  },
+  "memory": {
+    "everywhere": "Everywhere",
+    "documentHat": "Which part of life is this for?",
+    "documentHatHint": "Leave as everywhere unless it should stay out of the other hats. The name of the file is not used to guess.",
+    "struggles": "What you find hard",
+    "strugglesHint": "Only written when you ask to hear something again, or miss a check. Never from how long you looked.",
+    "strugglesEmpty": "Nothing recorded yet",
+    "explainAgain": "Explain this again",
+    "thatLanded": "That landed",
+    "didNotGetIt": "I didn't get it",
+    "recordedLanded": "Recorded as landed. Nothing else changed.",
+    "recordedMiss": "Recorded. The next explanation of this should differ.",
+    "couldNotRecord": "That could not be recorded. Nothing changed.",
+    "suggested": "Suggested",
+    "acceptSuggestion": "Use this",
+    "reaskedCount": "Heard again: {{count}}",
+    "revert": "Revert"
   }
 }

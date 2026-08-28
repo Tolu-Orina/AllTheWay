@@ -1,6 +1,6 @@
 import express from "express";
 import { z } from "zod";
-import { HomeDocumentSchema, type HomeDocument } from "@alltheway/contracts";
+import { HatSchema, HomeDocumentSchema, type HomeDocument } from "@alltheway/contracts";
 
 import { requireUser } from "../auth.js";
 import { authenticatingFetch } from "../a2a.js";
@@ -50,6 +50,7 @@ const UploadSchema = z.object({
   /** Base64, as with artifacts — one transport for the whole API. */
   content: z.string().min(1),
   mimeType: z.string().max(120).default("text/plain"),
+  hat: HatSchema.nullable().optional(),
 });
 
 const RetrieveSchema = z.object({

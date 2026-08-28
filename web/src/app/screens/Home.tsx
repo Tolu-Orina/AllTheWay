@@ -75,6 +75,11 @@ export default function Home() {
   const job = state.status === "ready" ? state.data.onboarding.job : undefined;
 
   useEffect(() => {
+    if (state.status !== "ready") return;
+    setHat(state.data.hat ?? "all");
+  }, [state]);
+
+  useEffect(() => {
     if (job !== "document") return;
     try {
       const key = "alltheway:doc-sheet";
@@ -116,7 +121,14 @@ export default function Home() {
           <PushOffer
             show={Boolean(home.day.nextLeave) || home.digest.awaitingDecision.length > 0}
           />
-          <DayTimeline day={home.day} hat={hat} onHat={setHat} />
+          <DayTimeline
+            day={home.day}
+            hat={hat}
+            onHat={(next) => {
+              setHat(next);
+              void api.setHat(next === "all" ? null : next);
+            }}
+          />
           <HomeRest
             job={home.onboarding.job ?? "skipped"}
             plan={home.plan}

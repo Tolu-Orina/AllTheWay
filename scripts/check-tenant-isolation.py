@@ -81,6 +81,12 @@ USER_OWNED = (
     "rhythms",
     "reminders",
     "proposedCommitments",
+    # Memory Layer Plan Phase C. What this person finds hard is as personal
+    # as a preference, and is scoped the same way.
+    "concepts",
+    # Locale, onboarding, voice retention, and Today's hat. A root-level
+    # settings collection would enumerate who is on which hat.
+    "settings",
 )
 
 #: Spans every user by definition. Permitted nowhere.

@@ -10,6 +10,7 @@ import {
   getArtifact,
   listArtifacts,
 } from "../repos/artifacts.js";
+import { rememberVisual } from "../repos/visual.js";
 import { getVersion, storageConfigured } from "../storage.js";
 
 /**
@@ -153,6 +154,17 @@ artifactRoutes.post("/:id/versions", requireUser, async (req, res) => {
       prompt: body.data.prompt,
       correction: body.data.correction,
     });
+    const note = body.data.correction?.trim();
+    if (note) {
+      try {
+        await rememberVisual(req.uid!, note);
+      } catch (err) {
+        // The version is the user's work and already landed. Brand memory is a
+        // convenience: failing the save because a palette could not be
+        // written would trade a small miss for a lost edit.
+        console.error("[artifacts] rememberVisual", err);
+      }
+    }
     res.status(201).json({ n });
   } catch (err) {
     if (err instanceof NotFound) {

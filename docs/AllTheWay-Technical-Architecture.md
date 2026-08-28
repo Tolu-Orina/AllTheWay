@@ -1,14 +1,14 @@
 # AllTheWay — Technical Architecture Document
 ### Serverless-first architecture for a unified companion: Collaborative Partner + Voice + Autonomous Watchers + Enterprise Trust
 
-*Updated for Product Manifest v2's unified-tracks scope. §11 and §12 are new (Voice architecture, Watcher Runtime architecture); §7 (Security & Identity) is revised to reflect Agent Identity as a Phase 1 foundation rather than a later addition. Everything else below is unchanged from the original architecture and remains accurate.*
+*Updated for Product Manifest v2's unified-tracks scope. Preference memory is the Firestore Cognitive Profile, not Vertex AI Memory Bank — see [Memory Layer Plan](AllTheWay-Memory-Layer-Plan.md) (2026-08-28). §11 and §12 are Voice and Watcher Runtime architecture.*
 
 ---
 
 ## 1. Architecture Principles
 
 1. **Serverless everywhere it's viable.** Every compute component runs on Cloud Run (request-driven) or Cloud Run Jobs (batch/long-running), scaling to zero between sessions. No GKE, no always-on VMs, no dedicated database clusters. This is both a cost discipline (matches the hackathon's own cost guidance) and a judged criterion ("Architectural Discipline").
-2. **Managed state over hand-rolled state.** Long-term memory is Vertex AI Memory Bank, not a custom vector pipeline. Short-term session state is Firestore, not an in-memory dict that dies with the container. Async coordination is Pub/Sub + Eventarc, not a homebrew job queue.
+2. **Managed state over hand-rolled state.** Short-term session state is Firestore, not an in-memory dict that dies with the container. Async coordination is Pub/Sub + Eventarc, not a homebrew job queue. **Preference memory is the Firestore Cognitive Profile** (`users/{uid}/preferences`), inspectable and revertible; working memory is the librarian's path-scoped vectors. Vertex AI Memory Bank is a deferred extractor behind that ledger, not the source of truth — see [Memory Layer Plan](AllTheWay-Memory-Layer-Plan.md) (2026-08-28). A black-box store would undo the product's own claim that memory is something you can read and put back.
 3. **Two frameworks, two layers, one reason each.** ADK owns multi-agent orchestration (routing, sub-agent composition, tool use). Genkit owns the application-flow layer (typed request/response contracts between the frontend and the backend, structured-output prompts, streaming to the client). Neither is used to duplicate what the other already does well.
 4. **The graph is the spine; the swarm is a leaf.** Anything user-visible or stateful runs through a deterministic ADK graph (Sequential/Parallel/Loop/LlmAgent router). A bounded swarm exists only inside the Research Cell, never touches the user directly, and always reconverges through a single synthesis node before the parent graph continues. This follows the 2026 consensus that supervisor/graph patterns trade some flexibility for the traceability and debuggability that swarms give up — a trade this product needs, since a companion that can't explain itself undermines its own value proposition.
 5. **Every inter-agent boundary is a protocol boundary, not a function call.** Internal specialist agents (Research Cell workers, Profile Synthesizer, the Watcher Runtime) talk to the Orchestrator over A2A (JSON-RPC 2.0 + SSE, AgentCard-based discovery), not direct Python imports. This costs a small amount of latency now, in exchange for meaning that adding a new specialist agent later (e.g., a Legal Explainer) never requires touching the Orchestrator's code — it just needs to publish an AgentCard.
@@ -68,13 +68,13 @@
         │ A2A (JSON-RPC│+SSE)      │ A2A
         ▼              ▼           ▼
 ┌───────────────┐ ┌──────────────┐ ┌───────────────────────┐
-│ Cloud Run:     │ │ Cloud Run:   │ │ Cloud Run Jobs:        │
+│ Cloud Run:     │ │ Cloud Run:   │ │ Cloud Run:              │
 │ RESEARCH CELL  │ │ DELIVERABLE  │ │ PROFILE SYNTHESIZER    │
-│ (ADK Parallel, │ │ GENERATOR    │ │ (ADK Loop: Generator +  │
-│ 2–4 Flash      │ │ (Genkit flow,│ │ Critic pair)            │
-│ workers +      │ │ Gemini 3.5   │ │ Triggered by Pub/Sub    │
-│ Synthesis node)│ │ Pro)         │ │ (Eventarc), runs async, │
-│ MCP tool calls │ │              │ │ writes to Memory Bank   │
+│ (ADK Parallel, │ │ GENERATOR    │ │ Deterministic keyed     │
+│ 2–4 Flash      │ │ (Genkit flow,│ │ write (TEPA revoke).    │
+│ workers +      │ │ Gemini 3.5   │ │ Pub/Sub push, writes    │
+│ Synthesis node)│ │ Pro)         │ │ users/{uid}/preferences  │
+│ MCP tool calls │ │              │ │                         │
 └───────┬────────┘ └──────┬───────┘ └───────────┬─────────────┘
         │                 │                     │
         ▼                 ▼                     ▼
@@ -85,10 +85,12 @@
 └───────────────────────────────────────────────────────────────┘
 
 ┌───────────────────────────────────────────────────────────────┐
-│  Vertex AI Agent Engine — Memory Bank                          │
-│  Scoped per user_id. GenerateMemories (async, session-end       │
-│  trigger) · RetrieveMemories (similarity search, in-session)    │
-│  · CreateMemory (direct write, Profile Synthesizer)             │
+│  Firestore Cognitive Profile + librarian                         │
+│  users/{uid}/preferences (standing rows injected every turn)    │
+│  users/{uid}/documentChunks (per-turn retrieval, not injection) │
+│  users/{uid}/visualPreferences (applied at image generate)      │
+│  users/{uid}/concepts (struggle model: reask and miss only)     │
+│  Memory Bank is an optional extractor behind this ledger         │
 └───────────────────────────────────────────────────────────────┘
 
 ┌───────────────────────────────────────────────────────────────┐
@@ -126,7 +128,7 @@
 
 ### 3.3 Research Cell (ADK ParallelAgent, Cloud Run)
 
-- 2–4 worker sub-agents, each running Gemini 3.5 Flash with a distinct tool/strategy (web search via an MCP search connector, prior-session lookup via Memory Bank `RetrieveMemories`, connected-document RAG via an MCP Docs connector).
+- 2–4 worker sub-agents, each running Gemini 3.5 Flash with a distinct tool/strategy (web search via an MCP search connector, connected-document RAG via passages the gateway already retrieved, prior-session thread the gateway already loaded). Standing preferences are injected by the gateway; workers do not call Memory Bank.
 - ADK's `ParallelAgent` isolates each branch's intermediate events from the others (branch isolation), so workers cannot see or influence each other mid-flight — this is what keeps the "bounded swarm" bounded: no emergent cross-talk, no runaway coordination cost.
 - A single Synthesis node reconverges the branches. Only the Synthesis node's output re-enters the parent graph; per FR-10, workers never emit directly to the user.
 - Hard caps: `max_workers=4`, workers restricted to Flash (never Pro), and a wall-clock timeout per fan-out — this is the direct mitigation for the "swarm-style Research Cell runs away on cost" risk called out in the product manifest.
@@ -136,13 +138,12 @@
 - A Genkit flow, not an ADK agent — this is a single-shot structured-generation task (produce a wireframe spec, a summary, a draft), which is exactly Genkit's sweet spot (typed structured output, no multi-step reasoning graph required). Runs on Gemini 3.5 Pro, since this is the "final reasoning / deliverable" tier the hackathon cost guidance explicitly recommends reserving Pro for.
 - Genkit's built-in plugin ecosystem is what supplies the model connection here (`@genkit-ai/google-genai` for Vertex AI/Gemini access) — no bespoke SDK wiring needed.
 
-### 3.5 Profile Synthesizer (ADK LoopAgent, Cloud Run Job)
+### 3.5 Profile Synthesizer (Cloud Run service, event-driven)
 
-- Runs as a **Cloud Run Job**, not a Cloud Run **Service** — this task has no HTTP client waiting on a response; it's triggered asynchronously and its job is to finish and write state, which is exactly what Jobs (not Services) are for. `--task-timeout` can be extended well past the default 10 minutes if a full session-history re-synthesis takes longer, up to Cloud Run Jobs' 7-day ceiling — comfortable headroom for something that in practice should take seconds to low minutes.
-- Trigger path: session ends → gateway publishes to the `session.ended` Pub/Sub topic → an Eventarc trigger invokes the job. This is the same asynchronous-invocation pattern Google's own ADK codelabs document for exactly this situation (integrating an agent into an event-driven workflow without changing the caller).
-- Internally: a `LoopAgent` running a Generator/Critic pair. The Generator proposes Cognitive Profile updates from the latest Feedback Ledger entries (read from Firestore); the Critic checks proposed changes against the last five sessions for consistency before anything commits; the loop breaks on Critic approval or `max_iterations`.
-- Writes: `GenerateMemories` (Memory Bank) using the session's events as the source when doing bulk extraction, or `CreateMemory` directly (via `add_memory`/the memories.create API) when the Critic has already decided exactly what fact should be stored — giving the system precise control rather than relying purely on Memory Bank's own extraction heuristics for every write.
-- Reads at session start: `RetrieveMemories` with similarity-search retrieval (not "fetch everything") so the Orchestrator's system context gets only the memories relevant to the current conversation, keeping prompt size and cost bounded as a user's history grows.
+- Deployed as a **Cloud Run service** that consumes Pub/Sub push on `/events`, same shape locally and in production. A Job is the wrong shape once a correction must be learned before the next turn in the same session.
+- Trigger path: a human correction (or session end) → gateway publishes `session-ended` → this service writes `users/{uid}/preferences`. Watchers subscribe to the same topic for `session_ended` triggers; they do not write the profile.
+- Internally: deterministic. A correction already contains both halves (`was` / `now`). The write is keyed (TEPA): a new fact under the same key stamps `revertedAt` on the previous active row rather than leaving two opposites in the prompt. Evidence counts same-key rows, not every preference the user has.
+- Reads at turn time: the **gateway** lists standing preferences (`revertedAt == null`) and injects them. The orchestrator is stateless and never fetches the profile itself. Working memory is retrieved separately, as passages, never injected as if it were a preference.
 
 ### 3.6 MCP Connector Layer (Cloud Run, one or pooled)
 
@@ -153,7 +154,7 @@
 ### 3.7 Guardrails
 
 - A lightweight guardrail step (modeled on the Model Armor pattern from the Fortified Enterprise Fleet track, even though this submission targets Collaborative Partner) sits between any fetched external content (web pages, documents) and the point where that content enters the Orchestrator's context — screening for prompt injection before it can influence agent behavior.
-- PII redaction runs before any write to Memory Bank, since memories are long-lived and scoped per identity; anything written there persists across every future session.
+- PII redaction runs before any write to the Cognitive Profile, since memories are long-lived and scoped per identity; anything written there persists across every future session. Watcher-ingested text is never a profile source.
 
 ---
 
@@ -165,7 +166,7 @@
 - **The confirm-summary gate**: before any tool call with a real-world side effect executes, the Orchestrator generates a spoken summary of the pending action(s) and requires an explicit confirmation turn — implemented as a mandatory step in the tool-calling flow, not a prompt-level suggestion the model could skip. This mirrors the text-mode Clarify Gate's architecture (a hard checkpoint, not a soft instruction) applied to the "about to act" moment instead of the "about to plan" moment.
 - **Known constraint**: current Live models do not reliably support switching between differently-instructed sub-agents mid-session (a documented limitation as of the 3.1 generation). Consequently, voice sessions run against a single Orchestrator context with a broad tool surface, rather than attempting live delegation to the Research Cell or other specialist sub-agents mid-call. If a voice turn would benefit from Research Cell-style parallel work, the Orchestrator queues it as a Plan Panel step for the user to see and approve after the voice turn ends, rather than trying to delegate invisibly mid-conversation. Re-validate this constraint against each new Live API model generation — it is a current technical limit, not a permanent design choice.
 - **Graceful degradation**: low-confidence transcription (background noise, ambiguous phrasing) routes to a clarifying spoken follow-up rather than acting on a guess — the same "confirm before executing, don't guess" posture the confirm-summary gate embodies generally.
-- **State sharing**: voice sessions use the same `DatabaseSessionService` (Firestore-backed) and the same Memory Bank profile as text sessions — there is no separate "voice memory." A session begun by voice and continued as text (or vice versa) is one continuous session, not two.
+- **State sharing**: voice sessions use the same Firestore session documents and the same Firestore preference ledger as text sessions — there is no separate "voice memory." A session begun by voice and continued as text (or vice versa) is one continuous session, not two. Live chit-chat stays a Live-model session; the moment it calls `plan_turn`, the gateway loads the same four stores a typed turn does.
 
 ## 3.9 Watcher Runtime Architecture
 
@@ -226,7 +227,7 @@ traceSpans/{spanId}                # mirrored subset of Cloud Trace, for the
                                       of truth remains Cloud Trace/OpenTelemetry
 ```
 
-Cognitive Profile itself is **not** stored in Firestore as primary data — it lives in Vertex AI Memory Bank, scoped by `{"user_id": userId}`. Firestore only caches the last-synthesized snapshot for fast UI reads (`users/{userId}/profileSnapshot`), refreshed whenever the Profile Synthesizer job completes. This avoids two sources of truth drifting: Memory Bank is authoritative, Firestore is a read-through cache.
+Cognitive Profile **is** stored in Firestore as primary data: `users/{userId}/preferences/{preferenceId}`, with `revertedAt` as the validity stamp (TEPA) and optional `hat` so work and home do not mix. Proposed `source: "synth"` rows are visible on You and not injected until accepted. Struggle rows live at `users/{userId}/concepts/{id}` and are written only on reask or a missed check. There is no `profileSnapshot` and no Memory Bank round-trip on the turn path, because the You screen and the orchestrator must read the same rows. Vertex AI Memory Bank is an optional extractor behind this ledger (`MEMORY_BANK_RESOURCE`, topics: `USER_PREFERENCES` only), not a second source of truth. Working memory is not this collection — it is `users/{userId}/documentChunks`, retrieved per turn, with the same hat rule as preferences (unlabelled always retrieves).
 
 Why Firestore over Cloud SQL for everything else: session/plan/feedback data is naturally document-shaped (nested, per-session, no cross-session joins needed for MVP), and Firestore's serverless pricing (pay-per-operation, no idle cost) matches the "scale to zero" principle in a way a provisioned Cloud SQL instance cannot. Cloud SQL is deferred to the post-hackathon roadmap, and only if the Connector Marketplace grows to need genuine relational integrity (e.g., many-to-many org-level connector sharing with foreign-key constraints).
 
@@ -240,7 +241,7 @@ Per the current (2026) production guidance on multi-agent topologies — which d
 |---|---|---|
 | Orchestrator → Plan Panel | Supervisor (LlmAgent dynamic routing) over a Sequential/Parallel/Loop graph | Predictable, debuggable, matches "Architectural Discipline" judging criterion |
 | Research Cell | Bounded fan-out/parallel (not open swarm) | Coverage/speed benefit of parallelism without swarm's traceability cost — the swarm is a leaf, never the spine |
-| Profile Synthesizer | Debate-style Generator/Critic loop | The literature on human-in-the-loop preference learning specifically favors a validating second pass before committing profile changes, to avoid over-fitting to noisy signals |
+| Profile Synthesizer | Deterministic keyed write, with revoke-on-conflict (TEPA), then a sleep-time pass that generalises *across* keys | A single correction already contains both halves; a model restating it adds drift. Sleep-time writes a new `source: "synth"` row and never overwrites a human one |
 | Cross-service (Orchestrator ↔ Research Cell ↔ Profile Synthesizer ↔ Connectors) | A2A (peer protocol) | Each of these is an independently deployable Cloud Run service; A2A means adding a new specialist later requires zero changes to the Orchestrator's code, only a new AgentCard |
 
 This directly avoids the two documented anti-patterns: an unbounded swarm ("obscures the execution path, making it difficult to trace errors"), and a single monolithic supervisor doing everything ("can become a bottleneck if poorly defined") — the Orchestrator delegates real work to independently scalable Cloud Run services rather than doing it all in one process.
@@ -280,8 +281,8 @@ This directly avoids the two documented anti-patterns: an unbounded swarm ("obsc
 | Cloud Run min-instances | 0 (all services, except briefly during live demo) | No idle cost; "pop-up shop" model — 0 requests, 0 running instances |
 | Cloud Run max-instances | Capped per service (e.g., 5–10) | Blocks unexpected spend spikes without hand-tuning autoscaling |
 | Gemini model tier default | Flash | Reserved for routing, classification, Research Cell workers, Clarify Gate scoring |
-| Gemini model tier escalation | Pro | Only for Deliverable Generator and Profile Synthesizer's final reasoning pass |
-| Vector search | Memory Bank's managed similarity search | No dedicated always-on vector database cluster |
+| Gemini model tier escalation | Pro | Only for Deliverable Generator. The Profile Synthesizer is deterministic in this phase. |
+| Vector search | Librarian path-scoped vectors on `users/{uid}/documentChunks` | No dedicated always-on vector database cluster; Memory Bank is not the working-memory index |
 | Cloud Run Jobs task timeout | Default 10 min, extendable to 7 days if ever needed | Profile Synthesizer in practice completes in seconds–minutes; headroom exists without needing a different compute model |
 
 ---

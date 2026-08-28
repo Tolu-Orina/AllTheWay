@@ -79,11 +79,14 @@ class IngestRequest(BaseModel):
     #: special case would be a second parsing path to keep correct.
     content: str
     mimeType: str = "text/plain"
+    #: Optional. Absent means unlabeled. Never inferred from the title.
+    hat: str | None = None
 
 
 class RetrieveRequest(BaseModel):
     query: str = Field(min_length=1, max_length=4000)
     limit: int = Field(default=6, ge=1, le=20)
+    hat: str | None = None
 
 
 @app.post("/documents")
@@ -104,7 +107,13 @@ def post_document(
         raise HTTPException(status_code=403, detail=message)
 
     try:
-        return ingest(user, title=request.title, body=body, mime_type=request.mimeType)
+        return ingest(
+            user,
+            title=request.title,
+            body=body,
+            mime_type=request.mimeType,
+            hat=request.hat if request.hat in {"work", "home", "church"} else None,
+        )
     except Blocked as blocked:
         # 422, not 500. Screening refusing a document is the system working,
         # and the user can act on it — a 500 would say the opposite.
@@ -169,7 +178,8 @@ def post_retrieve(
     user = scoped(x_scope_token)
 
     vector = embed.embed_query(request.query)
-    passages = store.retrieve(user, vector, limit=request.limit)
+    hat = request.hat if request.hat in {"work", "home", "church"} else None
+    passages = store.retrieve(user, vector, limit=request.limit, hat=hat)
 
     return {
         "passages": [

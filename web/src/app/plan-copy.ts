@@ -89,18 +89,21 @@ export function outcomeLine(row: ActOutcome): string {
 }
 
 export function decisionCopy(
-  kind: "confirmed" | "declined",
+  kind: "confirmed" | "declined" | "corrected",
   recorded: "pending" | "ok" | "failed",
   did: ActOutcome[],
 ): string {
   if (recorded === "pending") {
+    if (kind === "corrected") return "Saving what to do instead…";
     return kind === "confirmed" ? "Saving your answer…" : "Nothing was done. Saving your answer…";
   }
   if (recorded === "failed") {
+    if (kind === "corrected") return "That could not be saved. You can still say it again.";
     return kind === "confirmed"
       ? "Nothing was done, but your answer could not be saved. Nothing ran."
       : "Nothing was done, but your answer could not be saved.";
   }
+  if (kind === "corrected") return "Remembered. Nothing ran.";
   if (kind === "declined") return "Declined and recorded. Nothing was done.";
   if (did.length === 0) return "Recorded. Nothing needed to run.";
   return did.map(outcomeLine).join(" ");

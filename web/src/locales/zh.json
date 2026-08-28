@@ -133,7 +133,10 @@
     "allthewayCouldNotReachTheNetwork": "AllTheWay 无法连接网络。您的会话很安全 — 重新连接后本页面将自动恢复。",
     "checkingSession": "正在检查会话…",
     "couldNotLoad": "无法加载。",
-    "workSafe": "没有丢失任何内容。"
+    "workSafe": "没有丢失任何内容。",
+    "notQuite": "不太对",
+    "insteadPlaceholder": "本来应该是什么？",
+    "rememberThis": "记住这个"
   },
   "account": {
     "signOut": "退出登录"
@@ -413,5 +416,23 @@
     "openYou": "打开你",
     "dayEmpty": "这个身份在接下来十二小时没有事项。",
     "proposeFailed": "没能从该文件读出日期。没有写入日历。"
+  },
+  "memory": {
+    "everywhere": "到处适用",
+    "documentHat": "这属于生活的哪一面？",
+    "documentHatHint": "除非它不该出现在其他身份里，否则保持到处适用。文件名不会被用来猜测。",
+    "struggles": "你觉得难的",
+    "strugglesHint": "只有在你要求再讲一遍，或检查没过时才会写入。绝不会根据你看了多久。",
+    "strugglesEmpty": "还没有记录",
+    "explainAgain": "再讲一遍",
+    "thatLanded": "听懂了",
+    "didNotGetIt": "没跟上",
+    "recordedLanded": "已记为听懂。没有别的改动。",
+    "recordedMiss": "已记录。下一次解释这一点时必须不同。",
+    "couldNotRecord": "没能记录。没有改动。",
+    "suggested": "建议",
+    "acceptSuggestion": "采用",
+    "reaskedCount": "再听过：{{count}}",
+    "revert": "撤销"
   }
 }

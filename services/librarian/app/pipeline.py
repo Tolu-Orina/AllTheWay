@@ -140,7 +140,9 @@ def chunk(pages: list[tuple[int, str]]) -> list[tuple[int, int, str]]:
     return pieces
 
 
-def ingest(user: str, *, title: str, body: bytes, mime_type: str) -> dict:
+def ingest(
+    user: str, *, title: str, body: bytes, mime_type: str, hat: str | None = None
+) -> dict:
     """The whole pipeline, for one document.
 
     Returns a summary. Raises `Blocked` when screening refuses, which the
@@ -148,7 +150,9 @@ def ingest(user: str, *, title: str, body: bytes, mime_type: str) -> dict:
     matters to the person who uploaded it.
     """
     pages, page_count = extract(body, mime_type)
-    document_id = store.create_document(user, title=title, mime_type=mime_type, pages=page_count)
+    document_id = store.create_document(
+        user, title=title, mime_type=mime_type, pages=page_count, hat=hat
+    )
 
     if not pages:
         store.set_status(user, document_id, "blocked", blockedReason="No readable text.")
@@ -176,7 +180,7 @@ def ingest(user: str, *, title: str, body: bytes, mime_type: str) -> dict:
 
     # First contact with a model, and only after screening passed.
     vectors = embed.embed_all([text for _, _, text in pieces])
-    written = store.write_chunks(user, document_id, title, pieces, vectors)
+    written = store.write_chunks(user, document_id, title, pieces, vectors, hat=hat)
 
     store.set_status(user, document_id, "ready", chunks=written)
     return {"documentId": document_id, "pages": page_count, "chunks": written}

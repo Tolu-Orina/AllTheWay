@@ -116,6 +116,7 @@ export function CompanionConversation({ autoFocus = false }: { autoFocus?: boole
                         actions: m.actions ?? [],
                       })
                     }
+                    onCorrect={(now) => send(now)}
                   />
                 </div>
               ) : null}
