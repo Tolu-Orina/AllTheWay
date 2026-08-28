@@ -7,6 +7,7 @@ import { useAsync } from "@/app/use-async";
 import { api, type Commitment, type Meeting } from "@/app/data";
 import { cn } from "@/lib/utils";
 import { ConfirmGate } from "@/app/ConfirmGate";
+import { useCompanionThread } from "@/app/companion-thread";
 import { ConnectionQuality, DurationNotice } from "@/app/MeetingHealth";
 import { MeetingInsights } from "@/app/MeetingInsights";
 
@@ -464,6 +465,26 @@ export function CommitmentCard({
           onDecline={() => onDecline?.()}
         />
       )}
+      <PutOnCalendar text={commitment.text} />
     </li>
+  );
+}
+
+/**
+ * Approving a commitment records it. Putting it on the calendar is a plan,
+ * because that is a different action through the same confirm floor.
+ */
+function PutOnCalendar({ text }: { text: string }) {
+  const t = useT();
+  const { send, working } = useCompanionThread();
+  return (
+    <button
+      type="button"
+      disabled={working}
+      onClick={() => send(`Put this on my calendar: ${text}`)}
+      className="self-start text-[13px] text-muted-foreground underline underline-offset-2 disabled:opacity-50"
+    >
+      {t("meetings.putOnCalendar")}
+    </button>
   );
 }

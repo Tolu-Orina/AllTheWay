@@ -56,7 +56,8 @@
     "confirm": "Sim, registrar isto",
     "confirming": "Registrando…",
     "notThis": "Não isto",
-    "confirmed": "Confirmado"
+    "confirmed": "Confirmado",
+    "putOnCalendar": "Colocar no calendário"
   },
   "documents": {
     "heading": "Seus documentos",
@@ -222,6 +223,9 @@
     "welcomeSkipped": "Bem-vindo de volta{{who}}. Peça algo, ou escolha por onde começar.",
     "welcomeGeneric": "Bem-vindo de volta{{who}}. Peça algo, ou me corrija — eu aprendo mais com as correções do que com os pedidos.",
     "askHere": "Pergunte, ou corrija…"
+  },
+  "plan": {
+    "heading": "Plano"
   },
   "watchers": {
     "empty": "Ele observa algo e para antes de qualquer coisa irreversível.",

@@ -135,7 +135,11 @@ class FakeProvider:
         # A request that asks for something to leave the account produces a step
         # that says so, which is what the confirm gate reads.
         steps.append(
-            {"label": f"Carry it out: {user.strip()[:44]}", "action": act}
+            {
+                "label": f"Carry it out: {user.strip()[:44]}",
+                "action": act,
+                **_call_for(act, user),
+            }
             if act
             else {"label": "Review together", "action": ""}
         )
@@ -200,6 +204,30 @@ class VertexProvider:
             # A chunk can carry no text (a safety verdict, a usage-only frame).
             if chunk.text:
                 yield chunk.text
+
+
+def _call_for(action: str, user: str) -> dict:
+    """The call a side-effecting fake step would make.
+
+    Empty when the action has no connector in this catalogue. The graph must
+    still emit `connector` and `tool` on a real plan, or confirming writes a
+    ledger row and the calendar stays empty.
+    """
+    title = user.strip()[:80]
+    if action == "create_task":
+        return {
+            "connector": "google_calendar",
+            "tool": "create_event",
+            "arguments": {"title": title, "starts_at": ""},
+        }
+    if action == "send_external":
+        tool = "send_email" if "send" in user.lower() else "create_draft"
+        return {
+            "connector": "google_gmail",
+            "tool": tool,
+            "arguments": {"to": "", "subject": title, "body": ""},
+        }
+    return {}
 
 
 def _cycle(values: tuple[int, ...]) -> Iterator[int]:

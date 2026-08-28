@@ -239,6 +239,7 @@ export default function Watchers() {
                 reason: t("watchers.confirmReason"),
               },
             ]}
+            dialogLabel="Confirm before creating"
             confirmLabel={creating ? t("watchers.creating") : t("watchers.confirm")}
             declineLabel={t("watchers.decline")}
             busy={creating}

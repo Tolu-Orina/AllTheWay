@@ -1,5 +1,12 @@
 import { Role, TaskState, type Message, type Part, type Task } from "@a2a-js/sdk";
-import { CitationSchema, type Citation, type TurnEvent } from "@alltheway/contracts";
+import {
+  CitationSchema,
+  PlanStepSchema,
+  ProposedActionSchema,
+  type Citation,
+  type PlanStep,
+  type TurnEvent,
+} from "@alltheway/contracts";
 import { z } from "zod";
 
 import { orchestratorClient } from "./a2a.js";
@@ -21,12 +28,6 @@ import { orchestratorClient } from "./a2a.js";
  * strings. Comparing against string names silently yields UNRECOGNIZED.
  */
 
-const PlanStepSchema = z.object({
-  label: z.string(),
-  done: z.boolean(),
-  action: z.string().default(""),
-});
-
 export const TurnResponseSchema = z.object({
   decision: z.enum(["clarify", "plan", "confirm"]),
   clarify: z
@@ -38,9 +39,7 @@ export const TurnResponseSchema = z.object({
     .object({
       summary: z.string(),
       options: z.array(z.string()).default([]),
-      actions: z
-        .array(z.object({ label: z.string(), action: z.string(), reason: z.string() }))
-        .default([]),
+      actions: z.array(ProposedActionSchema).default([]),
     })
     .nullable()
     .optional(),
@@ -92,13 +91,13 @@ function textOf(parts: Part[]): string | undefined {
  * the note and trace — the same representation whether it was streamed in
  * chunks or folded into a finished task. One shape, both paths.
  */
-function stepsOf(payloads: Record<string, unknown>[]) {
-  return payloads
-    .map((p) => p.step)
-    .filter(
-      (s): s is { label: string; done: boolean; action?: string } =>
-        !!s && typeof s === "object",
-    );
+function stepsOf(payloads: Record<string, unknown>[]): PlanStep[] {
+  const out: PlanStep[] = [];
+  for (const part of payloads) {
+    const parsed = PlanStepSchema.safeParse(part.step);
+    if (parsed.success) out.push(parsed.data);
+  }
+  return out;
 }
 
 /**
@@ -289,19 +288,12 @@ export async function* streamTurn(input: TurnInput): AsyncGenerator<TurnEvent> {
       const payloads = dataPayloads(payload.value.artifact?.parts ?? []);
       for (const part of payloads) {
         if (part.step && typeof part.step === "object") {
-          const step = part.step as { label?: unknown; action?: unknown };
-          if (typeof step.label === "string") {
-            yield {
-              kind: "step",
-              step: {
-                label: step.label,
-                done: false,
-                // Carried through so the UI can say a step will send or delete
-                // before anyone approves it. Dropping it here would make every
-                // step look harmless on the way to the browser.
-                action: typeof step.action === "string" ? step.action : "",
-              },
-            };
+          const step = PlanStepSchema.safeParse({
+            ...(part.step as object),
+            done: false,
+          });
+          if (step.success) {
+            yield { kind: "step", step: step.data };
           }
         }
         if (typeof part.summary === "string") {

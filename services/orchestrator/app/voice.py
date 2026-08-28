@@ -84,6 +84,10 @@ class ProposedAction:
     label: str
     action: Action
     reason: str
+    #: The call, when the step names one. Empty when it proposes no call.
+    connector: str = ""
+    tool: str = ""
+    arguments: dict = field(default_factory=dict)
 
 
 @dataclass(frozen=True)
@@ -167,6 +171,9 @@ def confirmation_for(
                     label=step.label,
                     action=Action.SEND_EXTERNAL,
                     reason=f"Unrecognised action {step.action!r}, treated as irreversible.",
+                    connector=step.connector,
+                    tool=step.tool,
+                    arguments=dict(step.arguments),
                 )
             )
             continue
@@ -176,7 +183,16 @@ def confirmation_for(
 
         outcome = decide(action, ceiling, waiver=waiver)
         if not outcome.execute:
-            needs.append(ProposedAction(label=step.label, action=action, reason=outcome.reason))
+            needs.append(
+                ProposedAction(
+                    label=step.label,
+                    action=action,
+                    reason=outcome.reason,
+                    connector=step.connector,
+                    tool=step.tool,
+                    arguments=dict(step.arguments),
+                )
+            )
         elif action in IRREVERSIBLE and confidence < IRREVERSIBLE_CERTAINTY:
             needs.append(
                 ProposedAction(
@@ -186,6 +202,9 @@ def confirmation_for(
                         f"Permitted by your ceiling, but I am only "
                         f"{round(confidence * 100)}% sure I heard you correctly."
                     ),
+                    connector=step.connector,
+                    tool=step.tool,
+                    arguments=dict(step.arguments),
                 )
             )
 

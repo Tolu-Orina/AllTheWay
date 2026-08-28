@@ -53,7 +53,8 @@
     "confirm": "Yes, record this",
     "confirming": "Recording…",
     "notThis": "Not this",
-    "confirmed": "Confirmed"
+    "confirmed": "Confirmed",
+    "putOnCalendar": "Put this on the calendar"
   },
   "documents": {
     "heading": "Your documents",
@@ -219,6 +220,9 @@
     "welcomeSkipped": "Welcome back{{who}}. Ask me for something, or pick a starting job.",
     "welcomeGeneric": "Welcome back{{who}}. Ask me for something, or correct me — I learn from the corrections more than the requests.",
     "askHere": "Ask, or correct it…"
+  },
+  "plan": {
+    "heading": "Plan"
   },
   "watchers": {
     "empty": "It watches something and stops before anything irreversible.",

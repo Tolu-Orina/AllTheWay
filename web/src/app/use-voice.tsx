@@ -9,6 +9,7 @@ import {
 } from "react";
 import { useLocation } from "react-router";
 
+import { PlanStepSchema, type PlanStep } from "@alltheway/contracts";
 import { openVoiceSocket, type VoiceSocket } from "@/lib/voice";
 import { useT } from "@/app/i18n";
 import { resolveVoiceSessionId } from "@/app/work-id";
@@ -21,6 +22,8 @@ export type VoiceTurn = {
   question?: string;
   note?: string;
   options?: string[];
+  plan?: PlanStep[];
+  actions?: { label: string; action: string; reason: string }[];
 };
 
 type VoiceState = {
@@ -30,7 +33,7 @@ type VoiceState = {
   modelText: string;
   fake: boolean;
   turn: VoiceTurn | null;
-  /** True while the microphone is open but nothing is being sent upstream. */
+  sessionId: string;
   muted: boolean;
   start: () => void;
   stop: () => void;
@@ -207,14 +210,28 @@ export function VoiceProvider({ children }: { children: ReactNode }) {
             if (!current()) return;
             if (event && typeof event === "object") {
               const rec = event as Record<string, unknown>;
-              const confirm = rec.confirm as { summary?: string; options?: string[] } | undefined;
+              const confirm = rec.confirm as
+                | {
+                    summary?: string;
+                    options?: string[];
+                    actions?: { label: string; action: string; reason: string }[];
+                  }
+                | undefined;
               const clarify = rec.clarify as { question?: string; options?: string[] } | undefined;
+              const plan = Array.isArray(rec.plan)
+                ? rec.plan.flatMap((step) => {
+                    const parsed = PlanStepSchema.safeParse(step);
+                    return parsed.success ? [parsed.data] : [];
+                  })
+                : [];
               setTurn({
                 decision: typeof rec.decision === "string" ? rec.decision : undefined,
                 summary: confirm?.summary,
                 question: clarify?.question,
                 note: typeof rec.note === "string" ? rec.note : undefined,
                 options: confirm?.options ?? clarify?.options,
+                plan,
+                actions: confirm?.actions ?? [],
               });
             }
           },
@@ -266,7 +283,19 @@ export function VoiceProvider({ children }: { children: ReactNode }) {
 
   return (
     <VoiceContext.Provider
-      value={{ status, error, userText, modelText, fake, turn, muted, start, stop, toggleMute }}
+      value={{
+        status,
+        error,
+        userText,
+        modelText,
+        fake,
+        turn,
+        sessionId: resolveVoiceSessionId(pathname),
+        muted,
+        start,
+        stop,
+        toggleMute,
+      }}
     >
       {children}
     </VoiceContext.Provider>

@@ -166,7 +166,16 @@ def _as_step(raw: object) -> PlanStep | None:
         label = raw.get("label")
         if isinstance(label, str) and label:
             action = raw.get("action")
-            return PlanStep(label=label, action=action if isinstance(action, str) else "")
+            connector = raw.get("connector")
+            tool = raw.get("tool")
+            arguments = raw.get("arguments")
+            return PlanStep(
+                label=label,
+                action=action if isinstance(action, str) else "",
+                connector=connector if isinstance(connector, str) else "",
+                tool=tool if isinstance(tool, str) else "",
+                arguments=arguments if isinstance(arguments, dict) else {},
+            )
     return None
 
 
@@ -332,7 +341,14 @@ def _finish(
             "summary": confirmation.summary,
             "options": list(confirmation.options),
             "actions": [
-                {"label": a.label, "action": str(a.action), "reason": a.reason}
+                {
+                    "label": a.label,
+                    "action": str(a.action),
+                    "reason": a.reason,
+                    "connector": a.connector,
+                    "tool": a.tool,
+                    "arguments": a.arguments,
+                }
                 for a in confirmation.actions
             ],
         },

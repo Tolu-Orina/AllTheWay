@@ -16,7 +16,14 @@ import { streamTurn } from "@/lib/stream";
  */
 export type TurnPhase = "idle" | "working" | "clarify" | "confirm" | "done" | "error";
 
-export type ProposedAction = { label: string; action: string; reason: string };
+export type ProposedAction = {
+  label: string;
+  action: string;
+  reason: string;
+  connector?: string;
+  tool?: string;
+  arguments?: Record<string, unknown>;
+};
 
 export type TurnState = {
   phase: TurnPhase;

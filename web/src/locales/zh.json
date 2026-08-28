@@ -50,7 +50,8 @@
     "confirm": "是，记录此项",
     "confirming": "正在记录…",
     "notThis": "不是这项",
-    "confirmed": "已确认"
+    "confirmed": "已确认",
+    "putOnCalendar": "放到日历上"
   },
   "documents": {
     "heading": "您的文档",
@@ -216,6 +217,9 @@
     "welcomeSkipped": "欢迎回来{{who}}。问我一件事，或选一个起点。",
     "welcomeGeneric": "欢迎回来{{who}}。问我一件事，或纠正我——我从纠正里学到的，比从请求里多。",
     "askHere": "提问，或纠正它…"
+  },
+  "plan": {
+    "heading": "计划"
   },
   "watchers": {
     "empty": "它会盯着某件事，并在任何不可逆操作前停下来。",

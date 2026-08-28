@@ -14,6 +14,7 @@ export function ConfirmGate({
   declineLabel,
   busy = false,
   status,
+  dialogLabel = "Confirm before acting",
   onConfirm,
   onDecline,
 }: {
@@ -23,13 +24,14 @@ export function ConfirmGate({
   declineLabel: string;
   busy?: boolean;
   status?: string | null;
+  dialogLabel?: string;
   onConfirm: () => void;
   onDecline: () => void;
 }) {
   return (
     <div
       role="alertdialog"
-      aria-label="Confirm before creating"
+      aria-label={dialogLabel}
       aria-live="assertive"
       className="rounded-brand border-2 border-destructive/40 bg-destructive/5 p-4"
     >

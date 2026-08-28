@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { Link } from "react-router";
 import { useT } from "@/app/i18n";
-import { ArrowRight, Check, ExternalLink, Loader2 } from "lucide-react";
+import { ArrowRight, ExternalLink, Loader2 } from "lucide-react";
 import type { LifeContext, OnboardingJob } from "@alltheway/contracts";
 
 import { Button } from "@/components/ui/button";
@@ -34,6 +34,7 @@ import { LanguageOffer } from "@/app/LanguageChoice";
 import { CompanionConversation } from "@/app/CompanionPanel";
 import { useCompanionThread } from "@/app/companion-thread";
 import { DocumentPickup, askAboutAdded } from "@/app/Documents";
+import { PlanStack } from "@/app/PlanStack";
 import { BillingReturnBanner } from "@/app/Usage";
 
 type HomeData = {
@@ -355,26 +356,9 @@ function ContinueCard({ plan }: { plan: SessionDetail }) {
         </span>
       </div>
 
-      <ul className="mt-4 space-y-2.5">
-        {plan.plan.map((step) => (
-          <li key={step.label} className="flex items-center gap-2.5 text-[14px]">
-            <span
-              aria-hidden="true"
-              className={cn(
-                "grid size-[18px] shrink-0 place-items-center rounded-[6px] border",
-                step.done
-                  ? "border-primary bg-primary text-primary-foreground"
-                  : "bg-background",
-              )}
-            >
-              {step.done ? <Check className="size-3" strokeWidth={3} /> : null}
-            </span>
-            <span className={cn(step.done && "text-muted-foreground line-through")}>
-              {step.label}
-            </span>
-          </li>
-        ))}
-      </ul>
+      <div className="mt-4">
+        <PlanStack steps={plan.plan} />
+      </div>
 
       <Button
         render={<Link to={`/app/work/${plan.id}`} />}

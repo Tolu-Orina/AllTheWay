@@ -1,5 +1,6 @@
 import { FieldValue } from "firebase-admin/firestore";
 import {
+  PlanStepSchema,
   SessionDetailSchema,
   SessionSchema,
   type PlanStep,
@@ -38,14 +39,12 @@ export function clipTitle(utterance: string): string {
 
 function asPlan(value: unknown): PlanStep[] {
   if (!Array.isArray(value)) return [];
-  return value
-    .filter((step): step is Record<string, unknown> => !!step && typeof step === "object")
-    .filter((step) => typeof step.label === "string")
-    .map((step) => ({
-      label: step.label as string,
-      done: step.done === true,
-      action: typeof step.action === "string" ? step.action : "",
-    }));
+  const out: PlanStep[] = [];
+  for (const step of value) {
+    const parsed = PlanStepSchema.safeParse(step);
+    if (parsed.success) out.push(parsed.data);
+  }
+  return out;
 }
 
 function planFields(plan: PlanStep[]) {

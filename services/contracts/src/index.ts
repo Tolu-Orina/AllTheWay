@@ -14,7 +14,7 @@ import { z } from "zod";
 
 export const PlanStepSchema = z.object({
   label: z.string(),
-  done: z.boolean(),
+  done: z.boolean().default(false),
   /**
    * What this step would change outside the conversation, if anything.
    * Empty means it changes nothing. A non-empty value is what makes the
@@ -435,7 +435,19 @@ export const DigestSchema = z.object({
   sentAt: z.string().nullable(),
 });
 
-/** Errors carry a stable code the client can branch on, plus prose for a human. */
+export const ActOutcomeSchema = z.object({
+  label: z.string(),
+  connector: z.string(),
+  tool: z.string(),
+  /** "done", "refused", "skipped", or "failed". */
+  did: z.string(),
+  detail: z.string(),
+});
+
+export const DecisionResultSchema = z.object({
+  id: z.string(),
+  did: z.array(ActOutcomeSchema).default([]),
+});
 export const ApiErrorSchema = z.object({
   code: z.enum([
     "unauthenticated",
@@ -449,6 +461,8 @@ export const ApiErrorSchema = z.object({
 });
 
 export type PlanStep = z.infer<typeof PlanStepSchema>;
+export type ActOutcome = z.infer<typeof ActOutcomeSchema>;
+export type DecisionResult = z.infer<typeof DecisionResultSchema>;
 export type Session = z.infer<typeof SessionSchema>;
 export type SessionDetail = z.infer<typeof SessionDetailSchema>;
 export type Ceiling = z.infer<typeof CeilingSchema>;

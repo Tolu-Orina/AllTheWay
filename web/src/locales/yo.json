@@ -50,7 +50,8 @@
     "confirm": "Bẹ́ẹ̀ni, kọ èyí sílẹ̀",
     "confirming": "Ó ń kọ sílẹ̀…",
     "notThis": "Kì í ṣe èyí",
-    "confirmed": "A ti fọwọ́sí"
+    "confirmed": "A ti fọwọ́sí",
+    "putOnCalendar": "Fi sí kalẹ́ndà"
   },
   "documents": {
     "heading": "Àwọn àkọsílẹ̀ rẹ",
@@ -216,6 +217,9 @@
     "welcomeSkipped": "Welcome back{{who}}. Ask me for something, or pick a starting job.",
     "welcomeGeneric": "Welcome back{{who}}. Ask me for something, or correct me — I learn from the corrections more than the requests.",
     "askHere": "Ask, or correct it…"
+  },
+  "plan": {
+    "heading": "Ètò"
   },
   "watchers": {
     "empty": "It watches something and stops before anything irreversible.",

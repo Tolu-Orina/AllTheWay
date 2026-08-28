@@ -56,7 +56,8 @@
     "confirm": "Sí, registrar esto",
     "confirming": "Registrando…",
     "notThis": "Esto no",
-    "confirmed": "Confirmado"
+    "confirmed": "Confirmado",
+    "putOnCalendar": "Poner en el calendario"
   },
   "documents": {
     "heading": "Tus documentos",
@@ -222,6 +223,9 @@
     "welcomeSkipped": "Hola de nuevo{{who}}. Pídeme algo, o elige por dónde empezar.",
     "welcomeGeneric": "Hola de nuevo{{who}}. Pídeme algo, o corrígeme — aprendo más de las correcciones que de las peticiones.",
     "askHere": "Pregunta, o corrígelo…"
+  },
+  "plan": {
+    "heading": "Plan"
   },
   "watchers": {
     "empty": "Vigila algo y se detiene antes de cualquier cosa irreversible.",

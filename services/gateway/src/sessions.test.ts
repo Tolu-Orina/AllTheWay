@@ -108,6 +108,28 @@ test("touching without a plan does not wipe one that was already stored", emulat
   assert.equal(detail?.companionNote, "Reuse the 2025 phrasing.");
 });
 
+test("a stored plan keeps the call the person was shown", emulated, async () => {
+  const id = `call-${Date.now()}`;
+  await touchSession(UID, id, {
+    utterance: "Lunch with Ana tomorrow",
+    plan: [
+      {
+        label: "Put lunch on the calendar",
+        done: false,
+        action: "create_task",
+        connector: "google_calendar",
+        tool: "create_event",
+        arguments: { title: "Lunch with Ana" },
+      },
+    ],
+  });
+
+  const detail = await getSession(UID, id);
+  assert.equal(detail?.plan[0]?.connector, "google_calendar");
+  assert.equal(detail?.plan[0]?.tool, "create_event");
+  assert.equal((detail?.plan[0]?.arguments as { title?: string })?.title, "Lunch with Ana");
+});
+
 test("an empty plan still stores total 1 so the detail schema can parse", emulated, async () => {
   const id = `empty-${Date.now()}`;
   await ensureSession(UID, id);

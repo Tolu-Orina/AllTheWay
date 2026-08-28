@@ -54,6 +54,20 @@ def test_empty_plan_falls_back_to_a_question():
     assert r.decision == "clarify"
 
 
+def test_a_schedule_step_names_the_calendar_call():
+    r = turn("Schedule lunch with Ana tomorrow please")
+    calls = [s for s in r.plan if s.connector]
+    assert calls, "a schedule request must name the calendar call, not only a severity"
+    assert calls[0].connector == "google_calendar"
+    assert calls[0].tool == "create_event"
+
+
+def test_an_email_step_names_a_gmail_draft():
+    r = turn("Email the Northwind proposal to Ana today")
+    step = next(s for s in r.plan if s.connector == "google_gmail")
+    assert step.tool == "create_draft"
+
+
 def test_a_document_turn_returns_citations_with_the_retrieved_passage():
     # FR-D2: the citation is the passage that was in the prompt, not a later
     # fetch, and it does not carry a uid.

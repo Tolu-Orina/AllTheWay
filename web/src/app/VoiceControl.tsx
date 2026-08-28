@@ -3,6 +3,9 @@ import { Mic, MicOff, Loader2, Square } from "lucide-react";
 import { useVoice } from "@/app/use-voice";
 import { useT } from "@/app/i18n";
 import { cn } from "@/lib/utils";
+import { ConfirmGate } from "@/app/ConfirmGate";
+import { PlanStack } from "@/app/PlanStack";
+import { useDecision } from "@/app/use-decision";
 
 /**
  * Talk to the companion. The socket goes to our gateway; the model credential
@@ -112,8 +115,11 @@ export function VoiceControl({
 
 export function VoiceCaptions() {
   const voice = useVoice();
+  const { decide, status: decisionStatus } = useDecision(voice.sessionId);
   if (voice.status !== "live" && voice.status !== "error") return null;
   if (!voice.userText && !voice.modelText && !voice.turn) return null;
+
+  const confirming = voice.turn?.decision === "confirm";
 
   return (
     <div className="px-4 pb-2">
@@ -132,6 +138,36 @@ export function VoiceCaptions() {
       ) : null}
       {voice.turn?.question ? (
         <p className="mt-1.5">{voice.turn.question}</p>
+      ) : null}
+      {voice.turn?.plan?.length ? (
+        <div className="mt-2">
+          <PlanStack steps={voice.turn.plan} />
+        </div>
+      ) : null}
+      {confirming ? (
+        <div className="mt-2">
+          <ConfirmGate
+            summary={voice.turn?.summary ?? "Should I go ahead?"}
+            actions={voice.turn?.actions ?? []}
+            confirmLabel={voice.turn?.options?.[0] ?? "Yes, go ahead"}
+            declineLabel={voice.turn?.options?.[1] ?? "No, stop"}
+            status={decisionStatus}
+            onConfirm={() =>
+              void decide("confirmed", {
+                summary: voice.turn?.summary ?? "Should I go ahead?",
+                actions: voice.turn?.actions ?? [],
+                modality: "voice",
+              })
+            }
+            onDecline={() =>
+              void decide("declined", {
+                summary: voice.turn?.summary ?? "Should I go ahead?",
+                actions: voice.turn?.actions ?? [],
+                modality: "voice",
+              })
+            }
+          />
+        </div>
       ) : null}
     </div>
     </div>

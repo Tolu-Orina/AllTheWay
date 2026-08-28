@@ -12,9 +12,10 @@ import { useAuth } from "@/auth/useAuth";
 import { api } from "@/app/data";
 import { useT } from "@/app/i18n";
 import { useAsync } from "@/app/use-async";
+import { useDecision } from "@/app/use-decision";
 import { useTurn, type ProposedAction, type TurnPhase } from "@/app/use-turn";
 import { COMPANION_SESSION_ID } from "@/app/work-id";
-import type { Citation, OnboardingJob } from "@alltheway/contracts";
+import type { Citation, OnboardingJob, PlanStep } from "@alltheway/contracts";
 
 export type CompanionMessage = {
   id: number;
@@ -25,6 +26,7 @@ export type CompanionMessage = {
   options?: string[];
   actions?: ProposedAction[];
   citations?: Citation[];
+  steps?: PlanStep[];
 };
 
 type CompanionThread = {
@@ -34,8 +36,14 @@ type CompanionThread = {
   send: (text: string) => void;
   working: boolean;
   trace: string[];
+  steps: PlanStep[];
   job: OnboardingJob | null;
   refreshOnboarding: () => void;
+  decide: (
+    kind: "confirmed" | "declined",
+    body: { summary: string; actions: ProposedAction[] },
+  ) => Promise<void>;
+  decisionStatus: string | null;
 };
 
 const Context = createContext<CompanionThread | null>(null);
@@ -68,6 +76,9 @@ export function CompanionThreadProvider({ children }: { children: React.ReactNod
   const welcome = t(welcomeKey(job), { who });
 
   const { turn, send: runTurn } = useTurn(COMPANION_SESSION_ID);
+  const { decide, reset: resetDecision, status: decisionStatus } = useDecision(
+    COMPANION_SESSION_ID,
+  );
   const [history, setHistory] = useState<CompanionMessage[]>(() => [
     { id: 1, role: "agent", text: welcome },
   ]);
@@ -118,6 +129,7 @@ export function CompanionThreadProvider({ children }: { children: React.ReactNod
         options: turn.options,
         actions: turn.actions,
         citations: turn.citations,
+        steps: turn.steps.length ? turn.steps : undefined,
       },
     ]);
   }, [turn]);
@@ -132,9 +144,10 @@ export function CompanionThreadProvider({ children }: { children: React.ReactNod
         { id: prev.length + 1, role: "user", text: trimmed },
       ]);
       setDraft("");
+      resetDecision();
       void runTurn(trimmed);
     },
-    [runTurn, turn.phase],
+    [runTurn, turn.phase, resetDecision],
   );
 
   const value = useMemo<CompanionThread>(
@@ -145,10 +158,13 @@ export function CompanionThreadProvider({ children }: { children: React.ReactNod
       send,
       working: turn.phase === "working",
       trace: turn.trace,
+      steps: turn.steps,
       job,
       refreshOnboarding,
+      decide,
+      decisionStatus,
     }),
-    [history, draft, send, turn.phase, turn.trace, job, refreshOnboarding],
+    [history, draft, send, turn.phase, turn.trace, turn.steps, job, refreshOnboarding, decide, decisionStatus],
   );
 
   return <Context.Provider value={value}>{children}</Context.Provider>;

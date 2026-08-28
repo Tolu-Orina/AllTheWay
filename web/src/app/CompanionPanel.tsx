@@ -22,6 +22,8 @@ import { askAboutAdded, DOCUMENT_ACCEPT, DOCUMENT_MAX_BYTES } from "@/app/Docume
 import { Recovery } from "@/app/Recovery";
 import { failureKindFrom } from "@alltheway/contracts";
 import { CitationChip } from "@/app/CitationChip";
+import { ConfirmGate } from "@/app/ConfirmGate";
+import { PlanStack } from "@/app/PlanStack";
 import { useCompanionThread } from "@/app/companion-thread";
 import { cn } from "@/lib/utils";
 import { VoiceCaptions, VoiceControl } from "@/app/VoiceControl";
@@ -42,7 +44,7 @@ const DOCKED_FROM = "(min-width: 80rem)";
  * render the same thread rather than two implementations that drift.
  */
 export function CompanionConversation({ autoFocus = false }: { autoFocus?: boolean }) {
-  const { messages, send, working } = useCompanionThread();
+  const { messages, send, working, steps, decide, decisionStatus } = useCompanionThread();
   // Recovery rows are keyed by turn. Message ids are numbers and restart with
   // each thread, so they are scoped by the session in the path — otherwise two
   // different sessions would write recovery offers under the same id.
@@ -73,7 +75,7 @@ export function CompanionConversation({ autoFocus = false }: { autoFocus?: boole
             {m.role === "agent" ? (
               <LogoMark className="mt-0.5 size-6 shrink-0" />
             ) : null}
-            <div className="max-w-[15rem]">
+            <div className="max-w-[19rem]">
               <p
                 className={cn(
                   "rounded-brand px-3 py-2 text-[13.5px] leading-relaxed",
@@ -87,7 +89,38 @@ export function CompanionConversation({ autoFocus = false }: { autoFocus?: boole
                 {m.text}
               </p>
 
-              {m.actions?.length ? (
+              {m.steps?.length ? (
+                <div className="mt-2">
+                  <PlanStack steps={m.steps} />
+                </div>
+              ) : null}
+
+              {m.phase === "confirm" && m.id === last?.id ? (
+                <div className="mt-2">
+                  <ConfirmGate
+                    summary={m.text}
+                    actions={m.actions ?? []}
+                    confirmLabel={m.options?.[0] ?? "Yes, go ahead"}
+                    declineLabel={m.options?.[1] ?? "No, stop"}
+                    busy={working}
+                    status={decisionStatus}
+                    onConfirm={() =>
+                      void decide("confirmed", {
+                        summary: m.text,
+                        actions: m.actions ?? [],
+                      })
+                    }
+                    onDecline={() =>
+                      void decide("declined", {
+                        summary: m.text,
+                        actions: m.actions ?? [],
+                      })
+                    }
+                  />
+                </div>
+              ) : null}
+
+              {m.actions?.length && m.phase !== "confirm" ? (
                 <ul className="mt-1.5 flex flex-col gap-1">
                   {m.actions.map((a) => (
                     <li
@@ -138,7 +171,7 @@ export function CompanionConversation({ autoFocus = false }: { autoFocus?: boole
           </motion.div>
         ))}
 
-        {last?.role === "agent" && last.options?.length ? (
+        {last?.role === "agent" && last.phase === "clarify" && last.options?.length ? (
           <div className="flex flex-wrap gap-2 pl-[34px]">
             {last.options.map((option) => (
               <button
@@ -155,16 +188,24 @@ export function CompanionConversation({ autoFocus = false }: { autoFocus?: boole
         ) : null}
 
         {working ? (
-          <p
-            role="status"
-            className="flex items-center gap-2 pl-[34px] text-[12.5px] text-muted-foreground"
-          >
-            <Loader2
-              className="size-3.5 animate-spin motion-reduce:animate-none"
-              aria-hidden="true"
-            />
-            Thinking…
-          </p>
+          <div className="pl-[34px]">
+            {steps.length > 0 ? (
+              <div className="max-w-[18rem]">
+                <PlanStack steps={steps} live />
+              </div>
+            ) : (
+              <p
+                role="status"
+                className="flex items-center gap-2 text-[12.5px] text-muted-foreground"
+              >
+                <Loader2
+                  className="size-3.5 animate-spin motion-reduce:animate-none"
+                  aria-hidden="true"
+                />
+                Thinking…
+              </p>
+            )}
+          </div>
         ) : null}
 
         <div ref={endRef} />

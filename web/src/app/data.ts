@@ -7,6 +7,7 @@ import {
   ShareSchema,
   CommentSchema,
   SharedArtifactSchema,
+  DecisionResultSchema,
   DigestSchema,
   OnboardingSchema,
   SessionDetailSchema,
@@ -198,7 +199,7 @@ export const api = {
       modality?: "voice" | "text";
       confidence?: number;
     },
-  ) => apiPost(`/sessions/${encodeURIComponent(sessionId)}/decision`, body),
+  ) => apiPost(`/sessions/${encodeURIComponent(sessionId)}/decision`, body, DecisionResultSchema),
 
   /**
    * Connected accounts.

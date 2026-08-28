@@ -56,7 +56,8 @@
     "confirm": "Oui, enregistrer ceci",
     "confirming": "Enregistrement…",
     "notThis": "Pas celui-ci",
-    "confirmed": "Confirmé"
+    "confirmed": "Confirmé",
+    "putOnCalendar": "Mettre au calendrier"
   },
   "documents": {
     "heading": "Vos documents",
@@ -222,6 +223,9 @@
     "welcomeSkipped": "Bon retour{{who}}. Demandez-moi quelque chose, ou choisissez par où commencer.",
     "welcomeGeneric": "Bon retour{{who}}. Demandez-moi quelque chose, ou corrigez-moi — j'apprends plus des corrections que des demandes.",
     "askHere": "Demandez, ou corrigez…"
+  },
+  "plan": {
+    "heading": "Plan"
   },
   "watchers": {
     "empty": "Il surveille quelque chose et s'arrête avant tout acte irréversible.",
