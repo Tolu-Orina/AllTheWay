@@ -179,8 +179,33 @@ export function CompanionThreadProvider({ children }: { children: React.ReactNod
 
   const send = useCallback(
     (text: string) => {
-      const trimmed = text.trim();
+      let trimmed = text.trim();
       if (!trimmed || turn.phase === "working") return;
+
+      const lastAgent = [...history].reverse().find((m) => m.role === "agent");
+      if (lastAgent?.phase === "clarify" && lastAgent.options?.length) {
+        const numbered = /^(\d+)$/.exec(trimmed);
+        if (numbered) {
+          const picked = lastAgent.options[Number(numbered[1]) - 1];
+          if (picked) trimmed = picked;
+        }
+      }
+      if (
+        lastAgent?.phase === "confirm" &&
+        lastAgent.actions?.length &&
+        /^(1|y|yes|ok|go ahead|do it)$/i.test(trimmed)
+      ) {
+        setHistory((prev) => [
+          ...prev,
+          { id: prev.length + 1, role: "user", text: trimmed },
+        ]);
+        setDraft("");
+        void decide("confirmed", {
+          summary: lastAgent.text,
+          actions: lastAgent.actions,
+        });
+        return;
+      }
 
       setHistory((prev) => [
         ...prev,
@@ -190,7 +215,7 @@ export function CompanionThreadProvider({ children }: { children: React.ReactNod
       resetDecision();
       void runTurn(trimmed);
     },
-    [runTurn, turn.phase, resetDecision],
+    [runTurn, turn.phase, resetDecision, history, decide],
   );
 
   const openCompanion = useCallback(() => {

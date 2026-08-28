@@ -72,6 +72,12 @@ class TurnRequest(BaseModel):
     #: Labelled in the prompt, never concatenated into the user's message.
     lookups: list[str] = Field(default_factory=list)
 
+    #: Recent bubbles in this session, already fetched by the gateway.
+    #:
+    #: Without these, a follow-up ("anime", "1", "decide on one") is planned
+    #: as if it were the whole request, and the clarify gate interviews forever.
+    recent_thread: list[str] = Field(default_factory=list)
+
 
 class Passage(BaseModel):
     """One retrieved chunk. `chunk_id` is what a citation points at."""

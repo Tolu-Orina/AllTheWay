@@ -10,6 +10,7 @@ import {
   listSessions,
   touchSession,
   appendThread,
+  conversationContext,
   VOICE_TITLE,
 } from "./repos/sessions.js";
 
@@ -46,6 +47,21 @@ test("clipTitle collapses whitespace and caps at 80 characters", () => {
   assert.equal(clipTitle("  hello\nworld  "), "hello world");
   assert.equal(clipTitle("a".repeat(90)).length, 80);
   assert.equal(clipTitle("   "), "");
+});
+
+test("conversationContext keeps role, text, and options for the planner", () => {
+  const lines = conversationContext([
+    { role: "user", text: "I want to generate an image.", at: "2026-01-01T00:00:00.000Z" },
+    {
+      role: "agent",
+      text: "What kind of image?",
+      at: "2026-01-01T00:00:01.000Z",
+      options: ["Anime character illustration", "A landscape"],
+    },
+  ]);
+  assert.equal(lines[0], "user: I want to generate an image.");
+  assert.equal(lines[1], "agent: What kind of image?");
+  assert.equal(lines[2], "options: Anime character illustration | A landscape");
 });
 
 test("a first turn materialises a parent the list query can see", emulated, async () => {

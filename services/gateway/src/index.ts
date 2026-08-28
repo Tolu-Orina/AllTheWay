@@ -18,6 +18,7 @@ import {
   listSessions,
   touchSession,
   appendThread,
+  conversationContext,
 } from "./repos/sessions.js";
 import { listPreferences, revertPreference } from "./repos/preferences.js";
 import { listVisualPreferences, revertVisualPreference } from "./repos/visual.js";
@@ -360,13 +361,14 @@ api.get(
     // Preferences and passages are both context the orchestrator cannot fetch
     // for itself — it is stateless, and only this service can scope a request
     // to a user. Fetched together so a turn makes one round of reads.
-    const [prefs, passages, lookups] = await Promise.all([
+    const sessionId = param(req, "id");
+    const [prefs, passages, lookups, session] = await Promise.all([
       listPreferences(req.uid!),
       retrieve(req.uid!, message),
       connectedLookups(req.uid!, message),
+      getSession(req.uid!, sessionId),
     ]);
     const stream = openStream(req, res);
-    const sessionId = param(req, "id");
     const steps: PlanStep[] = [];
     let note = "";
     let phase: ThreadMessage["phase"] = "done";
@@ -389,6 +391,7 @@ api.get(
         knownPreferences: prefs.map((p) => p.now),
         passages,
         lookups,
+        thread: conversationContext(session?.thread ?? []),
       })) {
         if (event.kind === "step") steps.push(event.step);
         if (event.kind === "done") {
@@ -463,13 +466,14 @@ api.post(
     // Preferences and passages are both context the orchestrator cannot fetch
     // for itself — it is stateless, and only this service can scope a request
     // to a user. Fetched together so a turn makes one round of reads.
-    const [prefs, passages, lookups] = await Promise.all([
+    const sessionId = param(req, "id");
+    const [prefs, passages, lookups, session] = await Promise.all([
       listPreferences(req.uid!),
       retrieve(req.uid!, body.data.message),
       connectedLookups(req.uid!, body.data.message),
+      getSession(req.uid!, sessionId),
     ]);
 
-    const sessionId = param(req, "id");
     await rememberWork(req.uid!, sessionId, { utterance: body.data.message });
     await rememberThread(req.uid!, sessionId, [
       { role: "user", text: body.data.message, at: isoNow() },
@@ -482,6 +486,7 @@ api.post(
       knownPreferences: prefs.map((p) => p.now),
       passages,
       lookups,
+      thread: conversationContext(session?.thread ?? []),
     });
 
     const companionNote =

@@ -60,6 +60,7 @@ class FakeProvider:
     #: this call is the informed plan, so the steps differ -- which is what makes
     #: "the research changed the plan" observable rather than asserted.
     FINDING_MARKER = "A research cell investigated this and found:"
+    THREAD_MARKER = "RECENT CONVERSATION in this session, oldest first"
 
     #: Words that make a request side-effecting, and what they would do. A real
     #: model judges this; the fake uses a rule so tests assert the *gate's*
@@ -115,6 +116,18 @@ class FakeProvider:
             }
 
         too_vague = len(lowered.split()) < 4 or any(v in lowered for v in self.VAGUE)
+        # A follow-up in a thread is an answer, not a new empty request. The
+        # three-word "anime character illustration" is why image generation used
+        # to interview forever when the planner saw only the latest bubble.
+        if self.THREAD_MARKER in system:
+            too_vague = False
+
+        thread_tail = (
+            system.split(self.THREAD_MARKER, 1)[-1].lower()
+            if self.THREAD_MARKER in system
+            else ""
+        )
+        wants_image = "image" in lowered or "image" in thread_tail
 
         if too_vague:
             return {
@@ -143,6 +156,17 @@ class FakeProvider:
             if act
             else {"label": "Review together", "action": ""}
         )
+        if wants_image:
+            prompt = user.strip()
+            if self.THREAD_MARKER in system:
+                prompt = f"{system.split(self.THREAD_MARKER, 1)[-1][-200:].strip()} {prompt}".strip()
+            steps[-1] = {
+                "label": "Generate the image",
+                "action": "create_task",
+                "connector": "media",
+                "tool": "generate_image",
+                "arguments": {"prompt": prompt[:400], "style": ""},
+            }
 
         # Cite the first retrieved chunk so the closing payload can be asserted
         # without Vertex. The real model chooses; grounding still checks.

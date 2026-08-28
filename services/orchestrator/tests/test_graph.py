@@ -166,3 +166,70 @@ def test_passages_are_in_the_system_context_and_are_not_research():
     assert "The indemnity is capped at two million pounds." not in spy.user
     assert "What does the supply agreement say" in spy.user
 
+
+def test_recent_thread_is_in_the_system_context_not_the_user_message():
+    class Spy:
+        def __init__(self):
+            self.system = ""
+            self.user = ""
+
+        def structured(self, system, user, schema_hint):
+            self.system = system
+            self.user = user
+            return {
+                "decision": "plan",
+                "needsResearch": False,
+                "steps": [
+                    {
+                        "label": "Generate the image",
+                        "action": "create_task",
+                        "connector": "media",
+                        "tool": "generate_image",
+                        "arguments": {"prompt": "anime character illustration", "style": ""},
+                    }
+                ],
+                "note": "I will generate that.",
+            }
+
+    spy = Spy()
+    run_turn(
+        TurnRequest(
+            session_id="s1",
+            user_id="u1",
+            message="Anime character illustration",
+            recent_thread=[
+                "user: I want to generate an image.",
+                "agent: What kind of image would you like?",
+            ],
+        ),
+        spy,
+    )
+    assert "RECENT CONVERSATION" in spy.system
+    assert "I want to generate an image." in spy.system
+    assert "I want to generate an image." not in spy.user
+    assert spy.user == "Anime character illustration"
+
+
+def test_a_short_image_follow_up_plans_generate_image_instead_of_clarifying():
+    r = run_turn(
+        TurnRequest(
+            session_id="s1",
+            user_id="u1",
+            message="Anime character illustration",
+            recent_thread=[
+                "user: I want to generate an image.",
+                "agent: What kind of image would you like?",
+            ],
+        ),
+        FakeProvider(),
+    )
+    assert r.decision in ("plan", "confirm")
+    assert r.clarify is None
+    image = next(s for s in r.plan if s.tool == "generate_image")
+    assert image.connector == "media"
+
+
+def test_three_words_without_a_thread_still_hit_the_clarify_gate():
+    r = turn("Anime character illustration")
+    assert r.decision == "clarify"
+

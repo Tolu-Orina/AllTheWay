@@ -9,7 +9,7 @@ import { listPreferences } from "../repos/preferences.js";
 import { READ_TOOL_NAMES, runReadTool } from "./tools.js";
 import { readUsage, recordUsage } from "../repos/usage.js";
 import { recordLine } from "../repos/transcripts.js";
-import { ensureSession, touchSession, VOICE_TITLE } from "../repos/sessions.js";
+import { ensureSession, getSession, touchSession, VOICE_TITLE, conversationContext } from "../repos/sessions.js";
 import { createLiveOpener, type LiveOpener } from "./backend.js";
 import {
   AUTH_TIMEOUT_MS,
@@ -327,12 +327,16 @@ async function runPlanTurn(opts: {
   }
 
   try {
-    const prefs = await listPreferences(uid);
+    const [prefs, session] = await Promise.all([
+      listPreferences(uid),
+      getSession(uid, sessionId),
+    ]);
     const result = await runTurn({
       sessionId,
       userId: uid,
       message: request,
       knownPreferences: prefs.map((p) => p.now),
+      thread: conversationContext(session?.thread ?? []),
     });
     if (cancelled.has(call.id)) return;
     const companionNote =

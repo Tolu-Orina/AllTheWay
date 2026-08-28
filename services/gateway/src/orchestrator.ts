@@ -77,6 +77,13 @@ export type TurnInput = {
    * connector grant. Empty when the utterance did not ask for a lookup.
    */
   lookups?: string[];
+  /**
+   * Recent bubbles in this session, already stored.
+   *
+   * The orchestrator is stateless. Without these, a follow-up is planned as
+   * if it were the whole request, and generate-an-image interviews forever.
+   */
+  thread?: string[];
 };
 
 /** Parts are a tagged union; pull out the structured `data` payloads. */
@@ -150,6 +157,7 @@ function buildMessage(input: TurnInput): Message {
       // document said — they are not equally trustworthy.
       passages: input.passages ?? [],
       lookups: input.lookups ?? [],
+      thread: input.thread ?? [],
     },
     extensions: [],
     referenceTaskIds: [],

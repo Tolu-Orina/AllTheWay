@@ -62,6 +62,30 @@ function asThread(value: unknown): ThreadMessage[] {
 /** Last N bubbles. A session document must stay well under Firestore's 1 MB. */
 const THREAD_CAP = 80;
 
+/** How much of the thread the planner sees. Enough to answer a follow-up, not an archive. */
+const PLANNER_THREAD = 12;
+const LINE_CAP = 400;
+
+/**
+ * The recent conversation, as lines the orchestrator can put in system context.
+ *
+ * Each turn used to send only the latest bubble. "Anime character illustration"
+ * then looked like a new request with no subject, so the clarify gate asked
+ * again — and again — and the image never started.
+ */
+export function conversationContext(thread: ThreadMessage[]): string[] {
+  const lines: string[] = [];
+  for (const m of thread.slice(-PLANNER_THREAD)) {
+    const text = m.text.trim();
+    if (!text) continue;
+    lines.push(`${m.role}: ${text.length <= LINE_CAP ? text : `${text.slice(0, LINE_CAP).trimEnd()}…`}`);
+    if (m.options?.length) {
+      lines.push(`options: ${m.options.join(" | ")}`);
+    }
+  }
+  return lines;
+}
+
 function planFields(plan: PlanStep[]) {
   return {
     plan,

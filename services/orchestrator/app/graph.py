@@ -92,7 +92,19 @@ SYSTEM = (
     "used by chunkId. A question those passages address is not needsResearch. "
     "Leave connector and tool empty for a step that only thinks or explains, "
     "and for a read already answered in LOOKUPS. Never invent a tool that is "
-    "not listed."
+    "not listed. "
+    # Image generation used to interview forever: each follow-up was planned
+    # with no memory of the request, so "anime character" looked too vague to
+    # act on. The recent conversation is the request. Use it.
+    "When recent conversation lines are present, this turn is a follow-up in "
+    "that thread, not a new request. A short reply, a number, an option, or "
+    "'decide' / 'go ahead' answers the last question — plan, do not interview. "
+    "A request to generate an image or draft a video is ready to plan once "
+    "the user has named a subject, a style, a scene, picked an option, or asked "
+    "you to decide. Fill remaining details yourself. Ask at most one clarifying "
+    "question for a bare 'generate an image' with no subject yet. Never ask a "
+    "second question about the same image. Name media.generate_image (or "
+    "draft_video / render_video) on that step."
 )
 
 # Field order matters. `decision` first so nothing is shown before the gate has
@@ -162,6 +174,26 @@ def _lookups_block(request: TurnRequest) -> str:
     return chr(10).join(lines)
 
 
+def _thread_block(request: TurnRequest) -> str:
+    """Recent bubbles in this session, labelled as what they are.
+
+    Same injection rule as passages: system context, never concatenated into
+    the user's message. The current turn is still `request.message` and is the
+    only thing treated as this turn's instruction.
+    """
+    if not request.recent_thread:
+        return ""
+
+    lines = [
+        "RECENT CONVERSATION in this session, oldest first. The current turn is "
+        "the user message below, not this block. A short follow-up answers the "
+        "last question in this thread — plan from it rather than treating the "
+        "follow-up as a new, empty request.",
+    ]
+    lines.extend(request.recent_thread)
+    return chr(10).join(lines)
+
+
 def _system_for(request: TurnRequest) -> tuple[str, bool]:
     prefs = "; ".join(request.known_preferences)
     passages = _passages_block(request)
@@ -172,6 +204,9 @@ def _system_for(request: TurnRequest) -> tuple[str, bool]:
         system += "\n\n" + passages
     if lookups:
         system += "\n\n" + lookups
+    thread = _thread_block(request)
+    if thread:
+        system += "\n\n" + thread
 
     if not prefs:
         return system, False

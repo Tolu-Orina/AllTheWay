@@ -41,6 +41,7 @@ PREFERENCES_KEY = "knownPreferences"
 #: the message text.
 PASSAGES_KEY = "passages"
 LOOKUPS_KEY = "lookups"
+THREAD_KEY = "thread"
 
 #: Stable ids, so appended chunks land on one artifact rather than becoming
 #: N single-part artifacts. TaskUpdater mints a fresh uuid when not told one.
@@ -136,6 +137,21 @@ def _lookups_from(context: RequestContext) -> list[str]:
     return [str(item) for item in raw if str(item).strip()]
 
 
+def _thread_from(context: RequestContext) -> list[str]:
+    """Recent conversation from message metadata, never from the text."""
+    message = getattr(context, "message", None)
+    metadata = getattr(message, "metadata", None)
+    if metadata is None:
+        return []
+    try:
+        raw = json_format.MessageToDict(metadata).get(THREAD_KEY, [])
+    except Exception:
+        return []
+    if not isinstance(raw, list):
+        return []
+    return [str(item) for item in raw if str(item).strip()]
+
+
 def _citation_wire(citation: Citation) -> dict:
     """CamelCase payload the gateway maps to SSE. No uid."""
     return {
@@ -174,6 +190,7 @@ class OrchestratorExecutor(AgentExecutor):
             known_preferences=_preferences_from(context),
             passages=_passages_from(context),
             lookups=_lookups_from(context),
+            recent_thread=_thread_from(context),
         )
 
         trace: list[str] = []
