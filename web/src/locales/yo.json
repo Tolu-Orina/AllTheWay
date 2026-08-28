@@ -86,7 +86,10 @@
     "unmute": "Gbọ́ lẹ́ẹ̀kan síi",
     "muted": "Kò gbọ́",
     "micDenied": "A nílò àṣẹ gbohùngbohùn láti sọ̀rọ̀.",
-    "unavailable": "Ohùn kò sí ní àkókò yìí. O lè máa tẹ̀wé lọ."
+    "unavailable": "Ohùn kò sí ní àkókò yìí. O lè máa tẹ̀wé lọ.",
+    "you": "Ìwọ.",
+    "listening": "Ń gbọ́…",
+    "captions": "Ohun tí a ṣẹ̀ṣẹ̀ sọ"
   },
   "share": {
     "heading": "Pín",

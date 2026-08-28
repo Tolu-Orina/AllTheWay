@@ -92,7 +92,10 @@
     "cancelConnecting": "Cancelar conexión",
     "startSession": "Iniciar sesión de voz",
     "micDenied": "Se necesita permiso de micrófono para hablar.",
-    "unavailable": "La voz no está disponible ahora mismo. Puedes seguir escribiendo."
+    "unavailable": "La voz no está disponible ahora mismo. Puedes seguir escribiendo.",
+    "you": "Tú.",
+    "listening": "Escuchando…",
+    "captions": "Lo que se acaba de decir"
   },
   "share": {
     "heading": "Compartir",

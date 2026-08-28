@@ -1,4 +1,5 @@
 import { Mic, MicOff, Loader2, Square } from "lucide-react";
+import { useEffect, useRef } from "react";
 
 import { useVoice } from "@/app/use-voice";
 import { useT } from "@/app/i18n";
@@ -113,63 +114,99 @@ export function VoiceControl({
   );
 }
 
-export function VoiceCaptions() {
+export function VoiceCaptions({
+  variant = "live",
+  className,
+}: {
+  variant?: "live" | "log";
+  className?: string;
+}) {
+  const t = useT();
   const voice = useVoice();
   const { decide, status: decisionStatus } = useDecision(voice.sessionId);
-  if (voice.status !== "live" && voice.status !== "error") return null;
-  if (!voice.userText && !voice.modelText && !voice.turn) return null;
+  const logRef = useRef<HTMLDivElement>(null);
 
+  const live = voice.status === "live" || voice.status === "connecting";
+  const open = voice.lines.filter((l) => !l.finished);
+  const shown = variant === "log" ? voice.lines : open;
   const confirming = voice.turn?.decision === "confirm";
+  const listening = live && shown.length === 0 && !voice.turn && !voice.error;
+  const hasBody = shown.length > 0 || !!voice.turn || listening;
+
+  useEffect(() => {
+    logRef.current?.scrollTo({ top: logRef.current.scrollHeight, behavior: "smooth" });
+  }, [voice.lines, voice.turn]);
+
+  if (!hasBody) return null;
 
   return (
-    <div className="px-4 pb-2">
-    <div className="rounded-brand border bg-background px-3 py-2 text-[13px] leading-relaxed">
-      {voice.userText ? (
-        <p className="text-muted-foreground">
-          <span className="font-medium text-foreground">You. </span>
-          {voice.userText}
-        </p>
-      ) : null}
-      {voice.modelText ? (
-        <p className={cn(voice.userText && "mt-1.5")}>{voice.modelText}</p>
-      ) : null}
-      {voice.turn?.summary ? (
-        <p className="mt-1.5 font-medium">{voice.turn.summary}</p>
-      ) : null}
-      {voice.turn?.question ? (
-        <p className="mt-1.5">{voice.turn.question}</p>
-      ) : null}
-      {voice.turn?.plan?.length ? (
-        <div className="mt-2">
-          <PlanStack steps={voice.turn.plan} />
-        </div>
-      ) : null}
-      {confirming ? (
-        <div className="mt-2">
-          <ConfirmGate
-            summary={voice.turn?.summary ?? "Should I go ahead?"}
-            actions={voice.turn?.actions ?? []}
-            confirmLabel={voice.turn?.options?.[0] ?? "Yes, go ahead"}
-            declineLabel={voice.turn?.options?.[1] ?? "No, stop"}
-            status={decisionStatus}
-            onConfirm={() =>
-              void decide("confirmed", {
-                summary: voice.turn?.summary ?? "Should I go ahead?",
-                actions: voice.turn?.actions ?? [],
-                modality: "voice",
-              })
-            }
-            onDecline={() =>
-              void decide("declined", {
-                summary: voice.turn?.summary ?? "Should I go ahead?",
-                actions: voice.turn?.actions ?? [],
-                modality: "voice",
-              })
-            }
-          />
-        </div>
-      ) : null}
-    </div>
+    <div className={cn("px-4 pb-2", className)}>
+      <div
+        ref={logRef}
+        role="log"
+        aria-live="polite"
+        aria-label={t("voice.captions")}
+        className={cn(
+          "rounded-brand border bg-background px-3 py-2 text-[13px] leading-relaxed",
+          variant === "log" && "max-h-48 overflow-y-auto",
+        )}
+      >
+        {listening ? (
+          <p className="text-muted-foreground">{t("voice.listening")}</p>
+        ) : null}
+        {shown.map((line) => (
+          <p
+            key={line.id}
+            className={cn(
+              line.side === "user" ? "text-muted-foreground" : "text-foreground",
+              line.id !== shown[0]?.id && "mt-1.5",
+              !line.finished && "opacity-80",
+            )}
+          >
+            {line.side === "user" ? (
+              <span className="font-medium text-foreground">{t("voice.you")} </span>
+            ) : null}
+            {line.text}
+            {!line.finished ? (
+              <span className="ml-0.5 inline-block h-3 w-0.5 translate-y-px bg-foreground/50 motion-safe:animate-pulse" />
+            ) : null}
+          </p>
+        ))}
+        {voice.turn?.summary ? (
+          <p className="mt-1.5 font-medium">{voice.turn.summary}</p>
+        ) : null}
+        {voice.turn?.question ? <p className="mt-1.5">{voice.turn.question}</p> : null}
+        {voice.turn?.plan?.length ? (
+          <div className="mt-2">
+            <PlanStack steps={voice.turn.plan} />
+          </div>
+        ) : null}
+        {confirming ? (
+          <div className="mt-2">
+            <ConfirmGate
+              summary={voice.turn?.summary ?? "Should I go ahead?"}
+              actions={voice.turn?.actions ?? []}
+              confirmLabel={voice.turn?.options?.[0] ?? "Yes, go ahead"}
+              declineLabel={voice.turn?.options?.[1] ?? "No, stop"}
+              status={decisionStatus}
+              onConfirm={() =>
+                void decide("confirmed", {
+                  summary: voice.turn?.summary ?? "Should I go ahead?",
+                  actions: voice.turn?.actions ?? [],
+                  modality: "voice",
+                })
+              }
+              onDecline={() =>
+                void decide("declined", {
+                  summary: voice.turn?.summary ?? "Should I go ahead?",
+                  actions: voice.turn?.actions ?? [],
+                  modality: "voice",
+                })
+              }
+            />
+          </div>
+        ) : null}
+      </div>
     </div>
   );
 }

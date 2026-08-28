@@ -89,7 +89,10 @@
     "cancelConnecting": "Cancel connecting",
     "startSession": "Start a voice session",
     "micDenied": "Microphone permission is needed to talk.",
-    "unavailable": "Voice is not available right now. You can keep typing."
+    "unavailable": "Voice is not available right now. You can keep typing.",
+    "you": "You.",
+    "listening": "Listening…",
+    "captions": "What was just said"
   },
   "share": {
     "heading": "Share",

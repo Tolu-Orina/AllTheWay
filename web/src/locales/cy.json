@@ -101,7 +101,10 @@
     "cancelConnecting": "Canslo cysylltu",
     "startSession": "Dechrau sesiwn lafar",
     "micDenied": "Mae angen caniatâd meicroffon i siarad.",
-    "unavailable": "Nid yw llais ar gael ar hyn o bryd. Gallwch barhau i deipio."
+    "unavailable": "Nid yw llais ar gael ar hyn o bryd. Gallwch barhau i deipio.",
+    "you": "Chi.",
+    "listening": "Yn gwrando…",
+    "captions": "Yr hyn a ddywedwyd gynnau"
   },
   "share": {
     "heading": "Rhannu",

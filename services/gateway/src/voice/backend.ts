@@ -19,6 +19,8 @@ export type LiveEvents = {
   onInterrupted: () => void;
   onUserTranscript: (text: string, finished: boolean) => void;
   onModelTranscript: (text: string, finished: boolean) => void;
+  onTurnComplete?: () => void;
+  onResumeHandle?: (handle: string) => void;
   onToolCall: (call: { id: string; name: string; args: Record<string, unknown> }) => void;
   onToolCancel: (ids: string[]) => void;
   onError: (message: string) => void;
@@ -71,8 +73,9 @@ export function openFakeLive(opts: { events: LiveEvents }): Promise<LiveSession>
       // ~200ms of 16 kHz s16le. After that, one canned reply.
       if (heard < 16_000 * 2 * 0.2) return;
       replied = true;
-      events.onUserTranscript("testing voice locally", true);
+      // Audio first: a persist that talks to Firestore must not hold up playback.
       events.onPcm(tonePcmBase64());
+      events.onUserTranscript("testing voice locally", true);
       events.onModelTranscript(
         "This is a local voice session. The model is not connected, and nothing will be sent or changed.",
         true,
@@ -182,7 +185,6 @@ async function openVertexLive(opts: {
         }
         flushPending(ws);
       }
-      if (msg.interrupted) events.onInterrupted();
       for (const pcm of msg.pcm ?? []) events.onPcm(pcm);
       if (msg.userTranscript) {
         events.onUserTranscript(msg.userTranscript.text, msg.userTranscript.finished);
@@ -190,9 +192,14 @@ async function openVertexLive(opts: {
       if (msg.modelTranscript) {
         events.onModelTranscript(msg.modelTranscript.text, msg.modelTranscript.finished);
       }
+      if (msg.interrupted) events.onInterrupted();
+      if (msg.turnComplete) events.onTurnComplete?.();
       for (const call of msg.toolCalls ?? []) events.onToolCall(call);
       if (msg.toolCallCancellations?.length) events.onToolCancel(msg.toolCallCancellations);
-      if (msg.resumeHandle) handle = msg.resumeHandle;
+      if (msg.resumeHandle) {
+        handle = msg.resumeHandle;
+        events.onResumeHandle?.(msg.resumeHandle);
+      }
       if (msg.goAway) void reconnect("goAway");
     });
     ws.on("close", () => {

@@ -27,7 +27,7 @@ import { timeOfDay } from "@/lib/format";
 import { useAuth } from "@/auth/useAuth";
 import { Meetings } from "@/app/Meetings";
 import { cn } from "@/lib/utils";
-import { VoiceControl } from "@/app/VoiceControl";
+import { VoiceControl, VoiceCaptions } from "@/app/VoiceControl";
 import { Digest } from "@/app/Digest";
 import { LanguageOffer } from "@/app/LanguageChoice";
 import { useCompanionThread } from "@/app/companion-thread";
@@ -103,6 +103,7 @@ export default function Home() {
   return (
     <div className="flex flex-col gap-6">
       <HomeHeader day={home?.day ?? null} />
+      <VoiceCaptions variant="log" className="px-0 pb-0" />
       <BillingReturnBanner />
       <LifeTray />
 

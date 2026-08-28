@@ -11,9 +11,11 @@ import { api } from "@/app/data";
  * ## Why this is a switch and not a default
  *
  * Voice has been ephemeral: captions appeared, overwrote each other, and were
- * gone when the session closed. Turning that into a durable record is a change
- * in what this product remembers about a person — closer to a decision than a
- * feature — so it is off until someone chooses it.
+ * gone when the session closed. The live captions now keep a conversation log
+ * for the session; this switch is the separate choice to persist that log
+ * after hang-up. Turning that into a durable record is a change in what this
+ * product remembers about a person — closer to a decision than a feature —
+ * so it is off until someone chooses it.
  *
  * ## The wording says what it is for
  *

@@ -211,7 +211,7 @@ export function CompanionConversation({ autoFocus = false }: { autoFocus?: boole
         <div ref={endRef} />
       </div>
 
-      <VoiceCaptions />
+      <VoiceCaptions variant="live" />
       <CompanionComposer autoFocus={autoFocus} />
     </>
   );

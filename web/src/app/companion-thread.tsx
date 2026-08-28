@@ -34,6 +34,11 @@ type CompanionThread = {
   draft: string;
   setDraft: (text: string) => void;
   send: (text: string) => void;
+  /**
+   * Spoken line that already ran through Live — do not `send()` it or it
+   * would fire a second, typed turn.
+   */
+  recordSpoken: (role: "user" | "agent", text: string) => void;
   /** Opens the companion: docked column on xl, sheet everywhere else. */
   openCompanion: () => void;
   companionOpenNonce: number;
@@ -218,6 +223,16 @@ export function CompanionThreadProvider({ children }: { children: React.ReactNod
     [runTurn, turn.phase, resetDecision, history, decide],
   );
 
+  const recordSpoken = useCallback((role: "user" | "agent", text: string) => {
+    const trimmed = text.trim();
+    if (!trimmed) return;
+    setHistory((prev) => {
+      const last = prev[prev.length - 1];
+      if (last?.role === role && last.text === trimmed && !last.phase) return prev;
+      return [...prev, { id: prev.length + 1, role, text: trimmed }];
+    });
+  }, []);
+
   const openCompanion = useCallback(() => {
     setCompanionOpenNonce((n) => n + 1);
   }, []);
@@ -228,6 +243,7 @@ export function CompanionThreadProvider({ children }: { children: React.ReactNod
       draft,
       setDraft,
       send,
+      recordSpoken,
       openCompanion,
       companionOpenNonce,
       working: turn.phase === "working",
@@ -238,7 +254,7 @@ export function CompanionThreadProvider({ children }: { children: React.ReactNod
       decide,
       decisionStatus,
     }),
-    [history, draft, send, openCompanion, companionOpenNonce, turn.phase, turn.trace, turn.steps, job, refreshOnboarding, decide, decisionStatus],
+    [history, draft, send, recordSpoken, openCompanion, companionOpenNonce, turn.phase, turn.trace, turn.steps, job, refreshOnboarding, decide, decisionStatus],
   );
 
   return <Context.Provider value={value}>{children}</Context.Provider>;

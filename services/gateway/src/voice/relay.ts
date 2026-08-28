@@ -15,6 +15,7 @@ import {
   AUTH_TIMEOUT_MS,
   INPUT_HZ,
   OUTPUT_HZ,
+  TranscriptAccumulator,
   VOICE_PATH,
   isAuthMessage,
   isPcmMessage,
@@ -169,15 +170,44 @@ async function handleConnection(ws: WebSocket, opener: LiveOpener): Promise<void
   } = {};
 
   // Parent document first, so a conversation that only lives in a transcript
-  // subcollection is not invisible to listSessions. Title is a placeholder
-  // until the first finished user line arrives.
-  try {
-    await ensureSession(uid, sessionId, { title: VOICE_TITLE });
-  } catch (err) {
-    console.error("[voice] persist session", sessionId, err);
-  }
+  // subcollection is not invisible to listSessions. Not awaited: a slow write
+  // must not hold the socket before the person can talk — that is the hang
+  // that looks like "voice never starts".
+  void ensureSession(uid, sessionId, { title: VOICE_TITLE }).catch((err) =>
+    console.error("[voice] persist session", sessionId, err),
+  );
 
   let titled = false;
+  const captions = new TranscriptAccumulator();
+
+  const emitTranscript = (side: "user" | "model", text: string, finished: boolean) => {
+    const line = captions.push(side, text, finished);
+    send(ws, { transcript: { side, text: line.text, finished: line.finished } });
+    // Only the committed utterance. Folding happens first so a stream of
+    // deltas ("I'll" + " send") is stored as one sentence, not the last chunk.
+    //
+    // Never awaited: a slow write must not delay the caption a person is
+    // reading while they speak.
+    if (!line.finished || !line.text.trim()) return;
+    const persistText = line.text;
+    const persistSide = side;
+    const retitle = persistSide === "user" && !titled;
+    if (retitle) titled = true;
+    queueMicrotask(() => {
+      void keep(uid, sessionId, persistSide, persistText);
+      if (retitle) {
+        void touchSession(uid, sessionId, { utterance: persistText }).catch((err) =>
+          console.error("[voice] retitle session", sessionId, err),
+        );
+      }
+    });
+  };
+
+  const commitOpen = (side?: "user" | "model") => {
+    for (const line of captions.flush(side)) {
+      emitTranscript(line.side, line.text, true);
+    }
+  };
 
   try {
     slot.live = await opener({
@@ -198,29 +228,19 @@ async function handleConnection(ws: WebSocket, opener: LiveOpener): Promise<void
         },
         onInterrupted() {
           send(ws, { interrupted: true });
+          commitOpen("model");
         },
         onUserTranscript(text, finished) {
-          send(ws, { transcript: { side: "user", text, finished } });
-          // Only the finished line. The Live API refines a transcript as it
-          // goes — "I'll send", "I'll send the", "I'll send the contract" — and
-          // keeping every revision would store one sentence three times, twice
-          // of them wrong.
-          //
-          // Never awaited: a slow write must not delay the caption a person is
-          // reading while they speak.
-          if (finished) {
-            void keep(uid, sessionId, "user", text);
-            if (!titled && text.trim()) {
-              titled = true;
-              void touchSession(uid, sessionId, { utterance: text }).catch((err) =>
-                console.error("[voice] retitle session", sessionId, err),
-              );
-            }
-          }
+          emitTranscript("user", text, finished);
         },
         onModelTranscript(text, finished) {
-          send(ws, { transcript: { side: "model", text, finished } });
-          if (finished) void keep(uid, sessionId, "model", text);
+          emitTranscript("model", text, finished);
+        },
+        onTurnComplete() {
+          commitOpen();
+        },
+        onResumeHandle(handle) {
+          send(ws, { resumeHandle: handle });
         },
         onToolCall(call) {
           if (cancelled.has(call.id) || !slot.live) return;

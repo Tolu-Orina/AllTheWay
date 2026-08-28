@@ -130,9 +130,71 @@ export type RelayMessage =
   | { pcm: string }
   | { interrupted: true }
   | { transcript: { side: "user" | "model"; text: string; finished: boolean } }
+  | { resumeHandle: string }
   | { turn: unknown }
   | { error: { code: string; message: string } }
   | { closing: { reason: string } };
+
+/**
+ * Live transcriptions are streamed, not replaced.
+ *
+ * Google's own Live clients concatenate each `text` onto the current
+ * utterance (`inputTranscript += inputText`). We used to overwrite, so a
+ * phone only ever showed the last fragment — "partial conversation".
+ *
+ * Some payloads are refinements of the whole hypothesis ("I'll" → "I'll
+ * send") rather than a delta. Prefer the longer string when one is a prefix
+ * of the other; otherwise append, collapsing overlap.
+ */
+export function foldTranscript(current: string, incoming: string): string {
+  if (!incoming) return current;
+  if (!current) return incoming;
+  if (incoming === current) return incoming;
+  if (incoming.startsWith(current)) return incoming;
+  if (current.startsWith(incoming)) return current;
+  let overlap = 0;
+  const limit = Math.min(current.length, incoming.length);
+  for (let n = limit; n > 0; n--) {
+    if (current.slice(current.length - n) === incoming.slice(0, n)) {
+      overlap = n;
+      break;
+    }
+  }
+  return current + incoming.slice(overlap);
+}
+
+export class TranscriptAccumulator {
+  private user = "";
+  private model = "";
+
+  push(
+    side: "user" | "model",
+    text: string,
+    finished: boolean,
+  ): { text: string; finished: boolean } {
+    const prev = side === "user" ? this.user : this.model;
+    const next = foldTranscript(prev, text);
+    if (finished) {
+      if (side === "user") this.user = "";
+      else this.model = "";
+    } else if (side === "user") this.user = next;
+    else this.model = next;
+    return { text: next, finished };
+  }
+
+  flush(side?: "user" | "model"): { side: "user" | "model"; text: string }[] {
+    const out: { side: "user" | "model"; text: string }[] = [];
+    if (side !== "model" && this.user) {
+      out.push({ side: "user", text: this.user });
+      this.user = "";
+    }
+    if (side !== "user" && this.model) {
+      out.push({ side: "model", text: this.model });
+      this.model = "";
+    }
+    return out;
+  }
+}
 
 export function isAuthMessage(value: unknown): value is AuthMessage {
   if (!value || typeof value !== "object") return false;
@@ -275,6 +337,8 @@ function pick<T>(obj: Json, ...keys: string[]): T | undefined {
 export type ParsedServer = {
   setupComplete?: boolean;
   interrupted?: boolean;
+  turnComplete?: boolean;
+  generationComplete?: boolean;
   pcm?: string[];
   userTranscript?: { text: string; finished: boolean };
   modelTranscript?: { text: string; finished: boolean };
@@ -288,8 +352,13 @@ function transcription(value: unknown): { text: string; finished: boolean } | un
   const obj = asObject(value);
   if (!obj) return undefined;
   const text = pick<unknown>(obj, "text");
-  if (typeof text !== "string" || !text) return undefined;
-  return { text, finished: pick<unknown>(obj, "finished") === true };
+  const finished = pick<unknown>(obj, "finished") === true;
+  const str = typeof text === "string" ? text : "";
+  // `finished: true` with no new text is "commit what you have". Dropping it
+  // left the last utterance stuck as a partial, which is how a conversation
+  // looked like it stopped mid-sentence.
+  if (!str && !finished) return undefined;
+  return { text: str, finished };
 }
 
 function inlineAudio(part: unknown): string | undefined {
@@ -356,6 +425,10 @@ export function parseServerMessage(raw: unknown): ParsedServer {
   if (!server) return out;
 
   if (pick(server, "interrupted") === true) out.interrupted = true;
+  if (pick(server, "turnComplete", "turn_complete") === true) out.turnComplete = true;
+  if (pick(server, "generationComplete", "generation_complete") === true) {
+    out.generationComplete = true;
+  }
 
   const nestedIn = transcription(pick(server, "inputTranscription", "input_transcription"));
   const nestedOut = transcription(pick(server, "outputTranscription", "output_transcription"));

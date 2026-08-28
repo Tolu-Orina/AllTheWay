@@ -41,9 +41,9 @@ export function AppLayout() {
   }, []);
 
   return (
+    <CompanionThreadProvider>
     <VoiceProvider>
     <LifeAlertsProvider>
-    <CompanionThreadProvider>
     <SidebarProvider>
       <div className="relative isolate flex min-h-dvh flex-col bg-background lg:flex-row">
       <Ambient />
@@ -91,8 +91,8 @@ export function AppLayout() {
       <TabBar />
       </div>
     </SidebarProvider>
-    </CompanionThreadProvider>
     </LifeAlertsProvider>
     </VoiceProvider>
+    </CompanionThreadProvider>
   );
 }

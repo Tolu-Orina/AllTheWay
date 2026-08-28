@@ -10,9 +10,10 @@ import {
 import { useLocation } from "react-router";
 
 import { PlanStepSchema, type PlanStep } from "@alltheway/contracts";
-import { openVoiceSocket, type VoiceSocket } from "@/lib/voice";
+import { openVoiceSocket, applyVoiceCaption, type VoiceLine, type VoiceSocket } from "@/lib/voice";
 import { useT } from "@/app/i18n";
 import { resolveVoiceSessionId } from "@/app/work-id";
+import { useCompanionThread } from "@/app/companion-thread";
 
 export type VoiceStatus = "idle" | "connecting" | "live" | "error";
 
@@ -29,8 +30,7 @@ export type VoiceTurn = {
 type VoiceState = {
   status: VoiceStatus;
   error: string;
-  userText: string;
-  modelText: string;
+  lines: VoiceLine[];
   fake: boolean;
   turn: VoiceTurn | null;
   sessionId: string;
@@ -51,10 +51,10 @@ export function useVoice(): VoiceState {
 export function VoiceProvider({ children }: { children: ReactNode }) {
   const t = useT();
   const { pathname } = useLocation();
+  const { recordSpoken } = useCompanionThread();
   const [status, setStatus] = useState<VoiceStatus>("idle");
   const [error, setError] = useState("");
-  const [userText, setUserText] = useState("");
-  const [modelText, setModelText] = useState("");
+  const [lines, setLines] = useState<VoiceLine[]>([]);
   const [fake, setFake] = useState(false);
   const [turn, setTurn] = useState<VoiceTurn | null>(null);
   const [muted, setMuted] = useState(false);
@@ -74,8 +74,9 @@ export function VoiceProvider({ children }: { children: ReactNode }) {
    */
   const epoch = useRef(0);
 
-  /** Read by the capture handler, which is not re-created when state changes. */
   const mutedRef = useRef(false);
+  const linesRef = useRef<VoiceLine[]>([]);
+  const spokenAt = useRef(0);
 
   const socket = useRef<VoiceSocket | null>(null);
   const graph = useRef<{
@@ -135,20 +136,19 @@ export function VoiceProvider({ children }: { children: ReactNode }) {
     void (async () => {
       setStatus("connecting");
       setError("");
-      setUserText("");
-      setModelText("");
+      linesRef.current = [];
+      setLines([]);
+      spokenAt.current = 0;
       setTurn(null);
       setFake(false);
 
       try {
-        // The microphone is asked for FIRST, while the user's tap is still the
-        // most recent thing that happened.
-        //
-        // It used to be fourth: behind a network call to find the session, an
-        // AudioContext resume, and two worklet fetches. On a phone that is
-        // seconds of nothing before the permission sheet appears, and the user
-        // taps again thinking it did not register. Browsers also tie permission
-        // prompts to user activation, which repeated awaits can spend.
+        // AudioContext is created in the same tap as the permission prompt.
+        // On iOS, creating it after `await getUserMedia` spends the user
+        // gesture, and playback stays silent — which is the "no audio" report
+        // on a phone. Both start on the click stack; we only wait after.
+        const ctx = new AudioContext({ latencyHint: "interactive" });
+        try {
         const stream = await navigator.mediaDevices.getUserMedia({
           audio: {
             echoCancellation: true,
@@ -161,16 +161,16 @@ export function VoiceProvider({ children }: { children: ReactNode }) {
           // Stopped while the permission sheet was up. Release the microphone
           // rather than leaving the recording indicator on with nothing behind it.
           stream.getTracks().forEach((t) => t.stop());
+          void ctx.close();
           return;
         }
 
-        const ctx = new AudioContext();
         await ctx.resume();
 
         const sessionId = resolveVoiceSessionId(pathname);
         await Promise.all([
-          ctx.audioWorklet.addModule("/worklets/pcm-capture.js"),
-          ctx.audioWorklet.addModule("/worklets/pcm-play.js"),
+          ctx.audioWorklet.addModule("/worklets/pcm-capture.js?v=2"),
+          ctx.audioWorklet.addModule("/worklets/pcm-play.js?v=2"),
         ]);
 
         if (!current()) {
@@ -201,10 +201,19 @@ export function VoiceProvider({ children }: { children: ReactNode }) {
             if (!current()) return;
             play.port.postMessage("flush");
           },
-          onTranscript(side, text) {
+          onTranscript(side, text, finished) {
             if (!current()) return;
-            if (side === "user") setUserText(text);
-            else setModelText(text);
+            const next = applyVoiceCaption(linesRef.current, side, text, finished);
+            linesRef.current = next;
+            setLines(next);
+            if (finished) {
+              const last = [...next].reverse().find((l) => l.side === side);
+              const spoken = last?.text.trim();
+              if (spoken && last && spokenAt.current !== last.id) {
+                spokenAt.current = last.id;
+                recordSpoken(side === "user" ? "user" : "agent", spoken);
+              }
+            }
           },
           onTurn(event) {
             if (!current()) return;
@@ -266,6 +275,10 @@ export function VoiceProvider({ children }: { children: ReactNode }) {
           if (mutedRef.current || !current()) return;
           if (data instanceof Int16Array) voice.sendPcm(data);
         };
+        } catch (err) {
+          void ctx.close();
+          throw err;
+        }
       } catch (err) {
         // A cancelled attempt is not a failure, and must not paint one.
         if (!current()) return;
@@ -279,15 +292,14 @@ export function VoiceProvider({ children }: { children: ReactNode }) {
         );
       }
     })();
-  }, [pathname, status, stop, teardown, t]);
+  }, [pathname, status, stop, teardown, t, recordSpoken]);
 
   return (
     <VoiceContext.Provider
       value={{
         status,
         error,
-        userText,
-        modelText,
+        lines,
         fake,
         turn,
         sessionId: resolveVoiceSessionId(pathname),

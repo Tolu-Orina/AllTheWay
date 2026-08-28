@@ -32,11 +32,72 @@ export type VoiceHandlers = {
   onClose?: (reason: string) => void;
 };
 
+export type VoiceLine = {
+  id: number;
+  side: "user" | "model";
+  text: string;
+  finished: boolean;
+};
+
+/**
+ * Same fold as the gateway (`protocol.ts`). Kept here so an older relay
+ * that still forwards raw chunks does not overwrite the line on screen.
+ */
+export function foldTranscript(current: string, incoming: string): string {
+  if (!incoming) return current;
+  if (!current) return incoming;
+  if (incoming === current) return incoming;
+  if (incoming.startsWith(current)) return incoming;
+  if (current.startsWith(incoming)) return current;
+  let overlap = 0;
+  const limit = Math.min(current.length, incoming.length);
+  for (let n = limit; n > 0; n--) {
+    if (current.slice(current.length - n) === incoming.slice(0, n)) {
+      overlap = n;
+      break;
+    }
+  }
+  return current + incoming.slice(overlap);
+}
+
+export function applyVoiceCaption(
+  lines: VoiceLine[],
+  side: "user" | "model",
+  text: string,
+  finished: boolean,
+): VoiceLine[] {
+  const next = lines.slice();
+  let open = -1;
+  for (let i = next.length - 1; i >= 0; i--) {
+    if (next[i].side === side && !next[i].finished) {
+      open = i;
+      break;
+    }
+  }
+  if (open >= 0) {
+    const folded = foldTranscript(next[open].text, text);
+    next[open] = { ...next[open], text: folded || next[open].text, finished };
+    return next;
+  }
+  const last = [...next].reverse().find((l) => l.side === side);
+  if (last?.finished && finished) {
+    const folded = foldTranscript(last.text, text);
+    if (folded === last.text || last.text.startsWith(text) || text === last.text) {
+      return next;
+    }
+  }
+  if (!text && finished) return next;
+  const id = (next[next.length - 1]?.id ?? 0) + 1;
+  next.push({ id, side, text, finished });
+  return next;
+}
+
 function bytesToPcm(b64: string): Int16Array {
   const bin = atob(b64);
-  const buf = new ArrayBuffer(bin.length);
+  const even = bin.length - (bin.length % 2);
+  const buf = new ArrayBuffer(even);
   const view = new Uint8Array(buf);
-  for (let i = 0; i < bin.length; i++) view[i] = bin.charCodeAt(i);
+  for (let i = 0; i < even; i++) view[i] = bin.charCodeAt(i);
   return new Int16Array(buf);
 }
 
@@ -111,6 +172,10 @@ export async function openVoiceSocket(
         }
         if (msg.interrupted) {
           handlers.onInterrupted?.();
+          return;
+        }
+        if (typeof msg.resumeHandle === "string" && msg.resumeHandle) {
+          handle = msg.resumeHandle;
           return;
         }
         const transcript = msg.transcript as

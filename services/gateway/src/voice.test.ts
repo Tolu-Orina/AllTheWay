@@ -14,6 +14,8 @@ import {
   realtimePcm,
   setupMessage,
   SYSTEM_INSTRUCTION,
+  foldTranscript,
+  TranscriptAccumulator,
 } from "./voice/protocol.js";
 import { READ_TOOL_NAMES, runReadTool } from "./voice/tools.js";
 
@@ -94,6 +96,35 @@ test("server messages parse both camelCase and snake_case", () => {
   assert.deepEqual(snake.modelTranscript, { text: "hi", finished: false });
   assert.equal(snake.resumeHandle, "h2");
   assert.equal(snake.toolCalls?.[0]?.name, "plan_turn");
+});
+
+test("finished with no new text is still a commit", () => {
+  const parsed = parseServerMessage({
+    serverContent: { inputTranscription: { finished: true } },
+  });
+  assert.deepEqual(parsed.userTranscript, { text: "", finished: true });
+});
+
+test("turnComplete is parsed so an utterance without finished can still commit", () => {
+  const parsed = parseServerMessage({
+    serverContent: { turnComplete: true, outputTranscription: { text: "ok" } },
+  });
+  assert.equal(parsed.turnComplete, true);
+  assert.deepEqual(parsed.modelTranscript, { text: "ok", finished: false });
+});
+
+test("transcript chunks fold as either deltas or refinements", () => {
+  assert.equal(foldTranscript("I'll", "I'll send"), "I'll send");
+  assert.equal(foldTranscript("I'll send", " the contract"), "I'll send the contract");
+  assert.equal(foldTranscript("Hello wor", "ld"), "Hello world");
+
+  const acc = new TranscriptAccumulator();
+  assert.equal(acc.push("user", "I'll", false).text, "I'll");
+  assert.equal(acc.push("user", " send", false).text, "I'll send");
+  const done = acc.push("user", "", true);
+  assert.equal(done.text, "I'll send");
+  assert.equal(done.finished, true);
+  assert.deepEqual(acc.flush(), []);
 });
 
 test("a resumable=false update is not a handle to reconnect with", () => {

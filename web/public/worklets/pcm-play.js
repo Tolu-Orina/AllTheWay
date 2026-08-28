@@ -1,6 +1,10 @@
 /**
  * Playback: 24 kHz s16le from the Live API → device rate, with a short jitter
  * buffer. `interrupted` from the server is a flush of this queue.
+ *
+ * After the first start, a brief underrun is silence — not a restart of the
+ * 100ms pre-buffer. Resetting on the first empty quantum made a jittery phone
+ * socket start-stop-start, which is the dropout people hear as "audio issues".
  */
 class PcmPlayProcessor extends AudioWorkletProcessor {
   constructor() {
@@ -8,21 +12,23 @@ class PcmPlayProcessor extends AudioWorkletProcessor {
     this._queue = [];
     this._offset = 0;
     this._started = false;
-    this._target = Math.floor(sampleRate * 0.08); // ~80ms before we start
+    this._target = Math.floor(sampleRate * 0.1); // ~100ms before we start
     this._queued = 0;
+    this._starve = 0;
     this.port.onmessage = (ev) => {
       if (ev.data === "flush") {
         this._queue = [];
         this._offset = 0;
         this._started = false;
         this._queued = 0;
+        this._starve = 0;
         return;
       }
       const src = ev.data;
       if (!(src instanceof Int16Array) && !ArrayBuffer.isView(src)) return;
       const samples = src instanceof Int16Array ? src : new Int16Array(src.buffer);
       const ratio = sampleRate / 24000;
-      const out = new Float32Array(Math.floor(samples.length * ratio));
+      const out = new Float32Array(Math.max(0, Math.floor(samples.length * ratio)));
       for (let i = 0; i < out.length; i++) {
         const x = i / ratio;
         const i0 = Math.min(samples.length - 1, Math.floor(x));
@@ -47,15 +53,21 @@ class PcmPlayProcessor extends AudioWorkletProcessor {
         return true;
       }
       this._started = true;
+      this._starve = 0;
     }
 
     let written = 0;
     while (written < out.length) {
       if (this._queue.length === 0) {
         out.fill(0, written);
-        this._started = false;
+        this._starve += out.length - written;
+        if (this._starve > sampleRate * 0.04) {
+          this._started = false;
+          this._starve = 0;
+        }
         break;
       }
+      this._starve = 0;
       const frame = this._queue[0];
       const take = Math.min(out.length - written, frame.length - this._offset);
       out.set(frame.subarray(this._offset, this._offset + take), written);
