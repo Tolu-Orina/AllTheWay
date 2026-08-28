@@ -52,7 +52,7 @@ export function mediaFromConnectorTask(task: unknown): MediaPayload {
     if (!node || typeof node !== "object" || depth > 12) return;
     if (content && mimeType) return;
     const rec = node as Record<string, unknown>;
-    const err = asString(rec.error).trim();
+    const err = (asString(rec.error) || asString(rec.reason)).trim();
     if (err && !error) error = err;
     const maybeContent = asString(rec.content);
     const mime = asString(rec.mimeType);

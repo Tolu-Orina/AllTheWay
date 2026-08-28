@@ -104,6 +104,26 @@ def _fail(message: str, **extra) -> str:
     return json.dumps({"error": message, **extra})
 
 
+def _vertex_refusal(response: httpx.Response) -> str:
+    """Say why Vertex refused, not that a still arrived malformed."""
+    detail = ""
+    try:
+        message = (response.json().get("error") or {}).get("message")
+        if isinstance(message, str) and message.strip():
+            detail = message.strip()[:240]
+    except ValueError:
+        pass
+    if response.status_code == 403:
+        return (
+            f"The image model refused the call ({response.status_code})"
+            + (f": {detail}" if detail else ".")
+        )
+    return (
+        f"Could not generate that image ({response.status_code})"
+        + (f": {detail}" if detail else ".")
+    )
+
+
 @mcp.tool()
 def generate_image(prompt: str, style: str = "") -> str:
     """Generate an image from a description. Cheap enough to iterate on.
@@ -135,7 +155,7 @@ def generate_image(prompt: str, style: str = "") -> str:
         return _fail(f"Could not reach the image model ({type(exc).__name__}).")
 
     if response.status_code != 200:
-        return _fail("Could not generate that image.", status=response.status_code)
+        return _fail(_vertex_refusal(response), status=response.status_code)
 
     for candidate in response.json().get("candidates", []):
         for part in (candidate.get("content") or {}).get("parts", []):

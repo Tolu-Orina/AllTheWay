@@ -241,7 +241,9 @@ class ConnectorExecutor(AgentExecutor):
                     {
                         "refusal": outcome.refusal.value if outcome.refusal else "unavailable",
                         "reason": outcome.reason,
+                        "error": outcome.reason,
                         "trace": outcome.trace,
+                        **({"data": outcome.data} if outcome.data else {}),
                     }
                 )
             ],

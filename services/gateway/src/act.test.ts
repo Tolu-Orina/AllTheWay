@@ -114,3 +114,25 @@ test("a model error in the media payload is not treated as a still", () => {
   assert.equal(found.error, "Could not generate that image.");
   assert.equal(found.body, undefined);
 });
+
+test("a refusal reason is a failed still, not an unreadable shape", () => {
+  // Vertex 403 arrives as a refusal artifact with `reason`, not `error`.
+  // Treating that as "no still" is how Studio said the bytes were malformed.
+  const found = mediaFromConnectorTask({
+    artifacts: [
+      {
+        parts: [
+          {
+            data: {
+              refusal: "unavailable",
+              reason: "The image model refused the call (403).",
+              trace: ["Called media.generate_image"],
+            },
+          },
+        ],
+      },
+    ],
+  });
+  assert.equal(found.error, "The image model refused the call (403).");
+  assert.equal(found.body, undefined);
+});

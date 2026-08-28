@@ -215,8 +215,8 @@ locals {
 # logs and traces) and says the rest "belongs in envs/*". This is that.
 #
 # Derived from what each service's code actually calls, not from what might be
-# convenient later: the gateway and the watcher runtime publish events, only
-# the two services with a ModelProvider reach Vertex, and only the connector
+# convenient later: the gateway and the watcher runtime publish events, the
+# services that call a model hold aiplatform.user, and only the connector
 # gateway reads secrets. A service that gains a dependency gains a line here, in
 # a diff someone reads.
 # ---------------------------------------------------------------------------
@@ -279,6 +279,11 @@ locals {
       # written by the gateway's consent callback, which is the only service
       # the browser talks to.
       "roles/datastore.user",
+
+      # generate_image / Veo run here, with this identity. Without this the
+      # call authenticates and Vertex answers 403, which Studio used to
+      # report as an unreadable still rather than a refused model.
+      "roles/aiplatform.user",
     ]
 
     # Firestore is deliberately absent from orchestrator and research-cell: both
