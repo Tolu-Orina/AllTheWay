@@ -70,7 +70,7 @@ async function toBase64(file: File): Promise<string> {
   return btoa(binary);
 }
 
-export function DocumentPickup({ onUploaded }: { onUploaded?: (name: string) => void }) {
+export function DocumentPickup({ onUploaded }: { onUploaded?: (name: string, documentId?: string) => void }) {
   const t = useT();
   const [busy, setBusy] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
@@ -91,8 +91,8 @@ export function DocumentPickup({ onUploaded }: { onUploaded?: (name: string) => 
       setError(null);
       setBusy(file.name);
       try {
-        await api.uploadDocument(file.name, await toBase64(file), file.type || "text/plain");
-        onUploaded?.(file.name);
+        const result = await api.uploadDocument(file.name, await toBase64(file), file.type || "text/plain");
+        onUploaded?.(file.name, result.documentId);
       } catch (err) {
         const message = (err as { message?: string }).message;
         setError(message || "That document could not be added.");

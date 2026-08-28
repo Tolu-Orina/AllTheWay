@@ -75,6 +75,12 @@ USER_OWNED = (
     # Studio video jobs. An operation name is a handle on a generation this
     # user paid to start.
     "studioJobs",
+    # Life companion. Children's names here are ordinary PII in *her* account.
+    "people",
+    "places",
+    "rhythms",
+    "reminders",
+    "proposedCommitments",
 )
 
 #: Spans every user by definition. Permitted nowhere.

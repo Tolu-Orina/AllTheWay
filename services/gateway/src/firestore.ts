@@ -136,3 +136,9 @@ export const artifactVersions = (uid: string, artifactId: string) =>
  * would be the same cross-tenant hazard as a flat artifacts list.
  */
 export const studioJobs = (uid: string) => userDoc(uid).collection("studioJobs");
+
+export const people = (uid: string) => userDoc(uid).collection("people");
+export const places = (uid: string) => userDoc(uid).collection("places");
+export const rhythms = (uid: string) => userDoc(uid).collection("rhythms");
+export const reminders = (uid: string) => userDoc(uid).collection("reminders");
+export const proposedCommitments = (uid: string) => userDoc(uid).collection("proposedCommitments");

@@ -15,7 +15,8 @@ import {
   getStudioJob,
   listOpenStudioJobs,
 } from "../repos/studio-jobs.js";
-import { SEQUENCE_CAP_SECONDS, SHOT_MAX_SECONDS } from "../studio-shots.js";
+import { mergePlan, SEQUENCE_CAP_SECONDS, SHOT_MAX_SECONDS } from "../studio-shots.js";
+import { planVideoShots } from "../studio-plan.js";
 import { advanceStudioJob, RENDERING } from "../studio-advance.js";
 
 /**
@@ -38,16 +39,51 @@ import { advanceStudioJob, RENDERING } from "../studio-advance.js";
 
 export const studioRoutes = express.Router();
 
+const ShotSchema = z.object({
+  prompt: z.string().min(1).max(4000),
+  seconds: z.number().int().min(1).max(SHOT_MAX_SECONDS),
+});
+
 const GenerateSchema = z.object({
   prompt: z.string().min(1).max(4000),
   mode: z.enum(["image", "video"]),
   seconds: z.number().int().min(1).max(SEQUENCE_CAP_SECONDS).optional(),
   artifactId: z.string().max(128).optional(),
   costAcknowledged: z.boolean().optional(),
+  shots: z.array(ShotSchema).max(15).optional(),
+});
+
+const PlanSchema = z.object({
+  prompt: z.string().min(1).max(4000),
+  seconds: z.number().int().min(1).max(SEQUENCE_CAP_SECONDS),
 });
 
 const IMAGE_TIMEOUT_MS = 90_000;
 const VIDEO_START_TIMEOUT_MS = 90_000;
+
+studioRoutes.post("/plan", requireUser, async (req, res) => {
+  const body = PlanSchema.safeParse(req.body);
+  if (!body.success) {
+    return res.status(400).json({
+      code: "invalid_request",
+      message: "Describe what to make first.",
+    });
+  }
+  try {
+    const shots = await planVideoShots(body.data.prompt, body.data.seconds);
+    return res.json({
+      seconds: shots.reduce((sum, s) => sum + s.seconds, 0),
+      shots,
+    });
+  } catch (err) {
+    console.warn(`[studio] plan failed: ${(err as Error).message}`);
+    const shots = mergePlan(body.data.prompt, body.data.seconds, null);
+    return res.json({
+      seconds: shots.reduce((sum, s) => sum + s.seconds, 0),
+      shots,
+    });
+  }
+});
 
 studioRoutes.post("/generate", requireUser, async (req, res) => {
   const body = GenerateSchema.safeParse(req.body);
@@ -77,6 +113,7 @@ studioRoutes.post("/generate", requireUser, async (req, res) => {
       prompt,
       seconds: body.data.seconds ?? 6,
       artifactId,
+      shots: body.data.shots,
     });
   }
 
@@ -192,9 +229,37 @@ studioRoutes.get("/jobs/:id", requireUser, async (req, res) => {
 async function startVideo(
   _req: express.Request,
   res: express.Response,
-  opts: { uid: string; prompt: string; seconds: number; artifactId?: string },
+  opts: {
+    uid: string;
+    prompt: string;
+    seconds: number;
+    artifactId?: string;
+    shots?: Array<{ prompt: string; seconds: number }>;
+  },
 ) {
   const seconds = Math.max(1, Math.min(SEQUENCE_CAP_SECONDS, Math.floor(opts.seconds)));
+  const shots = (opts.shots ?? []).filter((s) => s.prompt.trim() && s.seconds >= 1);
+
+  // Confirmed plan: store the shots. The first GET starts Veo under a lock,
+  // so a double-mounted poll cannot bill twice.
+  if (shots.length > 0) {
+    const job = await createStudioJob({
+      uid: opts.uid,
+      operation: "",
+      model: "",
+      prompt: opts.prompt,
+      seconds: shots.reduce((sum, s) => sum + s.seconds, 0),
+      artifactId: opts.artifactId,
+      shots,
+    });
+    return res.json({
+      status: "queued",
+      message: RENDERING,
+      jobId: job.id,
+      shotIndex: 0,
+      shotCount: shots.length,
+    });
+  }
 
   if (seconds > SHOT_MAX_SECONDS) {
     const job = await createStudioJob({

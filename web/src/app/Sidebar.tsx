@@ -11,6 +11,7 @@ import { nameFor, useAppUser } from "@/app/user";
 import { useAuth } from "@/auth/useAuth";
 import { useSidebar } from "@/app/sidebar-state";
 import { cn } from "@/lib/utils";
+import { useLifeAlerts } from "@/app/life/alerts";
 
 /**
  * Desktop navigation. Hidden below lg, where the tab bar takes over.
@@ -29,6 +30,7 @@ export function Sidebar() {
   const { adapter } = useAuth();
   const navigate = useNavigate();
   const { collapsed, toggle } = useSidebar();
+  const { count } = useLifeAlerts();
   const { state } = useAsync(() => api.sessions());
   const recents = state.status === "ready" ? state.data.slice(0, 5) : [];
 
@@ -93,6 +95,9 @@ export function Sidebar() {
                     aria-hidden="true"
                   />
                   {collapsed ? <span className="sr-only">{t(item.labelKey)}</span> : t(item.labelKey)}
+                  {item.to === "/app" && count > 0 ? (
+                    <span className="ml-auto size-1.5 shrink-0 rounded-full bg-primary" aria-label={String(count)} />
+                  ) : null}
                 </>
               )}
             </NavLink>

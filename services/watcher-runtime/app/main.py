@@ -5,7 +5,7 @@ from __future__ import annotations
 from fastapi import FastAPI, Response
 from google.cloud import firestore
 
-from .due import fanout_session_ended, scan_due
+from .due import fanout_session_ended, scan_due, scan_reminders
 from .events import PushEnvelope
 from .digest import sweep
 from .firestore import preferences, runs, watchers
@@ -52,6 +52,14 @@ def handle_due() -> dict:
     sweep that would re-enqueue everyone else.
     """
     return {"status": "scanned", **scan_due()}
+
+
+@app.post("/events/reminders")
+def handle_reminders() -> dict:
+    """The one-minute leave-now scan. Always 200: a failed row is counted,
+    not retried as a sweep that would re-notify everyone else.
+    """
+    return {"status": "scanned", **scan_reminders()}
 
 
 @app.post("/events/session-ended")

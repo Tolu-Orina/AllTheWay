@@ -7,6 +7,7 @@ import { authenticatingFetch } from "../a2a.js";
 import { env } from "../env.js";
 import { scopeHeader, scopeTokenConfigured } from "../scope.js";
 import { documentsSlot } from "../repos/usage.js";
+import { onDocumentReady } from "./life.js";
 
 /**
  * Documents, proxied to the librarian.
@@ -182,9 +183,35 @@ documentRoutes.post("/", requireUser, async (req, res) => {
   }
 
   try {
+    const upstream = await callLibrarian(
+      req.uid!,
+      "/documents",
+      { method: "POST", body: JSON.stringify(body.data) },
+      INGEST_TIMEOUT_MS,
+    );
+    const text = await upstream.text();
+    if (upstream.ok) {
+      let documentId = "";
+      try {
+        const parsed = JSON.parse(text) as { documentId?: string };
+        documentId = typeof parsed.documentId === "string" ? parsed.documentId : "";
+      } catch {
+        /* librarian returned a non-JSON success — still relay it */
+      }
+      res.status(upstream.status).type("application/json").send(text || "{}");
+      if (documentId) {
+        void onDocumentReady(req.uid!, documentId, body.data.title).catch((err) => {
+          console.warn(`[documents] propose after ingest: ${(err as Error).message}`);
+        });
+      }
+      return;
+    }
     await relay(
       res,
-      await callLibrarian(req.uid!, "/documents", { method: "POST", body: JSON.stringify(body.data) }, INGEST_TIMEOUT_MS),
+      new Response(text, {
+        status: upstream.status,
+        headers: { "content-type": upstream.headers.get("content-type") ?? "application/json" },
+      }),
     );
   } catch (err) {
     console.warn(`[documents] ingest failed: ${(err as Error).message}`);

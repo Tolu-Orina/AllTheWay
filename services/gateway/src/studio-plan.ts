@@ -28,12 +28,14 @@ const TIMEOUT_MS = 20_000;
 
 const INSTRUCTION = `You are planning a short video for a generator that can only make ${SHOT_MAX_SECONDS} seconds at a time.
 
-Break the user's brief into consecutive shots. Rules:
-- Each shot is ${SHOT_MAX_SECONDS} seconds or less. Prefer ${SHOT_MAX_SECONDS}.
+The user wrote a brief. Your job is to make it a richer visual description the generator can film — same idea, more concrete: light, camera, people, motion, palette. Not a screenplay slug. Not a pitch.
+
+Rules:
+- Each shot is ${SHOT_MAX_SECONDS} seconds or less. Prefer ${SHOT_MAX_SECONDS} except the last remainder.
 - The seconds must sum to exactly the requested total.
-- Every shot is a visual description the generator can film, not a screenplay slug.
+- If the total is ${SHOT_MAX_SECONDS} seconds or less, write exactly one shot.
 - Keep one scene, the same people, lighting, and palette. Continuity is the product.
-- Shot 2 must follow shot 1 in time. Do not restart.
+- Shot 2 must follow shot 1 in time. Do not restart. Do not repeat the same action.
 - Do not mention the generator, shots, or these rules in the prompts.
 
 Reply as JSON only:
@@ -41,10 +43,6 @@ Reply as JSON only:
 
 export async function planVideoShots(userPrompt: string, totalSeconds: number): Promise<PlannedShot[]> {
   const total = Math.max(1, Math.min(SEQUENCE_CAP_SECONDS, Math.floor(totalSeconds)));
-  if (total <= SHOT_MAX_SECONDS) {
-    return [{ seconds: total, prompt: userPrompt.trim() }];
-  }
-
   const planned = await askPlanner(userPrompt, total).catch(() => null);
   return mergePlan(userPrompt, total, planned);
 }

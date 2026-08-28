@@ -14,12 +14,26 @@ import { cn } from "@/lib/utils";
 import { ApiError } from "@/lib/api";
 
 type Mode = "image" | "video";
-type Stage = "empty" | "generating" | "queued" | "rendering" | "joining" | "ready" | "error";
+type Stage =
+  | "empty"
+  | "planning"
+  | "reviewing"
+  | "generating"
+  | "queued"
+  | "rendering"
+  | "joining"
+  | "ready"
+  | "error";
 
 const STUDIO_SESSION = "studio";
 const JOB_KEY = "alltheway.studioJob";
 const MAX_VIDEO_SECONDS = 120;
 const SHOT_MAX_SECONDS = 8;
+
+type PlannedShot = {
+  prompt: string;
+  seconds: number;
+};
 
 type StoredJob = {
   jobId: string;
@@ -84,8 +98,16 @@ export default function Studio() {
   const [jobId, setJobId] = useState<string | null>(null);
   const [shotIndex, setShotIndex] = useState<number | null>(null);
   const [shotCount, setShotCount] = useState<number | null>(null);
+  const [shots, setShots] = useState<PlannedShot[]>([]);
+  const [plannedBrief, setPlannedBrief] = useState("");
+  const [plannedSeconds, setPlannedSeconds] = useState<number | null>(null);
   const [filter, setFilter] = useState<LibraryFilter>("all");
+  const [clipNotice, setClipNotice] = useState<"drafting" | "ready" | "failed" | null>(null);
+  const [readyClipId, setReadyClipId] = useState<string | null>(null);
   const resumed = useRef(false);
+  const submitting = useRef(false);
+  const modeRef = useRef(mode);
+  modeRef.current = mode;
 
   const images = meter(usage.state.status === "ready" ? usage.state.data : undefined, "images");
   const draft = meter(usage.state.status === "ready" ? usage.state.data : undefined, "draft_video_seconds");
@@ -148,8 +170,12 @@ export default function Studio() {
         setError(null);
         const current = detail.versions.find((v) => v.n === detail.currentVersion);
         if (current?.prompt) setPrompt(current.prompt);
+        // Opening a piece infers its tab. An in-flight clip must not do this
+        // — that hijack is why Image could film a video.
         if (detail.kind === "video" && params.get("mode") !== "video") {
           setSearchParams({ mode: "video", artifact: detail.id }, { replace: true });
+        } else if (detail.kind === "image" && params.get("mode") === "video") {
+          setSearchParams({ mode: "image", artifact: detail.id }, { replace: true });
         }
       })
       .catch(() => {
@@ -163,41 +189,41 @@ export default function Studio() {
   useEffect(() => {
     if (resumed.current) return;
     resumed.current = true;
+    const adoptVideoJob = (job: StoredJob & { status?: Stage; shotIndex?: number | null; shotCount?: number | null }) => {
+      setJobId(job.jobId);
+      writeStoredJob({ jobId: job.jobId, prompt: job.prompt, seconds: job.seconds });
+      if (job.seconds > SHOT_MAX_SECONDS) {
+        setShotCount(job.shotCount ?? shotCountFor(job.seconds));
+      }
+      if (typeof job.shotIndex === "number") setShotIndex(job.shotIndex);
+      if (modeRef.current === "video") {
+        setPrompt(job.prompt);
+        setSeconds(job.seconds);
+        setStage(job.status === "queued" || job.status === "joining" ? job.status : "rendering");
+      } else {
+        setClipNotice((current) => (current === "ready" ? current : "drafting"));
+      }
+    };
     const stored = readStoredJob();
     if (stored) {
-      setJobId(stored.jobId);
-      setPrompt(stored.prompt);
-      setSeconds(stored.seconds);
-      setStage("rendering");
-      if (stored.seconds > SHOT_MAX_SECONDS) {
-        setShotCount(shotCountFor(stored.seconds));
-      }
-      setSearchParams((current) => {
-        const next = new URLSearchParams(current);
-        next.set("mode", "video");
-        return next;
-      }, { replace: true });
+      adoptVideoJob(stored);
       return;
     }
     void api.studioOpenJobs().then((jobs) => {
       const open = jobs[0];
       if (!open) return;
-      setJobId(open.jobId);
-      setPrompt(open.prompt);
-      setSeconds(open.seconds);
-      setStage(open.status);
-      setShotIndex(open.shotIndex ?? null);
-      setShotCount(open.shotCount ?? (open.seconds > SHOT_MAX_SECONDS ? shotCountFor(open.seconds) : null));
-      writeStoredJob({ jobId: open.jobId, prompt: open.prompt, seconds: open.seconds });
-      setSearchParams((current) => {
-        const next = new URLSearchParams(current);
-        next.set("mode", "video");
-        return next;
-      }, { replace: true });
+      adoptVideoJob({
+        jobId: open.jobId,
+        prompt: open.prompt,
+        seconds: open.seconds,
+        status: open.status,
+        shotIndex: open.shotIndex ?? null,
+        shotCount: open.shotCount ?? null,
+      });
     }).catch(() => {
       /* no open job is the common case */
     });
-  }, [setSearchParams]);
+  }, []);
 
   useEffect(() => {
     if (!jobId) return;
@@ -214,23 +240,32 @@ export default function Studio() {
         if (result.status === "ready" && result.artifact) {
           writeStoredJob(null);
           setJobId(null);
-          setArtifact(result.artifact);
-          setViewing(result.artifact.currentVersion);
-          setStage("ready");
-          setSearchParams({ mode: "video", artifact: result.artifact.id }, { replace: true });
           void library.reload();
           void usage.reload();
+          if (modeRef.current === "video") {
+            setArtifact(result.artifact);
+            setViewing(result.artifact.currentVersion);
+            setStage("ready");
+            setSearchParams({ mode: "video", artifact: result.artifact.id }, { replace: true });
+          } else {
+            setReadyClipId(result.artifact.id);
+            setClipNotice("ready");
+          }
           return;
         }
         if (result.status === "failed" || result.status === "declined" || result.status === "quota") {
           writeStoredJob(null);
           setJobId(null);
-          setStage("error");
-          setError(
+          const message =
             result.status === "quota"
               ? result.message || t("studio.quotaVideoEmpty")
-              : result.message || t("studio.jobLost"),
-          );
+              : result.message || t("studio.jobLost");
+          if (modeRef.current === "video") {
+            setStage("error");
+            setError(message);
+          } else {
+            setClipNotice("failed");
+          }
           return;
         }
         if (
@@ -238,7 +273,8 @@ export default function Studio() {
           result.status === "rendering" ||
           result.status === "joining"
         ) {
-          setStage(result.status);
+          if (modeRef.current === "video") setStage(result.status);
+          else setClipNotice((current) => (current === "ready" ? current : "drafting"));
         }
       } catch {
         /* a missed poll is retried; the job is still running */
@@ -258,31 +294,71 @@ export default function Studio() {
   const quotaVideoEmpty =
     mode === "video" && draftLeft !== null && draftLeft < seconds;
   const busy =
-    stage === "generating" ||
-    stage === "queued" ||
-    stage === "rendering" ||
-    stage === "joining";
+    mode === "image"
+      ? stage === "generating"
+      : stage === "planning" ||
+        stage === "queued" ||
+        stage === "rendering" ||
+        stage === "joining";
+  const planDirty =
+    stage === "reviewing" &&
+    (prompt.trim() !== plannedBrief || (plannedSeconds !== null && plannedSeconds !== seconds));
   const canGenerate =
     mode === "image" && prompt.trim().length > 0 && !busy && !quotaEmpty;
-  const canDraft =
+  const canPlan =
     mode === "video" && prompt.trim().length > 0 && !busy && !quotaVideoEmpty;
+  const canDraft =
+    mode === "video" &&
+    stage === "reviewing" &&
+    shots.length > 0 &&
+    shots.every((s) => s.prompt.trim().length > 0) &&
+    !busy &&
+    !quotaVideoEmpty &&
+    !planDirty;
+
+  useEffect(() => {
+    if (mode !== "video" || !jobId) return;
+    setStage((current) =>
+      current === "queued" || current === "rendering" || current === "joining"
+        ? current
+        : "rendering",
+    );
+    setClipNotice(null);
+  }, [mode, jobId]);
 
   function setMode(next: Mode) {
+    const keep =
+      artifact &&
+      ((next === "image" && artifact.kind === "image") ||
+        (next === "video" && artifact.kind === "video"));
     const nextParams: Record<string, string> = { mode: next };
-    if (artifactParam) nextParams.artifact = artifactParam;
+    if (keep && artifact) nextParams.artifact = artifact.id;
+    else {
+      setArtifact(null);
+      setViewing(null);
+    }
     setSearchParams(nextParams, { replace: true });
+    if (next === "video") setClipNotice(null);
   }
 
   function startNew() {
     setArtifact(null);
     setViewing(null);
-    setStage("empty");
     setError(null);
-    setJobId(null);
+    setShots([]);
+    setPlannedBrief("");
+    setPlannedSeconds(null);
     setShotIndex(null);
     setShotCount(null);
-    writeStoredJob(null);
+    setStage(jobId && mode === "video" ? "rendering" : "empty");
     setSearchParams({ mode }, { replace: true });
+  }
+
+  function openVideoJob() {
+    const next: Record<string, string> = { mode: "video" };
+    if (readyClipId) next.artifact = readyClipId;
+    setSearchParams(next, { replace: true });
+    setClipNotice(null);
   }
 
   function openFromLibrary(item: Artifact) {
@@ -299,7 +375,7 @@ export default function Studio() {
       const result = await api.studioGenerate({
         prompt: prompt.trim(),
         mode: "image",
-        artifactId: artifact?.id,
+        artifactId: artifact?.kind === "image" ? artifact.id : undefined,
       });
       if (result.status === "ready" && result.artifact) {
         setArtifact(result.artifact);
@@ -320,9 +396,38 @@ export default function Studio() {
     }
   }
 
+  async function planClip() {
+    if (!canPlan && stage !== "error" && stage !== "reviewing") return;
+    if (!prompt.trim() || quotaVideoEmpty) return;
+    if (submitting.current) return;
+    submitting.current = true;
+    setStage("planning");
+    setError(null);
+    try {
+      const result = await api.studioPlan({ prompt: prompt.trim(), seconds });
+      if (!result.shots.length) {
+        setStage("error");
+        setError(t("studio.planFailed"));
+        return;
+      }
+      setShots(result.shots);
+      setPlannedBrief(prompt.trim());
+      setPlannedSeconds(result.seconds);
+      setSeconds(result.seconds);
+      setStage("reviewing");
+    } catch (err) {
+      setStage("error");
+      setError(err instanceof ApiError ? err.message : t("studio.planFailed"));
+    } finally {
+      submitting.current = false;
+    }
+  }
+
   async function draftVideo() {
     if (!canDraft && stage !== "error") return;
-    if (!prompt.trim() || quotaVideoEmpty) return;
+    if (!shots.length || quotaVideoEmpty) return;
+    if (submitting.current) return;
+    submitting.current = true;
     setStage("queued");
     setError(null);
     try {
@@ -330,6 +435,7 @@ export default function Studio() {
         prompt: prompt.trim(),
         mode: "video",
         seconds,
+        shots,
         artifactId: artifact?.kind === "video" ? artifact.id : undefined,
       });
       if (result.status === "quota") {
@@ -345,7 +451,7 @@ export default function Studio() {
       if ((result.status === "queued" || result.status === "rendering") && result.jobId) {
         setJobId(result.jobId);
         setStage(result.status);
-        setShotCount(seconds > SHOT_MAX_SECONDS ? shotCountFor(seconds) : null);
+        setShotCount(shots.length > 1 ? shots.length : null);
         setShotIndex(0);
         writeStoredJob({ jobId: result.jobId, prompt: prompt.trim(), seconds });
         return;
@@ -363,17 +469,25 @@ export default function Studio() {
     } catch (err) {
       setStage("error");
       setError(err instanceof ApiError ? err.message : t("studio.jobLost"));
+    } finally {
+      submitting.current = false;
     }
   }
 
   const waiting = stage === "queued" || stage === "rendering" || stage === "joining";
   const frameLabel = useMemo(() => {
-    if (stage === "generating") return t("studio.generating");
+    if (mode === "image") {
+      if (stage === "generating") return t("studio.generating");
+      if (stage === "error" && error) return error;
+      return prompt.trim() || t("studio.emptyFrame");
+    }
+    if (stage === "planning") return t("studio.planning");
+    if (stage === "reviewing") return t("studio.reviewTitle");
     if (stage === "joining") return t("studio.joining");
     if (waiting) return stage === "queued" ? t("studio.queued") : t("studio.rendering");
     if (stage === "error" && error) return error;
-    if (stage === "ready") return prompt.trim() || t("studio.emptyFrame");
-    return mode === "video" ? t("studio.emptyClip") : t("studio.emptyFrame");
+    if (stage === "ready") return prompt.trim() || t("studio.emptyClip");
+    return t("studio.emptyClip");
   }, [error, mode, prompt, stage, t, waiting]);
 
   return (
@@ -423,6 +537,24 @@ export default function Studio() {
               ? null
               : t("studio.draftSecondsLeft", { count: draftLeft })}
         </p>
+        {mode === "image" && clipNotice ? (
+          <p className="flex flex-wrap items-center gap-x-2 text-[13px] text-muted-foreground">
+            <span>
+              {clipNotice === "ready"
+                ? t("studio.clipReady")
+                : clipNotice === "failed"
+                  ? t("studio.clipLost")
+                  : t("studio.clipDrafting")}
+            </span>
+            <button
+              type="button"
+              onClick={openVideoJob}
+              className="text-foreground underline-offset-2 hover:underline"
+            >
+              {clipNotice === "ready" ? t("studio.showClip") : t("studio.openVideo")}
+            </button>
+          </p>
+        ) : null}
         <button
           type="button"
           onClick={() => openCompanion()}
@@ -448,13 +580,47 @@ export default function Studio() {
             aria-busy={busy}
             className="relative flex min-h-[18rem] flex-1 items-center justify-center overflow-hidden rounded-brand-lg bg-[color-mix(in_oklch,var(--muted),var(--foreground)_6%)] ring-1 ring-border/70 sm:min-h-[22rem]"
           >
-            {blobUrl && version?.mimeType.startsWith("video/") ? (
+            {stage === "reviewing" && mode === "video" ? (
+              <div className="flex h-full w-full flex-col gap-3 overflow-y-auto p-4 sm:p-5">
+                <div className="flex flex-wrap items-baseline justify-between gap-2">
+                  <p className="text-[14px] font-medium text-foreground">{t("studio.reviewTitle")}</p>
+                  <p className="text-[12.5px] tabular-nums text-muted-foreground">
+                    {t("studio.reviewDuration", { n: seconds })}
+                  </p>
+                </div>
+                {shots.map((shot, index) => (
+                  <label key={index} className="flex flex-col gap-1.5">
+                    <span className="text-[12px] font-medium text-muted-foreground">
+                      {shots.length === 1
+                        ? t("studio.reviewPrompt")
+                        : t("studio.shotLabel", { n: index + 1, s: shot.seconds })}
+                    </span>
+                    <textarea
+                      value={shot.prompt}
+                      onChange={(event) => {
+                        const next = event.target.value;
+                        setShots((current) =>
+                          current.map((row, i) => (i === index ? { ...row, prompt: next } : row)),
+                        );
+                      }}
+                      rows={shots.length === 1 ? 5 : 3}
+                      className="w-full resize-y rounded-brand border bg-background px-3 py-2 text-[13.5px] leading-relaxed outline-none focus-visible:ring-2 focus-visible:ring-ring/50"
+                    />
+                  </label>
+                ))}
+                {draftLeft !== null ? (
+                  <p className="text-[12.5px] text-muted-foreground">
+                    {t("studio.reviewCost", { n: seconds, m: draftLeft })}
+                  </p>
+                ) : null}
+              </div>
+            ) : blobUrl && mode === "video" && version?.mimeType.startsWith("video/") ? (
               <video
                 src={blobUrl}
                 controls
                 className="max-h-[min(70dvh,40rem)] w-full object-contain"
               />
-            ) : blobUrl ? (
+            ) : blobUrl && version && !version.mimeType.startsWith("video/") ? (
               <img
                 src={blobUrl}
                 alt={prompt.trim() || t("studio.emptyFrame")}
@@ -466,7 +632,8 @@ export default function Studio() {
               </p>
             )}
 
-            {stage === "generating" || waiting ? (
+            {stage === "generating" ||
+            (mode === "video" && (stage === "planning" || waiting)) ? (
               <div
                 className={cn(
                   "absolute inset-0 grid place-items-center bg-background/55",
@@ -479,12 +646,17 @@ export default function Studio() {
                     {reduced ? null : <Loader2 className="size-4 animate-spin" aria-hidden="true" />}
                     {stage === "generating"
                       ? t("studio.generating")
-                      : stage === "queued"
-                        ? t("studio.queued")
-                        : stage === "joining"
-                          ? t("studio.joining")
-                          : t("studio.rendering")}
+                      : stage === "planning"
+                        ? t("studio.planning")
+                        : stage === "queued"
+                          ? t("studio.queued")
+                          : stage === "joining"
+                            ? t("studio.joining")
+                            : t("studio.rendering")}
                   </span>
+                  {stage === "planning" ? (
+                    <span className="text-[12.5px] text-muted-foreground">{t("studio.planningWait")}</span>
+                  ) : null}
                   {waiting && shotCount && shotCount > 1 && stage !== "joining" ? (
                     <span className="text-[12.5px] text-muted-foreground">
                       {t("studio.shotProgress", {
@@ -512,7 +684,13 @@ export default function Studio() {
                     variant="outline"
                     size="lg"
                     className="mt-4 rounded-brand"
-                    onClick={() => void (mode === "video" ? draftVideo() : generate())}
+                    onClick={() =>
+                      void (mode === "video"
+                        ? shots.length
+                          ? draftVideo()
+                          : planClip()
+                        : generate())
+                    }
                     disabled={!prompt.trim() || (mode === "image" ? quotaEmpty : quotaVideoEmpty)}
                   >
                     {t("studio.retry")}
@@ -564,8 +742,10 @@ export default function Studio() {
         className="glass sticky bottom-24 z-10 flex flex-col gap-3 rounded-brand-lg p-3 shadow-e1 sm:p-4 lg:bottom-3"
         onSubmit={(event) => {
           event.preventDefault();
-          if (mode === "video") void draftVideo();
-          else void generate();
+          if (mode === "video") {
+            if (stage === "reviewing" && !planDirty) void draftVideo();
+            else void planClip();
+          } else generate();
         }}
       >
         <label className="sr-only" htmlFor="studio-prompt">
@@ -638,9 +818,19 @@ export default function Studio() {
               <VideoActions
                 seconds={seconds}
                 finalLeft={finalLeft}
+                canPlan={canPlan}
                 canDraft={canDraft}
+                planDirty={planDirty}
+                reviewing={stage === "reviewing"}
                 busy={busy}
+                planning={stage === "planning"}
                 quotaEmpty={quotaVideoEmpty}
+                onEditBrief={() => {
+                  setStage("empty");
+                  setShots([]);
+                  setPlannedBrief("");
+                  setPlannedSeconds(null);
+                }}
               />
             )}
           </div>
@@ -659,18 +849,38 @@ export default function Studio() {
 function VideoActions({
   seconds,
   finalLeft,
+  canPlan,
   canDraft,
+  planDirty,
+  reviewing,
   busy,
+  planning,
   quotaEmpty,
+  onEditBrief,
 }: {
   seconds: number;
   finalLeft: number;
+  canPlan: boolean;
   canDraft: boolean;
+  planDirty: boolean;
+  reviewing: boolean;
   busy: boolean;
+  planning: boolean;
   quotaEmpty: boolean;
+  onEditBrief: () => void;
 }) {
   const t = useT();
   const reduced = useReducedMotion();
+  const submitDisabled = reviewing ? (planDirty ? !canPlan : !canDraft) : !canPlan;
+  const submitLabel = planning
+    ? t("studio.planning")
+    : busy && !reviewing
+      ? t("studio.rendering")
+      : planDirty
+        ? t("studio.replan")
+        : reviewing
+          ? t("studio.draftSeconds", { n: seconds })
+          : t("studio.plan");
 
   return (
     <div className="flex flex-col items-end gap-2">
@@ -687,14 +897,19 @@ function VideoActions({
             {t("studio.seePlans")}
           </Button>
         ) : null}
-        <Button type="submit" variant="brand" size="lg" className="rounded-brand" disabled={!canDraft}>
-          {busy ? (
+        {reviewing ? (
+          <Button type="button" variant="outline" size="lg" className="rounded-brand" onClick={onEditBrief}>
+            {t("studio.editBrief")}
+          </Button>
+        ) : null}
+        <Button type="submit" variant="brand" size="lg" className="rounded-brand" disabled={submitDisabled}>
+          {planning || (busy && !reviewing) ? (
             <>
               {reduced ? null : <Loader2 className="size-4 animate-spin" aria-hidden="true" />}
-              {t("studio.rendering")}
+              {submitLabel}
             </>
           ) : (
-            t("studio.draft")
+            submitLabel
           )}
         </Button>
         <Button type="button" variant="outline" size="lg" className="rounded-brand" disabled>

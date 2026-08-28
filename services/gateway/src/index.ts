@@ -12,6 +12,7 @@ import { documentRoutes } from "./routes/documents.js";
 import { meetingRoutes } from "./routes/meetings.js";
 import { shareRoutes } from "./routes/shares.js";
 import { studioRoutes } from "./routes/studio.js";
+import { lifeRoutes } from "./routes/life.js";
 import { actOnConfirmed, storedSteps } from "./act.js";
 import {
   ensureSession,
@@ -796,6 +797,9 @@ api.use("/studio", studioRoutes);
 
 // Documents, proxied to the librarian with a signed scope token.
 api.use("/documents", documentRoutes);
+
+// Life: people, places, rhythms, reminders, proposed commitments.
+api.use("/life", lifeRoutes);
 
 app.use("/api", api);
 

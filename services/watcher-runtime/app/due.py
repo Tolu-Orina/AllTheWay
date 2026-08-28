@@ -140,3 +140,69 @@ def fanout_session_ended(uid: str, session_id: str) -> dict[str, int]:
             failed += 1
             log.exception("session-ended enqueue failed")
     return {"enqueued": enqueued, "failed": failed}
+
+
+def scan_reminders(now: datetime | None = None) -> dict[str, int]:
+    """Fire due leave-now reminders. Bounded, never raises into the sweep.
+
+    Pointers only on reminderDue. Instruction text (the title) lives under the
+    user. Claim-then-send: a retry after a crash does not double-notify because
+    the pointer is deleted and the reminder is marked fired first.
+    """
+    from google.cloud import firestore as fs
+
+    from .firestore import reminder_due, reminders
+    from .push import send_leave
+
+    at = now or datetime.now(timezone.utc)
+    fired = 0
+    failed = 0
+    seen = 0
+
+    query = reminder_due().where("fireAt", "<=", at).limit(MAX_DUE)
+    for snap in query.stream():
+        seen += 1
+        data = snap.to_dict() or {}
+        if "instruction" in data:
+            log.error("reminderDue %s carries instruction text; refusing", snap.id)
+            failed += 1
+            continue
+        uid = data.get("uid")
+        reminder_id = data.get("reminderId")
+        if not uid or not reminder_id:
+            failed += 1
+            continue
+        try:
+            rem_ref = reminders(str(uid)).document(str(reminder_id))
+            rem = rem_ref.get()
+            if not rem.exists:
+                snap.reference.delete()
+                continue
+            payload = rem.to_dict() or {}
+            state = payload.get("state")
+            if state != "scheduled":
+                snap.reference.delete()
+                continue
+            title = str(payload.get("title") or "pickup")
+            fire_at = data.get("fireAt")
+            minutes = 0
+            try:
+                due = _as_datetime(fire_at)
+                minutes = max(0, int(round((due - at).total_seconds() / 60)))
+            except (TypeError, ValueError):
+                minutes = 0
+            rem_ref.update({"state": "fired", "firedAt": fs.SERVER_TIMESTAMP})
+            snap.reference.delete()
+            send_leave(str(uid), title, minutes)
+            fired += 1
+        except Exception:  # noqa: BLE001 — one row must not break the sweep
+            failed += 1
+            log.exception("reminder fire failed")
+
+    if seen == MAX_DUE:
+        log.error(
+            "reminder scan hit its cap of %s rows; the rest wait for the next tick.",
+            MAX_DUE,
+        )
+
+    return {"seen": seen, "fired": fired, "failed": failed}

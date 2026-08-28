@@ -1,4 +1,4 @@
-"""Sending the digest notification.
+"""Sending notifications.
 
 FCM HTTP v1, called with the service's own identity. No VAPID private key lives
 here: for *sending*, Firebase authenticates the sender by service account, and
@@ -65,13 +65,19 @@ def _forget(uid: str, token: str) -> None:
         log.warning("could not remove a dead push token")
 
 
-def send_digest(uid: str, waiting: int) -> int:
+def send(
+    uid: str,
+    *,
+    body: str,
+    tag: str,
+    url: str = "/app",
+    urgency: str = "normal",
+    ttl: str = "43200",
+) -> int:
     """Notify one user. Returns how many devices were reached.
 
-    The wording is the design. "2 things need your decision" is actionable from
-    a lock screen; "You have a new digest" is not, and a notification that says
-    nothing specific is one people swipe away without reading — which trains
-    them to swipe away the ones that matter.
+    Sent as `data`, not `notification`: our own service worker renders it, so the
+    shape is ours and the payload cannot set options we did not intend.
     """
     if not PROJECT:
         return 0
@@ -80,50 +86,34 @@ def send_digest(uid: str, waiting: int) -> int:
     if not tokens:
         return 0
 
-    if waiting == 0:
-        # Nothing needs a person. Sending anyway would be a daily interruption
-        # that says "nothing to do", which is how notifications get turned off.
-        return 0
-
-    body = (
-        "1 thing needs your decision."
-        if waiting == 1
-        else f"{waiting} things need your decision."
-    )
-
     try:
         access_token = _token()
     except Exception:  # noqa: BLE001 - no credential, no push, no crash
         log.exception("could not authenticate to FCM")
         return 0
 
-    url = f"https://fcm.googleapis.com/v1/projects/{PROJECT}/messages:send"
+    fcm_url = f"https://fcm.googleapis.com/v1/projects/{PROJECT}/messages:send"
     reached = 0
 
     with httpx.Client(timeout=TIMEOUT_SECONDS) as http:
         for token in tokens:
             try:
                 response = http.post(
-                    url,
+                    url=fcm_url,
                     headers={"Authorization": f"Bearer {access_token}"},
                     json={
                         "message": {
                             "token": token,
-                            # Sent as `data`, not `notification`: our own service
-                            # worker renders it, so the shape is ours and the
-                            # payload cannot set options we did not intend.
                             "data": {
                                 "title": "AllTheWay",
                                 "body": body,
-                                "url": "/app",
-                                "tag": "alltheway-digest",
+                                "url": url,
+                                "tag": tag,
                             },
                             "webpush": {
                                 "headers": {
-                                    # Expires with the morning it belongs to.
-                                    # A digest delivered tomorrow is noise.
-                                    "TTL": "43200",
-                                    "Urgency": "normal",
+                                    "TTL": ttl,
+                                    "Urgency": urgency,
                                 }
                             },
                         }
@@ -144,3 +134,44 @@ def send_digest(uid: str, waiting: int) -> int:
                 log.warning("push rejected: HTTP %s", response.status_code)
 
     return reached
+
+
+def send_digest(uid: str, waiting: int) -> int:
+    """Notify one user. Returns how many devices were reached.
+
+    The wording is the design. "2 things need your decision" is actionable from
+    a lock screen; "You have a new digest" is not, and a notification that says
+    nothing specific is one people swipe away without reading — which trains
+    them to swipe away the ones that matter.
+    """
+    if waiting == 0:
+        # Nothing needs a person. Sending anyway would be a daily interruption
+        # that says "nothing to do", which is how notifications get turned off.
+        return 0
+
+    body = (
+        "1 thing needs your decision."
+        if waiting == 1
+        else f"{waiting} things need your decision."
+    )
+    return send(uid, body=body, tag="alltheway-digest", url="/app", urgency="normal", ttl="43200")
+
+
+def leave_copy(title: str, minutes: int) -> str:
+    """Lock-screen copy for leave-now. Never "You have a notification"."""
+    label = title.strip() or "pickup"
+    if minutes <= 0:
+        return f"Leave for {label} now."
+    return f"Leave for {label} in {minutes} minutes."
+
+
+def send_leave(uid: str, title: str, minutes: int) -> int:
+    """Leave-now. High urgency, short TTL — a late pickup notice is noise."""
+    return send(
+        uid,
+        body=leave_copy(title, minutes),
+        tag="alltheway-leave",
+        url="/app",
+        urgency="high",
+        ttl="120",
+    )

@@ -4,6 +4,7 @@ import { motion, useReducedMotion } from "motion/react";
 import { NAV } from "@/app/nav";
 import { useT } from "@/app/i18n";
 import { cn } from "@/lib/utils";
+import { useLifeAlerts } from "@/app/life/alerts";
 
 /**
  * Mobile tab bar: a floating glass pill where only the active tab carries its
@@ -17,6 +18,7 @@ export function TabBar() {
   const t = useT();
   const reduced = useReducedMotion();
   const { pathname } = useLocation();
+  const { count } = useLifeAlerts();
 
   return (
     <nav
@@ -57,6 +59,12 @@ export function TabBar() {
                 strokeWidth={active ? 2.4 : 1.9}
                 aria-hidden="true"
               />
+              {item.to === "/app" && count > 0 ? (
+                <span
+                  className="absolute top-1.5 right-2 size-1.5 rounded-full bg-primary"
+                  aria-label={String(count)}
+                />
+              ) : null}
               <span className={cn("relative", active ? "inline" : "sr-only")}>
                 {t(item.labelKey)}
               </span>

@@ -1,7 +1,7 @@
 import { FieldValue, Timestamp } from "firebase-admin/firestore";
 import { randomUUID } from "node:crypto";
 
-import { studioJobs } from "../firestore.js";
+import { db, studioJobs } from "../firestore.js";
 
 /**
  * A Veo draft that outlives the HTTP request that started it.
@@ -31,6 +31,8 @@ export type StudioJob = {
   error: string;
   shots: StudioJobShot[];
   shotIndex: number;
+  polling: boolean;
+  persisting: boolean;
   createdAt: string;
   updatedAt: string;
 };
@@ -67,6 +69,8 @@ function toJob(id: string, data: FirebaseFirestore.DocumentData): StudioJob {
     error: data.error ?? "",
     shots: toShots(data.shots),
     shotIndex: typeof data.shotIndex === "number" ? data.shotIndex : 0,
+    polling: data.polling === true,
+    persisting: data.persisting === true,
     createdAt: iso(data.createdAt),
     updatedAt: iso(data.updatedAt),
   };
@@ -99,6 +103,8 @@ export async function createStudioJob(opts: {
     error: "",
     shots: opts.shots ?? [],
     shotIndex: 0,
+    polling: false,
+    persisting: false,
     createdAt: FieldValue.serverTimestamp(),
     updatedAt: FieldValue.serverTimestamp(),
   });
@@ -135,10 +141,105 @@ export async function updateStudioJob(
     error: string;
     shots: StudioJobShot[];
     shotIndex: number;
+    polling: boolean;
+    persisting: boolean;
   }>,
 ): Promise<void> {
   await studioJobs(uid).doc(id).update({
     ...patch,
     updatedAt: FieldValue.serverTimestamp(),
+  });
+}
+
+/**
+ * Sentinel written before Vertex is called. A second GET that still sees
+ * this must not start another billed operation — it waits.
+ */
+export const STARTING_OPERATION = "starting";
+
+function stale(job: StudioJob, ms: number): boolean {
+  const at = Date.parse(job.updatedAt);
+  if (!Number.isFinite(at) || at === 0) return true;
+  return Date.now() - at > ms;
+}
+
+export type ShotStartClaim = { kind: "go" | "poll" | "wait"; job: StudioJob };
+
+/**
+ * Exactly one request may call draft_video for the current shot.
+ *
+ * Overlapping GETs (React Strict Mode remounts the poll effect) used to
+ * both see an empty operation and both start Veo. Vertex billed twice;
+ * the second write overwrote the first operation name.
+ */
+export async function claimShotStart(uid: string, id: string): Promise<ShotStartClaim> {
+  const ref = studioJobs(uid).doc(id);
+  return db.runTransaction(async (tx) => {
+    const snap = await tx.get(ref);
+    if (!snap.exists) throw new Error("That job is not here.");
+    const job = toJob(id, snap.data() ?? {});
+    if (job.operation && job.operation !== STARTING_OPERATION) {
+      return { kind: "poll" as const, job };
+    }
+    if (job.operation === STARTING_OPERATION && !stale(job, 90_000)) {
+      return { kind: "wait" as const, job };
+    }
+    tx.update(ref, {
+      operation: STARTING_OPERATION,
+      status: "rendering",
+      polling: false,
+      updatedAt: FieldValue.serverTimestamp(),
+    });
+    return { kind: "go" as const, job };
+  });
+}
+
+export type PollClaim = { kind: "go" | "wait" | "ready" | "failed"; job: StudioJob };
+
+/**
+ * Exactly one request may fetchPredictOperation at a time.
+ *
+ * A completed Veo response is a large video in JSON. Two in-flight polls
+ * each materialised that payload on connector-gateway and both instances
+ * OOM'd at 512Mi (2026-08-28 17:16).
+ */
+export async function claimPoll(uid: string, id: string): Promise<PollClaim> {
+  const ref = studioJobs(uid).doc(id);
+  return db.runTransaction(async (tx) => {
+    const snap = await tx.get(ref);
+    if (!snap.exists) throw new Error("That job is not here.");
+    const job = toJob(id, snap.data() ?? {});
+    if (job.resultArtifactId) return { kind: "ready" as const, job };
+    if (job.status === "failed") return { kind: "failed" as const, job };
+    if (job.persisting && !stale(job, 60_000)) return { kind: "wait" as const, job };
+    if (job.polling && !stale(job, 60_000)) return { kind: "wait" as const, job };
+    tx.update(ref, { polling: true, updatedAt: FieldValue.serverTimestamp() });
+    return { kind: "go" as const, job };
+  });
+}
+
+export async function releasePoll(uid: string, id: string): Promise<void> {
+  await studioJobs(uid).doc(id).update({
+    polling: false,
+    updatedAt: FieldValue.serverTimestamp(),
+  });
+}
+
+export type PersistClaim = { kind: "go" | "wait" | "already"; job: StudioJob };
+
+export async function claimPersist(uid: string, id: string): Promise<PersistClaim> {
+  const ref = studioJobs(uid).doc(id);
+  return db.runTransaction(async (tx) => {
+    const snap = await tx.get(ref);
+    if (!snap.exists) throw new Error("That job is not here.");
+    const job = toJob(id, snap.data() ?? {});
+    if (job.resultArtifactId) return { kind: "already" as const, job };
+    if (job.persisting && !stale(job, 60_000)) return { kind: "wait" as const, job };
+    tx.update(ref, {
+      persisting: true,
+      polling: false,
+      updatedAt: FieldValue.serverTimestamp(),
+    });
+    return { kind: "go" as const, job };
   });
 }

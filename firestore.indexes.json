@@ -42,6 +42,19 @@
     },
     {
       "//": [
+        "Leave-now due-scan: fireAt <= now, limit 50. reminderDue is a project",
+        "pointer collection like watcherSchedule. Single-field inequality is",
+        "automatic, but declaring it keeps the contract visible next to the",
+        "watcher composite."
+      ],
+      "collectionGroup": "reminderDue",
+      "queryScope": "COLLECTION",
+      "fields": [
+        { "fieldPath": "fireAt", "order": "ASCENDING" }
+      ]
+    },
+    {
+      "//": [
         "The watcher due-scan: running == true AND nextRunAt <= now, limit 50.",
         "watcherSchedule is a project pointer collection, not a user subcollection,",
         "and queryScope is COLLECTION — this is not a collectionGroup query."

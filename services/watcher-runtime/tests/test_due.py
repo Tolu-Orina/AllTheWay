@@ -7,15 +7,19 @@ instruction never rides on the index.
 
 from datetime import datetime, timedelta, timezone
 
-from app.due import MIN_INTERVAL_MINUTES, run_id, scan_due, fanout_session_ended
+from app.due import MIN_INTERVAL_MINUTES, run_id, scan_due, fanout_session_ended, scan_reminders
 
 
 class FakeRef:
     def __init__(self, data: dict):
         self.data = data
+        self.deleted = False
 
     def update(self, fields: dict) -> None:
         self.data.update(fields)
+
+    def delete(self) -> None:
+        self.deleted = True
 
 
 class FakeSnap:
@@ -129,3 +133,46 @@ def test_session_ended_fans_out_only_matching_watchers(monkeypatch):
     assert published[0]["watcherId"] == "ended"
     assert published[0]["sessionId"] == "sess-1"
     assert published[0]["runId"] == "ended+sess-1"
+
+
+def test_reminder_scan_fires_leave_then_drops_the_pointer(monkeypatch):
+    due = datetime(2026, 8, 28, 8, 10, tzinfo=timezone.utc)
+    pointer = {
+        "uid": "user-a",
+        "reminderId": "r1",
+        "fireAt": due,
+        "kind": "leave",
+    }
+    reminder = {"title": "pickup", "state": "scheduled"}
+    sent = []
+    snap = FakeSnap("user-a_r1", pointer)
+
+    class ReminderSnap:
+        exists = True
+
+        def to_dict(self):
+            return reminder
+
+    class ReminderRef:
+        def get(self):
+            return ReminderSnap()
+
+        def update(self, fields):
+            reminder.update(fields)
+
+    class Reminders:
+        def document(self, _id):
+            return ReminderRef()
+
+    import app.firestore as fs
+    import app.push as push_mod
+
+    monkeypatch.setattr(fs, "reminder_due", lambda: FakeCollection([snap]))
+    monkeypatch.setattr(fs, "reminders", lambda uid: Reminders())
+    monkeypatch.setattr(push_mod, "send_leave", lambda uid, title, minutes: sent.append((uid, title, minutes)) or 1)
+
+    out = scan_reminders(now=due)
+    assert out["fired"] == 1
+    assert sent == [("user-a", "pickup", 0)]
+    assert reminder["state"] == "fired"
+    assert snap.reference.deleted is True

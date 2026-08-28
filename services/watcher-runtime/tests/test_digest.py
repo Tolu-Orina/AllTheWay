@@ -55,6 +55,13 @@ def test_a_user_with_no_devices_is_not_an_error(monkeypatch):
     assert push.send_digest("u", 3) == 0
 
 
+def test_leave_copy_is_actionable():
+    from app.push import leave_copy
+
+    assert leave_copy("pickup", 12) == "Leave for pickup in 12 minutes."
+    assert leave_copy("school", 0) == "Leave for school now."
+
+
 def test_the_notification_says_what_is_waiting(monkeypatch):
     """"You have a new digest" is not actionable from a lock screen; "2 things
     need your decision" is. A notification that says nothing specific trains

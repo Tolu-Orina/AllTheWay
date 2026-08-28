@@ -214,7 +214,11 @@ export const CeilingSchema = z.enum([
   "send_automatically",
 ]);
 
-export const WatcherTriggerKindSchema = z.enum(["schedule", "session_ended"]);
+export const WatcherTriggerKindSchema = z.enum([
+  "schedule",
+  "session_ended",
+  "document_indexed",
+]);
 
 export const WatcherSchema = z.object({
   id: z.string(),
@@ -523,16 +527,107 @@ export const HomeDocumentSchema = z.object({
   createdAt: z.string().optional().default(""),
 });
 
+/**
+ * Life on Today: the next twelve hours, leave-now, and capture.
+ *
+ * Hats are filters over one companion, not three products. Google Calendar
+ * remains the clock; these objects are anticipation — who, where, when to leave.
+ */
+export const HatSchema = z.enum(["work", "home", "church"]);
+
+export const DayItemSchema = z.object({
+  id: z.string(),
+  title: z.string(),
+  startsAt: z.string(),
+  hat: HatSchema,
+  source: z.enum(["calendar", "rhythm"]),
+  personName: z.string().default(""),
+  leaveAt: z.string().nullable(),
+  placeLabel: z.string().default(""),
+});
+
+export const NextLeaveSchema = z.object({
+  title: z.string(),
+  leaveAt: z.string(),
+  minutes: z.number(),
+});
+
+export const DaySchema = z.object({
+  calendar: z.enum(["connected", "missing", "error"]),
+  hours: z.array(DayItemSchema),
+  nextLeave: NextLeaveSchema.nullable(),
+});
+
+export const PersonSchema = z.object({
+  id: z.string(),
+  name: z.string(),
+  relation: z.string().default(""),
+});
+
+export const PlaceSchema = z.object({
+  id: z.string(),
+  label: z.string(),
+  bufferMinutes: z.number().int().min(0).max(180).default(15),
+  hat: HatSchema.default("home"),
+});
+
+export const RhythmSchema = z.object({
+  id: z.string(),
+  title: z.string(),
+  hat: HatSchema,
+  weekdays: z.array(z.number().int().min(0).max(6)).min(1),
+  time: z.string(),
+  timeZone: z.string().default("Europe/London"),
+  personId: z.string().default(""),
+  placeId: z.string().default(""),
+});
+
+export const ReminderSchema = z.object({
+  id: z.string(),
+  title: z.string(),
+  kind: z.enum(["leave", "start", "prepare"]),
+  fireAt: z.string(),
+  state: z.enum(["scheduled", "fired", "dismissed"]),
+  hat: HatSchema.default("home"),
+  rhythmId: z.string().default(""),
+  commitmentId: z.string().default(""),
+});
+
+export const ProposedCommitmentSchema = z.object({
+  id: z.string(),
+  title: z.string(),
+  startsAt: z.string().nullable(),
+  hat: HatSchema.default("home"),
+  sourceDocumentId: z.string().default(""),
+  sourceTitle: z.string().default(""),
+  state: z.enum(["proposed", "accepted", "declined"]),
+  detail: z.string().default(""),
+});
+
 export const HomeSchema = z.object({
   onboarding: OnboardingSchema,
   plan: SessionDetailSchema.nullable(),
   digest: DigestSchema,
   runs: z.array(WatcherRunSchema),
   documents: z.array(HomeDocumentSchema),
+  day: DaySchema,
+  reminders: z.array(ReminderSchema),
+  proposed: z.array(ProposedCommitmentSchema),
+  people: z.array(PersonSchema),
+  places: z.array(PlaceSchema),
+  rhythms: z.array(RhythmSchema),
 });
 
 export type HomeDocument = z.infer<typeof HomeDocumentSchema>;
 export type Home = z.infer<typeof HomeSchema>;
+export type Hat = z.infer<typeof HatSchema>;
+export type DayItem = z.infer<typeof DayItemSchema>;
+export type Day = z.infer<typeof DaySchema>;
+export type Person = z.infer<typeof PersonSchema>;
+export type Place = z.infer<typeof PlaceSchema>;
+export type Rhythm = z.infer<typeof RhythmSchema>;
+export type Reminder = z.infer<typeof ReminderSchema>;
+export type ProposedCommitment = z.infer<typeof ProposedCommitmentSchema>;
 
 /** Human-facing labels live with the enum so both sides agree on wording. */
 export const CEILING_LABELS: Record<Ceiling, string> = {

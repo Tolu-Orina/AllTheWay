@@ -16,7 +16,7 @@ import { cn } from "@/lib/utils";
 type Draft = {
   instruction: string;
   name: string;
-  trigger: "daily" | "hourly" | "session_ended";
+  trigger: "daily" | "hourly" | "session_ended" | "document_indexed";
 };
 
 const emptyDraft: Draft = {
@@ -32,10 +32,11 @@ function clipName(instruction: string): string {
 }
 
 function triggerBody(draft: Draft): {
-  triggerKind: "schedule" | "session_ended";
+  triggerKind: "schedule" | "session_ended" | "document_indexed";
   intervalMinutes?: number;
 } {
   if (draft.trigger === "session_ended") return { triggerKind: "session_ended" };
+  if (draft.trigger === "document_indexed") return { triggerKind: "document_indexed" };
   return {
     triggerKind: "schedule",
     intervalMinutes: draft.trigger === "hourly" ? 60 : 1440,
@@ -119,7 +120,9 @@ export default function Watchers() {
       ? t("watchers.triggerHourly")
       : draft.trigger === "session_ended"
         ? t("watchers.triggerSessionEnded")
-        : t("watchers.triggerDaily");
+        : draft.trigger === "document_indexed"
+          ? t("watchers.triggerDocumentIndexed")
+          : t("watchers.triggerDaily");
 
   return (
     <div className="flex flex-col gap-5">
@@ -184,6 +187,7 @@ export default function Watchers() {
                   ["daily", t("watchers.triggerDaily")],
                   ["hourly", t("watchers.triggerHourly")],
                   ["session_ended", t("watchers.triggerSessionEnded")],
+                  ["document_indexed", t("watchers.triggerDocumentIndexed")],
                 ] as const
               ).map(([value, label]) => (
                 <label key={value} className="flex items-center gap-2 text-[14px]">

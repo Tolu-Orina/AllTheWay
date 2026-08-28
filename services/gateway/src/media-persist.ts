@@ -227,15 +227,24 @@ export async function persistMediaBytes(opts: {
   const kind = opts.kind;
 
   try {
-    if (opts.artifactId) {
-      await addVersion(opts.uid, opts.artifactId, {
+    // A still must not become a version of a clip (and the reverse). Kind is
+    // set at create and never changes; mixing bytes here is how "I asked for
+    // an image" can land on a video in the library.
+    let appendTo = opts.artifactId;
+    if (appendTo) {
+      const existing = await getArtifact(opts.uid, appendTo);
+      if (!existing || existing.kind !== kind) appendTo = undefined;
+    }
+
+    if (appendTo) {
+      await addVersion(opts.uid, appendTo, {
         body: opts.body,
         mimeType: opts.mimeType,
         producedBy: "agent",
         prompt,
         correction: "",
       });
-      const artifact = await getArtifact(opts.uid, opts.artifactId);
+      const artifact = await getArtifact(opts.uid, appendTo);
       if (!artifact) {
         return {
           error:

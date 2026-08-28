@@ -35,6 +35,7 @@ export function triggerLabel(
   intervalMinutes: number | null,
 ): string {
   if (kind === "session_ended") return "When a piece of work ends";
+  if (kind === "document_indexed") return "When a file is ready";
   if (intervalMinutes === 60) return "Every hour";
   if (intervalMinutes === 1440) return "Every weekday morning";
   return `Every ${intervalMinutes ?? MIN_INTERVAL_MINUTES} minutes`;
@@ -115,7 +116,7 @@ export async function setWatcherRunning(
   const indexRef = scheduleIndex().doc(scheduleDocId(uid, id));
   const batch = db.batch();
 
-  if (triggerKind === "session_ended") {
+  if (triggerKind === "session_ended" || triggerKind === "document_indexed") {
     batch.update(ref, { running, updatedAt: FieldValue.serverTimestamp() });
   } else if (running) {
     const minutes =
@@ -147,4 +148,20 @@ export async function setWatcherRunning(
   await batch.commit();
   const doc = await ref.get();
   return asWatcher(doc.id, doc.data() ?? {});
+}
+
+export async function writeAwaitingRun(
+  uid: string,
+  input: { watcherId: string; name: string; detail: string },
+): Promise<void> {
+  const id = crypto.randomUUID();
+  await runs(uid).doc(id).set({
+    watcherId: input.watcherId,
+    name: input.name,
+    detail: input.detail,
+    state: "awaiting_review",
+    trace: ["Proposed only. Nothing was added to the calendar."],
+    sessionId: "",
+    at: FieldValue.serverTimestamp(),
+  });
 }

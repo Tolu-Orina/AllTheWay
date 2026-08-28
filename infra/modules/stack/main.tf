@@ -477,10 +477,11 @@ module "service" {
   # number that can be raised.
   timeout_seconds = contains(["gateway", "scribe"], each.key) ? 3600 : 300
 
-  # Studio can join up to two minutes of Veo shots in /tmp. Those files live
-  # in memory on Cloud Run, and 512Mi is not enough once fifteen clips and
-  # the joined output are on disk at once.
-  memory = each.key == "gateway" ? "1Gi" : "512Mi"
+  # Studio video: the gateway joins shots in /tmp; connector-gateway holds a
+  # finished Veo payload in memory as JSON. 512Mi OOM'd the connector on a
+  # completed 8s poll (2026-08-28), and two overlapping polls killed two
+  # instances at once.
+  memory = contains(["gateway", "connector-gateway"], each.key) ? "1Gi" : "512Mi"
 
   # Concurrency, set for the pinned case rather than for today's traffic.
   #
@@ -639,6 +640,7 @@ locals {
     "meet-events",
     "digest-due",
     "watcher-due",
+    "reminder-due",
   ])
 
   # Which service consumes which topic, and at what path.
@@ -658,6 +660,10 @@ locals {
     # alive for one message a day.
     "digest-due"  = { topic = "digest-due", service = "watcher-runtime", path = "/events/digest" }
     "watcher-due" = { topic = "watcher-due", service = "watcher-runtime", path = "/events/due" }
+    # Leave-now. One-minute scan is the shippable backup; Cloud Tasks at fireAt
+    # is the preferred path once Tasks IAM is in place. A missed pickup is
+    # worse than a missed digest, so this tick is tighter than watcher-due.
+    "reminder-due" = { topic = "reminder-due", service = "watcher-runtime", path = "/events/reminders" }
   }
 }
 
@@ -780,6 +786,27 @@ resource "google_cloud_scheduler_job" "watcher_due" {
 
   pubsub_target {
     topic_name = google_pubsub_topic.events["watcher-due"].id
+    data       = base64encode(jsonencode({ sweep = true }))
+  }
+
+  depends_on = [google_pubsub_topic.events]
+}
+
+# Leave-now reminders. Cloud Tasks at fireAt is the preferred path (a one-shot
+# at the exact instant); this one-minute scan is the shippable backup until
+# that IAM is in place. Five minutes is acceptable for "leave in 15"; not
+# for "leave in 90 seconds".
+resource "google_cloud_scheduler_job" "reminder_due" {
+  project   = var.project_id
+  region    = var.region
+  name      = "reminder-due-${var.env}"
+  schedule  = "* * * * *"
+  time_zone = "Etc/UTC"
+
+  description = "Publishes the reminder due-scan. Prefer Cloud Tasks at fireAt when IAM allows."
+
+  pubsub_target {
+    topic_name = google_pubsub_topic.events["reminder-due"].id
     data       = base64encode(jsonencode({ sweep = true }))
   }
 

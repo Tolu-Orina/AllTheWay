@@ -23,6 +23,13 @@ test("a single clip is not split", () => {
   assert.deepEqual(shotDurations(6), [6]);
 });
 
+test("a six-second punch-up stays one shot", () => {
+  const merged = mergePlan("a desk", 6, [{ seconds: 6, prompt: "morning light on an oak desk" }]);
+  assert.equal(merged.length, 1);
+  assert.equal(merged[0]?.prompt, "morning light on an oak desk");
+  assert.equal(merged[0]?.seconds, 6);
+});
+
 test("a planner that returns extra shots is truncated to the duration split", () => {
   const merged = mergePlan("a walk through the office", 16, [
     { seconds: 8, prompt: "wide of the lobby" },

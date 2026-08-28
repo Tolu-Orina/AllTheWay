@@ -1,8 +1,8 @@
 import { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router";
 import { useT } from "@/app/i18n";
-import { ArrowRight, Clapperboard, ExternalLink, FileText, Image, ListTodo, Loader2 } from "lucide-react";
-import type { LifeContext, OnboardingJob } from "@alltheway/contracts";
+import { ArrowRight, Bell, Camera, Clapperboard, Clock, ExternalLink, Image, ListTodo, Loader2 } from "lucide-react";
+import type { Hat, Home as HomeData, LifeContext, OnboardingJob } from "@alltheway/contracts";
 
 import { Button } from "@/components/ui/button";
 import {
@@ -34,6 +34,12 @@ import { useCompanionThread } from "@/app/companion-thread";
 import { DocumentPickup, askAboutAdded } from "@/app/Documents";
 import { PlanStack } from "@/app/PlanStack";
 import { BillingReturnBanner } from "@/app/Usage";
+import { DayTimeline } from "@/app/life/DayTimeline";
+import { LifeTray } from "@/app/life/LifeTray";
+import { PushOffer } from "@/app/life/PushOffer";
+import { ProposedCommitments } from "@/app/life/ProposedCommitments";
+import { RhythmsSheet } from "@/app/life/RhythmsSheet";
+import { useLifeAlerts } from "@/app/life/alerts";
 
 type ActivationJob = Exclude<OnboardingJob, "skipped">;
 
@@ -58,8 +64,13 @@ export default function Home() {
   const t = useT();
   const navigate = useNavigate();
   const { send, openCompanion } = useCompanionThread();
+  const { refresh: refreshAlerts } = useLifeAlerts();
   const { state, reload } = useAsync(() => api.home());
   const [docsOpen, setDocsOpen] = useState(false);
+  const [rhythmsOpen, setRhythmsOpen] = useState(false);
+  const [remindOpen, setRemindOpen] = useState(false);
+  const [proposeAfterUpload, setProposeAfterUpload] = useState(false);
+  const [hat, setHat] = useState<Hat | "all">("all");
 
   const job = state.status === "ready" ? state.data.onboarding.job : undefined;
 
@@ -75,51 +86,118 @@ export default function Home() {
     }
   }, [job]);
 
+  function reloadAll() {
+    reload();
+    refreshAlerts();
+  }
+
   // Greeting and the four cards do not wait. First-run vs Today is a product
   // branch, not a reason to hide the shell behind onboarding then four more
   // round trips.
   if (state.status === "ready" && state.data.onboarding.job === null) {
-    return <FirstRun onSaved={reload} />;
+    return <FirstRun onSaved={reloadAll} />;
   }
+
+  const home = state.status === "ready" ? state.data : null;
 
   return (
     <div className="flex flex-col gap-6">
-      <HomeHeader />
+      <HomeHeader day={home?.day ?? null} />
       <BillingReturnBanner />
+      <LifeTray />
+
+      {state.status === "loading" ? <HomeSkeleton /> : null}
+      {state.status === "error" ? (
+        <ErrorState message={state.message} onRetry={reloadAll} />
+      ) : null}
+      {home ? (
+        <>
+          <PushOffer
+            show={Boolean(home.day.nextLeave) || home.digest.awaitingDecision.length > 0}
+          />
+          <DayTimeline day={home.day} hat={hat} onHat={setHat} />
+          <HomeRest
+            job={home.onboarding.job ?? "skipped"}
+            plan={home.plan}
+            runs={home.runs}
+            digest={home.digest}
+            documents={home.documents}
+            proposed={home.proposed}
+            onAddFile={() => {
+              setProposeAfterUpload(false);
+              setDocsOpen(true);
+            }}
+            onReload={reloadAll}
+          />
+        </>
+      ) : null}
+
       <CapabilityGrid
         onImage={() => navigate("/app/studio?mode=image")}
         onVideo={() => navigate("/app/studio?mode=video")}
         onPlan={() => openCompanion()}
-        onFile={() => setDocsOpen(true)}
+        onFile={() => {
+          setProposeAfterUpload(true);
+          setDocsOpen(true);
+        }}
+        onToday={() => {
+          openCompanion();
+          send("What's on my calendar for the next twelve hours?");
+        }}
+        onRemind={() => setRemindOpen(true)}
+        onRhythms={() => setRhythmsOpen(true)}
       />
-
-      {state.status === "loading" ? <HomeSkeleton /> : null}
-      {state.status === "error" ? (
-        <ErrorState message={state.message} onRetry={reload} />
-      ) : null}
-      {state.status === "ready" ? (
-        <HomeRest
-          job={state.data.onboarding.job ?? "skipped"}
-          plan={state.data.plan}
-          runs={state.data.runs}
-          digest={state.data.digest}
-          documents={state.data.documents}
-          onAddFile={() => setDocsOpen(true)}
-        />
-      ) : null}
 
       <Sheet open={docsOpen} onOpenChange={setDocsOpen}>
         <SheetContent side="bottom" className="gap-4 p-4">
           <SheetHeader className="p-0">
-            <SheetTitle>{t("today.addAFile")}</SheetTitle>
-            <SheetDescription>{t("today.addAFileHint")}</SheetDescription>
+            <SheetTitle>{proposeAfterUpload ? t("life.addFromPhoto") : t("today.addAFile")}</SheetTitle>
+            <SheetDescription>
+              {proposeAfterUpload ? t("life.capabilityPhotoHint") : t("today.addAFileHint")}
+            </SheetDescription>
           </SheetHeader>
           <DocumentPickup
-            onUploaded={(name) => {
-              reload();
-              openCompanion();
-              send(askAboutAdded(name));
+            onUploaded={(name, documentId) => {
+              reloadAll();
+              if (proposeAfterUpload && documentId) {
+                void api.proposeFromDocument(documentId).then(reloadAll);
+              } else {
+                openCompanion();
+                send(askAboutAdded(name));
+              }
               setDocsOpen(false);
+            }}
+          />
+        </SheetContent>
+      </Sheet>
+
+      <Sheet open={rhythmsOpen} onOpenChange={setRhythmsOpen}>
+        <SheetContent side="bottom" className="max-h-[85dvh] gap-4 overflow-y-auto p-4">
+          <SheetHeader className="p-0">
+            <SheetTitle>{t("life.whoWeLookAfter")}</SheetTitle>
+            <SheetDescription>{t("life.whoHint")}</SheetDescription>
+          </SheetHeader>
+          {home ? (
+            <RhythmsSheet
+              people={home.people}
+              places={home.places}
+              rhythms={home.rhythms}
+              onChange={reloadAll}
+            />
+          ) : null}
+        </SheetContent>
+      </Sheet>
+
+      <Sheet open={remindOpen} onOpenChange={setRemindOpen}>
+        <SheetContent side="bottom" className="gap-4 p-4">
+          <SheetHeader className="p-0">
+            <SheetTitle>{t("life.remindMe")}</SheetTitle>
+            <SheetDescription>{t("life.capabilityRemindHint")}</SheetDescription>
+          </SheetHeader>
+          <RemindForm
+            onSaved={() => {
+              setRemindOpen(false);
+              reloadAll();
             }}
           />
         </SheetContent>
@@ -128,7 +206,7 @@ export default function Home() {
   );
 }
 
-function HomeHeader() {
+function HomeHeader({ day }: { day: HomeData["day"] | null }) {
   const t = useT();
   const { user } = useAuth();
   const now = new Date();
@@ -141,6 +219,18 @@ function HomeHeader() {
   const greeting =
     hour < 12 ? "Good morning" : hour < 18 ? "Good afternoon" : "Good evening";
   const firstName = user?.displayName?.trim().split(/\s+/)[0];
+  const next = day?.nextLeave;
+  const standIn =
+    !next && day?.hours[0]
+      ? t("life.nothingTimed", {
+          time: new Date(day.hours[0].startsAt).toLocaleTimeString(undefined, {
+            hour: "numeric",
+            minute: "2-digit",
+          }),
+        })
+      : !next
+        ? t("life.nothingTimedEmpty")
+        : null;
 
   return (
     <header className="flex items-end justify-between gap-4">
@@ -151,7 +241,13 @@ function HomeHeader() {
           {firstName ? `, ${firstName}` : ""}
         </h1>
         <p className="mt-2 text-[15px] leading-relaxed text-muted-foreground">
-          {t("common.hereIsWhereThingsStand")}
+          {!day
+            ? t("common.hereIsWhereThingsStand")
+            : next
+              ? next.minutes <= 0
+                ? t("life.nextLeaveNow", { title: next.title })
+                : t("life.nextLeave", { title: next.title, minutes: String(next.minutes) })
+              : standIn}
         </p>
       </div>
       <VoiceControl />
@@ -258,14 +354,18 @@ function HomeRest({
   runs,
   digest,
   documents,
+  proposed,
   onAddFile,
+  onReload,
 }: {
   job: OnboardingJob;
   plan: SessionDetail | null;
   runs: WatcherRun[];
   digest: DigestData;
   documents: UserDocument[];
+  proposed: HomeData["proposed"];
   onAddFile: () => void;
+  onReload: () => void;
 }) {
   const t = useT();
   const firstWin = plan !== null || documents.length > 0;
@@ -274,7 +374,14 @@ function HomeRest({
   return (
     <>
       <LanguageOffer show={firstWin} />
-      <Digest digest={digest} />
+
+      <section aria-labelledby="waiting-heading" className="flex flex-col gap-3">
+        <h2 id="waiting-heading" className="text-[16px] font-semibold">
+          {t("life.waitingOnYou")}
+        </h2>
+        <Digest digest={digest} />
+        <ProposedCommitments rows={proposed} onChange={onReload} />
+      </section>
 
       {indexing ? (
         <p role="status" className="text-[13px] text-muted-foreground">
@@ -351,18 +458,28 @@ function CapabilityGrid({
   onVideo,
   onPlan,
   onFile,
+  onToday,
+  onRemind,
+  onRhythms,
 }: {
   onImage: () => void;
   onVideo: () => void;
   onPlan: () => void;
   onFile: () => void;
+  onToday: () => void;
+  onRemind: () => void;
+  onRhythms: () => void;
 }) {
   const t = useT();
-  const cards = [
+  const promoted = [
+    { key: "today", icon: Clock, title: t("life.whatsToday"), hint: t("life.capabilityTodayHint"), onClick: onToday },
+    { key: "remind", icon: Bell, title: t("life.remindMe"), hint: t("life.capabilityRemindHint"), onClick: onRemind },
+    { key: "photo", icon: Camera, title: t("life.addFromPhoto"), hint: t("life.capabilityPhotoHint"), onClick: onFile },
+    { key: "plan", icon: ListTodo, title: t("today.capabilityPlan"), hint: t("today.capabilityPlanHint"), onClick: onPlan },
+  ] as const;
+  const demoted = [
     { key: "image", icon: Image, title: t("today.capabilityImage"), hint: t("today.capabilityImageHint"), onClick: onImage },
     { key: "video", icon: Clapperboard, title: t("today.capabilityVideo"), hint: t("today.capabilityVideoHint"), onClick: onVideo },
-    { key: "plan", icon: ListTodo, title: t("today.capabilityPlan"), hint: t("today.capabilityPlanHint"), onClick: onPlan },
-    { key: "file", icon: FileText, title: t("today.capabilityFile"), hint: t("today.capabilityFileHint"), onClick: onFile },
   ] as const;
 
   return (
@@ -371,7 +488,7 @@ function CapabilityGrid({
         {t("today.capabilityHeading")}
       </h2>
       <ul className="grid grid-cols-2 gap-4 xl:grid-cols-4">
-        {cards.map((card) => (
+        {promoted.map((card) => (
           <li key={card.key}>
             <button
               type="button"
@@ -385,7 +502,94 @@ function CapabilityGrid({
           </li>
         ))}
       </ul>
+      <p className="mt-5 mb-2 text-[12px] font-semibold tracking-[0.08em] text-muted-foreground uppercase">
+        {t("nav.studio")}
+      </p>
+      <ul className="grid grid-cols-2 gap-4">
+        {demoted.map((card) => (
+          <li key={card.key}>
+            <button
+              type="button"
+              onClick={card.onClick}
+              className="flex h-full w-full flex-col items-start gap-2 rounded-brand-lg border bg-card/70 px-4 py-3 text-left text-muted-foreground shadow-e1 transition-colors hover:border-primary/40 hover:text-foreground"
+            >
+              <card.icon className="size-5 shrink-0" aria-hidden="true" />
+              <span className="text-[14px] font-semibold leading-snug">{card.title}</span>
+              <span className="text-[12.5px] leading-relaxed">{card.hint}</span>
+            </button>
+          </li>
+        ))}
+      </ul>
+      <button
+        type="button"
+        onClick={onRhythms}
+        className="mt-4 text-[13px] text-muted-foreground underline underline-offset-2"
+      >
+        {t("life.whoWeLookAfter")}
+      </button>
     </section>
+  );
+}
+
+function RemindForm({ onSaved }: { onSaved: () => void }) {
+  const t = useT();
+  const [title, setTitle] = useState("");
+  const [when, setWhen] = useState("");
+  const [saving, setSaving] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+
+  async function save() {
+    if (!title.trim() || !when) return;
+    setSaving(true);
+    setError(null);
+    try {
+      await api.createReminder({
+        title: title.trim(),
+        kind: "start",
+        fireAt: new Date(when).toISOString(),
+      });
+      onSaved();
+    } catch {
+      setError(t("life.couldNotSave"));
+      setSaving(false);
+    }
+  }
+
+  return (
+    <form
+      className="flex flex-col gap-3"
+      onSubmit={(e) => {
+        e.preventDefault();
+        void save();
+      }}
+    >
+      <input
+        required
+        value={title}
+        onChange={(e) => setTitle(e.target.value)}
+        placeholder={t("life.rhythmPlaceholder")}
+        className="rounded-brand border bg-background px-3 py-2 text-[14px]"
+        aria-label={t("life.remindMe")}
+      />
+      <label className="text-[13px] text-muted-foreground">
+        {t("life.remindAt")}
+        <input
+          type="datetime-local"
+          required
+          value={when}
+          onChange={(e) => setWhen(e.target.value)}
+          className="mt-1 block w-full rounded-brand border bg-background px-3 py-2 text-[14px]"
+        />
+      </label>
+      {error ? (
+        <p role="alert" className="text-[13px] text-destructive">
+          {error}
+        </p>
+      ) : null}
+      <Button type="submit" variant="brand" size="lg" disabled={saving || !title.trim() || !when}>
+        {saving ? t("life.creating") : t("life.save")}
+      </Button>
+    </form>
   );
 }
 

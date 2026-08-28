@@ -25,6 +25,22 @@ export type PushOutcome =
   | { ok: true; token: string }
   | { ok: false; reason: string };
 
+export function isStandaloneDisplay(): boolean {
+  if (typeof window === "undefined") return false;
+  return (
+    window.matchMedia("(display-mode: standalone)").matches ||
+    Boolean((navigator as { standalone?: boolean }).standalone)
+  );
+}
+
+export function iosNeedsHomeScreen(): boolean {
+  if (typeof navigator === "undefined") return false;
+  const ios =
+    /iPad|iPhone|iPod/.test(navigator.userAgent) ||
+    (navigator.platform === "MacIntel" && navigator.maxTouchPoints > 1);
+  return ios && !isStandaloneDisplay();
+}
+
 export async function enablePush(): Promise<PushOutcome> {
   const vapidKey = import.meta.env.VITE_FIREBASE_VAPID_KEY as string | undefined;
   if (!vapidKey) {

@@ -27,6 +27,15 @@ def runs(uid: str):
     return user_doc(uid).collection("runs")
 
 
+def reminders(uid: str):
+    return user_doc(uid).collection("reminders")
+
+
+def reminder_due():
+    """Pointer collection. uid + reminderId + fireAt. Never instruction text."""
+    return db.collection("reminderDue")
+
+
 def sessions(uid: str):
     return user_doc(uid).collection("sessions")
 

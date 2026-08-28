@@ -11,6 +11,7 @@ import { TabBar } from "@/app/TabBar";
 import { CompanionPanel } from "@/app/CompanionPanel";
 import { CompanionThreadProvider } from "@/app/companion-thread";
 import { VoiceProvider } from "@/app/use-voice";
+import { LifeAlertsProvider } from "@/app/life/alerts";
 import { registerAppServiceWorker } from "@/app/pwa";
 import { cn } from "@/lib/utils";
 
@@ -41,6 +42,7 @@ export function AppLayout() {
 
   return (
     <VoiceProvider>
+    <LifeAlertsProvider>
     <CompanionThreadProvider>
     <SidebarProvider>
       <div className="relative isolate flex min-h-dvh flex-col bg-background lg:flex-row">
@@ -90,6 +92,7 @@ export function AppLayout() {
       </div>
     </SidebarProvider>
     </CompanionThreadProvider>
+    </LifeAlertsProvider>
     </VoiceProvider>
   );
 }

@@ -10,11 +10,17 @@ import {
   videoStartFromConnectorTask,
 } from "./media-persist.js";
 import { env } from "./env.js";
+import { getArtifact } from "./repos/artifacts.js";
 import { planVideoShots } from "./studio-plan.js";
 import { SHOT_MAX_SECONDS } from "./studio-shots.js";
 import {
+  claimPersist,
+  claimPoll,
+  claimShotStart,
   getStudioJob,
+  releasePoll,
   scratchArtifactId,
+  STARTING_OPERATION,
   updateStudioJob,
   type StudioJob,
 } from "./repos/studio-jobs.js";
@@ -63,12 +69,34 @@ export async function advanceStudioJob(uid: string, job: StudioJob): Promise<Stu
     return joinShots(uid, job);
   }
 
+  if (job.resultArtifactId) {
+    const artifact = await getArtifact(uid, job.resultArtifactId);
+    return {
+      status: "ready",
+      message: "",
+      jobId: job.id,
+      artifact: artifact ?? undefined,
+      shotIndex: job.shotIndex,
+      shotCount: job.shots.length || undefined,
+    };
+  }
+
   if (isSequence(job) && job.shots.length === 0) {
     return planShots(uid, job);
   }
 
-  if (isSequence(job) && !job.operation) {
-    if (job.shotIndex >= job.shots.length) {
+  if (job.operation === STARTING_OPERATION) {
+    return {
+      status: "rendering",
+      message: RENDERING,
+      jobId: job.id,
+      shotIndex: job.shots.length ? job.shotIndex : undefined,
+      shotCount: job.shots.length || undefined,
+    };
+  }
+
+  if (!job.operation) {
+    if (isSequence(job) && job.shotIndex >= job.shots.length) {
       return joinShots(uid, job);
     }
     return startCurrentShot(uid, job);
@@ -91,9 +119,26 @@ async function planShots(uid: string, job: StudioJob): Promise<StudioAdvance> {
 
 async function startCurrentShot(uid: string, job: StudioJob): Promise<StudioAdvance> {
   const shot = job.shots[job.shotIndex];
-  if (!shot) {
+  if (!shot && isSequence(job)) {
     return joinShots(uid, job);
   }
+
+  const claim = await claimShotStart(uid, job.id);
+  if (claim.kind === "wait") {
+    return {
+      status: "rendering",
+      message: RENDERING,
+      jobId: job.id,
+      shotIndex: job.shotIndex,
+      shotCount: job.shots.length || undefined,
+    };
+  }
+  if (claim.kind === "poll") {
+    return pollCurrent(uid, claim.job);
+  }
+
+  const prompt = shot?.prompt ?? job.prompt;
+  const seconds = shot?.seconds ?? job.seconds;
 
   try {
     const task = await runConnectorTool({
@@ -101,7 +146,7 @@ async function startCurrentShot(uid: string, job: StudioJob): Promise<StudioAdva
       sessionId: STUDIO_SESSION_ID,
       connector: "media",
       tool: "draft_video",
-      arguments: { prompt: shot.prompt, seconds: shot.seconds },
+      arguments: { prompt, seconds },
       confirmed: true,
       timeoutMs: VIDEO_START_TIMEOUT_MS,
     });
@@ -114,7 +159,7 @@ async function startCurrentShot(uid: string, job: StudioJob): Promise<StudioAdva
           ? `Shot ${job.shotIndex + 1} could not start — no draft seconds left. Earlier shots were billed.`
           : "No draft seconds left this month."
         : "The model declined that. Try a different description.";
-      await updateStudioJob(uid, job.id, { status: "failed", error: message });
+      await updateStudioJob(uid, job.id, { status: "failed", error: message, operation: "" });
       return {
         status: quota ? "quota" : "declined",
         message,
@@ -127,7 +172,7 @@ async function startCurrentShot(uid: string, job: StudioJob): Promise<StudioAdva
     const started = videoStartFromConnectorTask(task);
     if (started.error || !started.operation) {
       const message = started.error || "Could not start that clip. Nothing was saved.";
-      await updateStudioJob(uid, job.id, { status: "failed", error: message });
+      await updateStudioJob(uid, job.id, { status: "failed", error: message, operation: "" });
       return { status: "failed", message, jobId: job.id };
     }
 
@@ -146,6 +191,7 @@ async function startCurrentShot(uid: string, job: StudioJob): Promise<StudioAdva
   } catch (err) {
     const msg = (err as Error).message;
     console.warn(`[studio] shot start failed: ${msg}`);
+    await updateStudioJob(uid, job.id, { operation: "" }).catch(() => undefined);
     return {
       status: "rendering",
       message: RENDERING,
@@ -157,6 +203,36 @@ async function startCurrentShot(uid: string, job: StudioJob): Promise<StudioAdva
 }
 
 async function pollCurrent(uid: string, job: StudioJob): Promise<StudioAdvance> {
+  if (!job.operation || job.operation === STARTING_OPERATION) {
+    return {
+      status: "rendering",
+      message: RENDERING,
+      jobId: job.id,
+      shotIndex: job.shots.length ? job.shotIndex : undefined,
+      shotCount: job.shots.length || undefined,
+    };
+  }
+
+  const claim = await claimPoll(uid, job.id);
+  if (claim.kind === "ready") {
+    const artifact = claim.job.resultArtifactId
+      ? (await getArtifact(uid, claim.job.resultArtifactId)) ?? undefined
+      : undefined;
+    return { status: "ready", message: "", jobId: job.id, artifact };
+  }
+  if (claim.kind === "failed") {
+    return { status: "failed", message: claim.job.error || "That clip could not be made.", jobId: job.id };
+  }
+  if (claim.kind === "wait") {
+    return {
+      status: "rendering",
+      message: RENDERING,
+      jobId: job.id,
+      shotIndex: job.shots.length ? job.shotIndex : undefined,
+      shotCount: job.shots.length || undefined,
+    };
+  }
+
   const shot = job.shots[job.shotIndex];
   const seconds = shot?.seconds ?? job.seconds;
 
@@ -177,7 +253,7 @@ async function pollCurrent(uid: string, job: StudioJob): Promise<StudioAdvance> 
 
     const poll = videoPollFromConnectorTask(task);
     if (poll.error && !poll.body) {
-      await updateStudioJob(uid, job.id, { status: "failed", error: poll.error });
+      await updateStudioJob(uid, job.id, { status: "failed", error: poll.error, polling: false });
       return { status: "failed", message: poll.error, jobId: job.id };
     }
 
@@ -208,6 +284,7 @@ async function pollCurrent(uid: string, job: StudioJob): Promise<StudioAdvance> 
           status: "joining",
           operation: "",
           shotIndex: nextIndex,
+          polling: false,
         });
         const latest = await getStudioJob(uid, job.id);
         return joinShots(uid, latest ?? { ...job, shotIndex: nextIndex, status: "joining" });
@@ -216,6 +293,7 @@ async function pollCurrent(uid: string, job: StudioJob): Promise<StudioAdvance> 
         status: "rendering",
         operation: "",
         shotIndex: nextIndex,
+        polling: false,
       });
       return {
         status: "rendering",
@@ -223,6 +301,21 @@ async function pollCurrent(uid: string, job: StudioJob): Promise<StudioAdvance> 
         jobId: job.id,
         shotIndex: nextIndex,
         shotCount: job.shots.length,
+      };
+    }
+
+    const persist = await claimPersist(uid, job.id);
+    if (persist.kind === "already") {
+      const artifact = persist.job.resultArtifactId
+        ? (await getArtifact(uid, persist.job.resultArtifactId)) ?? undefined
+        : undefined;
+      return { status: "ready", message: "", jobId: job.id, artifact };
+    }
+    if (persist.kind === "wait") {
+      return {
+        status: "rendering",
+        message: RENDERING,
+        jobId: job.id,
       };
     }
 
@@ -236,18 +329,20 @@ async function pollCurrent(uid: string, job: StudioJob): Promise<StudioAdvance> 
     });
 
     if (saved && "error" in saved) {
-      await updateStudioJob(uid, job.id, { status: "failed", error: saved.error });
+      await updateStudioJob(uid, job.id, { status: "failed", error: saved.error, persisting: false });
       return { status: "failed", message: saved.error, jobId: job.id };
     }
     if (!saved || !("artifact" in saved)) {
       const message = "The clip finished but could not be saved.";
-      await updateStudioJob(uid, job.id, { status: "failed", error: message });
+      await updateStudioJob(uid, job.id, { status: "failed", error: message, persisting: false });
       return { status: "failed", message, jobId: job.id };
     }
 
     await updateStudioJob(uid, job.id, {
       status: "ready",
       resultArtifactId: saved.artifact.id,
+      persisting: false,
+      polling: false,
     });
     return {
       status: "ready",
@@ -265,6 +360,8 @@ async function pollCurrent(uid: string, job: StudioJob): Promise<StudioAdvance> 
       shotIndex: job.shots.length ? job.shotIndex : undefined,
       shotCount: job.shots.length || undefined,
     };
+  } finally {
+    await releasePoll(uid, job.id).catch(() => undefined);
   }
 }
 
@@ -278,6 +375,17 @@ async function joinShots(uid: string, job: StudioJob): Promise<StudioAdvance> {
 
   if (job.status !== "joining") {
     await updateStudioJob(uid, job.id, { status: "joining", operation: "" });
+  }
+
+  const persist = await claimPersist(uid, job.id);
+  if (persist.kind === "already") {
+    const artifact = persist.job.resultArtifactId
+      ? (await getArtifact(uid, persist.job.resultArtifactId)) ?? undefined
+      : undefined;
+    return { status: "ready", message: "", jobId: job.id, artifact, shotIndex: count, shotCount: count };
+  }
+  if (persist.kind === "wait") {
+    return { status: "joining", message: JOINING, jobId: job.id, shotIndex: job.shotIndex, shotCount: count };
   }
 
   try {
@@ -310,6 +418,7 @@ async function joinShots(uid: string, job: StudioJob): Promise<StudioAdvance> {
       status: "ready",
       resultArtifactId: saved.artifact.id,
       operation: "",
+      persisting: false,
     });
     return {
       status: "ready",

@@ -15,6 +15,11 @@ import {
   SessionSchema,
   WatcherRunSchema,
   WatcherSchema,
+  PersonSchema,
+  PlaceSchema,
+  RhythmSchema,
+  ReminderSchema,
+  ProposedCommitmentSchema,
   type OnboardingJob,
   type LifeContext,
   UsageSchema,
@@ -48,6 +53,15 @@ export type {
   SessionDetail,
   Watcher,
   WatcherRun,
+  Home,
+  Day,
+  DayItem,
+  Hat,
+  Person,
+  Place,
+  Rhythm,
+  Reminder,
+  ProposedCommitment,
 } from "@alltheway/contracts";
 
 export const ConnectorSchema = z.object({
@@ -130,6 +144,16 @@ export type Artifact = z.infer<typeof ArtifactSchema>;
 export type ArtifactDetail = z.infer<typeof ArtifactDetailSchema>;
 export type ArtifactVersion = z.infer<typeof ArtifactVersionSchema>;
 
+export const StudioPlanSchema = z.object({
+  seconds: z.number(),
+  shots: z.array(
+    z.object({
+      prompt: z.string(),
+      seconds: z.number(),
+    }),
+  ),
+});
+
 export const StudioGenerateSchema = z.object({
   status: z.enum(["ready", "queued", "rendering", "joining", "not_ready", "declined", "quota", "failed"]),
   message: z.string(),
@@ -170,7 +194,7 @@ export const api = {
   createWatcher: (body: {
     name: string;
     instruction: string;
-    triggerKind: "schedule" | "session_ended";
+    triggerKind: "schedule" | "session_ended" | "document_indexed";
     intervalMinutes?: number;
     ceiling?: "draft_only" | "send_after_review" | "send_automatically";
   }) => apiPost("/watchers", body, WatcherSchema),
@@ -244,7 +268,7 @@ export const api = {
    * API, and a second parsing path would be a second thing to keep correct.
    */
   uploadDocument: (title: string, content: string, mimeType: string) =>
-    apiPost("/documents", { title, content, mimeType }),
+    apiPost("/documents", { title, content, mimeType }, z.object({ documentId: z.string().optional() })),
 
   deleteDocument: (id: string) =>
     apiDelete(`/documents/${encodeURIComponent(id)}`),
@@ -292,11 +316,15 @@ export const api = {
    * Studio Generate. Pressing the button is consent — confirmed on the
    * gateway, no second Yes card.
    */
+  studioPlan: (body: { prompt: string; seconds: number }) =>
+    apiPost("/studio/plan", body, StudioPlanSchema),
+
   studioGenerate: (body: {
     prompt: string;
     mode: "image" | "video";
     seconds?: number;
     artifactId?: string;
+    shots?: Array<{ prompt: string; seconds: number }>;
   }) => apiPost("/studio/generate", body, StudioGenerateSchema),
 
   studioJob: (id: string) =>
@@ -355,6 +383,39 @@ export const api = {
     apiPost("/recoveries/taken", { id, routeId }),
   registerPushToken: (token: string) => apiPost("/push/tokens", { token }),
   unregisterPushToken: (token: string) => apiPost("/push/tokens/remove", { token }),
+  people: () => apiGet("/life/people", z.array(PersonSchema)),
+  createPerson: (body: { name: string; relation?: string }) =>
+    apiPost("/life/people", body, PersonSchema),
+  places: () => apiGet("/life/places", z.array(PlaceSchema)),
+  createPlace: (body: { label: string; bufferMinutes?: number; hat?: "work" | "home" | "church" }) =>
+    apiPost("/life/places", body, PlaceSchema),
+  rhythms: () => apiGet("/life/rhythms", z.array(RhythmSchema)),
+  createRhythm: (body: {
+    title: string;
+    hat: "work" | "home" | "church";
+    weekdays: number[];
+    time: string;
+    timeZone?: string;
+    personId?: string;
+    placeId?: string;
+  }) => apiPost("/life/rhythms", body, RhythmSchema),
+  deleteRhythm: (id: string) => apiDelete(`/life/rhythms/${encodeURIComponent(id)}`),
+  reminders: () => apiGet("/life/reminders", z.array(ReminderSchema)),
+  createReminder: (body: {
+    title: string;
+    kind?: "leave" | "start" | "prepare";
+    fireAt: string;
+    hat?: "work" | "home" | "church";
+  }) => apiPost("/life/reminders", body, ReminderSchema),
+  dismissReminder: (id: string) =>
+    apiPost(`/life/reminders/${encodeURIComponent(id)}/dismiss`, {}, ReminderSchema),
+  proposed: () => apiGet("/life/proposed", z.array(ProposedCommitmentSchema)),
+  proposeFromDocument: (documentId: string) =>
+    apiPost("/life/propose", { documentId }, z.array(ProposedCommitmentSchema)),
+  acceptProposed: (id: string) =>
+    apiPost(`/life/proposed/${encodeURIComponent(id)}/accept`, {}, ProposedCommitmentSchema),
+  declineProposed: (id: string) =>
+    apiPost(`/life/proposed/${encodeURIComponent(id)}/decline`, {}, ProposedCommitmentSchema),
   locale: () => apiGet("/settings/locale", z.object({ locale: z.string().nullable() })),
   setLocale: (locale: string) => apiPost("/settings/locale", { locale }),
   onboarding: () => apiGet("/settings/onboarding", OnboardingSchema),

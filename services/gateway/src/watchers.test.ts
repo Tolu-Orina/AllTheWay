@@ -69,6 +69,19 @@ test("creating a schedule writes the due index", emulated, async () => {
   assert.ok(next.toDate().getTime() > Date.now());
 });
 
+test("a document_indexed watcher has no due row", emulated, async () => {
+  const uid = `${UID}-docs`;
+  const watcher = await createWatcher(uid, {
+    name: "School letters",
+    instruction: "When a file is ready, propose dates. Do not add them to the calendar.",
+    triggerKind: "document_indexed",
+    ceiling: "send_after_review",
+  });
+  const index = await scheduleIndex().doc(scheduleDocId(uid, watcher.id)).get();
+  assert.equal(index.exists, false);
+  assert.equal(watcher.triggerKind, "document_indexed");
+});
+
 test("a session-ended watcher has no due row", emulated, async () => {
   const uid = `${UID}-ended`;
   const watcher = await createWatcher(uid, {
