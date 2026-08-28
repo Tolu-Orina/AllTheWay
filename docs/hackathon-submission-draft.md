@@ -1,6 +1,6 @@
 # AllTheWay — Devpost submission draft
 
-> Draft. Four fields need your input before submitting — marked **[NEEDS YOU]**. Everything else is drawn from the repo.
+> Draft. Remaining fields that need you before submitting are marked **[NEEDS YOU]**: sharing a private repo, the test-account password (Devpost field only), and publishing the bonus content / social post. Start date, testing instructions, and the architecture diagram are filled in from the repo.
 
 ---
 
@@ -16,90 +16,101 @@ So AllTheWay started from two commitments. It should keep working when you're no
 
 AllTheWay is a companion you talk to, that watches and acts for you, and that learns how you think from your corrections.
 
-**Voice, properly.** Real-time speech in and out over a WebSocket, with the audio relayed through our own gateway so we can meter it, screen it, and keep the transcript. It handles 85+ languages and code-mixing mid-sentence — which matters more than it sounds, because plenty of people don't speak one language at a time.
+**Voice, and it follows you between languages.** Real-time speech in and out over a WebSocket, relayed through our own gateway so we can meter it, screen it, and keep the transcript. It handles 85+ languages, and it switches when you switch — mid-conversation, mid-sentence — because we deliberately send no language code and instruct it to mirror the speaker. It also mirrors code-mixing, which matters: plenty of people speak English and Yorùbá in the same sentence, and a companion that tidies that into one language is correcting them.
 
-**Watchers.** Standing instructions that run without you. "Watch this inbox and draft a reply when a contract arrives." Each watcher has an autonomy ceiling you set — draft only, send after review, or send automatically — and there's a floor enforced server-side that no setting can raise. Anything irreversible stops and asks.
+**Watchers.** Standing instructions that run without you, on a schedule we can observe. Each has an autonomy ceiling you set — draft only, send after review, or send automatically — and a floor enforced server-side that no setting can raise. Anything irreversible stops and asks.
 
-**Meetings.** It joins, listens, and takes notes, and it cannot speak — that's a hard property, not a setting. Everyone is asked before it connects. It ladders down gracefully: live transcription when available, reading the transcript afterwards when not, and a browser extension that captures locally when neither is possible. Live insights arrive on a backing-off schedule — one minute, three, five, ten, fifteen, then every fifteen — so a ninety-minute meeting costs ten reasoning passes instead of ninety.
+**Meetings.** It joins, listens, and takes notes, and it cannot speak — a property of how it's built, not a setting. Everyone is asked before it connects. It ladders down gracefully: live transcription where available, the transcript afterwards where not, and a browser extension that captures locally when neither is possible. Live insights arrive on a backing-off schedule — one minute, three, five, ten, fifteen, then every fifteen — so a ninety-minute meeting costs ten reasoning passes instead of ninety.
 
-**Documents.** Add a contract or a spec and it answers from it with citations you can click. Deleting the document removes what it learned from it.
+**Documents, answered with citations you can click.** Add a contract or a spec and it answers from it. Deleting the document removes what it learned from it.
 
-**Artifacts you can correct.** Every document, image or video it produces is versioned. When you say "no, shorter, and drop the second paragraph", that correction is stored as the reason for the next version. The Feedback Ledger is append-only — reverting a learned preference stamps it rather than deleting it, so the history of what it believed about you stays intact.
+**Artifacts you can correct.** Every document, image or video it produces is versioned. "No, shorter, and drop the second paragraph" is stored as the reason for the next version. The Feedback Ledger is append-only — reverting a learned preference stamps it rather than deleting it, so the history of what it believed about you stays intact.
 
-**Everything is inspectable.** Every specialist agent publishes a signed AgentCard, and the Agents page verifies each signature *at the moment you ask*, not at deploy time. If a capability stops verifying, the page says so.
+**Everything is inspectable.** Every specialist agent publishes a signed AgentCard, and the Agents page verifies each signature *at the moment you ask*, not at deploy time. A capability that stops verifying says so.
+
+**Seven languages.** 234 interface strings, each locale shipped as its own ~8KB chunk. Plural forms come from `Intl.PluralRules`, never a hand-written table.
 
 ## How we built it
 
 Nine services on Cloud Run, one GCP project, everything in Terraform with dev and prod as workspaces.
 
-The gateway is the only service reachable from the internet. It's Express with `firebase-admin`, and it holds the voice WebSocket, which is deliberate: it's the only process that can observe how long a session actually lasted, so it's the only place usage can be metered without trusting the client to report its own consumption.
+The gateway is the only service reachable from the internet. Express with `firebase-admin`, and it holds the voice WebSocket — deliberately, because it's the only process that can observe how long a session actually lasted, so it's the only place usage can be metered without trusting the client to report its own consumption.
 
-Behind it, the orchestrator runs the planning graph — the Clarify Gate that stops a turn when the request is ambiguous instead of guessing, and the confirm gate that refuses to run a plan with an irreversible step until you say yes. Around it sit the librarian (documents and retrieval), the scribe (meetings), the research cell, the connector gateway, the registry, the watcher runtime, and the profile synthesiser that turns corrections into learned preferences.
+Behind it the orchestrator runs the planning graph: the Clarify Gate that stops a turn when the request is ambiguous instead of guessing, and the confirm gate that refuses to run a plan with an irreversible step until you say yes. Around it sit the librarian (documents and retrieval), the scribe (meetings), the research cell, the connector gateway, the registry, the watcher runtime, and the profile synthesiser that turns corrections into learned preferences.
 
-Services talk to each other over A2A with signed AgentCards — ES256 detached JWS over canonically-serialised JSON, with the `signatures` field excluded from what's signed. The Python side publishes and the TypeScript side signs, and we proved the interop by having the Python library verify a card the TypeScript signer produced.
+Services talk over A2A with signed AgentCards — ES256 detached JWS over canonically-serialised JSON, with the `signatures` field excluded from what's signed. The Python side publishes and the TypeScript side signs; we proved the interop by having the Python library verify a card the TypeScript signer produced.
 
-Firestore holds everything, path-scoped per user. There are no collection-group queries anywhere, and a guard in CI fails the build if one appears — cross-tenant retrieval is the one failure this product cannot have.
+Firestore holds everything, path-scoped per user. No collection-group queries anywhere, and a check fails the build if one appears — cross-tenant retrieval is the one failure this product cannot have.
 
-Untrusted content is screened before any model reads it, and the screener fails closed. We tested it the only way that means anything: we fed it a prompt injection, confirmed it was transcribed rather than obeyed, then confirmed the screener blocked it.
+Untrusted content is screened before any model reads it, and the screener fails closed. We tested it the only way that means anything: fed it a prompt injection, confirmed it was transcribed rather than obeyed, then confirmed the screener blocked it.
 
-The whole thing is guarded by five checks that run before anything ships — tenant isolation, image dependencies, the plan table matching what's actually enforced, locale completeness, and whether every test file is genuinely being executed.
+Billing is Stripe, with the tier on the Subscription metadata, a refetch rather than trust in the webhook body, signature verification, and idempotency keyed on `event.id` so a replayed event writes once.
+
+Five checks run before anything ships: tenant isolation, image dependencies, the plan table matching what's enforced, locale completeness, and whether every test file is genuinely being executed.
 
 ## Challenges we ran into
 
 **The bugs that passed every check.** This is the theme of the project. Nearly every serious failure compiled cleanly and had green tests.
 
-The worst was an ingress misconfiguration. Every backend service was set to internal-only, which reads as the strict, correct choice — but there was no VPC anywhere in the Terraform, and a Cloud Run service calling another one leaves over the public internet unless its egress is routed through a VPC. Cloud Run rejects those with a **404, not a 403**, so the gateway dutifully turned it into a 502. The agents page had returned 502 for thirty days and had *never once succeeded*. We only found it by reading production request logs and noticing that every endpoint the gateway served itself returned 200, while every endpoint it proxied failed.
+The worst was an ingress misconfiguration. Every backend service was `INGRESS_TRAFFIC_INTERNAL_ONLY`, which reads as the strict, correct choice — but there was no VPC anywhere in the Terraform, and a Cloud Run service calling another leaves over the public internet unless its egress routes through a VPC. Cloud Run rejects those with a **404, not a 403**, so the gateway turned it into a 502. The agents page had returned 502 for thirty days and had *never once succeeded*. We found it by reading production request logs and noticing that every endpoint the gateway served itself returned 200 while every endpoint it proxied failed.
 
-Fixing that revealed a second fault hiding underneath. `google-auth` doesn't install `requests`, and `google.auth.transport.requests` raises `ImportError` without it. That import sat inside a broad `except`, logged at `debug` — which is also exactly what a developer laptop with no metadata server looks like. So every internal call had been going out with no `Authorization` header at all, invisibly, for weeks. Two stacked faults, and the first was masking the second.
+Fixing that revealed a second fault underneath. `google-auth` does not install `requests`, and `google.auth.transport.requests` raises `ImportError` without it. That import sat inside a broad `except`, logged at `debug` — which is also exactly what a developer laptop with no metadata server looks like. Every internal call had been going out with no `Authorization` header at all, invisibly, for weeks. Two stacked faults, and the first was masking the second.
 
-Then there was the typechecking that wasn't. `web`'s tsconfig is solution-style with `"files": []`, which means `tsc -p` checks nothing and exits 0. There was no `typecheck` script at all, and CI ran lint and build — but Vite builds with esbuild, which strips types without reading them. Type errors had been reaching production as runtime failures the entire time.
+**A test suite that certified a bug.** The morning digest read `status == "awaiting_confirmation"` while the watcher runtime wrote `state: "awaiting_review"`. No document has ever carried that field and value, so the "needs your decision" list was permanently empty however many runs were genuinely waiting. It survived because every test fixture had been written to match the *reader* instead of the *writer*. A green suite proved nothing. We rewrote the fixtures to the runtime's shape and verified the fix by reverting the reader and watching three tests fail.
+
+**Typechecking that wasn't.** `web`'s tsconfig is solution-style with `"files": []`, so `tsc -p` checks nothing and exits 0. There was no `typecheck` script at all, and CI ran lint and build — but Vite builds with esbuild, which strips types without reading them. Type errors had been reaching production as runtime failures the entire time.
+
+**A white screen where the sign-in form should be.** `useT` throws when it finds no provider — deliberately, so a missing catalogue surfaces instead of rendering raw keys. That makes the provider boundary load-bearing, and when it wrapped only the authenticated area, every auth screen threw on render. Nothing failed to compile and no test noticed. There is now a build check on the shape of that tree.
+
+**Latency that was entirely cold starts.** Users reported the app was slow to open. The bundle was fine — 112KB over the wire. The request logs showed a p50 of 0.06s against a p95 of 4–10s on *every* endpoint, and nothing genuinely slow is fast half the time. Instances were finishing startup five seconds after the request that woke them.
 
 **Guards that couldn't fail.** We wrote a dependency check that could never trip, because the pattern it looked for was matched by an unrelated `COPY` line. And a `terraform validate` that passed vacuously because it ran in a directory holding only tfvars. Both looked green for weeks. The rule that came out of it: after writing a guard, break the thing on purpose and watch it fail, or you haven't written a guard.
 
-**Terraform's `merge()` is shallow.** A service listed in two maps lost the keys from the first, which took secret-access IAM down to three of five services and caused a short production incident.
-
-**Costs that bite once.** An early test wasn't stubbed properly and would have started a real video generation. It only cost nothing because a credential allow-list happened to block it. We rewrote it to stub the connector and assert the real path is never reached.
+**Terraform's `merge()` is shallow.** A service listed in two maps lost the keys from the first, which took secret-access IAM down to three of five services and caused a short production incident. Later, a service missing from the roles map entirely had no Firestore permission at all — its container crashed on every request and restarted clean, so the logs showed healthy startups and nothing else.
 
 ## Accomplishments that we're proud of
 
-**Tenant isolation that's structurally enforced, not just intended.** No collection-group queries, no user-owned root collections, and a guard that fails the build if either appears. "Cross-user retrieval is unacceptable" is a sentence a lot of projects would put in a README. Here it's a check that runs before every deploy.
+**Tenant isolation that's structurally enforced, not merely intended.** No collection-group queries, no user-owned root collections, and a guard that fails the build if either appears. "Cross-user retrieval is unacceptable" is a sentence many projects put in a README. Here it's a check that runs before every deploy.
 
-**The autonomy floor.** Tests were written before the mechanism, and it's still the strongest code in the repo. A watcher cannot take an irreversible action regardless of how its ceiling is configured — the floor is server-side and no client setting can raise it.
+**The autonomy floor.** Tests were written before the mechanism, and it's still the strongest code in the repo. A watcher cannot take an irreversible action regardless of how its ceiling is configured.
 
 **Meeting insights that cost what they should.** The backing-off schedule holds a ninety-minute meeting to ten reasoning passes instead of ninety, without the user having to think about it.
 
-**Signed capability contracts, verified live.** The Agents page checks each signature when you open it. A capability that silently stops verifying is visible immediately, rather than at the next deploy.
+**Signed capability contracts, verified live.** The Agents page checks each signature when you open it, so a capability that silently stops verifying is visible immediately rather than at the next deploy.
 
-**Seven languages, wired end to end.** 120 keys, each locale shipped as its own ~8KB chunk so a French user never downloads Yoruba and an English user downloads neither. **Internationalisation that respects grammar.** Plural categories come from `Intl.PluralRules`, never a hand-written table. Welsh has six categories and drives consonant mutation — *peth* becomes *beth* becomes *pheth* — and it's driven correctly by the plural category. A `count === 1` check would read as illiteracy to a native speaker.
+**Seven languages, wired end to end.** 234 keys, each locale its own ~8KB chunk, so a French user never downloads Yorùbá and an English user downloads neither. Plural categories come from `Intl.PluralRules`. Welsh has six categories and drives consonant mutation — *peth* becomes *beth* becomes *pheth* — and it is driven correctly by the plural category. A `count === 1` check would read as illiteracy to a native speaker.
 
-**Honest failure states.** Errors say what happened and what's safe. "Your work is safe — nothing was lost" is a real guarantee here, not reassurance.
+**Voice that follows the speaker.** No language code is sent, and a test asserts that field stays absent — because pinning one would lock the session to a single language and quietly undo the whole behaviour.
+
+**584 tests** — 211 TypeScript, 373 Python — and five build guards, each of which we have deliberately broken to confirm it fails.
 
 ## What we learned
 
-**A green build is evidence of very little.** The single most valuable habit we developed was reproducing the failure, fixing it, then reproducing the fix. Every significant bug in this codebase typechecked.
+**A green build is evidence of very little.** The single most valuable habit we developed was reproducing the failure, fixing it, then reproducing the fix. Every significant bug in this codebase typechecked, and one of them was actively certified by its own tests.
 
-**Silent failure paths are worse than loud broken ones.** The missing `requests` package cost weeks precisely because it was handled gracefully. A broad `except` that logs at `debug` turns a packaging bug into an invisible one. We now distinguish the two cases explicitly: a metadata server that won't answer is normal on a laptop and stays at debug; a build that *cannot* mint tokens at all is an error that names the fix.
+**Test the writer, not the reader.** The digest bug survived because its fixtures were written to match the code under test rather than the code that produces the data. A fixture that agrees with the reader tests nothing at all.
 
-**404 doesn't always mean "not found".** Cloud Run uses it for ingress rejection, which sends you looking for a routing bug when the problem is network policy.
+**Silent failure paths are worse than loud broken ones.** The missing `requests` package cost weeks precisely because it was handled gracefully. A broad `except` that logs at `debug` turns a packaging bug into an invisible one. We now separate the two cases explicitly: a metadata server that won't answer is normal on a laptop and stays at debug; a build that *cannot* mint tokens at all is an error that names the fix.
 
-**Read the logs before forming a theory.** The breakdown of which paths returned 200 and which returned 502 identified the root cause in about a minute, after a good deal of speculation had gotten nowhere.
+**404 doesn't always mean "not found".** Cloud Run uses it for ingress rejection, which sends you hunting for a routing bug when the problem is network policy.
+
+**Read the logs before forming a theory.** The breakdown of which paths returned 200 and which returned 502 identified a month-old outage in about a minute, after a good deal of speculation had gone nowhere.
 
 **Write the interface for the person who has to trust it.** The most valuable design decisions weren't technical — the confirm gate, the append-only ledger, the live signature check. Those are what make the thing checkable, and checkable is what trust actually rests on.
 
 ## What's next for AllTheWay
 
-- **Native review of the six machine-drafted catalogues.** The interface is wired and switching language works, but only English has been read by someone who speaks it. Machine translation is a first pass, not a release.
-- **Session creation.** Sessions can be read but not created; the flow needs building end to end.
-- **Real observability on the turn path.** The orchestrator currently logs only startup and shutdown, so a failed turn leaves no trace. That's the next thing to fix, and it should have been first.
-- **Publish the browser extension** once the privacy policy and store listing are done.
-- **Payments**, deferred deliberately until the product questions behind them are settled.
+- **Close the acting gap.** Confirming a plan currently writes a ledger row; it does not yet put the event on your calendar. The architecture for it is designed — the gateway calls the connector gateway over A2A with the stored arguments — and it is the single change that turns "here is a plan" into "it is done".
+- **Native review of the six machine-drafted catalogues.** The interface is wired and switching works, but only English has been read by someone who speaks it. Machine translation is a first pass, not a release.
+- **Real observability on the turn path.** The orchestrator logs startup and shutdown and little else, so a failed turn leaves no trace. It should have been first.
+- **Publish the browser extension** once the store listing is done.
 - **Google Meet Developer Preview** integration, deferred to v4.
 
 ---
 
 ## Built with
 
-`google-cloud` · `cloud-run` · `firestore` · `firebase` · `firebase-auth` · `firebase-hosting` · `vertex-ai` · `gemini` · `veo` · `gemma` · `terraform` · `typescript` · `python` · `react` · `vite` · `tailwindcss` · `fastapi` · `express` · `zod` · `a2a-protocol` · `mcp` · `websockets` · `pub-sub` · `cloud-build` · `chrome-extension`
+`google-cloud` · `cloud-run` · `firestore` · `firebase` · `firebase-auth` · `firebase-hosting` · `vertex-ai` · `gemini` · `veo` · `gemma` · `terraform` · `typescript` · `python` · `react` · `vite` · `tailwindcss` · `fastapi` · `express` · `zod` · `a2a-protocol` · `mcp` · `stripe` · `websockets` · `cloud-build` · `chrome-extension`
 
 *(25 tags — the maximum)*
 
@@ -111,11 +122,11 @@ Then there was the typechecking that wasn't. `web`'s tsconfig is solution-style 
 
 ## What date did you start this project?
 
-**[NEEDS YOU]** Git history begins **08-25-26**, but that is when the project was added to source control — not when you started building. Entries must be newly created during the submission period, so put the real start date and check it falls inside the window.
+**22 August 2026.** Git history begins 25 August 2026, which is when the work landed in source control — not when building started.
 
 ## Did you add Reproducible Testing instructions to your README?
 
-**[NEEDS YOU] — currently no.** The README has a "Running locally" section but nothing labelled reproducible testing. I can write one covering emulator setup, the guard commands and how to run every suite. Test account: `alltheway@rinegansolutions.com` — put the password in the Devpost field, which only Devpost managers and judges see.
+**Yes.** Judges do not clone the repo. Open [https://alltheway.rinegansolutions.com](https://alltheway.rinegansolutions.com) and sign in with `alltheway@rinegansolutions.com`. The password is in the Devpost field (managers and judges only). That is the production app.
 
 ## Which Google SDK did you use?
 
@@ -123,7 +134,7 @@ Then there was the typechecking that wasn't. `web`'s tsconfig is solution-style 
 - **A2A SDK** (`a2a-sdk`, with the `fastapi` extra) — agent-to-agent protocol
 - **Firebase Admin SDK** (`firebase-admin`) — auth and Firestore server-side
 - **Google Cloud client libraries** — `google-cloud-firestore`, `@google-cloud/pubsub`, `@google-cloud/storage`
-- **google-auth** — service-to-service identity tokens
+- **google-auth** (`[requests]`) — service-to-service identity tokens
 - **MCP SDK** (`mcp`) — agent-to-tool, kept deliberately separate from A2A
 
 ## Which Google Cloud Service(s) did you use?
@@ -147,9 +158,101 @@ Cloud Run · Firestore · Firebase Authentication · Firebase Hosting · Vertex 
 
 ## Architecture diagram
 
-**[NEEDS YOU]** Not yet produced. I can generate one from the Terraform and the service graph on request.
+Nine Cloud Run services in one GCP project (`alltheway-rinegan`, `europe-west1`). The gateway is the only process on the public internet. Everything else is internal-only, invoked by named service accounts — the invoker graph is Terraform, not a convention.
+
+```mermaid
+flowchart TB
+  subgraph clients [People]
+    Web["Web SPA<br/>Firebase Hosting"]
+    Ext["Chrome extension"]
+  end
+
+  subgraph edge [Public edge]
+    Hosting["Firebase Hosting<br/>alltheway.rinegansolutions.com"]
+    GW["Cloud Run: Gateway<br/>Express · Firebase Admin<br/>voice WebSocket · SSE turns<br/>Stripe webhook"]
+  end
+
+  subgraph agents [Internal Cloud Run — A2A + identity tokens]
+    Orch["Orchestrator<br/>Clarify Gate · confirm gate<br/>plan graph"]
+    Lib["Librarian<br/>documents · embeddings<br/>path-scoped retrieval"]
+    Scribe["Scribe<br/>meetings · notes<br/>cannot speak"]
+    Research["Research cell<br/>bounded fan-out"]
+    Conn["Connector gateway<br/>MCP tools · Calendar"]
+    Watch["Watcher runtime<br/>autonomy floor"]
+    Synth["Profile synthesizer<br/>learned preferences"]
+    Reg["Registry<br/>signed AgentCards<br/>verified live"]
+  end
+
+  subgraph models [Vertex AI]
+    Flash["gemini-3.7-flash"]
+    Live["gemini-live-2.5-flash-native-audio"]
+    Transcribe["gemini-3.5-transcribe-live-preview"]
+    Embed["gemini-embedding-001"]
+    Veo["Veo 3.1"]
+    Gemma["gemma-3-4b-it"]
+  end
+
+  subgraph state [State and events]
+    FS[("Firestore<br/>one user per path")]
+    GCS[("Cloud Storage")]
+    SM["Secret Manager"]
+    Bus["Pub/Sub · Eventarc<br/>Cloud Scheduler"]
+  end
+
+  Stripe["Stripe Checkout / Portal"]
+
+  Web --> Hosting
+  Hosting -->|"/api rewrite"| GW
+  Web -->|"voice WS + turn stream<br/>direct — Hosting times out at 60s"| GW
+  Ext --> GW
+  Stripe -->|"signed webhook"| GW
+
+  GW --> Orch
+  GW --> Lib
+  GW --> Scribe
+  GW --> Watch
+  GW --> Synth
+  GW --> Reg
+  GW --> FS
+  GW --> GCS
+  GW --> SM
+  GW --> Live
+
+  Orch --> Research
+  Orch --> Lib
+  Orch --> Conn
+  Orch --> Flash
+  Orch --> Gemma
+
+  Scribe --> Orch
+  Scribe --> Transcribe
+
+  Lib --> Embed
+  Lib --> FS
+
+  Watch --> Orch
+  Watch --> Conn
+  Bus --> Watch
+  Bus --> Synth
+
+  Conn --> Veo
+  Conn --> FS
+
+  Reg --> Orch
+  Reg --> Lib
+  Reg --> Scribe
+  Reg --> Research
+  Reg --> Conn
+  Reg --> Watch
+```
+
+**How a turn actually travels.** The browser never talks to an agent. The gateway verifies the Firebase ID token, retrieves passages from the librarian under that user (never a client-supplied uid), and drives the orchestrator over A2A. Ambiguous requests stop at the Clarify Gate (`TASK_STATE_INPUT_REQUIRED`). A plan with an irreversible step stops at the confirm gate. Grounded answers carry the retrieved passage on the wire so a citation chip can open it without a second fetch.
+
+**Why the gateway holds the voice socket.** Vertex does not issue ephemeral tokens. The browser sends PCM to us; we relay it. That is also the only process that can observe how long a session lasted, so it is the only honest place to meter usage.
+
+The same diagram lives in the root README.
 
 ## Optional bonus items
 
-- **Content piece (blog, podcast, video)** — not created. Must be public, not unlisted, and must state explicitly that it was created for this hackathon.
-- **Social media post** — not created. Must include **#AllThingsAgentic Hackathon**.
+- **Content piece (blog, podcast, video)** — `content/the-invoice-the-model-forgot.md` exists in the repo but is not published. It must be public, not unlisted, and must state explicitly that it was created for this hackathon. **[NEEDS YOU]** to publish and link.
+- **Social media post** — `content/social-posts.md` exists as drafts. Must include **#AllThingsAgentic Hackathon**. **[NEEDS YOU]** to post and link.

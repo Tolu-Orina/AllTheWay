@@ -105,3 +105,14 @@ export function agentClient(baseUrl: string): Promise<Client> {
 }
 
 export const orchestratorClient = () => agentClient(env.orchestratorUrl);
+
+/**
+ * The Agent Gateway.
+ *
+ * Reachable from here only since v3.5: the gateway holds the connector grants,
+ * so it is the natural caller for a read the user is already authenticated for.
+ * Writes are deliberately not routed this way — they go through the planner and
+ * the confirm gate, and the connector gateway enforces the autonomy floor on
+ * its own side regardless of who calls it.
+ */
+export const connectorClient = () => agentClient(env.connectorGatewayUrl);

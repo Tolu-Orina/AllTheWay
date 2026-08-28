@@ -52,6 +52,18 @@ locals {
     }
   } : {}
 
+  # Which services are Python, read from the repository rather than listed.
+  #
+  # A hand-kept list is the wrong shape here: adding a service and forgetting to
+  # add it here would silently stop `libs/**` rebuilding it, which is the exact
+  # failure the included_files comment below describes — a stale image nobody
+  # notices. The presence of a pyproject is what actually makes a service
+  # Python, so that is what is asked.
+  python_services = [
+    for s in var.backend_services :
+    s if fileexists("${path.module}/../../services/${s}/pyproject.toml")
+  ]
+
   ci_environments = local.ci_enabled ? toset(var.environments) : toset([])
 }
 
@@ -184,11 +196,30 @@ resource "google_cloudbuild_trigger" "backend" {
   # Deliberately over-broad: any libs change rebuilds every backend service.
   # Rebuilding an image that did not need it costs a few minutes; not
   # rebuilding one that did costs a service running code nobody shipped.
-  included_files = [
-    "services/${each.value.service}/**",
-    "libs/**",
-    "services/contracts/**",
-  ]
+  # Over-broad in the direction that is safe, but along the language boundary
+  # rather than across it.
+  #
+  # Every service watched both `libs/**` and `services/contracts/**`, and no
+  # service uses both: `libs/` is Python and is copied only into the seven
+  # Python images; `services/contracts` is TypeScript and is baked only into
+  # the gateway and the scribe. Neither TypeScript Dockerfile mentions
+  # `libs/`, and no Python pyproject mentions contracts.
+  #
+  # The cost was not theoretical. Builds here serialise: the regional pool
+  # allows ten concurrent build CPUs and every build asks for eight, so
+  # nothing overlaps. A one-line change to a TypeScript schema queued all ten
+  # services back to back -- about forty-five minutes to ship the three
+  # images that had actually changed.
+  #
+  # Still deliberately generous *within* a language: any `libs/` change
+  # rebuilds all seven Python services, because failing to rebuild one that
+  # needed it once shipped a stale screener into production.
+  included_files = concat(
+    ["services/${each.value.service}/**"],
+    contains(local.python_services, each.value.service)
+    ? ["libs/**"]
+    : ["services/contracts/**"],
+  )
   filename = "services/${each.value.service}/cloudbuild.yaml"
 
   substitutions = {

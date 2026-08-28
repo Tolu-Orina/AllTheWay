@@ -1,3 +1,4 @@
+import { READ_TOOLS } from "./tools.js";
 /**
  * The Live API wire, and our thinner wire to the browser.
  *
@@ -72,6 +73,21 @@ export const SYSTEM_INSTRUCTION = [
   "language nearest theirs that you do speak, and offer what you have. For",
   "Igbo: continue in English and say you can also continue in Yoruba or Hausa.",
   "Bad output in someone's language is worse than admitting you do not have it.",
+  "",
+  "# Looking things up",
+  "",
+  "You can see some things for yourself. Use those tools rather than guessing,",
+  "and rather than asking the person for what you could look up. If they ask",
+  "what is on today, what is waiting, what a document says, or what was agreed",
+  "in a meeting, go and look before you answer.",
+  "",
+  "Say what you found in your own words, in their language. Do not read the",
+  "result out field by field. If a tool tells you it cannot see something --",
+  "an account that is not connected -- say that plainly and say what would fix",
+  "it. Never invent a meeting, a time, or a document you did not get back.",
+  "",
+  "Scheduled meetings live on the calendar. Meetings you took notes in are a",
+  "different thing; do not answer one with the other.",
   "",
   "# Doing things",
   "",
@@ -183,7 +199,14 @@ export function setupMessage(opts: {
       },
       tools: [
         {
+          // The read tools first, then the planner.
+          //
+          // Order is not cosmetic: a model choosing a tool reads the list, and
+          // putting the thing that answers a question ahead of the thing that
+          // makes a plan is how "what's on today" stops becoming a plan about
+          // looking at a calendar.
           functionDeclarations: [
+            ...READ_TOOLS,
             {
               name: "plan_turn",
               description:

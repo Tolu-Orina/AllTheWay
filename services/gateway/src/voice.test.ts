@@ -15,6 +15,7 @@ import {
   setupMessage,
   SYSTEM_INSTRUCTION,
 } from "./voice/protocol.js";
+import { READ_TOOL_NAMES, runReadTool } from "./voice/tools.js";
 
 test("auth message requires a session id", () => {
   assert.equal(isAuthMessage({ auth: { token: "x", sessionId: "s1" } }), true);
@@ -246,4 +247,45 @@ test("voice keeps automatic turn detection, but not at its most eager", () => {
     (vad.prefixPaddingMs as number) > 0,
     "without prefix padding the first syllable of a turn is clipped",
   );
+});
+
+test("voice can look things up, and every lookup is read-only", () => {
+  /**
+   * The gap this closes: the model had exactly one tool, `plan_turn`, and the
+   * planner it reaches is told "never take an action; only plan". Asked about a
+   * meeting later that day, there was nothing it could consult — so it answered
+   * from the conversation alone and did not know.
+   */
+  const msg = setupMessage({
+    modelResource: "projects/p/locations/global/publishers/google/models/gemini-live-2.5-flash-native-audio",
+  });
+  const decls = (msg.setup as { tools: { functionDeclarations: { name: string }[] }[] })
+    .tools[0].functionDeclarations;
+  const names = decls.map((d) => d.name);
+
+  assert.ok(names.includes("whats_on_my_calendar"), "voice must be able to see the day");
+  assert.ok(names.includes("ask_my_documents"));
+  assert.ok(names.includes("whats_waiting_for_me"));
+  assert.ok(names.includes("my_recent_meetings"));
+  assert.ok(names.includes("plan_turn"), "the planner must remain");
+
+  // The safety property, stated as a test: nothing that changes the world is
+  // reachable directly. Writes go through plan_turn and stop at the confirm
+  // gate, so a misheard sentence cannot send, pay, or delete anything.
+  for (const name of names) {
+    if (name === "plan_turn") continue;
+    assert.ok(
+      READ_TOOL_NAMES.has(name),
+      `${name} is declared to voice but is not a read tool — writes must go through plan_turn`,
+    );
+  }
+});
+
+test("a read tool answers rather than throwing, even when it cannot help", async () => {
+  // A rejected tool call leaves the model holding nothing at the moment it is
+  // about to speak, and nothing is what a confident invention looks like from
+  // the inside. Every path returns an object.
+  const result = await runReadTool("nobody", "no_such_tool", {});
+  assert.equal(typeof result, "object");
+  assert.ok("cannot" in result, "an unknown tool must explain itself, not throw");
 });

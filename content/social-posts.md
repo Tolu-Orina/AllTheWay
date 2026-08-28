@@ -118,7 +118,7 @@ Both carry **#AllThingsAgenticHackathon** as the rules require. Neither is publi
 
 ## Notes before you post
 
-- The blog post carries the required hackathon-entry language in two places (top and bottom). Keep both if you trim.
+- The blog post carries the required hackathon-entry language in two places (top and bottom). Keep both if you trim. File: `content/the-invoice-the-model-forgot.md`.
 - Publish **public, not unlisted** — the rules are explicit about it.
 - The $6-mistake anecdote is deliberately included. It is the most credible thing in the post, and removing it would make the rest read as a highlight reel.
 - Every number is real and reproducible from the repo: 8/12, 5/5, the region probes, the 1008 error. Nothing is rounded up for effect.

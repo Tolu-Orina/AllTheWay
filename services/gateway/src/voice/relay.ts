@@ -6,6 +6,7 @@ import { env } from "../env.js";
 import { routeUpgrade } from "../ws-router.js";
 import { runTurn } from "../orchestrator.js";
 import { listPreferences } from "../repos/preferences.js";
+import { READ_TOOL_NAMES, runReadTool } from "./tools.js";
 import { readUsage, recordUsage } from "../repos/usage.js";
 import { recordLine } from "../repos/transcripts.js";
 import { ensureSession, touchSession, VOICE_TITLE } from "../repos/sessions.js";
@@ -223,6 +224,19 @@ async function handleConnection(ws: WebSocket, opener: LiveOpener): Promise<void
         },
         onToolCall(call) {
           if (cancelled.has(call.id) || !slot.live) return;
+
+          // A read answers from here and never reaches the planner: one hop
+          // instead of two, and it cannot change anything -- which is why it
+          // needs no confirmation and none is asked for.
+          if (READ_TOOL_NAMES.has(call.name)) {
+            const live = slot.live;
+            void runReadTool(uid, call.name, call.args).then((result) => {
+              if (cancelled.has(call.id)) return;
+              live.sendToolResult(call.id, call.name, result);
+            });
+            return;
+          }
+
           void runPlanTurn({
             ws,
             live: slot.live,

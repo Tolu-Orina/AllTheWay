@@ -24,7 +24,16 @@ locals {
     # orchestrator on a user's behalf, and the watcher runtime on a trigger.
     # Nothing else, and never the browser -- the browser has no path to a
     # connector that does not pass through policy enforcement.
-    connector-gateway = ["orchestrator", "watcher-runtime", "registry"]
+    # The gateway joins the two things that act, for reads only.
+    #
+    # v3.5 §2.1 made the gateway the actor on a confirmed plan. This adds the
+    # other half: a voice session that can *look things up* — what is on your
+    # calendar today — without a planning round trip. Writes still go through
+    # the planner and the confirm gate; nothing here changes that.
+    #
+    # The connector gateway enforces the autonomy floor itself, so being on this
+    # list buys the gateway reachability, not permission to skip confirmation.
+    connector-gateway = ["orchestrator", "watcher-runtime", "registry", "gateway"]
 
     # The Agent Registry reads every agent's card, so it calls all three and is
     # called only by the gateway.
@@ -88,7 +97,8 @@ locals {
   # not know where it is, is as broken as one that knows and may not.
   peer_env_vars = {
     gateway = {
-      ORCHESTRATOR_URL = local.service_url["orchestrator"]
+      CONNECTOR_GATEWAY_URL = local.service_url["connector-gateway"]
+      ORCHESTRATOR_URL      = local.service_url["orchestrator"]
       # Phase 2: the turn stream cannot go through the Firebase Hosting rewrite
       # (60s timeout), so it is served from this service's own hostname and is
       # therefore cross-origin. See docs/decisions/0001.

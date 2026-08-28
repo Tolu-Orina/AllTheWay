@@ -120,6 +120,15 @@ export const env = {
   // list that 503s is a better answer than a gateway that will not start.
   scribeUrl: (process.env.SCRIBE_URL ?? "").replace(/\/$/, ""),
 
+  /**
+   * The Agent Gateway, for reads made during a voice turn.
+   *
+   * Empty in an environment without one, and the voice tools then say so rather
+   * than failing: "I cannot see your calendar here" is a true answer, and a
+   * stack trace is not.
+   */
+  connectorGatewayUrl: (process.env.CONNECTOR_GATEWAY_URL ?? "").replace(/\/$/, ""),
+
   resendApiKey: process.env.RESEND_API_KEY ?? "",
   mailFrom: process.env.MAIL_FROM ?? "",
 

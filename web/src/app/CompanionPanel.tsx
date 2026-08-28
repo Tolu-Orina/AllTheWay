@@ -343,7 +343,6 @@ export function CompanionPanel({
   onOpenChange: (open: boolean) => void;
 }) {
   const { pathname } = useLocation();
-  const onHome = pathname === "/app";
   const sessionId = pathname.match(/^\/app\/work\/([^/]+)$/)?.[1];
   const artifacts = useAsync(
     () => (sessionId ? api.artifacts(sessionId) : Promise.resolve([])),
@@ -415,7 +414,13 @@ export function CompanionPanel({
         aria-expanded={sheetOpen}
         className={cn(
           "fixed right-4 bottom-[5.75rem] z-40 grid size-14 place-items-center rounded-full bg-primary text-primary-foreground shadow-e2 transition-transform hover:scale-105 active:scale-95 motion-reduce:transition-none motion-reduce:hover:scale-100 lg:right-6 lg:bottom-6 xl:hidden",
-          onHome && "max-lg:hidden",
+          // Deliberately shown on Home too, below lg.
+          //
+          // It was hidden there because Home has its own composer -- but that
+          // composer sits below the digest and the chips, which on a phone is
+          // below the fold. The affordance did not move, it disappeared, and
+          // "the companion button is gone and I do not know why" is what that
+          // costs. A redundant way in is cheaper than a missing one.
         )}
         style={{ marginBottom: "env(safe-area-inset-bottom, 0px)" }}
       >

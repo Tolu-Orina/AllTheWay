@@ -103,6 +103,33 @@ def _distribution_root(module: str, names: list[str]) -> set[str]:
     return {".".join(parts[:2])}
 
 
+def _extra_providing(manifest: str, distribution: str) -> str | None:
+    """The optional group a distribution is declared in, if only in one.
+
+    A dependency under `[project.optional-dependencies]` reads as declared but
+    is not installed by `pip install .`, and the images install exactly that.
+    `google-genai` sat in a `vertex` extra for months: every manifest check
+    passed, and the orchestrator raised `cannot import name 'genai' from
+    'google'` on the first real turn -- late, because the import is inside the
+    function that needs it and `google` resolves anyway via google-auth.
+
+    Returns None when the distribution is a base dependency, which is the case
+    that needs nothing from the Dockerfile.
+    """
+    base = manifest.split("[project.optional-dependencies]")[0]
+    if f'"{distribution}' in base:
+        return None
+
+    for name, body in re.findall(
+        r"^(\w[\w-]*)\s*=\s*\[(.*?)\]",
+        manifest.split("[project.optional-dependencies]", 1)[-1],
+        flags=re.S | re.M,
+    ):
+        if f'"{distribution}' in body:
+            return name
+    return None
+
+
 def third_party_roots(text: str) -> set[str]:
     """Import roots that must come from a package this service declares."""
     roots: set[str] = set()
@@ -227,6 +254,10 @@ def main() -> int:
         )
         text = " ".join(io.open(f, encoding="utf-8").read() for f in sources)
         manifest = io.open(directory / "pyproject.toml", encoding="utf-8").read()
+        # Read here rather than relying on the loop above: Python leaks its loop
+        # variables, so `dockerfile` would otherwise hold whichever service that
+        # loop happened to finish on.
+        image = io.open(directory / "Dockerfile", encoding="utf-8").read()
 
         undeclared: list[str] = []
         unmapped: list[str] = []
@@ -236,6 +267,13 @@ def main() -> int:
                 unmapped.append(root)
             elif f'"{distribution}' not in manifest:
                 undeclared.append(f"{root} (needs {distribution})")
+            else:
+                extra = _extra_providing(manifest, distribution)
+                if extra is not None and f".[{extra}]" not in image:
+                    undeclared.append(
+                        f"{root} (needs {distribution}, which is only in the "
+                        f"'{extra}' extra - the image installs `.` not `.[{extra}]`)"
+                    )
 
         if undeclared:
             failures.append(

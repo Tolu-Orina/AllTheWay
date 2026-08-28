@@ -37,8 +37,16 @@ COPY services/orchestrator/pyproject.toml ./
 
 # --target gives a flat, relocatable tree that can be copied into an image with
 # no pip, which is exactly what distroless is.
+# `.[vertex]`, not `.`.
+#
+# `google-genai` is an optional extra so a local checkout stays light, but
+# every deployed image needs it: the provider does `from google import genai`
+# and Vertex is the only backend in production. Installing the bare project
+# left that import raising `cannot import name 'genai' from 'google'` on the
+# first turn -- and `google` resolves, because google-auth owns the same
+# namespace, so nothing failed until the line actually ran.
 RUN pip install --no-cache-dir --upgrade pip \
- && pip wheel --no-cache-dir --wheel-dir=/wheels ./libs/agentcards ./libs/policy ./libs/agentauth ./libs/screening && pip install --no-cache-dir --target=/deps --find-links=/wheels .
+ && pip wheel --no-cache-dir --wheel-dir=/wheels ./libs/agentcards ./libs/policy ./libs/agentauth ./libs/screening && pip install --no-cache-dir --target=/deps --find-links=/wheels .[vertex]
 
 # ---------------------------------------------------------------------- test
 # A real build stage, not a convenience: `docker build --target test` fails the
