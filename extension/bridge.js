@@ -28,6 +28,11 @@
  * signed-in event it then waited for was never dispatched. `sendMessage` to a
  * sleeping service worker also fails silently (`lastError`). Ask again until
  * a token arrives, and retry the worker hand-off when Chrome drops it.
+ *
+ * A successful reply must not be treated as a reason to ask again. Clearing
+ * `haveToken` on `alltheway:signed-in` used to restart the ask after every
+ * answer; if the page also announced on every reply, that loop froze the
+ * browser. Signed-in now only wakes an ask that has not yet received a token.
  */
 
 const REQUEST = "alltheway:token-request";
@@ -68,6 +73,10 @@ window.addEventListener("message", (event) => {
   const token = event.data.token;
   if (typeof token !== "string" || token.length < 20) return;
 
+  // Stop asking the moment a token arrives. Waiting for the worker ack left
+  // haveToken false, so a signed-in event could start another ask — and if the
+  // page also announced on every reply, that loop froze the machine.
+  haveToken = true;
   deliver(token, event.data.gateway);
 });
 
@@ -80,9 +89,9 @@ function askUntilHeard() {
 
 askUntilHeard();
 window.addEventListener("alltheway:signed-in", () => {
-  haveToken = false;
+  if (haveToken) return;
   retries = 0;
-  ask();
+  askUntilHeard();
 });
 window.addEventListener("pageshow", () => {
   if (!haveToken) {

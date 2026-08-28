@@ -32,10 +32,16 @@ import { firebaseAuth } from "@/auth/firebase";
  * ## The page pushes; it does not only wait to be asked
  *
  * The content script asks once at `document_idle`. React's listener used to
- * mount later, on `/app` only, and `announceSignIn` was never called — so a
- * signed-in user still looked signed-out to the extension, with no console
- * output at all. The page now pushes whenever Auth says someone is in, and
+ * mount later, on `/app` only, so a signed-in user still looked signed-out to
+ * the extension. The page now pushes whenever Auth says someone is in, and
  * the listener lives for the whole app (including `/login`), not only the shell.
+ *
+ * `reply()` must never dispatch `alltheway:signed-in`. The content script
+ * used to treat that event as "ask again from scratch". Combined with a reply
+ * that announced on every answer, visiting the site with the extension loaded
+ * became an unbounded postMessage / getIdToken loop that froze the browser
+ * and the machine. The signed-in event is a one-shot wake-up when Auth
+ * actually becomes signed in, not part of the reply.
  */
 
 const REQUEST = "alltheway:token-request";
@@ -60,27 +66,37 @@ function announceSignIn(): void {
   window.dispatchEvent(new Event(SIGNED_IN));
 }
 
+let replyInFlight = false;
+let lastReplyAt = 0;
+
 async function reply(): Promise<void> {
-  const user = firebaseAuth.currentUser;
-  if (!user) return;
-
-  let token: string;
+  if (replyInFlight) return;
+  replyInFlight = true;
   try {
-    token = await user.getIdToken(false);
-  } catch {
-    return;
-  }
+    const user = firebaseAuth.currentUser;
+    if (!user) return;
+    if (Date.now() - lastReplyAt < 400) return;
 
-  const gateway = gatewayOrigin();
-  window.postMessage(
-    {
-      type: RESPONSE,
-      token,
-      ...(gateway ? { gateway } : {}),
-    },
-    window.location.origin,
-  );
-  announceSignIn();
+    let token: string;
+    try {
+      token = await user.getIdToken(false);
+    } catch {
+      return;
+    }
+
+    const gateway = gatewayOrigin();
+    window.postMessage(
+      {
+        type: RESPONSE,
+        token,
+        ...(gateway ? { gateway } : {}),
+      },
+      window.location.origin,
+    );
+    lastReplyAt = Date.now();
+  } finally {
+    replyInFlight = false;
+  }
 }
 
 export function serveExtensionToken(): () => void {
@@ -92,8 +108,17 @@ export function serveExtensionToken(): () => void {
 
   window.addEventListener("message", onMessage);
 
+  let announced = false;
   const unsub = onAuthStateChanged(firebaseAuth, (user) => {
-    if (user) void reply();
+    if (!user) {
+      announced = false;
+      return;
+    }
+    void reply();
+    if (!announced) {
+      announced = true;
+      announceSignIn();
+    }
   });
 
   // currentUser is often already set by the time this effect runs (localStorage

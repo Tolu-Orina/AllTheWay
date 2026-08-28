@@ -131,13 +131,24 @@ chrome.runtime.onMessage.addListener((message, _sender, respond) => {
     // Forwarded by the content script from the web app. Session storage, so it
     // is gone when the browser closes and never written to disk or synced.
     void chrome.storage.session
-      .set({
-        [TOKEN_KEY]: message.token,
-        // Only overwritten when the page actually supplied one, so a page that
-        // answers without it cannot erase a working gateway.
-        ...(message.gateway ? { [GATEWAY_KEY]: message.gateway } : {}),
-      })
-      .then(() => respond({ ok: true }));
+      .get([TOKEN_KEY, GATEWAY_KEY])
+      .then((current) => {
+        if (
+          current[TOKEN_KEY] === message.token &&
+          (!message.gateway || current[GATEWAY_KEY] === message.gateway)
+        ) {
+          respond({ ok: true });
+          return;
+        }
+        return chrome.storage.session
+          .set({
+            [TOKEN_KEY]: message.token,
+            // Only overwritten when the page actually supplied one, so a page that
+            // answers without it cannot erase a working gateway.
+            ...(message.gateway ? { [GATEWAY_KEY]: message.gateway } : {}),
+          })
+          .then(() => respond({ ok: true }));
+      });
     return true;
   }
   if (message?.type === "insights-now") {
