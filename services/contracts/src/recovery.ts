@@ -232,3 +232,36 @@ export const QUALITY_LABELS: Record<Quality, string> = {
   degraded: "Patchy - some words may be missed",
   poor: "Losing audio - notes will have gaps",
 };
+
+
+/**
+ * A service's error text, mapped to the kind of failure it is.
+ *
+ * The plan asked for a default of `unknown`. There is no such kind, and adding
+ * one would mean a failure with no routes — the single thing this taxonomy
+ * exists to prevent. `upstream_error` is the honest default: something broke on
+ * our side, and its routes (retry, tell us) are the right offer when we cannot
+ * say more.
+ *
+ * Matching is on substrings of messages we write ourselves, so it stays true as
+ * long as those strings do. It is deliberately not a parser: an error we do not
+ * recognise must still produce a route, never a blank.
+ */
+export function failureKindFrom(message: string): FailureKind {
+  const m = message.toLowerCase();
+
+  if (m.includes("not connected") || m.includes("connect your")) return "connector_not_connected";
+  if (m.includes("plan") && (m.includes("limit") || m.includes("allowance"))) return "plan_limit";
+  if (m.includes("blocked") || m.includes("screen")) return "screening_blocked";
+  if (m.includes("nothing in your documents") || m.includes("no matching")) return "retrieval_empty";
+  if (m.includes("too large") || m.includes("too big")) return "too_large";
+  if (m.includes("too many") || m.includes("rate")) return "rate_limited";
+  if (m.includes("not available in this environment") || m.includes("not configured")) {
+    return "not_configured";
+  }
+  if (m.includes("did not answer in time") || m.includes("could not reach")) {
+    return "model_unavailable";
+  }
+
+  return "upstream_error";
+}

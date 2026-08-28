@@ -32,6 +32,10 @@ from alltheway_metering import as_json  # noqa: E402
 
 USAGE_TS = ROOT / "services" / "gateway" / "src" / "repos" / "usage.ts"
 CONTRACTS_TS = ROOT / "services" / "contracts" / "src" / "index.ts"
+#: Distinct from None, which is a real limit meaning "unmetered".
+_ABSENT = object()
+
+LANDING_JSON = ROOT / "web" / "src" / "lib" / "plans.json"
 PLANS_JSON = ROOT / "web" / "src" / "lib" / "plans.json"
 
 
@@ -87,6 +91,18 @@ def main() -> int:
     ts_plans = typescript_table(io.open(USAGE_TS, encoding="utf-8").read())
     ts_meters, ts_tiers = shared_lists(io.open(CONTRACTS_TS, encoding="utf-8").read())
 
+    # The prices and limits on the public page.
+    #
+    # `pricing.tsx` renders this file, so it is what a visitor is quoted before
+    # they pay. Nothing tied it to the limits actually enforced, which is the
+    # drift that matters most: a landing page promising an allowance the meter
+    # refuses is a refund conversation, and it is the one mismatch a user
+    # discovers by being told no after paying.
+    landing = {
+        p["tier"]: p
+        for p in json.loads(io.open(LANDING_JSON, encoding="utf-8").read())["plans"]
+    }
+
     failures: list[str] = []
 
     # The shared contract is what the browser validates every usage response
@@ -115,6 +131,26 @@ def main() -> int:
     extra = sorted(set(ts_plans) - set(python_plans))
     if extra:
         failures.append(f"the interface offers {extra}, which nothing enforces")
+
+    for tier in sorted(set(python_plans) | set(landing)):
+        if tier not in landing:
+            failures.append(f"the landing page has no plan for {tier}")
+            continue
+        if tier not in python_plans:
+            failures.append(f"the landing page advertises {tier}, which nothing enforces")
+            continue
+        want, shown = python_plans[tier], landing[tier]
+        if want["pricePence"] != shown["pricePence"]:
+            failures.append(
+                f"{tier}: the landing page quotes {shown['pricePence']}, "
+                f"charged at {want['pricePence']}"
+            )
+        for meter, limit in want["limits"].items():
+            if shown["limits"].get(meter, _ABSENT) != limit:
+                failures.append(
+                    f"{tier}: the landing page shows {meter} as "
+                    f"{shown['limits'].get(meter, 'absent')}, enforced as {limit}"
+                )
 
     for tier in sorted(set(python_plans) & set(ts_plans)):
         want, got = python_plans[tier], ts_plans[tier]

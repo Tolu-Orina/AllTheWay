@@ -19,6 +19,8 @@ import { CanvasPane } from "@/app/CanvasPane";
 import { useAsync } from "@/app/use-async";
 import { api } from "@/app/data";
 import { askAboutAdded, DOCUMENT_ACCEPT, DOCUMENT_MAX_BYTES } from "@/app/Documents";
+import { Recovery } from "@/app/Recovery";
+import { failureKindFrom } from "@alltheway/contracts";
 import { CitationChip } from "@/app/CitationChip";
 import { useCompanionThread } from "@/app/companion-thread";
 import { cn } from "@/lib/utils";
@@ -41,6 +43,11 @@ const DOCKED_FROM = "(min-width: 80rem)";
  */
 export function CompanionConversation({ autoFocus = false }: { autoFocus?: boolean }) {
   const { messages, send, working } = useCompanionThread();
+  // Recovery rows are keyed by turn. Message ids are numbers and restart with
+  // each thread, so they are scoped by the session in the path — otherwise two
+  // different sessions would write recovery offers under the same id.
+  const { pathname } = useLocation();
+  const threadId = pathname.match(/^\/app\/work\/([^/]+)$/)?.[1] ?? "home";
   const last = messages[messages.length - 1];
   const reduced = useReducedMotion();
   const endRef = useRef<HTMLDivElement>(null);
@@ -100,6 +107,26 @@ export function CompanionConversation({ autoFocus = false }: { autoFocus?: boole
                 </ul>
               ) : null}
 
+              {/*
+                A failure with a way forward.
+              
+                Recovery and its route table have existed since v3 and were
+                imported nowhere, so a failed turn showed a message and stopped --
+                which is the moment the taxonomy was built for. `turnId` is the
+                message id: stable for the life of the thread, which is all the
+                recovery ledger needs to tie an offer to what was offered.
+              */}
+              {m.phase === "error" ? (
+                <div className="mt-2">
+                  <Recovery
+                    kind={failureKindFrom(m.text)}
+                    message={m.text}
+                    turnId={`${threadId}-${m.id}`}
+                    onRetry={() => send(m.text)}
+                  />
+                </div>
+              ) : null}
+              
               {m.citations?.length ? (
                 <div className="mt-1.5 flex flex-wrap gap-1.5">
                   {m.citations.map((c) => (

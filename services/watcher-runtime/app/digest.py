@@ -85,7 +85,7 @@ def awaiting_count(uid: str, now: datetime | None = None) -> int:
     are the whole definition:
 
       1. a run in the last 24 hours
-      2. whose status is awaiting_confirmation
+      2. whose state is awaiting_review
       3. whose session does not already appear in the ledger
 
     Rule 3 is the one that matters. A notification asking someone to decide
@@ -99,7 +99,12 @@ def awaiting_count(uid: str, now: datetime | None = None) -> int:
         runs = (
             user_doc(uid)
             .collection("runs")
-            .where("status", "==", "awaiting_confirmation")
+            # `state` / `awaiting_review`: the field and value `record_run`
+            # writes and the enum published in contracts. This read was
+            # `status == "awaiting_confirmation"`, which nothing writes, so the
+            # count was always zero and the notification never fired however
+            # many runs were waiting.
+            .where("state", "==", "awaiting_review")
             .limit(50)
             .get()
         )

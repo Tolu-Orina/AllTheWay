@@ -94,7 +94,9 @@ export async function buildDigest(uid: string, now = new Date()): Promise<Digest
     .map((d) => ({
       watcherId: d.get("watcherId") ?? "",
       at: iso(d.get("at")) ?? "",
-      summary: d.get("summary") ?? "Ran.",
+        // `detail` is what the runtime writes. `summary` is still read so
+        // documents written before this fix render rather than all saying "Ran.".
+        summary: d.get("detail") ?? d.get("summary") ?? "Ran.",
     }));
 
   // Only what is still waiting. A decision already recorded in the ledger is
@@ -105,14 +107,20 @@ export async function buildDigest(uid: string, now = new Date()): Promise<Digest
 
   const awaitingDecision: DigestDecision[] = runsSnap.docs
     .filter((d) => inWindow(d.get("at")))
-    .filter((d) => d.get("status") === "awaiting_confirmation")
+    // `state`, and `awaiting_review`: the field and value the runtime writes
+    // (watcher-runtime/app/main.py) and the enum published in contracts. This
+    // read was `status === "awaiting_confirmation"` -- a field/value pair
+    // nothing has ever written -- so the awaiting list stayed empty no matter
+    // how many runs were genuinely waiting. The tests asserted the reader
+    // rather than the writer, which is why a green suite proved nothing.
+    .filter((d) => d.get("state") === "awaiting_review")
     .filter((d) => !decided.has(String(d.get("sessionId") ?? "")))
     .map((d) => ({
       id: d.id,
       // Verbatim, exactly as the ledger stores it. A digest that paraphrases
       // what someone is being asked to approve is asking them to approve
       // something they did not read.
-      summary: d.get("summary") ?? "A step needs your decision.",
+      summary: d.get("detail") ?? d.get("summary") ?? "A step needs your decision.",
       at: iso(d.get("at")) ?? "",
       sessionId: String(d.get("sessionId") ?? ""),
     }));

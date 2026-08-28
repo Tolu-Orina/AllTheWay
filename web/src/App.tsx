@@ -3,7 +3,6 @@ import { Navigate, Route, Routes, useParams, useSearchParams } from "react-route
 
 import { RequireAuth } from "@/auth/RequireAuth";
 import { RouteFallback } from "@/app/RouteFallback";
-import { I18nProvider } from "@/app/i18n";
 
 /**
  * Routes, split so a page only downloads what it needs.
@@ -24,6 +23,7 @@ import { I18nProvider } from "@/app/i18n";
 
 const LandingPage = lazy(() => import("@/routes/landing"));
 const ContactPage = lazy(() => import("@/routes/contact"));
+const PrivacyPage = lazy(() => import("@/routes/privacy"));
 const OfflinePage = lazy(() => import("@/routes/offline"));
 
 const Login = lazy(() => import("@/routes/auth/Login"));
@@ -50,13 +50,8 @@ const ArtifactScreen = lazy(() =>
  * `useT` for the session check; wrapping only AppLayout left that call
  * outside the provider, so /app threw before Home could ask the job.
  */
-function Authenticated() {
-  return (
-    <I18nProvider>
-      <RequireAuth />
-    </I18nProvider>
-  );
-}
+// The provider now lives in main.tsx, above App: the auth screens call `useT`
+// too, and they render outside this subtree.
 
 /**
  * Old bookmarks keep working. Query strings travel with them — `?fail=` in
@@ -79,6 +74,7 @@ export default function App() {
       <Routes>
         <Route path="/" element={<LandingPage />} />
         <Route path="/contact" element={<ContactPage />} />
+          <Route path="/privacy" element={<PrivacyPage />} />
         <Route path="/offline" element={<OfflinePage />} />
 
         <Route path="/login" element={<Login />} />
@@ -87,7 +83,7 @@ export default function App() {
         <Route path="/forgot-password" element={<ForgotPassword />} />
         <Route path="/reset-password" element={<ResetPassword />} />
 
-        <Route element={<Authenticated />}>
+        <Route element={<RequireAuth />}>
           <Route path="/app" element={<AppLayout />}>
             <Route index element={<Home />} />
             <Route path="work" element={<Sessions />} />

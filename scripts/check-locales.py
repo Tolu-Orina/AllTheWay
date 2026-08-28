@@ -82,13 +82,45 @@ def plural_stems(keys: set[str]) -> set[str]:
             {"zero", "one", "two", "few", "many", "other"}}
 
 
+def check_provider_is_at_the_root() -> list[str]:
+    """The provider must wrap the whole app, not part of it.
+
+    `useT` throws when it finds no context -- deliberately, so a missing
+    provider surfaces instead of rendering raw keys. That makes the boundary
+    load-bearing: every auth screen calls `useT`, and they render outside
+    `/app`. Wrapping only the authenticated area therefore left `/login`
+    throwing on render, which is a white screen where the sign-in form should
+    be. Nothing failed to compile and no test noticed.
+
+    Checked structurally rather than by rendering, because the failure is a
+    tree-shape problem and this is the shape that is correct.
+    """
+    main_tsx = (ROOT / "web" / "src" / "main.tsx").read_text(encoding="utf-8")
+    problems: list[str] = []
+
+    if "I18nProvider" not in main_tsx:
+        problems.append(
+            "web/src/main.tsx does not mount <I18nProvider>. Every screen that "
+            "calls useT outside that provider throws on render."
+        )
+        return problems
+
+    before = main_tsx.index("I18nProvider")
+    app_at = main_tsx.find("<App", before)
+    if app_at == -1:
+        problems.append("web/src/main.tsx mounts <I18nProvider> but not around <App />.")
+
+    return problems
+
+
 def main() -> int:
     english = flatten(json.load(io.open(LOCALES / f"{SOURCE}.json", encoding="utf-8")))
     stems = plural_stems(set(english))
     # A plural key is satisfied by its forms, not by its stem.
     required = {k for k in english if k.rsplit("_", 1)[0] not in stems}
 
-    failures: list[str] = []
+    # Shape first: a catalogue nothing can reach is worse than an incomplete one.
+    failures: list[str] = check_provider_is_at_the_root()
 
     for path in sorted(LOCALES.glob("*.json")):
         code = path.stem

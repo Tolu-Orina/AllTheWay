@@ -61,8 +61,8 @@ test("something awaiting a decision is listed as awaiting", emulated, async () =
   await runs(UID).doc("run-pending").set({
     watcherId: "w2",
     at: hoursAgo(2),
-    summary: "Send the renewal notice to Acme?",
-    status: "awaiting_confirmation",
+    detail: "Send the renewal notice to Acme?",
+    state: "awaiting_review",
     sessionId: "session-pending",
   });
 
@@ -85,8 +85,8 @@ test("a decision already in the ledger is not asked for twice", emulated, async 
   await runs(UID).doc("run-decided").set({
     watcherId: "w3",
     at: hoursAgo(3),
-    summary: "Reply to the invoice query?",
-    status: "awaiting_confirmation",
+    detail: "Reply to the invoice query?",
+    state: "awaiting_review",
     sessionId: "session-decided",
   });
   await ledger(UID).add({
@@ -153,4 +153,51 @@ test("the stored digest document holds no content", emulated, async () => {
 
   const doc = await userDoc(uid).collection("digest").doc(digestDate()).get();
   strictEqual(Object.keys(doc.data() ?? {}).join(","), "sentAt");
+});
+
+
+test("a run written the old way is not counted as awaiting", emulated, async () => {
+  /**
+   * The bug this file used to certify.
+   *
+   * The reader filtered `status === "awaiting_confirmation"` while the runtime
+   * wrote `state: "awaiting_review"` — so the awaiting list was permanently
+   * empty no matter how many runs were genuinely waiting on a person. Every
+   * fixture here was written to match the reader instead of the writer, so the
+   * suite passed and the digest stayed silent in production.
+   *
+   * This test pins the direction: `awaiting_confirmation` is not a value this
+   * system produces, and a document carrying it must not be treated as pending.
+   */
+  await runs(UID).doc("run-legacy-shape").set({
+    watcherId: "w9",
+    at: hoursAgo(2),
+    summary: "Written with the field nothing writes.",
+    status: "awaiting_confirmation",
+    sessionId: "session-legacy",
+  });
+
+  const digest = await buildDigest(UID);
+  strictEqual(
+    digest.awaitingDecision.some((d) => d.summary === "Written with the field nothing writes."),
+    false,
+    "a status/awaiting_confirmation document must not appear as awaiting",
+  );
+});
+
+test("a run reports the detail the runtime wrote, not a placeholder", emulated, async () => {
+  // `detail` is the runtime's field. Reading only `summary` meant every real
+  // run rendered as the fallback string "Ran.".
+  await runs(UID).doc("run-detail").set({
+    watcherId: "w10",
+    at: hoursAgo(1),
+    detail: "Checked the contracts folder.",
+    state: "done",
+  });
+
+  const digest = await buildDigest(UID);
+  strictEqual(
+    digest.ranWatchers.some((r) => r.summary === "Checked the contracts folder."),
+    true,
+  );
 });

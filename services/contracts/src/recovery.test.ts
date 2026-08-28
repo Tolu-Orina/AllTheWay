@@ -6,6 +6,7 @@ import {
   qualityOf,
   FailureKindSchema,
   ROUTES,
+  failureKindFrom,
   RouteSchema,
   failureKindFor,
   routesFor,
@@ -194,4 +195,33 @@ test("every quality is named for what it costs the reader", () => {
     ok(!/^(fair|moderate|ok|average)$/i.test(label), `${quality} is named for a metric`);
   }
   ok(QUALITY_LABELS.poor.toLowerCase().includes("gap"));
+});
+
+test("an unrecognised failure still gets a kind that has routes", () => {
+  /**
+   * The plan specified a default of `unknown`. No such kind exists, and adding
+   * one would create the only thing this taxonomy forbids: a failure with
+   * nowhere to go. `upstream_error` is the honest fallback.
+   */
+  const kind = failureKindFrom("something nobody has ever seen before");
+  strictEqual(kind, "upstream_error");
+  ok(ROUTES[kind].length > 0, "the default kind must offer at least one route");
+});
+
+test("the messages this product actually writes map to the right kind", () => {
+  strictEqual(failureKindFrom("Connect your Google account to do that."), "connector_not_connected");
+  strictEqual(failureKindFrom("The planner did not answer in time"), "model_unavailable");
+  strictEqual(failureKindFrom("Meetings are not available in this environment."), "not_configured");
+});
+
+test("every kind a message can produce has routes", () => {
+  // The mapper cannot return a kind the routes table does not cover, because a
+  // recovery panel with no buttons is worse than no panel.
+  for (const m of [
+    "not connected", "plan limit reached", "blocked by screening", "no matching passages",
+    "that file is too large", "too many requests", "not configured", "could not reach the planner",
+    "utterly unrecognisable",
+  ]) {
+    ok(ROUTES[failureKindFrom(m)].length > 0, m);
+  }
 });
