@@ -81,6 +81,31 @@ export const READ_TOOLS = [
     parameters: { type: "OBJECT", properties: {} },
   },
   {
+    name: "find_in_my_drive",
+    description:
+      "List files in the user's Google Drive. Use this when they ask what they have, " +
+      "or to find a file by name before doing anything with it. Read-only.",
+    parameters: {
+      type: "OBJECT",
+      properties: {
+        limit: { type: "NUMBER", description: "How many files. Default 10." },
+      },
+    },
+  },
+  {
+    name: "read_a_google_doc",
+    description:
+      "Read the contents of one Google Doc the user names, by its document id. Use " +
+      "this after finding it in Drive. Read-only.",
+    parameters: {
+      type: "OBJECT",
+      properties: {
+        document_id: { type: "STRING", description: "The Google Doc id." },
+      },
+      required: ["document_id"],
+    },
+  },
+  {
     name: "my_recent_meetings",
     description:
       "Meetings the companion took notes in, and what was said to be committed to. Use " +
@@ -206,6 +231,17 @@ export async function runReadTool(
         return await connectorRead(uid, "google_calendar", "list_events", {
           limit: num(args.limit, 10, 25),
         });
+
+      case "find_in_my_drive":
+        return await connectorRead(uid, "google_drive", "list_files", {
+          limit: num(args.limit, 10, 25),
+        });
+
+      case "read_a_google_doc": {
+        const id = String(args.document_id ?? "").trim();
+        if (!id) return { cannot: "I need the document to read." };
+        return await connectorRead(uid, "google_docs", "read_document", { document_id: id });
+      }
 
       case "ask_my_documents": {
         if (!env.librarianUrl) return { cannot: "Documents are not available here." };

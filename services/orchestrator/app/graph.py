@@ -51,7 +51,31 @@ SYSTEM = (
     "produce a short plan of concrete steps. Never take an action; only plan. "
     "Set needsResearch when the request turns on facts you would have to look "
     "up rather than on the user's own context, and put the thing to look up in "
-    "topic."
+    "topic. "
+    # The catalogue, named rather than described.
+    #
+    # A step used to carry only how severe it was and never what it would do,
+    # so a confirmed plan had nothing to replay: the gateway wrote a ledger row
+    # and the calendar stayed empty. Naming the call is what turns 'here is a
+    # plan' into something that can actually happen.
+    #
+    # Still only a plan. Nothing here is executed by this service: the gateway
+    # replays it after the person says yes, and the Agent Gateway enforces the
+    # autonomy floor on its own side whatever this plan claims.
+    "When a step would do something outside the conversation, name the call by "
+    "setting connector, tool and arguments. Use only these. "
+    "google_calendar: list_events(limit), create_event(title, starts_at), "
+    "delete_event(event_id), send_invite(event_id, email). "
+    "google_gmail: create_draft(to, subject, body), send_email(to, subject, body). "
+    "google_drive: list_files(limit), create_file(name, content, mime_type), "
+    "delete_file(file_id). "
+    "google_docs: read_document(document_id), create_document(title, body), "
+    "append_text(document_id, text). "
+    "media: generate_image(prompt, style), draft_video(prompt, seconds), "
+    "render_video(prompt, seconds). "
+    "starts_at is RFC 3339. Prefer create_draft over send_email unless the user "
+    "clearly asked to send. Leave connector and tool empty for a step that only "
+    "thinks, reads back, or explains. Never invent a tool that is not listed."
 )
 
 # Field order matters. `decision` first so nothing is shown before the gate has
@@ -63,7 +87,7 @@ SCHEMA_HINT = (
     '"needsResearch":boolean,"topic":string,'
     '"question":string,"options":string[],'
     '"steps":[{"label":string,"action":""|"draft"|"create_task"|"update_record"'
-    '|"send_external"|"make_payment"|"delete_data"}],'
+    '|"send_external"|"make_payment"|"delete_data","connector":string,"tool":string,"arguments":object}],'
     '"note":string,'
     # Citations are part of the contract, not an instruction. A model told to
     # "always cite" complies most of the time — and the times it does not are

@@ -11,6 +11,7 @@ import { artifactRoutes } from "./routes/artifacts.js";
 import { documentRoutes } from "./routes/documents.js";
 import { meetingRoutes } from "./routes/meetings.js";
 import { shareRoutes } from "./routes/shares.js";
+import { actOnConfirmed, storedSteps } from "./act.js";
 import {
   ensureSession,
   getSession,
@@ -299,8 +300,29 @@ api.post(
       return;
     }
 
-    const id = await record(req.uid!, { sessionId: param(req, "id"), ...body.data });
-    res.status(201).json({ id });
+    const sessionId = param(req, "id");
+    const id = await record(req.uid!, { sessionId, ...body.data });
+
+    // Recorded first, then acted on.
+    //
+    // The ledger is the record of what the person agreed to, and it has to
+    // survive a connector being slow or refusing. Acting first and recording
+    // after would let a timeout send an email nothing remembers approving.
+    //
+    // Only a confirmation acts. Declining and correcting are decisions too,
+    // and neither is permission to do anything.
+    const did =
+      body.data.kind === "confirmed"
+        ? await actOnConfirmed({
+            uid: req.uid!,
+            sessionId,
+            // From the stored plan, never the request body: the browser must
+            // not be able to name an action nobody was shown.
+            steps: await storedSteps(req.uid!, sessionId),
+          })
+        : [];
+
+    res.status(201).json({ id, did });
   }),
 );
 

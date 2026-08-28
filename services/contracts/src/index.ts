@@ -22,6 +22,22 @@ export const PlanStepSchema = z.object({
    * a step will send, pay, or delete before anyone approves it.
    */
   action: z.string().default(""),
+
+  /**
+   * The call this step would make, when it makes one.
+   *
+   * The planner named a step's *severity* and nothing else, so a confirmed plan
+   * had nothing to replay: "Yes" wrote a ledger row and the calendar stayed
+   * empty. These three carry the call itself, so the gateway acts on exactly
+   * what the person was shown and approved -- not on a re-derivation of it.
+   *
+   * Empty for a step that changes nothing. `arguments` is deliberately untyped:
+   * each connector validates its own, and restating those shapes here would
+   * mean two places to be wrong.
+   */
+  connector: z.string().optional(),
+  tool: z.string().optional(),
+  arguments: z.record(z.string(), z.unknown()).optional(),
 });
 
 /** One step the user is being asked to approve, and why it needs approving. */
@@ -29,6 +45,10 @@ export const ProposedActionSchema = z.object({
   label: z.string(),
   action: z.string(),
   reason: z.string(),
+  /** The call, mirroring PlanStep. Empty when this proposes no call. */
+  connector: z.string().optional(),
+  tool: z.string().optional(),
+  arguments: z.record(z.string(), z.unknown()).optional(),
 });
 
 /**

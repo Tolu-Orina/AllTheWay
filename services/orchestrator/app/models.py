@@ -20,6 +20,18 @@ class PlanStep(BaseModel):
     #: the confirm gate.
     action: str = ""
 
+    #: The call this step would make, when it makes one.
+    #:
+    #: The plan used to name only how severe a step was, never what it would
+    #: actually do — so a confirmed plan had nothing to replay and "Yes" wrote a
+    #: ledger row while the calendar stayed empty. Naming the call here is what
+    #: lets the gateway act on the thing the person was shown.
+    #:
+    #: Empty for a step that changes nothing outside the conversation.
+    connector: str = ""
+    tool: str = ""
+    arguments: dict = Field(default_factory=dict)
+
 
 class ClarifyQuestion(BaseModel):
     question: str
