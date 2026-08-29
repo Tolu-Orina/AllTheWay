@@ -40,7 +40,7 @@ from .jsonstream import parse_partial
 from .models import ClarifyQuestion, PlanStep, TurnEvent, TurnRequest, TurnResponse
 from .grounding import check as check_grounding
 from .models import Citation
-from .plan_validation import validate
+from .plan_validation import attach_work_files, validate
 from .providers import ModelProvider, iter_text
 from .research_client import research
 from .voice import UNCLEAR, confirmation_for, transcript_verdict
@@ -71,10 +71,50 @@ SYSTEM = (
     "delete_file(file_id). "
     "google_docs: read_document(document_id), create_document(title, body), "
     "append_text(document_id, text). "
+    "work_files: create_document(title, body, kind, audience) or report.v1, "
+    "create_spreadsheet(title, headers, rows), "
+    "create_slides as deck.v1, create_pdf as report.v1 or (title, body, kind, audience), "
+    "create_markdown(title, body). "
     "media: generate_image(prompt, style), draft_video(prompt, seconds), "
     "render_video(prompt, seconds). "
     "starts_at is RFC 3339. Prefer create_draft over send_email unless the user "
     "clearly asked to send. "
+    # Downloadable Office files. These are session artifacts, not Microsoft 365
+    # and not Google Docs. Put the full content in the arguments so Yes can write
+    # a real .docx / .xlsx / .pptx. google_docs.create_document is a Google Doc
+    # in Drive and needs Docs connected — use it only when they asked for that.
+    "work_files writes a Word document, spreadsheet, PowerPoint, PDF, or markdown note "
+    "into this session's artifacts. No connected account. "
+    "create_document is a designed Word file, not a text dump: title is the "
+    "document title once — do not also start body with that same # heading. "
+    "body is markdown: a short Executive Summary paragraph, then ## sections, "
+    "| tables | for milestones and asks, and - **Label:** sentences for goals "
+    "and risks. kind is briefing, memo, proposal, or report when known; "
+    "audience is who it is for (the Board, the exec team). Prefer specific "
+    "numbers, dates, and named owners. headers is column names, rows is a "
+    "list of lists (or csv). Prefer numbers, not quoted numeric strings, and "
+    "include a Total row when the sheet is a budget or table of amounts. "
+    "create_slides arguments are deck.v1: {ir:'deck.v1', title, audience, "
+    "slides:[{layout, ...}]}. Layouts: title, two-card, metric-row, split-visual, "
+    "photo-story, chart, closing-ask, quote, agenda, bullets. two-card uses cards:[{title, body}] "
+    "(not card1/card2). chart uses chart:{type, categories, series:[{name, values}]} "
+    "(not chart_type or categories on the slide). closing-ask uses asks:[string]. "
+    "Pick a layout per slide, not heading-plus-bullets for everything. "
+    "Every deck has at least three image slots {kind:'generate', prompt}: the title cover, "
+    "a split-visual or photo-story for product/place/people, and a third that belongs "
+    "on that slide. Never a generated picture of a graph — that is layout chart. "
+    "Prompts describe a specific photograph. Native chart when they gave or implied numbers. "
+    "Max about eight slides unless they asked for more. "
+    "Do not generate images at plan time; after Yes the document cell fills generate slots, "
+    "rasters the pages, and runs visual QA. "
+    "create_document and create_pdf may use report.v1: {ir:'report.v1', title, "
+    "audience, kind, sections:[{heading, body, bullets, table}]}. "
+    "Legacy {title, slides:[{title, bullets}]} still compiles. "
+    "create_pdf is a designed A4 PDF from report.v1 or the same markdown as create_document. "
+    "Prefer create_markdown for a briefing, note, summary, or checklist they can keep "
+    "here. Prefer create_document / create_spreadsheet / create_slides / create_pdf when they "
+    "asked for a Word doc, spreadsheet, Excel, PowerPoint, PDF, or slide deck they "
+    "can download. "
     # Reads of connected accounts are fetched by the gateway *before* this
     # turn and arrive in a LOOKUPS block. Answer from that block. Do not plan
     # a read that is already answered there — that used to send the person
@@ -434,9 +474,10 @@ def _finish(
         yield TurnEvent(kind="trace", text=line)
 
     planned, corrections = validate(planned)
+    planned, office_notes = attach_work_files(planned, request.message)
     planned = _without_fetched_reads(planned)
     emitted = len(planned)
-    for correction in corrections:
+    for correction in corrections + office_notes:
         yield TurnEvent(kind="trace", text=correction)
 
     confirmation = confirmation_for(

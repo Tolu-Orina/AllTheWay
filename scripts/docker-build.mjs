@@ -18,6 +18,7 @@ const SERVICES = [
   "watcher-runtime",
   "profile-synthesizer",
   "research-cell",
+  "document-cell",
   "connector-gateway",
 ];
 

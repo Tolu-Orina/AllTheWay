@@ -348,6 +348,9 @@ export async function* streamTurn(input: TurnInput): AsyncGenerator<TurnEvent> {
     if (payload.$case !== "statusUpdate") continue;
     const status = payload.value.status;
     if (!status) continue;
+    // Confirm and clarify already stopped the turn. A later COMPLETED from
+    // the same stream used to overwrite that with `done`, which hid Yes.
+    if (settled) continue;
 
     switch (status.state) {
       case TaskState.TASK_STATE_WORKING: {

@@ -36,6 +36,28 @@ def test_an_unlabelled_send_is_caught():
     assert steps[0].action == str(Action.SEND_EXTERNAL)
 
 
+def test_a_bare_create_task_for_a_briefing_names_work_files():
+    from app.plan_validation import attach_work_files
+
+    steps, notes = attach_work_files(
+        [PlanStep(label="Create Q4 product launch markdown briefing", action="create_task")],
+        "Write a markdown briefing I can keep here for the Q4 product launch.",
+    )
+    assert steps[0].connector == "work_files"
+    assert steps[0].tool == "create_markdown"
+    assert notes
+
+
+def test_a_word_request_is_not_downgraded_to_markdown():
+    from app.plan_validation import attach_work_files
+
+    steps, _ = attach_work_files(
+        [PlanStep(label="Create the Word document", action="create_task")],
+        "Create a Word document briefing the Q4 launch",
+    )
+    assert steps[0].tool == "create_document"
+
+
 def test_the_worst_action_in_a_step_wins():
     # "Email the vendor and pay the invoice" is a payment that also sends mail.
     # Judging it as a send would put it below the bar that payments must clear.

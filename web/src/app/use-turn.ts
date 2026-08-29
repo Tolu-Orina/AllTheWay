@@ -112,6 +112,7 @@ export function useTurn(sessionId: string) {
                   ],
                 };
               case "done":
+                if (prev.phase === "confirm" || prev.phase === "clarify") return prev;
                 return {
                   ...prev,
                   phase: "done",

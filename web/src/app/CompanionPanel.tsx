@@ -27,11 +27,12 @@ import {
 import { Recovery } from "@/app/Recovery";
 import { failureKindFrom } from "@alltheway/contracts";
 import { CitationChip } from "@/app/CitationChip";
-import { ConfirmGate } from "@/app/ConfirmGate";
+import { ConfirmGate, pendingConfirmId } from "@/app/ConfirmGate";
 import { PlanStack } from "@/app/PlanStack";
 import { useCompanionThread } from "@/app/companion-thread";
-import { cn } from "@/lib/utils";
+import { Markdown } from "@/app/Markdown";
 import { VoiceCaptions, VoiceControl } from "@/app/VoiceControl";
+import { cn } from "@/lib/utils";
 
 /**
  * The conversation itself, with no opinion about what contains it.
@@ -46,7 +47,8 @@ export function CompanionConversation({ autoFocus = false }: { autoFocus?: boole
   // different sessions would write recovery offers under the same id.
   const { pathname } = useLocation();
   const threadId = pathname.match(/^\/app\/work\/([^/]+)$/)?.[1] ?? "home";
-  const last = messages[messages.length - 1];
+  const confirmId = pendingConfirmId(messages);
+  const last = messages.at(-1);
   const reduced = useReducedMotion();
   const endRef = useRef<HTMLDivElement>(null);
 
@@ -72,8 +74,8 @@ export function CompanionConversation({ autoFocus = false }: { autoFocus?: boole
               <LogoMark className="mt-0.5 size-6 shrink-0" />
             ) : null}
             <div className="max-w-[19rem]">
-              {m.phase === "confirm" && m.id === last?.id ? null : m.phase === "error" ? null : (
-              <p
+              {m.id === confirmId ? null : m.phase === "error" ? null : (
+              <div
                 className={cn(
                   "rounded-brand px-3 py-2 text-[13.5px] leading-relaxed",
                   m.role === "agent"
@@ -81,24 +83,24 @@ export function CompanionConversation({ autoFocus = false }: { autoFocus?: boole
                     : "rounded-tr-sm bg-accent text-accent-foreground",
                 )}
               >
-                {m.text}
-              </p>
+                {m.role === "agent" ? <Markdown className="md-compact">{m.text}</Markdown> : m.text}
+              </div>
               )}
 
-              {m.steps?.length && m.phase !== "confirm" ? (
+              {m.steps?.length && m.id !== confirmId ? (
                 <div className="mt-2">
                   <PlanStack steps={m.steps} />
                 </div>
               ) : null}
 
-              {m.phase === "confirm" && m.id === last?.id ? (
+              {m.id === confirmId ? (
                 <div className="mt-2">
                   <ConfirmGate
                     summary={m.text}
                     actions={m.actions ?? []}
                     confirmLabel={m.options?.[0] ?? "Yes, go ahead"}
                     declineLabel={m.options?.[1] ?? "No, stop"}
-                    busy={working}
+                    busy={working || Boolean(decisionStatus)}
                     status={decisionStatus}
                     onConfirm={() =>
                       void decide("confirmed", {
@@ -117,7 +119,7 @@ export function CompanionConversation({ autoFocus = false }: { autoFocus?: boole
                 </div>
               ) : null}
 
-              {m.actions?.length && m.phase !== "confirm" ? (
+              {m.actions?.length && m.id !== confirmId ? (
                 <ul className="mt-1.5 flex flex-col gap-1">
                   {m.actions.map((a) => (
                     <li
@@ -368,6 +370,7 @@ export function CompanionComposer({ autoFocus = false }: { autoFocus?: boolean }
 export function CompanionPanel() {
   const { pathname } = useLocation();
   const studio = pathname.startsWith("/app/studio");
+  const work = pathname.startsWith("/app/work");
   const sessionId = pathname.match(/^\/app\/work\/([^/]+)$/)?.[1];
   const artifacts = useAsync(
     () => (sessionId ? api.artifacts(sessionId) : Promise.resolve([])),
@@ -389,19 +392,20 @@ export function CompanionPanel() {
   }, [sessionId, artifacts.state]);
 
   useEffect(() => {
-    if (studio) setSheetOpen(false);
-  }, [studio]);
+    if (studio || work) setSheetOpen(false);
+  }, [studio, work]);
 
   useEffect(() => {
+    if (work) return;
     if (companionOpenNonce === 0 || companionOpenNonce === seenOpenNonce.current) return;
     seenOpenNonce.current = companionOpenNonce;
     setMode("chat");
     setSheetOpen(true);
-  }, [companionOpenNonce]);
+  }, [companionOpenNonce, work]);
 
   return (
     <>
-      {studio ? null : (
+      {studio || work ? null : (
       <button
         type="button"
         onClick={() => setSheetOpen(true)}

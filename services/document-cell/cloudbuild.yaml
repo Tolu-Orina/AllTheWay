@@ -1,0 +1,133 @@
+# Template for a backend Cloud Run service.
+#
+# Copy to services/<service>/cloudbuild.yaml (e.g. services/gateway/cloudbuild.yaml).
+# It needs no edits: every value that differs between services and environments arrives as a
+# substitution from the trigger defined in infra/bootstrap/triggers.tf.
+#
+# Every step builds from the REPO ROOT, not from the service directory. The gateway imports
+# services/contracts, and a build context of services/gateway cannot see a sibling — COPY
+# refuses to leave its context. Building all services the same way means the gateway is not
+# a special case waiting to break. See .dockerignore and docs/decisions/0003.
+#
+#   _SERVICE     gateway | orchestrator | research-cell | ...
+#   _ENV         dev | prod
+#   _REGION      Cloud Run + Artifact Registry region
+#   _REGISTRY    <region>-docker.pkg.dev/<project>/alltheway
+#   _RUNTIME_SA  the per-service, per-env runtime identity
+#
+# The image is tagged with the commit SHA, never :latest — so a rollback is
+# "deploy the previous tag" rather than an archaeology exercise.
+
+options:
+  logging: CLOUD_LOGGING_ONLY
+  machineType: E2_HIGHCPU_8
+
+steps:
+  - id: test
+    name: gcr.io/cloud-builders/docker
+    entrypoint: bash
+    args:
+      - -c
+      - |
+        set -euo pipefail
+        # Tests run inside the image being shipped, against the same base and
+        # dependency set that will run in production. A red suite exits
+        # non-zero here, so the build stops before anything is pushed.
+        docker build --target test           -f services/${_SERVICE}/Dockerfile           -t "${_SERVICE}-test:${SHORT_SHA}" .
+
+  - id: build
+    name: gcr.io/cloud-builders/docker
+    args:
+      - build
+      - -f
+      - services/${_SERVICE}/Dockerfile
+      - -t
+      - ${_REGISTRY}/${_SERVICE}:${SHORT_SHA}
+      - -t
+      - ${_REGISTRY}/${_SERVICE}:${_ENV}
+      - .
+
+  - id: push
+    name: gcr.io/cloud-builders/docker
+    args: ["push", "--all-tags", "${_REGISTRY}/${_SERVICE}"]
+
+  # Image only. Terraform owns the service's shape — ingress, env vars, scaling,
+  # identity — and its lifecycle block ignores the image so the two never fight.
+  # Passing --set-env-vars or --ingress here would silently overwrite what
+  # Terraform declared, and the next apply would not put it back.
+  - id: deploy
+    name: gcr.io/google.com/cloudsdktool/cloud-sdk:slim
+    entrypoint: gcloud
+    args:
+      - run
+      - deploy
+      - ${_SERVICE}-${_ENV}
+      - --image=${_REGISTRY}/${_SERVICE}:${SHORT_SHA}
+      - --region=${_REGION}
+      - --quiet
+
+  # Prove the revision actually runs.
+  #
+  # Two things this deliberately does NOT do, both learned from it failing:
+  #
+  #   `gcloud auth print-identity-token` does not work here. Cloud Build runs as
+  #   a service account whose ID tokens come from the metadata server and need an
+  #   audience; the bare command has no user credential to mint from.
+  #
+  #   An HTTP probe cannot reach most of these services. Every service except the
+  #   gateway is INGRESS_TRAFFIC_INTERNAL_ONLY, and the default build pool is
+  #   outside the VPC — so a curl would fail on a service that deployed perfectly.
+  #
+  # What is checked instead is what is observable from here and still meaningful:
+  # the revision reached Ready and is serving all traffic. Cloud Run only marks a
+  # revision Ready once the container started and passed its startup probe, so a
+  # green check means the image runs, not merely that it built.
+  #
+  # The gateway is public, so it gets the real HTTP check on top.
+  - id: smoke
+    name: gcr.io/google.com/cloudsdktool/cloud-sdk:slim
+    entrypoint: bash
+    args:
+      - -c
+      - |
+        set -euo pipefail
+        SERVICE="${_SERVICE}-${_ENV}"
+
+        READY=$$(gcloud run services describe "$$SERVICE" --region "${_REGION}"           --format='value(status.conditions[0].status)')
+        if [ "$$READY" != "True" ]; then
+          echo "smoke FAILED: $$SERVICE is not Ready (status=$$READY)"
+          gcloud run services describe "$$SERVICE" --region "${_REGION}"             --format='value(status.conditions)'
+          exit 1
+        fi
+
+        URL=$$(gcloud run services describe "$$SERVICE" --region "${_REGION}"           --format='value(status.url)')
+        echo "smoke ok: $$SERVICE is Ready at $$URL"
+
+        # Only the gateway is reachable from here. Anything else would be
+        # testing the network, not the service.
+        if [ "${_SERVICE}" = "gateway" ]; then
+          # The trailing slash is load-bearing, not a typo.
+          #
+          # Google's frontend on *.run.app intercepts the exact path /healthz and
+          # returns its own 404 — the request never reaches the container, which
+          # was proven by it appearing in no log while /api/sessions from the
+          # same probe did. /healthz/ is passed through, and Express matches it
+          # to the same route because strict routing is off.
+          #
+          # Note this trick does NOT transfer to the Python services: FastAPI
+          # redirects /healthz/ to /healthz with a 307, straight back into the
+          # intercepted path. They are internal-only and not probed here, but a
+          # future external check on one of them needs a different route.
+          CODE=$$(curl -s -o /dev/null -w '%{http_code}' --max-time 30 "$$URL/healthz/")
+          if [ "$$CODE" != "200" ]; then
+            echo "smoke FAILED: $$URL/healthz/ returned $$CODE"
+            exit 1
+          fi
+          echo "smoke ok: $$URL/healthz/ -> 200"
+        fi
+
+images:
+  - ${_REGISTRY}/${_SERVICE}:${SHORT_SHA}
+  - ${_REGISTRY}/${_SERVICE}:${_ENV}
+
+timeout: 1800s

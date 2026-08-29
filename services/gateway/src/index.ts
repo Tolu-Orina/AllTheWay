@@ -466,7 +466,7 @@ api.get(
 
       for await (const event of streamTurn(context)) {
         if (event.kind === "step") steps.push(event.step);
-        if (event.kind === "done") {
+        if (event.kind === "done" && phase !== "confirm" && phase !== "clarify") {
           note = event.note;
           citations = event.citations;
           phase = "done";
@@ -500,24 +500,28 @@ api.get(
       note = note || "Something went wrong on our side.";
       phase = "error";
     } finally {
-      await rememberWork(req.uid!, sessionId, {
-        utterance: message,
-        plan: steps.length > 0 ? steps : undefined,
-        companionNote: note || undefined,
-      });
-      if (note) {
-        await rememberThread(req.uid!, sessionId, [
-          {
-            role: "agent",
-            text: note,
-            at: isoNow(),
-            phase,
-            options,
-            actions,
-            citations,
-            steps: steps.length ? steps : undefined,
-          },
-        ]);
+      // An aborted stream is a reader that left. Persisting its partial plan
+      // would overwrite the retry that actually finished.
+      if (!stream.closed()) {
+        await rememberWork(req.uid!, sessionId, {
+          utterance: message,
+          plan: steps.length > 0 ? steps : undefined,
+          companionNote: note || undefined,
+        });
+        if (note) {
+          await rememberThread(req.uid!, sessionId, [
+            {
+              role: "agent",
+              text: note,
+              at: isoNow(),
+              phase,
+              options,
+              actions,
+              citations,
+              steps: steps.length ? steps : undefined,
+            },
+          ]);
+        }
       }
       stream.end();
     }

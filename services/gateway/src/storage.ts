@@ -1,4 +1,8 @@
+import { mkdir, readFile, rm, writeFile } from "node:fs/promises";
+import path from "node:path";
+
 import { Storage } from "@google-cloud/storage";
+import { extensionForMime } from "@alltheway/contracts";
 
 import { env } from "./env.js";
 
@@ -32,10 +36,9 @@ import { env } from "./env.js";
  * The byte store, behind an interface.
  *
  * Same shape as the connector gateway's `RefreshTokenStore` and `PolicyStore`:
- * a real implementation for the deployed service, an in-memory one for tests,
- * and the choice made explicitly at the call site rather than by an
- * environment variable. A store that silently swaps itself is a store that can
- * be swapped by accident.
+ * a real implementation for the deployed service, an in-memory one for tests
+ * (passed at the call site), and an explicit disk store when ARTIFACTS_DIR is
+ * set against the emulator. Production still requires ARTIFACTS_BUCKET.
  */
 export interface ByteStore {
   put(uid: string, artifactId: string, n: number, body: Buffer, mimeType: string): Promise<string>;
@@ -48,7 +51,16 @@ const storage = new Storage({ projectId: env.projectId });
 /** Empty disables artifact storage rather than failing at import. */
 export const bucketName = process.env.ARTIFACTS_BUCKET ?? "";
 
-export const storageConfigured = bucketName !== "";
+/**
+ * Local-only byte store. Explicit, emulator-only: production still requires
+ * ARTIFACTS_BUCKET. Set this so Work can generate and reopen files without GCS.
+ */
+const artifactsDir =
+  env.production || env.usingEmulator === false
+    ? ""
+    : (process.env.ARTIFACTS_DIR ?? "").trim();
+
+export const storageConfigured = bucketName !== "" || artifactsDir !== "";
 
 function bucket() {
   if (!storageConfigured) {
@@ -115,6 +127,37 @@ export const gcsStore: ByteStore = {
   get: getVersion,
   deleteAll: deleteArtifactBytes,
 };
+
+function diskStore(root: string): ByteStore {
+  const fileFor = (uid: string, artifactId: string, n: number) =>
+    path.join(root, uid, artifactId, String(n));
+  return {
+    async put(uid, artifactId, n, body, mimeType) {
+      const file = fileFor(uid, artifactId, n);
+      await mkdir(path.dirname(file), { recursive: true });
+      await writeFile(file, body);
+      const ext = extensionForMime(mimeType);
+      if (ext) await writeFile(`${file}${ext}`, body);
+      return `file://${file.replaceAll("\\", "/")}`;
+    },
+    async get(uid, artifactId, n) {
+      return readFile(fileFor(uid, artifactId, n));
+    },
+    async deleteAll(uid, artifactId) {
+      await rm(path.join(root, uid, artifactId), { recursive: true, force: true });
+    },
+  };
+}
+
+/**
+ * The store routes and persist actually use.
+ *
+ * Disk only when ARTIFACTS_DIR is set against the emulator. Tests still pass
+ * inMemoryStore themselves.
+ */
+export const artifactStore: ByteStore = artifactsDir
+  ? diskStore(path.resolve(artifactsDir))
+  : gcsStore;
 
 /**
  * For tests. Never selected implicitly — a caller must pass it, which is what

@@ -62,6 +62,12 @@ AGENTS: tuple[Entry, ...] = (
         url_env="RESEARCH_CELL_URL",
     ),
     Entry(
+        id="document-cell",
+        owner="core",
+        purpose="Compiles a layout IR into one Office file after Yes.",
+        url_env="DOCUMENT_CELL_URL",
+    ),
+    Entry(
         id="librarian",
         owner="core",
         purpose="Holds the user's documents and answers from them with citations.",

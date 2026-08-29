@@ -772,6 +772,8 @@ export const ArtifactSchema = z.object({
   createdAt: z.string().datetime(),
   updatedAt: z.string().datetime(),
   provenance: ProvenanceSchema,
+  /** Latest version's MIME, so the rail can say PowerPoint without opening it. */
+  mimeType: z.string().optional().default(""),
 });
 
 /** An artifact with its history, for the canvas. */
@@ -779,11 +781,93 @@ export const ArtifactDetailSchema = ArtifactSchema.extend({
   versions: z.array(ArtifactVersionSchema),
 });
 
+export const MIME_WORD =
+  "application/vnd.openxmlformats-officedocument.wordprocessingml.document";
+export const MIME_SHEET =
+  "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet";
+export const MIME_SLIDES =
+  "application/vnd.openxmlformats-officedocument.presentationml.presentation";
+
+export function isOfficeMime(mimeType: string): boolean {
+  return mimeType === MIME_WORD || mimeType === MIME_SHEET || mimeType === MIME_SLIDES;
+}
+
+export function isTextEditableMime(mimeType: string): boolean {
+  if (!mimeType) return true;
+  if (isOfficeMime(mimeType)) return false;
+  if (mimeType.startsWith("image/") || mimeType.startsWith("video/")) return false;
+  if (mimeType === "application/pdf") return false;
+  return (
+    mimeType.startsWith("text/") ||
+    mimeType === "application/json" ||
+    mimeType === "application/xml"
+  );
+}
+
+export function extensionForMime(mimeType: string): string {
+  if (mimeType === MIME_WORD) return ".docx";
+  if (mimeType === MIME_SHEET) return ".xlsx";
+  if (mimeType === MIME_SLIDES) return ".pptx";
+  if (mimeType === "text/markdown") return ".md";
+  if (mimeType === "text/plain") return ".txt";
+  if (mimeType === "text/csv") return ".csv";
+  if (mimeType === "application/json") return ".json";
+  if (mimeType === "application/pdf") return ".pdf";
+  if (mimeType.startsWith("image/png")) return ".png";
+  if (mimeType.startsWith("image/jpeg")) return ".jpg";
+  if (mimeType.startsWith("image/webp")) return ".webp";
+  if (mimeType.startsWith("video/mp4")) return ".mp4";
+  if (mimeType.startsWith("video/webm")) return ".webm";
+  return "";
+}
+
+export function officeKindLabel(mimeType: string): "word" | "sheet" | "slides" | "doc" | "image" | "video" {
+  if (mimeType === MIME_WORD) return "word";
+  if (mimeType === MIME_SHEET) return "sheet";
+  if (mimeType === MIME_SLIDES) return "slides";
+  if (mimeType.startsWith("image/")) return "image";
+  if (mimeType.startsWith("video/")) return "video";
+  return "doc";
+}
+
+/**
+ * What to show when opening an artifact, without pretending every MIME type
+ * is a live Word/Excel/PowerPoint editor.
+ *
+ * Text stays editable. Office Open XML is previewed as structure (paragraphs,
+ * sheet rows, slide bullets) and downloaded as the real file.
+ */
+export const ArtifactPreviewSchema = z.object({
+  mimeType: z.string(),
+  format: z.enum(["text", "image", "video", "word", "sheet", "slides", "binary"]),
+  text: z.string().optional(),
+  paragraphs: z.array(z.string()).optional(),
+  sheets: z
+    .array(
+      z.object({
+        name: z.string(),
+        rows: z.array(z.array(z.string())),
+      }),
+    )
+    .optional(),
+  slides: z
+    .array(
+      z.object({
+        title: z.string(),
+        bullets: z.array(z.string()),
+        /** data: URL of a still on that page, when the PPT embeds one. */
+        image: z.string().optional(),
+      }),
+    )
+    .optional(),
+});
+
 export type ArtifactKind = z.infer<typeof ArtifactKindSchema>;
 export type Provenance = z.infer<typeof ProvenanceSchema>;
 export type ArtifactVersion = z.infer<typeof ArtifactVersionSchema>;
 export type Artifact = z.infer<typeof ArtifactSchema>;
 export type ArtifactDetail = z.infer<typeof ArtifactDetailSchema>;
+export type ArtifactPreview = z.infer<typeof ArtifactPreviewSchema>;
 
 /* ------------------------------------------------------------------ *
  * Usage and plan

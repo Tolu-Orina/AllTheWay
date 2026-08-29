@@ -76,6 +76,7 @@ RUN npm prune --omit=dev
 # backend and never reaches Firestore or Vertex.
 FROM build AS test
 WORKDIR /repo
+COPY services/document-cell/references ./services/document-cell/references
 ENV FIRESTORE_EMULATOR_HOST=127.0.0.1:8081
 ENV ALLOW_ANONYMOUS=true
 ENV GOOGLE_CLOUD_PROJECT=alltheway-local

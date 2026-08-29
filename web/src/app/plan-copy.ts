@@ -70,6 +70,26 @@ export function describeCall(step: PlanStep): string | null {
       return title ? `This will create a Google Doc called “${title}”` : "This will create a Google Doc";
     case "google_docs.append_text":
       return "This will add text to a Google Doc";
+    case "work_files.create_document":
+      return title
+        ? `This will create a Word document called “${title}” in this session`
+        : "This will create a Word document in this session";
+    case "work_files.create_spreadsheet":
+      return title
+        ? `This will create a spreadsheet called “${title}” in this session`
+        : "This will create a spreadsheet in this session";
+    case "work_files.create_slides":
+      return title
+        ? `This will create a PowerPoint called “${title}” in this session`
+        : "This will create a PowerPoint in this session";
+    case "work_files.create_pdf":
+      return title
+        ? `This will create a PDF called “${title}” in this session`
+        : "This will create a PDF in this session";
+    case "work_files.create_markdown":
+      return title
+        ? `This will save a markdown note called “${title}” in this session`
+        : "This will save a markdown note in this session";
     case "media.generate_image":
       return "This will generate an image";
     case "media.draft_video":

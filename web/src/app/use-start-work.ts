@@ -28,6 +28,18 @@ export function useStartWork() {
       setStarting(true);
       try {
         const { id } = await api.createSession();
+        if (opts?.seed != null) {
+          // Survive React Strict Mode remount: location.state is consumed on
+          // the first mount, and that mount's in-flight turn is aborted.
+          try {
+            sessionStorage.setItem(
+              `atw:work-seed:${id}`,
+              JSON.stringify({ seed: opts.seed, promptOnly: opts.promptOnly === true }),
+            );
+          } catch {
+            /* private windows */
+          }
+        }
         navigate(`/app/work/${id}`, {
           state:
             opts?.seed != null

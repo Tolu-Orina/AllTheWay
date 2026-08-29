@@ -39,8 +39,7 @@ const AppLayout = lazy(() =>
   }),
 );
 const Home = lazy(() => import("@/app/screens/Home"));
-const Sessions = lazy(() => import("@/app/screens/Sessions"));
-const SessionDetail = lazy(() => import("@/app/screens/SessionDetail"));
+const Work = lazy(() => import("@/app/screens/Work"));
 const Watchers = lazy(() => import("@/app/screens/Watchers"));
 const Agents = lazy(() => import("@/app/screens/Agents"));
 const Profile = lazy(() => import("@/app/screens/Profile"));
@@ -90,8 +89,8 @@ export default function App() {
         <Route element={<RequireAuth />}>
           <Route path="/app" element={<AppLayout />}>
             <Route index element={<Home />} />
-            <Route path="work" element={<Sessions />} />
-            <Route path="work/:id" element={<SessionDetail />} />
+            <Route path="work" element={<Work />} />
+            <Route path="work/:id" element={<Work />} />
             <Route path="watchers" element={<Watchers />} />
             <Route path="you" element={<Profile />} />
             <Route path="you/running" element={<Agents />} />

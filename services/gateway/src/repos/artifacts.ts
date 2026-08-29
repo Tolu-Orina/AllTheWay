@@ -9,7 +9,7 @@ import {
 import { FieldValue, Timestamp } from "firebase-admin/firestore";
 
 import { artifacts, artifactVersions, db } from "../firestore.js";
-import { gcsStore, type ByteStore } from "../storage.js";
+import { artifactStore, type ByteStore } from "../storage.js";
 
 /**
  * Artifacts: the durable, versioned things the agent produced.
@@ -43,6 +43,7 @@ function toArtifact(id: string, data: FirebaseFirestore.DocumentData): Artifact 
     currentVersion: data.currentVersion ?? 0,
     createdAt: iso(data.createdAt),
     updatedAt: iso(data.updatedAt),
+    mimeType: data.mimeType ?? "",
     provenance: {
       agentId: data.provenance?.agentId ?? "",
       cardVersion: data.provenance?.cardVersion ?? "",
@@ -116,7 +117,7 @@ export type NewArtifact = {
 export async function createArtifact(
   uid: string,
   input: NewArtifact,
-  store: ByteStore = gcsStore,
+  store: ByteStore = artifactStore,
 ): Promise<ArtifactDetail> {
   const ref = artifacts(uid).doc();
 
@@ -127,6 +128,7 @@ export async function createArtifact(
     title: input.title,
     sessionId: input.sessionId ?? "",
     currentVersion: 0,
+    mimeType: input.mimeType,
     provenance: input.provenance,
     createdAt: FieldValue.serverTimestamp(),
     updatedAt: FieldValue.serverTimestamp(),
@@ -158,7 +160,7 @@ export async function addVersion(
   uid: string,
   artifactId: string,
   input: NewVersion,
-  store: ByteStore = gcsStore,
+  store: ByteStore = artifactStore,
 ): Promise<number> {
   const artifactRef = artifacts(uid).doc(artifactId);
 
@@ -171,6 +173,7 @@ export async function addVersion(
     const next = (doc.get("currentVersion") ?? 0) + 1;
     tx.update(artifactRef, {
       currentVersion: next,
+      mimeType: input.mimeType,
       updatedAt: FieldValue.serverTimestamp(),
     });
     return next;
@@ -213,7 +216,7 @@ export class NotFound extends Error {
 export async function deleteArtifact(
   uid: string,
   artifactId: string,
-  store: ByteStore = gcsStore,
+  store: ByteStore = artifactStore,
 ): Promise<boolean> {
   const ref = artifacts(uid).doc(artifactId);
   const doc = await ref.get();

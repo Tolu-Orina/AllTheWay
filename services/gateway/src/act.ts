@@ -3,6 +3,7 @@ import { env } from "./env.js";
 import { connectorClient, connectorInvokeMessage } from "./a2a.js";
 import { getSession } from "./repos/sessions.js";
 import { MEDIA_TOOLS, persistGeneratedMedia, videoStartFromConnectorTask } from "./media-persist.js";
+import { actWorkFiles, isWorkFilesStep } from "./office-persist.js";
 import { createStudioJob } from "./repos/studio-jobs.js";
 import {
   connectorIsConnected,
@@ -72,16 +73,6 @@ export async function actOnConfirmed(opts: {
   const actionable = opts.steps.filter((s) => s.connector && s.tool);
   if (actionable.length === 0) return [];
 
-  if (!env.connectorGatewayUrl) {
-    return actionable.map((s) => ({
-      label: s.label ?? "",
-      connector: s.connector ?? "",
-      tool: s.tool ?? "",
-      did: "skipped",
-      detail: "Connections are not available in this environment.",
-    }));
-  }
-
   const outcomes: ActOutcome[] = [];
 
   // Serially, not in parallel. These are irreversible-adjacent, and a failure
@@ -90,6 +81,21 @@ export async function actOnConfirmed(opts: {
     const connector = step.connector as string;
     const tool = step.tool as string;
     const base = { label: step.label ?? "", connector, tool };
+
+    // First-party Office files. No connector, no OAuth — generate bytes here.
+    if (isWorkFilesStep(step)) {
+      outcomes.push(await actWorkFiles({ uid: opts.uid, sessionId: opts.sessionId, step }));
+      continue;
+    }
+
+    if (!env.connectorGatewayUrl) {
+      outcomes.push({
+        ...base,
+        did: "skipped",
+        detail: "Connections are not available in this environment.",
+      });
+      continue;
+    }
 
     if (isGoogleConnector(connector)) {
       const grant = await db.collection("connectorGrants").doc(googleGrantId(opts.uid)).get();
@@ -235,6 +241,16 @@ export function readableDetail(task: unknown): string {
  */
 export async function storedSteps(uid: string, sessionId: string): Promise<ActableStep[]> {
   const session = await getSession(uid, sessionId);
-  const plan = (session?.plan ?? []) as ActableStep[];
-  return Array.isArray(plan) ? plan : [];
+  if (!session) return [];
+  const fromPlan = (session.plan ?? []).filter((s) => s.connector && s.tool);
+  if (fromPlan.length) return fromPlan as ActableStep[];
+  // Steps are streamed as they grow; the confirm payload is the gate's last
+  // word on the call. A create_task with no connector is a ledger row and
+  // nothing saved — so Yes must replay what was actually shown to confirm.
+  for (let i = session.thread.length - 1; i >= 0; i--) {
+    const actions = session.thread[i]?.actions ?? [];
+    const calls = actions.filter((a) => a.connector && a.tool);
+    if (calls.length) return calls as ActableStep[];
+  }
+  return [];
 }

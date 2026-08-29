@@ -23,6 +23,29 @@ test("a connector invoke uses the numeric Role enum, not a string name", () => {
   assert.equal(message.parts[0]?.content?.$case, "data");
 });
 
+test("work_files still runs when no connector gateway is configured", async () => {
+  // Office files are first-party artifacts. They must not inherit the
+  // "connections are not available" skip that Google calls correctly use.
+  const did = await actOnConfirmed({
+    uid: "u1",
+    sessionId: "s1",
+    steps: [
+      {
+        label: "Write the brief as a Word document",
+        connector: "work_files",
+        tool: "create_document",
+        arguments: { title: "Brief", body: "Ship it." },
+      },
+    ],
+  });
+  assert.equal(did.length, 1);
+  assert.equal(did[0].tool, "create_document");
+  // Without Cloud Storage the persist fails honestly rather than skipping as
+  // an unconnected account. Either saved or could not save is a real answer.
+  assert.ok(["done", "failed"].includes(did[0].did));
+  assert.ok(!/Connections are not available/i.test(did[0].detail));
+});
+
 test("a plan with no calls does nothing, and says so by doing nothing", async () => {
   const did = await actOnConfirmed({
     uid: "u1",

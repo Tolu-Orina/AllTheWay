@@ -16,8 +16,11 @@ locals {
     # before anything reasons about them. Giving it ORCHESTRATOR_URL without
     # this is the exact failure the comment below warns about: a service that
     # knows where another is and may not call it.
-    orchestrator        = ["gateway", "registry", "scribe"]
-    research-cell       = ["orchestrator", "registry"]
+    orchestrator  = ["gateway", "registry", "scribe"]
+    research-cell = ["orchestrator", "registry"]
+    # Leaf cell: compiles IR after Yes. Gateway is the only actor; registry
+    # fetches the card. Never faces the internet.
+    document-cell       = ["gateway", "registry"]
     profile-synthesizer = ["orchestrator"]
     watcher-runtime     = ["orchestrator"]
     # The Agent Gateway is reachable only by the two things that act: the
@@ -111,9 +114,10 @@ locals {
       # Always non-empty, which also matters: the relay treats an empty
       # allow-list as development and accepts any origin, so an unset value
       # would turn a security check off rather than on.
-      REGISTRY_URL  = local.service_url["registry"]
-      LIBRARIAN_URL = local.service_url["librarian"]
-      SCRIBE_URL    = local.service_url["scribe"]
+      REGISTRY_URL      = local.service_url["registry"]
+      LIBRARIAN_URL     = local.service_url["librarian"]
+      SCRIBE_URL        = local.service_url["scribe"]
+      DOCUMENT_CELL_URL = local.service_url["document-cell"]
 
       WEB_ORIGINS = join(",", compact([
         var.custom_domain != "" ? "https://${var.custom_domain}" : "",
@@ -158,6 +162,7 @@ locals {
     }
     profile-synthesizer = {}
     research-cell       = {}
+    document-cell       = {}
 
     # Derived here rather than listed in the registry's own code, so the
     # catalogue cannot disagree with what Cloud Run actually serves.
@@ -189,6 +194,7 @@ locals {
       CONNECTOR_GATEWAY_URL = local.service_url["connector-gateway"]
       LIBRARIAN_URL         = local.service_url["librarian"]
       SCRIBE_URL            = local.service_url["scribe"]
+      DOCUMENT_CELL_URL     = local.service_url["document-cell"]
     }
     # Screening is mandatory on untrusted external content, and it fails closed:
     # without a template these services refuse rather than passing content
@@ -246,6 +252,7 @@ locals {
     ]
     orchestrator        = ["roles/aiplatform.user"] # Vertex, via ModelProvider
     research-cell       = ["roles/aiplatform.user"]
+    document-cell       = ["roles/aiplatform.user"] # image slots + vision critic
     profile-synthesizer = ["roles/datastore.user"]
     watcher-runtime = [
       "roles/datastore.user",
@@ -311,6 +318,11 @@ locals {
       # default is invisible at exactly the moment someone is asking where a
       # video was produced.
       MEDIA_LOCATION = var.media_location
+    }
+    document-cell = {
+      MEDIA_LOCATION      = var.media_location
+      SLIDE_REFERENCE_DIR = "/repo/services/document-cell/references"
+      HOME                = "/tmp"
     }
     gateway = {
       # Where artifact bytes live. Empty would disable artifacts rather than
@@ -475,13 +487,20 @@ module "service" {
   # to survive. A 90-minute meeting still exceeds it; that is what session
   # resumption in Phase F is for, and it is a reconnect problem rather than a
   # number that can be raised.
-  timeout_seconds = contains(["gateway", "scribe"], each.key) ? 3600 : 300
+  #
+  # Document-cell visual QA is compile + LibreOffice + critic, budgeted at
+  # 360s with images. 300s was killing the request before the sixth turn.
+  timeout_seconds = contains(["gateway", "scribe"], each.key) ? 3600 : each.key == "document-cell" ? 480 : 300
 
   # Studio video: the gateway joins shots in /tmp; connector-gateway holds a
   # finished Veo payload in memory as JSON. 512Mi OOM'd the connector on a
   # completed 8s poll (2026-08-28), and two overlapping polls killed two
   # instances at once.
-  memory = contains(["gateway", "connector-gateway"], each.key) ? "1Gi" : "512Mi"
+  #
+  # Document-cell runs LibreOffice per compile. 1Gi OOMs a PPTX→PDF→PNG
+  # pass; 2Gi is the floor that matches local visual QA.
+  memory = each.key == "document-cell" ? "2Gi" : contains(["gateway", "connector-gateway"], each.key) ? "1Gi" : "512Mi"
+  cpu    = each.key == "document-cell" ? "2" : "1"
 
   # Concurrency, set for the pinned case rather than for today's traffic.
   #
@@ -494,7 +513,10 @@ module "service" {
   # So it is chosen now for the shape this service is built for. Four is small
   # enough that a pinned session has room, and large enough that the REST path
   # does not scale out for no reason.
-  concurrency = each.key == "scribe" ? 4 : 40
+  #
+  # Document-cell is one soffice profile per request and 2Gi. Two overlapping
+  # compiles on one instance would fight for RAM; scale out instead.
+  concurrency = each.key == "scribe" ? 4 : each.key == "document-cell" ? 1 : 40
 
   env_vars = merge(var.common_env_vars, {
     APP_ENV              = var.env

@@ -2,10 +2,12 @@ import { motion, useReducedMotion } from "motion/react";
 import {
   Calendar,
   Check,
+  FileSpreadsheet,
   FileText,
   Folder,
   Image as ImageIcon,
   Mail,
+  Presentation,
   Video,
 } from "lucide-react";
 import type { PlanStep } from "@alltheway/contracts";
@@ -29,12 +31,22 @@ const ICONS = {
   google_gmail: Mail,
   google_drive: Folder,
   google_docs: FileText,
+  work_files: FileText,
   media: ImageIcon,
 } as const;
 
 function StepIcon({ step }: { step: PlanStep }) {
   if (step.connector === "media" && (step.tool ?? "").includes("video")) {
     return <Video className="size-4 shrink-0 text-muted-foreground" aria-hidden="true" />;
+  }
+  if (step.connector === "work_files" && step.tool === "create_spreadsheet") {
+    return <FileSpreadsheet className="size-4 shrink-0 text-muted-foreground" aria-hidden="true" />;
+  }
+  if (step.connector === "work_files" && step.tool === "create_slides") {
+    return <Presentation className="size-4 shrink-0 text-muted-foreground" aria-hidden="true" />;
+  }
+  if (step.connector === "work_files" && step.tool === "create_pdf") {
+    return <FileText className="size-4 shrink-0 text-muted-foreground" aria-hidden="true" />;
   }
   const Icon = (step.connector && ICONS[step.connector as keyof typeof ICONS]) || FileText;
   return <Icon className="size-4 shrink-0 text-muted-foreground" aria-hidden="true" />;

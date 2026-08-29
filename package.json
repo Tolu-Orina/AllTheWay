@@ -24,6 +24,7 @@
     "test:streaming": "npm --workspace web run test:streaming",
     "verify:streaming": "cd services/orchestrator && python scripts/verify_streaming.py",
     "dev:research": "cd services/research-cell && python -m uvicorn app.main:app --port 8093",
+    "dev:document": "npm --workspace @alltheway/gateway exec -- tsx src/document-cell-server.ts",
     "verify:cell": "cd services/research-cell && python scripts/verify_cell.py healthy",
     "postinstall": "npm --workspace @alltheway/contracts run build",
     "docker:build": "node scripts/docker-build.mjs",

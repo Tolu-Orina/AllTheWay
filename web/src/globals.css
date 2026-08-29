@@ -360,3 +360,113 @@
     transform: translateX(160%);
   }
 }
+
+.md-body {
+  font-size: 14px;
+  line-height: 1.65;
+  overflow-wrap: anywhere;
+}
+.md-body > :first-child {
+  margin-top: 0;
+}
+.md-body > :last-child {
+  margin-bottom: 0;
+}
+.md-body h1,
+.md-body h2,
+.md-body h3 {
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  color: var(--foreground);
+}
+.md-body h1 {
+  font-size: 1.35rem;
+  margin: 1.15em 0 0.4em;
+}
+.md-body h2 {
+  font-size: 1.12rem;
+  margin: 1.05em 0 0.35em;
+}
+.md-body h3 {
+  font-size: 1rem;
+  margin: 0.95em 0 0.3em;
+}
+.md-body p,
+.md-body ul,
+.md-body ol,
+.md-body blockquote,
+.md-body pre,
+.md-body table {
+  margin: 0.55em 0;
+}
+.md-body ul {
+  list-style: disc;
+  padding-left: 1.2rem;
+}
+.md-body ol {
+  list-style: decimal;
+  padding-left: 1.2rem;
+}
+.md-body li {
+  margin: 0.2em 0;
+}
+.md-body li > ul,
+.md-body li > ol {
+  margin: 0.15em 0;
+}
+.md-body strong {
+  font-weight: 600;
+}
+.md-body a {
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+.md-body blockquote {
+  border-left: 2px solid var(--border);
+  padding-left: 0.85rem;
+  color: var(--muted-foreground);
+}
+.md-body code {
+  font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  font-size: 0.9em;
+  background: var(--muted);
+  border-radius: 4px;
+  padding: 0.1em 0.35em;
+}
+.md-body pre {
+  overflow-x: auto;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-brand);
+  background: var(--muted);
+  padding: 0.75rem 0.9rem;
+}
+.md-body pre code {
+  background: none;
+  padding: 0;
+}
+.md-body table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 13px;
+}
+.md-body th,
+.md-body td {
+  border: 1px solid var(--border);
+  padding: 0.4rem 0.55rem;
+  text-align: left;
+}
+.md-body th {
+  font-weight: 600;
+  background: var(--muted);
+}
+.md-body hr {
+  border: 0;
+  border-top: 1px solid var(--border);
+  margin: 1em 0;
+}
+.md-body.md-compact h1,
+.md-body.md-compact h2,
+.md-body.md-compact h3 {
+  font-size: 1em;
+  margin: 0.7em 0 0.25em;
+}

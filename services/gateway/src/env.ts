@@ -130,6 +130,12 @@ export const env = {
    */
   connectorGatewayUrl: (process.env.CONNECTOR_GATEWAY_URL ?? "").replace(/\/$/, ""),
 
+  /**
+   * Document cell. Internal-only, invoked after Yes. Empty runs the quality
+   * loop in-process; a set URL that fails degrades to today's renderer.
+   */
+  documentCellUrl: (process.env.DOCUMENT_CELL_URL ?? "").replace(/\/$/, ""),
+
   resendApiKey: process.env.RESEND_API_KEY ?? "",
   mailFrom: process.env.MAIL_FROM ?? "",
 

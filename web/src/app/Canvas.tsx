@@ -1,11 +1,13 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import { useParams } from "react-router";
 import { useT } from "@/app/i18n";
-import { Check, Download, FileText, History, Loader2 } from "lucide-react";
+import { Check, Download, FileText, History, Loader2, Pencil, Eye } from "lucide-react";
 
-import { api, type ArtifactDetail, type ArtifactVersion } from "@/app/data";
+import { api, type ArtifactDetail, type ArtifactPreview, type ArtifactVersion } from "@/app/data";
 import { Comments } from "@/app/Comments";
 import { ShareControls } from "@/app/Share";
+import { extensionForMime, isOfficeMime, isTextEditableMime } from "@alltheway/contracts";
+import { Markdown } from "@/app/Markdown";
 import { cn } from "@/lib/utils";
 
 /**
@@ -123,7 +125,12 @@ export function Canvas({ artifactId }: { artifactId: string }) {
           </p>
         </div>
 
-        <ExportButton artifactId={artifact.id} version={shown?.n} title={artifact.title} />
+        <ExportButton
+          artifactId={artifact.id}
+          version={shown?.n}
+          title={artifact.title}
+          mimeType={shown?.mimeType}
+        />
       </header>
 
       <VersionStrip
@@ -174,10 +181,12 @@ function ExportButton({
   artifactId,
   version,
   title,
+  mimeType,
 }: {
   artifactId: string;
   version: number | undefined;
   title: string;
+  mimeType?: string;
 }) {
   const [busy, setBusy] = useState(false);
 
@@ -193,7 +202,8 @@ function ExportButton({
           const url = URL.createObjectURL(blob);
           const a = document.createElement("a");
           a.href = url;
-          a.download = `${title.replace(/[^\w\d\-. ]+/g, "_") || "artifact"}-v${version}`;
+          const ext = extensionForMime(mimeType ?? blob.type);
+          a.download = `${title.replace(/[^\w\d\-. ]+/g, "_") || "artifact"}-v${version}${ext}`;
           a.click();
           // Revoked on the next tick: revoking synchronously can cancel the
           // download in some browsers before it has started reading.
@@ -276,6 +286,7 @@ function ArtifactBody({
   const [text, setText] = useState<string | null>(null);
   const [imageUrl, setImageUrl] = useState<string | null>(null);
   const [note, setNote] = useState("");
+  const [editing, setEditing] = useState(false);
   const original = useRef<string>("");
 
   useEffect(() => {
@@ -283,17 +294,18 @@ function ArtifactBody({
     let live = true;
     let created: string | null = null;
 
-    if (kind === "image" || kind === "video") {
+    if (kind === "image" || kind === "video" || version.mimeType === "application/pdf") {
       api.artifactBytes(artifactId, version.n).then((blob) => {
         if (!live) return;
         created = URL.createObjectURL(blob);
         setImageUrl(created);
       });
-    } else {
+    } else if (!isOfficeMime(version.mimeType)) {
       api.artifactText(artifactId, version.n).then((body) => {
         if (!live) return;
         original.current = body;
         setText(body);
+        setEditing(false);
       });
     }
 
@@ -311,6 +323,34 @@ function ArtifactBody({
         <p className="text-[13.5px] font-medium">Nothing in this yet</p>
         <p className="max-w-[22rem] text-[12.5px] leading-relaxed text-muted-foreground">
           {t("canvas.askForADraftInThe")}
+        </p>
+      </div>
+    );
+  }
+
+  if (isOfficeMime(version.mimeType)) {
+    return <OfficePreviewBody artifactId={artifactId} version={version} />;
+  }
+
+  if (version.mimeType === "application/pdf") {
+    return (
+      <div className="flex min-h-0 flex-1 flex-col">
+        {imageUrl ? (
+          <iframe
+            src={imageUrl}
+            title={`Version ${version.n}`}
+            className="min-h-0 w-full flex-1 border-0"
+          />
+        ) : (
+          <div className="flex flex-1 items-center justify-center">
+            <Loader2
+              className="size-5 animate-spin text-muted-foreground motion-reduce:animate-none"
+              aria-label="Opening"
+            />
+          </div>
+        )}
+        <p className="border-t px-4 py-3 text-[12.5px] leading-relaxed text-muted-foreground">
+          {t("work.officeEditHint")}
         </p>
       </div>
     );
@@ -358,21 +398,60 @@ function ArtifactBody({
   }
 
   const changed = text !== null && text !== original.current;
+  const markdown = isTextEditableMime(version.mimeType);
 
   return (
     <>
       <div className="flex-1 overflow-y-auto p-4">
-        <label htmlFor="canvas-body" className="sr-only">
-          {t("canvas.artifactContent")}
-        </label>
-        <textarea
-          id="canvas-body"
-          value={text ?? ""}
-          disabled={text === null || saving}
-          onChange={(e) => setText(e.target.value)}
-          spellCheck
-          className="h-full min-h-[14rem] w-full resize-none rounded-brand border bg-background p-3 font-mono text-[13px] leading-relaxed outline-none disabled:opacity-60"
-        />
+        {markdown && !editing ? (
+          <>
+            <div className="mb-3 flex justify-end">
+              <button
+                type="button"
+                onClick={() => setEditing(true)}
+                className="inline-flex items-center gap-1.5 rounded-full border px-3 py-1.5 text-[12.5px] text-muted-foreground transition-colors hover:border-primary/40 hover:text-foreground"
+              >
+                <Pencil className="size-3.5" aria-hidden="true" />
+                {t("canvas.edit")}
+              </button>
+            </div>
+            {text === null ? (
+              <Loader2
+                className="size-4 animate-spin text-muted-foreground motion-reduce:animate-none"
+                aria-label="Loading"
+              />
+            ) : (
+              <Markdown>{text}</Markdown>
+            )}
+          </>
+        ) : (
+          <>
+            {markdown ? (
+              <div className="mb-3 flex justify-end">
+                <button
+                  type="button"
+                  onClick={() => setEditing(false)}
+                  disabled={changed}
+                  className="inline-flex items-center gap-1.5 rounded-full border px-3 py-1.5 text-[12.5px] text-muted-foreground transition-colors hover:border-primary/40 hover:text-foreground disabled:opacity-40"
+                >
+                  <Eye className="size-3.5" aria-hidden="true" />
+                  {t("canvas.preview")}
+                </button>
+              </div>
+            ) : null}
+            <label htmlFor="canvas-body" className="sr-only">
+              {t("canvas.artifactContent")}
+            </label>
+            <textarea
+              id="canvas-body"
+              value={text ?? ""}
+              disabled={text === null || saving}
+              onChange={(e) => setText(e.target.value)}
+              spellCheck
+              className="h-full min-h-[14rem] w-full resize-none rounded-brand border bg-background p-3 font-mono text-[13px] leading-relaxed outline-none disabled:opacity-60"
+            />
+          </>
+        )}
         {version.correction ? <Correction note={version.correction} /> : null}
       </div>
 
@@ -413,6 +492,130 @@ function ArtifactBody({
         </button>
       </form>
     </>
+  );
+}
+
+function OfficePreviewBody({
+  artifactId,
+  version,
+}: {
+  artifactId: string;
+  version: ArtifactVersion;
+}) {
+  const t = useT();
+  const [preview, setPreview] = useState<ArtifactPreview | null>(null);
+  const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    let live = true;
+    setPreview(null);
+    setError(null);
+    api
+      .artifactPreview(artifactId, version.n)
+      .then((data) => {
+        if (live) setPreview(data);
+      })
+      .catch(() => {
+        if (live) setError("That could not be opened.");
+      });
+    return () => {
+      live = false;
+    };
+  }, [artifactId, version.n]);
+
+  if (error) {
+    return (
+      <div className="flex flex-1 flex-col items-center justify-center gap-2 p-6 text-center">
+        <p className="text-[13.5px] text-muted-foreground">{error}</p>
+      </div>
+    );
+  }
+
+  if (!preview) {
+    return (
+      <div className="flex flex-1 items-center justify-center">
+        <Loader2
+          className="size-5 animate-spin text-muted-foreground motion-reduce:animate-none"
+          aria-label="Opening"
+        />
+      </div>
+    );
+  }
+
+  return (
+    <div className="flex-1 overflow-y-auto p-4">
+      {preview.format === "word" ? (
+        <div className="space-y-3">
+          {(preview.paragraphs ?? []).map((p, i) => (
+            <p key={`${i}-${p.slice(0, 24)}`} className="text-[14px] leading-relaxed">
+              {p}
+            </p>
+          ))}
+        </div>
+      ) : null}
+
+      {preview.format === "sheet"
+        ? (preview.sheets ?? []).map((sheet) => (
+            <div key={sheet.name} className="mb-4 overflow-x-auto">
+              <p className="mb-2 text-[12px] font-semibold tracking-wide text-muted-foreground uppercase">
+                {sheet.name}
+              </p>
+              <table className="w-full border-collapse text-[13px]">
+                <tbody>
+                  {sheet.rows.map((row, r) => (
+                    <tr key={r} className="border-b">
+                      {row.map((cell, c) => (
+                        <td
+                          key={`${r}-${c}`}
+                          className={cn(
+                            "border-r px-2.5 py-1.5",
+                            r === 0 && "font-semibold",
+                          )}
+                        >
+                          {cell}
+                        </td>
+                      ))}
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          ))
+        : null}
+
+      {preview.format === "slides" ? (
+        <ol className="space-y-3">
+          {(preview.slides ?? []).map((slide, i) => (
+            <li key={`${slide.title}-${i}`} className="overflow-hidden rounded-brand border bg-background">
+              {slide.image ? (
+                <img
+                  src={slide.image}
+                  alt=""
+                  className="aspect-video w-full object-cover"
+                />
+              ) : null}
+              <div className="p-3">
+                <p className="text-[13px] font-semibold">
+                  {i + 1}. {slide.title}
+                </p>
+                {slide.bullets.length ? (
+                  <ul className="mt-2 list-disc space-y-1 pl-5 text-[13px] leading-relaxed text-muted-foreground">
+                    {slide.bullets.map((b, j) => (
+                      <li key={`${j}-${b.slice(0, 24)}`}>{b}</li>
+                    ))}
+                  </ul>
+                ) : null}
+              </div>
+            </li>
+          ))}
+        </ol>
+      ) : null}
+
+      <p className="mt-4 text-[12.5px] leading-relaxed text-muted-foreground">
+        {t("work.officeEditHint")}
+      </p>
+      {version.correction ? <Correction note={version.correction} /> : null}
+    </div>
   );
 }
 

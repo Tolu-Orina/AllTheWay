@@ -298,3 +298,46 @@ def test_three_words_without_a_thread_still_hit_the_clarify_gate():
     r = turn("Anime character illustration")
     assert r.decision == "clarify"
 
+
+def test_a_powerpoint_request_names_work_files_slides():
+    r = turn("Create a PowerPoint deck about the Q4 launch")
+    step = next(s for s in r.plan if s.connector == "work_files")
+    assert step.tool == "create_slides"
+
+
+def test_a_spreadsheet_request_names_work_files_sheet():
+    r = turn("Create a spreadsheet of the Q4 launch budget")
+    step = next(s for s in r.plan if s.connector == "work_files")
+    assert step.tool == "create_spreadsheet"
+
+
+def test_a_word_document_request_names_work_files_document():
+    r = turn("Create a Word document briefing the Q4 launch")
+    step = next(s for s in r.plan if s.connector == "work_files")
+    assert step.tool == "create_document"
+
+
+def test_a_markdown_briefing_names_work_files_markdown():
+    r = turn("Create a markdown briefing of the Q4 launch")
+    step = next(s for s in r.plan if s.connector == "work_files")
+    assert step.tool == "create_markdown"
+
+
+def test_a_pdf_request_names_work_files_pdf():
+    r = turn("Create a PDF of the Q4 launch for the board")
+    step = next(s for s in r.plan if s.connector == "work_files")
+    assert step.tool == "create_pdf"
+
+
+def test_a_board_deck_with_metrics_plans_chart_and_image_slot():
+    r = turn("Create a board deck with metrics and a budget chart")
+    step = next(s for s in r.plan if s.tool == "create_slides")
+    slides = step.arguments.get("slides") or []
+    assert any(isinstance(s, dict) and s.get("layout") == "chart" for s in slides)
+    pictured = [
+        s
+        for s in slides
+        if isinstance(s, dict) and (s.get("image") or {}).get("kind") == "generate"
+    ]
+    assert len(pictured) >= 3
+

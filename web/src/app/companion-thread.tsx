@@ -15,6 +15,7 @@ import { useAsync } from "@/app/use-async";
 import { useDecision } from "@/app/use-decision";
 import { useTurn, type ProposedAction, type TurnPhase } from "@/app/use-turn";
 import { COMPANION_SESSION_ID } from "@/app/work-id";
+import { pendingConfirmId } from "@/app/ConfirmGate";
 import type { Citation, OnboardingJob, PlanStep, ThreadMessage } from "@alltheway/contracts";
 
 export type CompanionMessage = {
@@ -65,7 +66,7 @@ function welcomeKey(job: OnboardingJob | null): string {
 }
 
 function fromStored(thread: ThreadMessage[]): CompanionMessage[] {
-  return thread.map((m, i) => ({
+  const mapped: CompanionMessage[] = thread.map((m, i) => ({
     id: i + 1,
     role: m.role,
     text: m.text,
@@ -75,6 +76,16 @@ function fromStored(thread: ThreadMessage[]): CompanionMessage[] {
     citations: m.citations,
     steps: m.steps,
   }));
+  const last = mapped[mapped.length - 1];
+  if (
+    last?.role === "agent" &&
+    last.actions?.length &&
+    last.phase !== "clarify" &&
+    last.phase !== "error"
+  ) {
+    last.phase = "confirm";
+  }
+  return mapped;
 }
 
 /**
@@ -206,7 +217,9 @@ export function CompanionThreadProvider({ children }: { children: React.ReactNod
         return;
       }
 
-      const lastAgent = [...history].reverse().find((m) => m.role === "agent");
+      const lastAgent =
+        history.find((m) => m.id === pendingConfirmId(history)) ??
+        [...history].reverse().find((m) => m.role === "agent");
       if (lastAgent?.phase === "clarify" && lastAgent.options?.length) {
         const numbered = /^(\d+)$/.exec(trimmed);
         if (numbered) {
@@ -215,8 +228,7 @@ export function CompanionThreadProvider({ children }: { children: React.ReactNod
         }
       }
       if (
-        lastAgent?.phase === "confirm" &&
-        lastAgent.actions?.length &&
+        lastAgent?.actions?.length &&
         /^(1|y|yes|ok|go ahead|do it)$/i.test(trimmed)
       ) {
         setHistory((prev) => [
@@ -236,7 +248,7 @@ export function CompanionThreadProvider({ children }: { children: React.ReactNod
         { id: prev.length + 1, role: "user", text: trimmed },
       ]);
       setDraft("");
-      if (lastAgent?.phase === "confirm") {
+      if (lastAgent?.actions?.some((a) => a.connector && a.tool)) {
         void (async () => {
           await decide("corrected", {
             summary: lastAgent.text,

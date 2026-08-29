@@ -9,7 +9,7 @@
     "build": "tsc -p tsconfig.build.json",
     "seed": "tsx src/seed.ts",
     "typecheck": "tsc -p tsconfig.json --noEmit",
-    "test": "node --import tsx --test src/voice.test.ts src/voice/hangup.test.ts src/artifacts.test.ts src/shares.test.ts src/digest.test.ts src/capture.test.ts src/transcripts.test.ts src/sessions.test.ts src/onboarding.test.ts src/watchers.test.ts src/billing.test.ts src/act.test.ts src/lookups.test.ts src/google-scopes.test.ts src/studio-shots.test.ts src/life.test.ts src/calendar-day.test.ts src/visual.test.ts src/turn-payload.test.ts src/hat.test.ts src/concepts.test.ts",
+    "test": "node --import tsx --test src/voice.test.ts src/voice/hangup.test.ts src/artifacts.test.ts src/shares.test.ts src/digest.test.ts src/capture.test.ts src/transcripts.test.ts src/sessions.test.ts src/onboarding.test.ts src/watchers.test.ts src/billing.test.ts src/act.test.ts src/lookups.test.ts src/google-scopes.test.ts src/studio-shots.test.ts src/life.test.ts src/calendar-day.test.ts src/visual.test.ts src/turn-payload.test.ts src/hat.test.ts src/concepts.test.ts src/office-files.test.ts src/document-quality.test.ts src/document-cell-prompt.test.ts src/document-references.test.ts",
     "start:tsx": "tsx src/index.ts"
   },
   "dependencies": {
@@ -17,15 +17,22 @@
     "@alltheway/contracts": "*",
     "@google-cloud/pubsub": "^5.3.1",
     "@google-cloud/storage": "^7.14.0",
+    "docx": "^9.7.1",
+    "exceljs": "^4.4.0",
     "express": "^5.1.0",
     "firebase-admin": "^13.6.0",
     "google-auth-library": "^9.15.1",
+    "jpeg-js": "^0.4.4",
+    "jszip": "^3.10.1",
+    "pdf-lib": "^1.17.1",
+    "pptxgenjs": "^4.0.1",
     "stripe": "^22.6.0",
     "ws": "^8.18.3",
     "zod": "^3.25.0"
   },
   "devDependencies": {
     "@types/express": "^5.0.0",
+    "@types/jszip": "^3.4.0",
     "@types/node": "^24.13.3",
     "@types/ws": "^8.18.1",
     "tsx": "^4.20.0",

@@ -74,6 +74,12 @@ class FakeProvider:
         ("schedule", "create_task"),
     )
 
+    SLIDES_WORDS = ("powerpoint", "pptx", "slide deck", "slides", "deck")
+    SHEET_WORDS = ("spreadsheet", "xlsx", "excel")
+    WORD_WORDS = ("word document", "word doc", "docx")
+    PDF_WORDS = ("pdf",)
+    MARKDOWN_WORDS = ("markdown", "briefing", "write a note", "save a note")
+
     #: Deltas a real model produces are ragged, so the fake's are too. Chunking
     #: on a fixed width would let a bug that only appears when a value straddles
     #: a chunk boundary hide behind a tidy split.
@@ -168,6 +174,10 @@ class FakeProvider:
                 "arguments": {"prompt": prompt[:400], "style": ""},
             }
 
+        office = _office_call(lowered, user)
+        if office:
+            steps[-1] = office
+
         # Cite the first retrieved chunk so the closing payload can be asserted
         # without Vertex. The real model chooses; grounding still checks.
         citations = []
@@ -228,6 +238,115 @@ class VertexProvider:
             # A chunk can carry no text (a safety verdict, a usage-only frame).
             if chunk.text:
                 yield chunk.text
+
+
+def _office_call(lowered: str, user: str) -> dict | None:
+    """A downloadable Office file, when the request named one.
+
+    Distinct from google_docs: this writes a .docx / .xlsx / .pptx into the
+    session. The fake has to name the same calls the catalogue lists, or the
+    graph tests cannot prove Yes would produce a file.
+    """
+    title = user.strip()[:80]
+    if any(w in lowered for w in FakeProvider.SLIDES_WORDS):
+        if "metric" in lowered and "chart" in lowered:
+            return {
+                "label": "Create the PowerPoint",
+                "action": "create_task",
+                "connector": "work_files",
+                "tool": "create_slides",
+                "arguments": {
+                    "ir": "deck.v1",
+                    "title": title,
+                    "audience": "the Board",
+                    "slides": [
+                        {
+                            "layout": "title",
+                            "kicker": "Board briefing",
+                            "title": title,
+                            "image": {
+                                "kind": "generate",
+                                "prompt": "cinematic photograph of an executive war-room at dusk, no text",
+                            },
+                        },
+                        {
+                            "layout": "metric-row",
+                            "title": "Goals",
+                            "metrics": [{"label": "ARR", "value": "£6.4m"}],
+                        },
+                        {
+                            "layout": "chart",
+                            "title": "Budget",
+                            "chart": {
+                                "type": "bar",
+                                "categories": ["Ads", "Events"],
+                                "series": [{"name": "GBP", "values": [120, 80]}],
+                            },
+                        },
+                        {
+                            "layout": "split-visual",
+                            "title": "The product",
+                            "bullets": ["Ships this quarter"],
+                            "image": {
+                                "kind": "generate",
+                                "prompt": "product photography of the launch",
+                            },
+                        },
+                        {
+                            "layout": "photo-story",
+                            "title": "In the field",
+                            "bullets": ["Named owners in the room"],
+                            "image": {
+                                "kind": "generate",
+                                "prompt": "customers using the product in a real office, no text",
+                            },
+                        },
+                    ],
+                },
+            }
+        return {
+            "label": "Create the PowerPoint",
+            "action": "create_task",
+            "connector": "work_files",
+            "tool": "create_slides",
+            "arguments": {
+                "title": title,
+                "slides": [{"title": title, "bullets": ["First pass from the request"]}],
+            },
+        }
+    if any(w in lowered for w in FakeProvider.SHEET_WORDS):
+        return {
+            "label": "Create the spreadsheet",
+            "action": "create_task",
+            "connector": "work_files",
+            "tool": "create_spreadsheet",
+            "arguments": {"title": title, "headers": ["Item", "Value"], "rows": []},
+        }
+    if any(w in lowered for w in FakeProvider.WORD_WORDS):
+        return {
+            "label": "Create the Word document",
+            "action": "create_task",
+            "connector": "work_files",
+            "tool": "create_document",
+            "arguments": {"title": title, "body": user.strip()[:2000]},
+        }
+    if any(w in lowered for w in FakeProvider.PDF_WORDS):
+        return {
+            "label": "Create the PDF",
+            "action": "create_task",
+            "connector": "work_files",
+            "tool": "create_pdf",
+            "arguments": {"title": title, "body": user.strip()[:4000]},
+        }
+    if any(w in lowered for w in FakeProvider.MARKDOWN_WORDS):
+        return {
+            "label": "Save the markdown note",
+            "action": "create_task",
+            "connector": "work_files",
+            "tool": "create_markdown",
+            "arguments": {"title": title, "body": user.strip()[:4000]},
+        }
+    return None
 
 
 def _call_for(action: str, user: str) -> dict:

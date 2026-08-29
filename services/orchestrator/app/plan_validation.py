@@ -165,3 +165,65 @@ def validate(steps: list[PlanStep]) -> tuple[list[PlanStep], list[str]]:
         )
 
     return corrected, notes
+
+
+_SLIDES = ("powerpoint", "pptx", "slide deck", "slides")
+_SHEET = ("spreadsheet", "xlsx", "excel")
+_WORD = ("word document", "word doc", "docx")
+_PDF = ("pdf",)
+_MARKDOWN = ("markdown", "briefing", "write a note", "save a note", "keep here")
+
+
+def _work_files_tool(text: str) -> str | None:
+    lowered = text.lower()
+    if any(w in lowered for w in _SLIDES):
+        return "create_slides"
+    if any(w in lowered for w in _SHEET):
+        return "create_spreadsheet"
+    if any(w in lowered for w in _WORD):
+        return "create_document"
+    if any(w in lowered for w in _PDF):
+        return "create_pdf"
+    if any(w in lowered for w in _MARKDOWN):
+        return "create_markdown"
+    return None
+
+
+def attach_work_files(steps: list[PlanStep], user: str) -> tuple[list[PlanStep], list[str]]:
+    """Name work_files on a keepable-file request the model planned as a bare task.
+
+    Yes replays connector + tool from the stored plan. A create_task with no
+    call is a ledger row and an empty artifacts rail.
+    """
+    if any(step.connector == "work_files" for step in steps):
+        return steps, []
+
+    tool = _work_files_tool(f"{user} {' '.join(step.label for step in steps)}")
+    if tool is None:
+        return steps, []
+
+    notes: list[str] = []
+    out: list[PlanStep] = []
+    filled = False
+    for step in steps:
+        if filled or step.connector or step.action not in ("", "create_task", "draft"):
+            out.append(step)
+            continue
+        arguments = dict(step.arguments)
+        if not arguments.get("title"):
+            arguments["title"] = user.strip()[:80] or "Note"
+        if tool in ("create_markdown", "create_document", "create_pdf") and not arguments.get("body"):
+            arguments["body"] = user.strip()[:4000]
+        out.append(
+            step.model_copy(
+                update={
+                    "action": "create_task",
+                    "connector": "work_files",
+                    "tool": tool,
+                    "arguments": arguments,
+                }
+            )
+        )
+        notes.append(f"Named work_files.{tool} on {step.label!r} so Yes can save the file.")
+        filled = True
+    return out, notes

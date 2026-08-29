@@ -21,9 +21,11 @@ import {
   RhythmSchema,
   ReminderSchema,
   ProposedCommitmentSchema,
+  ArtifactPreviewSchema,
   type OnboardingJob,
   type LifeContext,
   UsageSchema,
+  type ArtifactPreview,
 } from "@alltheway/contracts";
 import { z } from "zod";
 
@@ -130,6 +132,7 @@ export const ArtifactSchema = z.object({
   currentVersion: z.number(),
   createdAt: z.string(),
   updatedAt: z.string(),
+  mimeType: z.string().optional().default(""),
   provenance: z.object({
     agentId: z.string(),
     cardVersion: z.string(),
@@ -145,6 +148,7 @@ export const ArtifactDetailSchema = ArtifactSchema.extend({
 export type Artifact = z.infer<typeof ArtifactSchema>;
 export type ArtifactDetail = z.infer<typeof ArtifactDetailSchema>;
 export type ArtifactVersion = z.infer<typeof ArtifactVersionSchema>;
+export type { ArtifactPreview };
 
 export const StudioPlanSchema = z.object({
   seconds: z.number(),
@@ -299,6 +303,25 @@ export const api = {
   artifact: (id: string) =>
     apiGet(`/artifacts/${encodeURIComponent(id)}`, ArtifactDetailSchema),
 
+  createArtifact: (input: {
+    kind: "doc" | "summary" | "checklist";
+    title: string;
+    sessionId: string;
+    content: string;
+    mimeType?: string;
+  }) =>
+    apiPost(
+      "/artifacts",
+      {
+        kind: input.kind,
+        title: input.title,
+        sessionId: input.sessionId,
+        content: btoa(unescape(encodeURIComponent(input.content))),
+        mimeType: input.mimeType ?? "text/markdown",
+      },
+      ArtifactDetailSchema,
+    ),
+
   /**
    * A correction, which is the point of the whole feature.
    *
@@ -324,6 +347,12 @@ export const api = {
 
   artifactText: (id: string, version: number) =>
     apiText(`/artifacts/${encodeURIComponent(id)}/export?version=${version}`),
+
+  artifactPreview: (id: string, version: number) =>
+    apiGet(
+      `/artifacts/${encodeURIComponent(id)}/preview?version=${version}`,
+      ArtifactPreviewSchema,
+    ),
 
   /**
    * Studio Generate. Pressing the button is consent — confirmed on the

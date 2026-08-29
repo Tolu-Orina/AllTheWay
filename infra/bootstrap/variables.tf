@@ -56,6 +56,7 @@ variable "backend_services" {
     "gateway",
     "orchestrator",
     "research-cell",
+    "document-cell",
     "profile-synthesizer",
     "watcher-runtime",
     # Added in Phase 6. Missing here meant its runtime identity was never

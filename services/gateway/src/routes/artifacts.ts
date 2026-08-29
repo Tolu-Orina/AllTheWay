@@ -11,7 +11,10 @@ import {
   listArtifacts,
 } from "../repos/artifacts.js";
 import { rememberVisual } from "../repos/visual.js";
-import { getVersion, storageConfigured } from "../storage.js";
+import { artifactStore, storageConfigured } from "../storage.js";
+import { previewBytes } from "../office-preview.js";
+import { ArtifactPreviewSchema } from "@alltheway/contracts";
+import { extensionForMime } from "../office-mime.js";
 
 /**
  * Artifacts over HTTP.
@@ -192,14 +195,37 @@ artifactRoutes.get("/:id/export", requireUser, async (req, res) => {
     return res.status(404).json({ code: "not_found", message: "No such version." });
   }
 
-  const bytes = await getVersion(req.uid!, param(req, "id"), version.n);
+  const bytes = await artifactStore.get(req.uid!, param(req, "id"), version.n);
 
   // A filename the user recognises, sanitised: a title is user input, and it
   // is about to become a Content-Disposition header.
   const safeTitle = artifact.title.replace(/[^\w\d\-. ]+/g, "_").slice(0, 80) || "artifact";
+  const ext = extensionForMime(version.mimeType);
+  const filename = `${safeTitle}-v${version.n}${ext}`;
   res.setHeader("Content-Type", version.mimeType);
-  res.setHeader("Content-Disposition", `attachment; filename="${safeTitle}-v${version.n}"`);
+  res.setHeader("Content-Disposition", `attachment; filename="${filename}"`);
   res.send(bytes);
+});
+
+/**
+ * A typed preview for the modal. Bytes stay on export; this is what a person
+ * can actually read in the browser without pretending we are Word.
+ */
+artifactRoutes.get("/:id/preview", requireUser, async (req, res) => {
+  if (unavailable(res)) return;
+
+  const artifact = await getArtifact(req.uid!, param(req, "id"));
+  if (!artifact) return res.status(404).json({ code: "not_found", message: "No such artifact." });
+
+  const requested = Number(req.query.version ?? artifact.currentVersion);
+  const version = artifact.versions.find((v) => v.n === requested);
+  if (!version) {
+    return res.status(404).json({ code: "not_found", message: "No such version." });
+  }
+
+  const bytes = await artifactStore.get(req.uid!, param(req, "id"), version.n);
+  const preview = await previewBytes(version.mimeType, bytes);
+  res.json(ArtifactPreviewSchema.parse(preview));
 });
 
 artifactRoutes.delete("/:id", requireUser, async (req, res) => {

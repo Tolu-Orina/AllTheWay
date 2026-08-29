@@ -4,6 +4,7 @@
  * set VAR=value prefixes.
  */
 process.env.FIRESTORE_EMULATOR_HOST ??= "127.0.0.1:8081";
+process.env.DOCUMENT_CELL_URL ??= "";
 process.env.ALLOW_ANONYMOUS ??= "true";
 process.env.GOOGLE_CLOUD_PROJECT ??= "alltheway-local";
 process.env.STRIPE_WEBHOOK_SECRET ??= "whsec_test_secret";

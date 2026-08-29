@@ -3,6 +3,24 @@ import { ShieldAlert } from "lucide-react";
 
 import { useT } from "@/app/i18n";
 
+/** Latest unanswered write-plan. A later `done` note must not hide Yes. */
+export function pendingConfirmId(
+  messages: Array<{
+    id: number;
+    role: string;
+    actions?: Array<{ connector?: string; tool?: string }>;
+  }>,
+): number | null {
+  for (let i = messages.length - 1; i >= 0; i--) {
+    const m = messages[i];
+    if (m.role === "user") return null;
+    if (m.role === "agent" && (m.actions ?? []).some((a) => a.connector && a.tool)) {
+      return m.id;
+    }
+  }
+  return null;
+}
+
 /**
  * The stop before something with a side effect happens.
  *
