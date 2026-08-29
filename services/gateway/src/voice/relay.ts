@@ -7,6 +7,12 @@ import { routeUpgrade } from "../ws-router.js";
 import { runTurn } from "../orchestrator.js";
 import { loadTurnContext } from "../turn-context.js";
 import { READ_TOOL_NAMES, runReadTool } from "./tools.js";
+import {
+  END_THIS_CONVERSATION,
+  HANGUP_TOOL_RESULT,
+  SpokenHangup,
+  hangupDelays,
+} from "./hangup.js";
 import { readUsage, recordUsage } from "../repos/usage.js";
 import { recordLine } from "../repos/transcripts.js";
 import { ensureSession, touchSession, VOICE_TITLE } from "../repos/sessions.js";
@@ -168,6 +174,9 @@ async function handleConnection(ws: WebSocket, opener: LiveOpener): Promise<void
       close: () => void;
     };
   } = {};
+  const spokenHangup = new SpokenHangup(() => {
+    slot.live?.close();
+  }, hangupDelays);
 
   // Parent document first, so a conversation that only lives in a transcript
   // subcollection is not invisible to listSessions. Not awaited: a slow write
@@ -224,9 +233,11 @@ async function handleConnection(ws: WebSocket, opener: LiveOpener): Promise<void
           });
         },
         onPcm(pcm) {
+          spokenHangup.onPcm();
           send(ws, { pcm });
         },
         onInterrupted() {
+          spokenHangup.onInterrupted();
           send(ws, { interrupted: true });
           commitOpen("model");
         },
@@ -237,6 +248,7 @@ async function handleConnection(ws: WebSocket, opener: LiveOpener): Promise<void
           emitTranscript("model", text, finished);
         },
         onTurnComplete() {
+          spokenHangup.onTurnComplete();
           commitOpen();
         },
         onResumeHandle(handle) {
@@ -244,6 +256,16 @@ async function handleConnection(ws: WebSocket, opener: LiveOpener): Promise<void
         },
         onToolCall(call) {
           if (cancelled.has(call.id) || !slot.live) return;
+
+          if (call.name === END_THIS_CONVERSATION) {
+            // Arm before the tool result so a fake/local backend that speaks
+            // the farewell synchronously is still counted as farewell audio.
+            // Not a plan: leaving must not confirm, decline, or execute.
+            if (cancelled.has(call.id)) return;
+            spokenHangup.arm(call.id);
+            slot.live.sendToolResult(call.id, call.name, HANGUP_TOOL_RESULT);
+            return;
+          }
 
           // A read answers from here and never reaches the planner: one hop
           // instead of two, and it cannot change anything -- which is why it
@@ -267,6 +289,7 @@ async function handleConnection(ws: WebSocket, opener: LiveOpener): Promise<void
           });
         },
         onToolCancel(ids) {
+          spokenHangup.onCancel(ids);
           for (const id of ids) cancelled.add(id);
         },
         onError(message) {
@@ -274,7 +297,11 @@ async function handleConnection(ws: WebSocket, opener: LiveOpener): Promise<void
         },
         onClose(reason) {
           send(ws, { closing: { reason } });
-          if (ws.readyState === WebSocket.OPEN) ws.close();
+          if (ws.readyState === WebSocket.OPEN) {
+            // 4000: the client must idle, not reconnect. A dropped frame of
+            // `{ closing }` otherwise looks like a network blip.
+            ws.close(reason === "hangup" ? 4000 : 1000, reason.slice(0, 120));
+          }
         },
       },
     });
@@ -297,6 +324,7 @@ async function handleConnection(ws: WebSocket, opener: LiveOpener): Promise<void
       return;
     }
     if (msg && typeof msg === "object" && "hangup" in msg) {
+      spokenHangup.dispose();
       slot.live?.close();
       ws.close();
     }
@@ -314,6 +342,7 @@ async function handleConnection(ws: WebSocket, opener: LiveOpener): Promise<void
   const startedAt = Date.now();
 
   ws.on("close", () => {
+    spokenHangup.dispose();
     slot.live?.close();
 
     const seconds = (Date.now() - startedAt) / 1000;

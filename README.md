@@ -176,6 +176,8 @@ tests-listed checks. Gateway tests want the Firestore emulator
 
 | Rule | File |
 |---|---|
+| Product (PRD) | `docs/AllTheWay-PRD.md` |
+| Requirements (high- and low-level) | `docs/AllTheWay-Requirements.md` |
 | Irreversible actions always stop for review | `libs/policy` and `services/orchestrator/app/graph.py` |
 | Ambiguous requests never get acted on | `services/orchestrator/app/graph.py` |
 | A citation must be a retrieved passage | `services/orchestrator/app/grounding.py` |

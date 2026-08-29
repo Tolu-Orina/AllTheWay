@@ -14,13 +14,15 @@ import { Meetings } from "@/app/Meetings";
 import { SharedWithMe } from "@/app/SharedWithMe";
 import { VoiceTranscripts } from "@/app/VoiceTranscripts";
 import { LanguageChoice, LanguageOffer } from "@/app/LanguageChoice";
+import { nameFor, useAppUser } from "@/app/user";
 import { useAuth } from "@/auth/useAuth";
+import { Button } from "@/components/ui/button";
 
 /**
- * You — account, memory, and what is running. Not the product.
+ * Your Profile — account, memory, and what is running. Not the product.
  *
- * Section order is the design: plan first, learned memory, language, accounts,
- * libraries, registry collapsed, then sign out. Upgrade starts Checkout;
+ * Section order is the design: name, learned memory, language, accounts, libraries,
+ * plan & usage, registry collapsed, then sign out. Upgrade starts Checkout;
  * Manage plan opens the Stripe Customer Portal.
  */
 export default function Profile() {
@@ -71,7 +73,7 @@ export default function Profile() {
         </p>
       </header>
 
-      <Usage heading={t("you.plan")} />
+      <DisplayNameForm />
 
       <section className="flex flex-col gap-3">
         <h2 className="text-[12px] font-semibold tracking-[0.08em] text-blue-deep uppercase dark:text-blue-bright">
@@ -232,6 +234,8 @@ export default function Profile() {
         <Documents />
       </section>
 
+      <Usage heading={t("you.plan")} />
+
       <details className="rounded-brand-lg border bg-card p-4 shadow-e1">
         <summary className="cursor-pointer text-[16px] font-semibold tracking-[-0.01em]">
           {t("you.whatsRunning")}
@@ -256,5 +260,72 @@ export default function Profile() {
         {t("account.signOut")}
       </button>
     </div>
+  );
+}
+
+function DisplayNameForm() {
+  const t = useT();
+  const user = useAppUser();
+  const { adapter } = useAuth();
+  const [name, setName] = useState(() => nameFor(user));
+  const [saving, setSaving] = useState(false);
+  const [saved, setSaved] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+
+  async function save() {
+    const trimmed = name.trim();
+    if (!trimmed) return;
+    setSaving(true);
+    setError(null);
+    setSaved(false);
+    const result = await adapter.updateDisplayName(trimmed);
+    setSaving(false);
+    if (!result.ok) {
+      setError(t("you.nameSaveFailed"));
+      return;
+    }
+    setSaved(true);
+  }
+
+  return (
+    <section className="flex flex-col gap-2">
+      <h2 className="text-[12px] font-semibold tracking-[0.08em] text-blue-deep uppercase dark:text-blue-bright">
+        {t("you.displayName")}
+      </h2>
+      <p className="text-[13.5px] leading-relaxed text-muted-foreground">
+        {t("you.displayNameHint")}
+      </p>
+      <form
+        className="flex flex-col gap-2 sm:flex-row sm:items-center"
+        onSubmit={(e) => {
+          e.preventDefault();
+          void save();
+        }}
+      >
+        <input
+          value={name}
+          onChange={(e) => {
+            setName(e.target.value);
+            setSaved(false);
+          }}
+          autoComplete="name"
+          className="min-w-0 flex-1 rounded-brand border bg-background px-3 py-2 text-[14px] outline-none"
+          aria-label={t("you.displayName")}
+        />
+        <Button type="submit" variant="brand" size="lg" disabled={saving || !name.trim()}>
+          {saving ? t("you.savingName") : t("you.saveName")}
+        </Button>
+      </form>
+      {saved ? (
+        <p role="status" className="text-[13px] text-muted-foreground">
+          {t("you.nameSaved")}
+        </p>
+      ) : null}
+      {error ? (
+        <p role="alert" className="text-[13px] text-destructive">
+          {error}
+        </p>
+      ) : null}
+    </section>
   );
 }

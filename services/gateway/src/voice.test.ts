@@ -6,7 +6,7 @@ import WebSocket from "ws";
 
 import { env } from "./env.js";
 import { attachVoice } from "./voice/relay.js";
-import { openFakeLive } from "./voice/backend.js";
+import { openFakeLive, type LiveEvents } from "./voice/backend.js";
 import {
   isAuthMessage,
   liveWebSocketUrl,
@@ -17,7 +17,8 @@ import {
   foldTranscript,
   TranscriptAccumulator,
 } from "./voice/protocol.js";
-import { READ_TOOL_NAMES, runReadTool } from "./voice/tools.js";
+import { READ_TOOL_NAMES, SESSION_TOOL_NAMES, runReadTool } from "./voice/tools.js";
+import { END_THIS_CONVERSATION, setHangupDelaysForTests } from "./voice/hangup.js";
 
 test("auth message requires a session id", () => {
   assert.equal(isAuthMessage({ auth: { token: "x", sessionId: "s1" } }), true);
@@ -54,6 +55,7 @@ test("setup enables resumption, transcriptions, and plan_turn — not a language
   assert.ok(setup.sessionResumption);
   assert.ok(setup.inputAudioTranscription);
   assert.match(json, /plan_turn/);
+  assert.match(json, /end_this_conversation/);
   assert.match(json, /AUDIO/);
 });
 
@@ -247,6 +249,14 @@ test("the voice instruction still refuses to claim work it has not done", () => 
   assert.match(SYSTEM_INSTRUCTION, /Igbo/);
 });
 
+test("the voice instruction hangs up only when they are leaving the conversation", () => {
+  const s = SYSTEM_INSTRUCTION.toLowerCase();
+  assert.match(s, /end_this_conversation/);
+  assert.match(s, /ending this conversation/);
+  assert.match(s, /that is plan_turn/);
+  assert.match(s, /leaving is not a yes/);
+});
+
 
 test("voice keeps automatic turn detection, but not at its most eager", () => {
   /**
@@ -299,17 +309,25 @@ test("voice can look things up, and every lookup is read-only", () => {
   assert.ok(names.includes("whats_waiting_for_me"));
   assert.ok(names.includes("my_recent_meetings"));
   assert.ok(names.includes("plan_turn"), "the planner must remain");
+  assert.ok(names.includes(END_THIS_CONVERSATION), "voice must be able to leave");
+  assert.ok(
+    names.indexOf(END_THIS_CONVERSATION) > names.indexOf("plan_turn"),
+    "hanging up must not be preferred over looking up or planning",
+  );
 
   // The safety property, stated as a test: nothing that changes the world is
   // reachable directly. Writes go through plan_turn and stop at the confirm
   // gate, so a misheard sentence cannot send, pay, or delete anything.
+  // Leaving the conversation is the other exception: it closes the socket.
   for (const name of names) {
-    if (name === "plan_turn") continue;
+    if (name === "plan_turn" || SESSION_TOOL_NAMES.has(name)) continue;
     assert.ok(
       READ_TOOL_NAMES.has(name),
       `${name} is declared to voice but is not a read tool — writes must go through plan_turn`,
     );
   }
+  assert.equal(SESSION_TOOL_NAMES.has(END_THIS_CONVERSATION), true);
+  assert.equal(READ_TOOL_NAMES.has(END_THIS_CONVERSATION), false);
 });
 
 test("a read tool answers rather than throwing, even when it cannot help", async () => {
@@ -320,3 +338,140 @@ test("a read tool answers rather than throwing, even when it cannot help", async
   assert.equal(typeof result, "object");
   assert.ok("cannot" in result, "an unknown tool must explain itself, not throw");
 });
+
+async function connectVoice(
+  port: number,
+): Promise<{ ws: WebSocket; inbox: unknown[] }> {
+  const ws = new WebSocket(`ws://127.0.0.1:${port}/api/voice/live`);
+  await new Promise((resolve, reject) => {
+    ws.once("open", resolve);
+    ws.once("error", reject);
+  });
+  const inbox: unknown[] = [];
+  ws.on("message", (data) => inbox.push(JSON.parse(String(data))));
+  ws.send(JSON.stringify({ auth: { token: "", sessionId: "s-hangup" } }));
+  await waitFor(() => inbox.some((m) => m && typeof m === "object" && "ready" in m));
+  return { ws, inbox };
+}
+
+test("end_this_conversation closes the browser socket after farewell, not as a plan", async () => {
+  const restore = setHangupDelaysForTests({ silentMs: 40, playoutMs: 40, watchdogMs: 400 });
+  try {
+
+  let events: LiveEvents | undefined;
+  const toolResults: { name: string; payload: unknown }[] = [];
+  const server = createServer();
+  attachVoice(server, ({ events: ev }) => {
+    events = ev;
+    queueMicrotask(() => ev.onReady());
+    return Promise.resolve({
+      sendPcm() {},
+      sendToolResult(_id, name, payload) {
+        toolResults.push({ name, payload });
+      },
+      close() {
+        ev.onClose("hangup");
+      },
+      handle: () => undefined,
+    });
+  });
+  await new Promise<void>((resolve) => server.listen(0, resolve));
+  after(() => server.close());
+  const { port } = server.address() as { port: number };
+
+  const { ws, inbox } = await connectVoice(port);
+  const closed = new Promise<{ code: number }>((resolve) => {
+    ws.once("close", (code) => resolve({ code }));
+  });
+
+  events?.onToolCall({ id: "h1", name: END_THIS_CONVERSATION, args: {} });
+  assert.equal(toolResults[0]?.name, END_THIS_CONVERSATION);
+  assert.equal((toolResults[0]?.payload as { will_hangup?: boolean }).will_hangup, true);
+  assert.equal(
+    inbox.some((m) => m && typeof m === "object" && "turn" in m),
+    false,
+    "leaving must not surface as a confirmable turn",
+  );
+
+  events?.onPcm("QQ==");
+  events?.onTurnComplete?.();
+
+  await waitFor(() => inbox.some((m) => (m as { closing?: { reason?: string } }).closing?.reason === "hangup"));
+  const { code } = await closed;
+  assert.equal(code, 4000);
+  } finally {
+    restore();
+  }
+});
+
+test("barge-in after end_this_conversation keeps the session live", async () => {
+  const restore = setHangupDelaysForTests({ silentMs: 40, playoutMs: 40, watchdogMs: 180 });
+  try {
+
+  let events: LiveEvents | undefined;
+  const server = createServer();
+  attachVoice(server, ({ events: ev }) => {
+    events = ev;
+    queueMicrotask(() => ev.onReady());
+    return Promise.resolve({
+      sendPcm() {},
+      sendToolResult() {},
+      close() {
+        ev.onClose("hangup");
+      },
+      handle: () => undefined,
+    });
+  });
+  await new Promise<void>((resolve) => server.listen(0, resolve));
+  after(() => server.close());
+  const { port } = server.address() as { port: number };
+
+  const { ws, inbox } = await connectVoice(port);
+  events?.onToolCall({ id: "h2", name: END_THIS_CONVERSATION, args: {} });
+  events?.onInterrupted();
+  await new Promise((r) => setTimeout(r, 200));
+  assert.equal(
+    inbox.some((m) => (m as { closing?: unknown }).closing),
+    false,
+    "interrupt must cancel spoken hang-up",
+  );
+  assert.equal(ws.readyState, WebSocket.OPEN);
+  ws.close();
+  } finally {
+    restore();
+  }
+});
+
+test("toolCallCancellation of end_this_conversation cancels hang-up", async () => {
+  const restore = setHangupDelaysForTests({ silentMs: 40, playoutMs: 40, watchdogMs: 180 });
+  try {
+  let events: LiveEvents | undefined;
+  const server = createServer();
+  attachVoice(server, ({ events: ev }) => {
+    events = ev;
+    queueMicrotask(() => ev.onReady());
+    return Promise.resolve({
+      sendPcm() {},
+      sendToolResult() {},
+      close() {
+        ev.onClose("hangup");
+      },
+      handle: () => undefined,
+    });
+  });
+  await new Promise<void>((resolve) => server.listen(0, resolve));
+  after(() => server.close());
+  const { port } = server.address() as { port: number };
+
+  const { ws, inbox } = await connectVoice(port);
+  events?.onToolCall({ id: "h3", name: END_THIS_CONVERSATION, args: {} });
+  events?.onToolCancel(["h3"]);
+  await new Promise((r) => setTimeout(r, 200));
+  assert.equal(inbox.some((m) => (m as { closing?: unknown }).closing), false);
+  assert.equal(ws.readyState, WebSocket.OPEN);
+  ws.close();
+  } finally {
+    restore();
+  }
+});
+

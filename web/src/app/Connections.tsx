@@ -40,43 +40,80 @@ const OUTCOMES: Record<string, { tone: "good" | "bad"; text: string }> = {
   failed: { tone: "bad", text: "That did not complete. Nothing was connected." },
 };
 
-export function Connections() {
+export type ConnectOutcome = { tone: "good" | "bad"; text: string };
+
+/**
+ * Read once from the URL the callback redirected to, then strip it — so a
+ * refresh does not keep re-announcing a connection that happened minutes ago.
+ */
+export function consumeConnectedOutcome(): ConnectOutcome | undefined {
+  const params = new URLSearchParams(window.location.search);
+  const value = params.get("connected");
+  if (value) {
+    params.delete("connected");
+    const query = params.toString();
+    window.history.replaceState(
+      {},
+      "",
+      window.location.pathname + (query ? `?${query}` : ""),
+    );
+  }
+  return value ? OUTCOMES[value] : undefined;
+}
+
+const ACCOUNT_ORDER = [
+  "google_calendar",
+  "google_gmail",
+  "google_drive",
+  "google_meet",
+  "google_docs",
+  "slack",
+  "notion",
+  "github",
+  "microsoft_teams",
+];
+
+function sortConnectors(rows: Connector[]): Connector[] {
+  return [...rows].sort((a, b) => {
+    const ai = ACCOUNT_ORDER.indexOf(a.id);
+    const bi = ACCOUNT_ORDER.indexOf(b.id);
+    return (ai === -1 ? 99 : ai) - (bi === -1 ? 99 : bi);
+  });
+}
+
+export function useGoogleConnect(returnTo: "/app" | "/app/you" = "/app/you") {
   const t = useT();
   const { state, reload } = useAsync(() => api.connectors());
   const [starting, setStarting] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [drafts, setDrafts] = useState(false);
-
-  // Read once from the URL the callback redirected to, then removed — so a
-  // refresh does not keep re-announcing a connection that happened minutes ago.
-  const [outcome] = useState(() => {
-    const params = new URLSearchParams(window.location.search);
-    const value = params.get("connected");
-    if (value) {
-      params.delete("connected");
-      const query = params.toString();
-      window.history.replaceState(
-        {},
-        "",
-        window.location.pathname + (query ? `?${query}` : ""),
-      );
-    }
-    return value ? OUTCOMES[value] : undefined;
-  });
+  const [outcome] = useState(() => consumeConnectedOutcome());
 
   async function connect(connectorId: string) {
     setStarting(connectorId);
     setError(null);
     try {
-      const { url } = await api.connectGoogle({ connector: connectorId, drafts });
+  const { url } = await api.connectGoogle({
+        connector: connectorId,
+        drafts,
+        returnTo,
+      });
       // A full navigation, not a popup: Google's consent screen refuses to
       // render in an iframe, and a popup is the thing mobile browsers block.
       window.location.assign(url);
     } catch {
       setStarting(null);
-      setError("Could not start connecting. Try again in a moment.");
+      setError(t("connections.couldNotStart"));
     }
   }
+
+  return { state, reload, drafts, setDrafts, starting, error, outcome, connect };
+}
+
+export function Connections() {
+  const t = useT();
+  const { state, reload, drafts, setDrafts, starting, error, outcome, connect } =
+    useGoogleConnect("/app/you");
 
   return (
     <section className="flex flex-col gap-3">
@@ -87,6 +124,33 @@ export function Connections() {
         {t("connections.whatAllthewayIsAllowedToReach")}
       </p>
 
+      <ConnectOutcomeBanner outcome={outcome} error={error} />
+
+      <DraftsToggle drafts={drafts} onDrafts={setDrafts} />
+
+      <Async state={state} reload={reload}>
+        {(data) => (
+          <AccountList
+            connectors={data.connectors}
+            starting={starting}
+            onConnect={connect}
+            connectedAsStatus={false}
+          />
+        )}
+      </Async>
+    </section>
+  );
+}
+
+export function ConnectOutcomeBanner({
+  outcome,
+  error,
+}: {
+  outcome: ConnectOutcome | undefined;
+  error: string | null;
+}) {
+  return (
+    <>
       {outcome ? (
         <p
           role="status"
@@ -106,40 +170,60 @@ export function Connections() {
           {error}
         </p>
       ) : null}
+    </>
+  );
+}
 
-      {/* Off by default, and says why. Asking for a restricted scope nobody
-          needs is how an app ends up owing Google a security assessment. */}
-      <label className="flex items-start gap-2.5 rounded-brand border bg-card px-3.5 py-3 text-[13px]">
-        <input
-          type="checkbox"
-          checked={drafts}
-          onChange={(e) => setDrafts(e.target.checked)}
-          className="mt-0.5 size-4 shrink-0"
-        />
-        <span>
-          <span className="font-medium">Let it save Gmail drafts</span>
-          <span className="mt-0.5 block text-[12.5px] leading-relaxed text-muted-foreground">
-            {t("connections.draftingIsTheSafestThingIt")}
-            {t("connections.googleStillClassesThePermissionAs")}
-          </span>
+export function DraftsToggle({
+  drafts,
+  onDrafts,
+}: {
+  drafts: boolean;
+  onDrafts: (next: boolean) => void;
+}) {
+  const t = useT();
+  return (
+    <label className="flex items-start gap-2.5 rounded-brand border bg-card px-3.5 py-3 text-[13px]">
+      <input
+        type="checkbox"
+        checked={drafts}
+        onChange={(e) => onDrafts(e.target.checked)}
+        className="mt-0.5 size-4 shrink-0 accent-navy-deep"
+      />
+      <span>
+        <span className="font-medium">{t("connections.letItSaveDrafts")}</span>
+        <span className="mt-0.5 block text-[12.5px] leading-relaxed text-muted-foreground">
+          {t("connections.draftsUnlessYouAsk")}{" "}
+          {t("connections.googleStillClassesThePermissionAs")}
         </span>
-      </label>
+      </span>
+    </label>
+  );
+}
 
-      <Async state={state} reload={reload}>
-        {(data) => (
-          <ul className="flex flex-col gap-2">
-            {data.connectors.map((c) => (
-              <ConnectorRow
-                key={c.id}
-                connector={c}
-                busy={starting === c.id}
-                onConnect={() => connect(c.id)}
-              />
-            ))}
-          </ul>
-        )}
-      </Async>
-    </section>
+export function AccountList({
+  connectors,
+  starting,
+  onConnect,
+  connectedAsStatus,
+}: {
+  connectors: Connector[];
+  starting: string | null;
+  onConnect: (id: string) => void;
+  connectedAsStatus: boolean;
+}) {
+  return (
+    <ul className="flex flex-col gap-2">
+      {sortConnectors(connectors).map((c) => (
+        <ConnectorRow
+          key={c.id}
+          connector={c}
+          busy={starting === c.id}
+          onConnect={() => onConnect(c.id)}
+          connectedAsStatus={connectedAsStatus}
+        />
+      ))}
+    </ul>
   );
 }
 
@@ -147,10 +231,12 @@ function ConnectorRow({
   connector,
   busy,
   onConnect,
+  connectedAsStatus,
 }: {
   connector: Connector;
   busy: boolean;
   onConnect: () => void;
+  connectedAsStatus: boolean;
 }) {
   const t = useT();
   const soon = connector.status === "coming_soon";
@@ -163,8 +249,10 @@ function ConnectorRow({
       )}
     >
       <div className="min-w-0">
-        <p className="text-[14px] font-medium">{connector.label}</p>
-        {connector.connected ? (
+        <p className={cn("text-[14px] font-medium", soon && "text-muted-foreground")}>
+          {connector.label}
+        </p>
+        {!connectedAsStatus && connector.connected ? (
           <p className="mt-0.5 flex items-center gap-1 text-[12.5px] text-muted-foreground">
             <Check className="size-3.5" aria-hidden="true" />
             {t("connections.connected")}
@@ -173,8 +261,13 @@ function ConnectorRow({
       </div>
 
       {soon ? (
-        <span className="shrink-0 rounded-full border px-2.5 py-1 text-[12px] text-muted-foreground">
+        <span className="shrink-0 rounded-full border bg-muted px-2.5 py-1 text-[12px] text-muted-foreground">
           {t("connections.comingSoon")}
+        </span>
+      ) : connectedAsStatus && connector.connected ? (
+        <span className="inline-flex shrink-0 items-center gap-1 rounded-full bg-emerald-50 px-2.5 py-1 text-[12px] font-medium text-emerald-800 dark:bg-emerald-950/50 dark:text-emerald-300">
+          <Check className="size-3.5" aria-hidden="true" />
+          {t("connections.connected")}
         </span>
       ) : (
         <button
@@ -188,10 +281,7 @@ function ConnectorRow({
           ) : (
             <ExternalLink className="size-3.5" aria-hidden="true" />
           )}
-          {/* Reconnect, not Connected: the button is still useful once an
-              account is linked, because granting a further permission means
-              going through consent again. */}
-          {connector.connected ? "Reconnect" : "Connect"}
+          {connector.connected ? t("connections.reconnect") : t("connections.connect")}
         </button>
       )}
     </li>

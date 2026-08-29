@@ -1,4 +1,4 @@
-import { READ_TOOLS } from "./tools.js";
+import { SESSION_TOOLS, READ_TOOLS } from "./tools.js";
 /**
  * The Live API wire, and our thinner wire to the browser.
  *
@@ -102,6 +102,17 @@ export const SYSTEM_INSTRUCTION = [
   "language, not in English.",
   "",
   "Then wait for a yes. Never claim you have sent, paid, or deleted anything.",
+  "",
+  "# Leaving",
+  "",
+  "When they are ending this conversation itself - goodbye, bye, that's all,",
+  "you can stop, I'm done talking - speak a short farewell in their language,",
+  "then call end_this_conversation. Do not wait for a yes.",
+  "",
+  "Do not call it when they want you to stop a task, a reminder, an email, or",
+  "anything they asked you to do. That is plan_turn.",
+  "",
+  "Leaving is not a yes. Do not treat goodbye as confirmation of a pending plan.",
 ].join("\n");
 
 export type AuthMessage = {
@@ -285,6 +296,8 @@ export function setupMessage(opts: {
                 required: ["request"],
               },
             },
+            // Last: lookups and doing things must win over hanging up.
+            ...SESSION_TOOLS,
           ],
         },
       ],

@@ -34,6 +34,9 @@ export interface AuthAdapter {
     code: string,
     password: string,
   ): Promise<AuthResult>;
+
+  /** Persist a chosen name. Empty clears it so greetings fall back to the email. */
+  updateDisplayName(name: string): Promise<AuthResult>;
 }
 
 /** Shared password policy, shown to the user before they submit rather than after. */

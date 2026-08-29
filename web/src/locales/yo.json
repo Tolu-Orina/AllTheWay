@@ -8,7 +8,7 @@
     "recents": "Àwọn àìpẹ́",
     "today": "Òní",
     "work": "Iṣẹ́",
-    "you": "Ìwọ",
+    "you": "Prófáìlì rẹ",
     "studio": "Studio",
     "expand": "Ṣí ìtọ́sọ́nà",
     "collapse": "Tì ìtọ́sọ́nà"
@@ -89,7 +89,13 @@
     "unavailable": "Ohùn kò sí ní àkókò yìí. O lè máa tẹ̀wé lọ.",
     "you": "Ìwọ.",
     "listening": "Ń gbọ́…",
-    "captions": "Ohun tí a ṣẹ̀ṣẹ̀ sọ"
+    "captions": "Ohun tí a ṣẹ̀ṣẹ̀ sọ",
+    "sessionTitle": "Speaking with AllTheWay",
+    "sessionHint": "Nothing irreversible happens until you say so.",
+    "connecting": "Connecting…",
+    "pauseListening": "Pause listening",
+    "resumeListening": "Resume listening",
+    "stop": "Stop"
   },
   "share": {
     "heading": "Pín",
@@ -221,7 +227,16 @@
     "draftingIsTheSafestThingIt": "Kíkọ àkọsílẹ̀ sílẹ̀ ni ohun tó ní ààbò jù lọ tí ó lè ṣe pẹ̀lú ímeèlì — a kò fi nǹkan ránṣẹ́.",
     "googleStillClassesThePermissionAs": "Google ṣì ka àṣẹ yìí sí èyí tí a dínkù, nítorí náà èyí yóò wà ní pípa àyàfi tí o bá béèrè fún un.",
     "connected": "Ti so pọ̀",
-    "comingSoon": "Ń bọ̀ láìpẹ́"
+    "comingSoon": "Ń bọ̀ láìpẹ́",
+    "connectYourTools": "Connect your tools",
+    "connectYourToolsHint": "AllTheWay works best when it can see your schedule and communications. You're always in control of what it can access.",
+    "permissions": "Permissions",
+    "accounts": "Accounts",
+    "letItSaveDrafts": "Let it save Gmail drafts",
+    "draftsUnlessYouAsk": "Drafting is the safest thing it can do with mail — nothing is sent unless you ask for it.",
+    "connect": "Connect",
+    "reconnect": "Reconnect",
+    "couldNotStart": "Could not start connecting. Try again in a moment."
   },
   "specialists": {
     "whatItCanDo": "Ohun tí ó lè ṣe",
@@ -272,7 +287,11 @@
     "chipTalk": "Talk something through",
     "chipDocument": "Read a file",
     "chipMeetings": "Catch me up",
-    "capabilityHeading": "What it can do",
+    "goodMorning": "Good morning",
+    "goodAfternoon": "Good afternoon",
+    "goodEvening": "Good evening",
+    "tellMeWhatICanHelp": "Tell me what I can help you with",
+    "capabilityHeading": "What I can do right now",
     "capabilityImage": "Generate an image",
     "capabilityImageHint": "A still, from a description.",
     "capabilityVideo": "Draft a video",
@@ -297,6 +316,21 @@
     "welcomeSkipped": "Welcome back{{who}}. Ask me for something, or pick a starting job.",
     "welcomeGeneric": "Welcome back{{who}}. Ask me for something, or correct me — I learn from the corrections more than the requests.",
     "askHere": "Ask, or correct it…"
+  },
+  "todo": {
+    "howToStart": "How would you like to start?",
+    "howToStartHint": "Create your list manually, or let AllTheWay help you find what's important.",
+    "manualEntry": "Manual Entry",
+    "manualEntryHint": "Type out your tasks quickly and easily.",
+    "addANewTask": "Add a new task",
+    "speakToAllTheWay": "Speak to AllTheWay",
+    "speakHint": "Opens a live session. You can pause or stop at any time.",
+    "generateFromConnections": "Generate from connections",
+    "generateFromConnectionsHint": "Build a list from your Google Calendar, Gmail, and Slack.",
+    "generateList": "Generate list",
+    "manualPrompt": "Add this to my to-do list: {{task}}. Keep it as a list I can work through. Don't do anything irreversible.",
+    "generatePrompt": "Propose a to-do list from my connected calendar and email for the next few days. Propose only — do not create events or send mail until I confirm.",
+    "templatesPrompt": "Help me set up messaging templates for quick replies. Drafting only — nothing is sent unless I ask."
   },
   "plan": {
     "heading": "Ètò"
@@ -343,7 +377,13 @@
     "libraries": "Àwọn ìwé àti ìpàdé",
     "whatsRunning": "Ohun tó ń ṣiṣẹ́",
     "whatsRunningHint": "Àwọn aṣojú àti àwọn onímọ̀-ìjìnlẹ̀ tí ọjà yìí ń lò, ọ̀kọ̀ọ̀kan pẹ̀lú káàdì tí a tẹ̀jáde.",
-    "seeRunning": "Wo àwọn aṣojú àti onímọ̀-ìjìnlẹ̀"
+    "seeRunning": "Wo àwọn aṣojú àti onímọ̀-ìjìnlẹ̀",
+    "displayName": "Your name",
+    "displayNameHint": "Used in greetings. Until you set one, this comes from your email address.",
+    "saveName": "Save name",
+    "savingName": "Saving…",
+    "nameSaved": "Name saved.",
+    "nameSaveFailed": "That name did not save. Nothing changed — try again."
   },
   "work": {
     "listHint": "Àwọn okùn tí ìwọ àti ẹlẹgbẹ́ ń ṣiṣẹ́ lórí.",
@@ -364,6 +404,17 @@
     "nextLeaveNow": "Leave for {{title}} now",
     "nothingTimed": "Nothing timed until {{time}}.",
     "nothingTimedEmpty": "Nothing timed in the next twelve hours.",
+    "nothingTimedYet": "Nothing timed yet",
+    "timelineEmptyHint": "Your timeline is empty. Connect your calendar to see your schedule, or tell me what's happening today.",
+    "connectAccounts": "Connect Accounts",
+    "waitSyncCalendar": "Sync Calendar",
+    "waitSyncCalendarHint": "Enable schedule tracking",
+    "waitConnectEmail": "Connect Email",
+    "waitConnectEmailHint": "Sync communications",
+    "waitCreateTodo": "Create first to-do",
+    "waitCreateTodoHint": "Start tracking tasks",
+    "waitTemplates": "Set messaging templates",
+    "waitTemplatesHint": "Quick replies setup",
     "dayHeading": "Wákàtí méjìlá tó ń bọ̀",
     "connectCalendar": "Connect Google Calendar in You, or tell me the school run.",
     "hatAll": "All",

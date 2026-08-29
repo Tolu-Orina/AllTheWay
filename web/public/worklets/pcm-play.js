@@ -15,6 +15,8 @@ class PcmPlayProcessor extends AudioWorkletProcessor {
     this._target = Math.floor(sampleRate * 0.1); // ~100ms before we start
     this._queued = 0;
     this._starve = 0;
+    this._draining = false;
+    this._drainPosted = false;
     this.port.onmessage = (ev) => {
       if (ev.data === "flush") {
         this._queue = [];
@@ -22,6 +24,14 @@ class PcmPlayProcessor extends AudioWorkletProcessor {
         this._started = false;
         this._queued = 0;
         this._starve = 0;
+        this._draining = false;
+        this._drainPosted = false;
+        return;
+      }
+      if (ev.data === "drain") {
+        this._draining = true;
+        this._drainPosted = false;
+        this._postDrainedIfIdle();
         return;
       }
       const src = ev.data;
@@ -79,7 +89,15 @@ class PcmPlayProcessor extends AudioWorkletProcessor {
         this._offset = 0;
       }
     }
+    this._postDrainedIfIdle();
     return true;
+  }
+
+  _postDrainedIfIdle() {
+    if (!this._draining || this._drainPosted) return;
+    if (this._queued > 0) return;
+    this._drainPosted = true;
+    this.port.postMessage({ drained: true });
   }
 }
 

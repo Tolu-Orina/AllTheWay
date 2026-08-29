@@ -8,7 +8,7 @@
     "recents": "Diweddar",
     "today": "Heddiw",
     "work": "Gwaith",
-    "you": "Chi",
+    "you": "Eich proffil",
     "studio": "Stiwdio",
     "expand": "Agor y llywio",
     "collapse": "Cau'r llywio"
@@ -104,7 +104,13 @@
     "unavailable": "Nid yw llais ar gael ar hyn o bryd. Gallwch barhau i deipio.",
     "you": "Chi.",
     "listening": "Yn gwrando…",
-    "captions": "Yr hyn a ddywedwyd gynnau"
+    "captions": "Yr hyn a ddywedwyd gynnau",
+    "sessionTitle": "Siarad ag AllTheWay",
+    "sessionHint": "Does dim yn ddiwrthdro yn digwydd nes i chi ddweud.",
+    "connecting": "Yn cysylltu…",
+    "pauseListening": "Oedi gwrando",
+    "resumeListening": "Ailddechrau gwrando",
+    "stop": "Stopio"
   },
   "share": {
     "heading": "Rhannu",
@@ -236,7 +242,16 @@
     "draftingIsTheSafestThingIt": "Drafftio yw'r peth mwyaf diogel y gall ei wneud ag e-bost — nid anfonir dim.",
     "googleStillClassesThePermissionAs": "Mae Google yn dal i ddosbarthu'r caniatâd fel un cyfyngedig, felly mae hwn yn aros i ffwrdd oni bai eich bod yn gofyn amdano.",
     "connected": "Cysylltiedig",
-    "comingSoon": "Yn dod yn fuan"
+    "comingSoon": "Yn dod yn fuan",
+    "connectYourTools": "Cysylltwch eich offer",
+    "connectYourToolsHint": "Mae AllTheWay yn gweithio orau pan all weld eich amserlen a'ch negeseuon. Chi sy'n rheoli beth all ei gyrraedd.",
+    "permissions": "Caniatadau",
+    "accounts": "Cyfrifon",
+    "letItSaveDrafts": "Gadewch iddo gadw drafftiau Gmail",
+    "draftsUnlessYouAsk": "Drafftio yw'r peth mwyaf diogel y gall ei wneud ag e-bost — nid anfonir dim oni bai eich bod yn gofyn.",
+    "connect": "Cysylltu",
+    "reconnect": "Ailgysylltu",
+    "couldNotStart": "Methu dechrau cysylltu. Ceisiwch eto mewn eiliad."
   },
   "specialists": {
     "whatItCanDo": "Yr hyn y gall ei wneud",
@@ -287,7 +302,11 @@
     "chipTalk": "Talk something through",
     "chipDocument": "Read a file",
     "chipMeetings": "Catch me up",
-    "capabilityHeading": "What it can do",
+    "goodMorning": "Bore da",
+    "goodAfternoon": "Prynhawn da",
+    "goodEvening": "Noswaith dda",
+    "tellMeWhatICanHelp": "Dywedwch wrthyf beth allaf helpu gyda",
+    "capabilityHeading": "Beth allaf ei wneud nawr",
     "capabilityImage": "Generate an image",
     "capabilityImageHint": "A still, from a description.",
     "capabilityVideo": "Draft a video",
@@ -312,6 +331,21 @@
     "welcomeSkipped": "Welcome back{{who}}. Ask me for something, or pick a starting job.",
     "welcomeGeneric": "Welcome back{{who}}. Ask me for something, or correct me — I learn from the corrections more than the requests.",
     "askHere": "Ask, or correct it…"
+  },
+  "todo": {
+    "howToStart": "How would you like to start?",
+    "howToStartHint": "Create your list manually, or let AllTheWay help you find what's important.",
+    "manualEntry": "Manual Entry",
+    "manualEntryHint": "Type out your tasks quickly and easily.",
+    "addANewTask": "Add a new task",
+    "speakToAllTheWay": "Speak to AllTheWay",
+    "speakHint": "Opens a live session. You can pause or stop at any time.",
+    "generateFromConnections": "Generate from connections",
+    "generateFromConnectionsHint": "Build a list from your Google Calendar, Gmail, and Slack.",
+    "generateList": "Generate list",
+    "manualPrompt": "Add this to my to-do list: {{task}}. Keep it as a list I can work through. Don't do anything irreversible.",
+    "generatePrompt": "Propose a to-do list from my connected calendar and email for the next few days. Propose only — do not create events or send mail until I confirm.",
+    "templatesPrompt": "Help me set up messaging templates for quick replies. Drafting only — nothing is sent unless I ask."
   },
   "plan": {
     "heading": "Cynllun"
@@ -358,7 +392,13 @@
     "libraries": "Dogfennau a chyfarfodydd",
     "whatsRunning": "Beth sy’n rhedeg",
     "whatsRunningHint": "Yr asiantau a’r arbenigwyr y mae’r cynnyrch hwn yn eu defnyddio, pob un â cherdyn cyhoeddedig.",
-    "seeRunning": "Gweld asiantau ac arbenigwyr"
+    "seeRunning": "Gweld asiantau ac arbenigwyr",
+    "displayName": "Eich enw",
+    "displayNameHint": "Defnyddir mewn cyfarchion. Hyd nes i chi osod un, mae'n dod o'ch cyfeiriad e-bost.",
+    "saveName": "Cadw'r enw",
+    "savingName": "Yn cadw…",
+    "nameSaved": "Enw wedi'i gadw.",
+    "nameSaveFailed": "Ni chadwyd yr enw hwnnw. Ni newidiodd dim — ceisiwch eto."
   },
   "work": {
     "listHint": "Edau rydych chi a’r cydymaith yn gweithio drwyddynt.",
@@ -379,6 +419,17 @@
     "nextLeaveNow": "Leave for {{title}} now",
     "nothingTimed": "Nothing timed until {{time}}.",
     "nothingTimedEmpty": "Nothing timed in the next twelve hours.",
+    "nothingTimedYet": "Nothing timed yet",
+    "timelineEmptyHint": "Your timeline is empty. Connect your calendar to see your schedule, or tell me what's happening today.",
+    "connectAccounts": "Connect Accounts",
+    "waitSyncCalendar": "Sync Calendar",
+    "waitSyncCalendarHint": "Enable schedule tracking",
+    "waitConnectEmail": "Connect Email",
+    "waitConnectEmailHint": "Sync communications",
+    "waitCreateTodo": "Create first to-do",
+    "waitCreateTodoHint": "Start tracking tasks",
+    "waitTemplates": "Set messaging templates",
+    "waitTemplatesHint": "Quick replies setup",
     "dayHeading": "Y 12 awr nesaf",
     "connectCalendar": "Connect Google Calendar in You, or tell me the school run.",
     "hatAll": "All",

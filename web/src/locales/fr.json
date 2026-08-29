@@ -8,7 +8,7 @@
     "recents": "Récents",
     "today": "Aujourd’hui",
     "work": "Travail",
-    "you": "Vous",
+    "you": "Votre profil",
     "studio": "Studio",
     "expand": "Ouvrir la navigation",
     "collapse": "Fermer la navigation"
@@ -95,7 +95,13 @@
     "unavailable": "La voix est indisponible pour le moment. Vous pouvez continuer par écrit.",
     "you": "Vous.",
     "listening": "J'écoute…",
-    "captions": "Ce qui vient d'être dit"
+    "captions": "Ce qui vient d'être dit",
+    "sessionTitle": "Parler avec AllTheWay",
+    "sessionHint": "Rien d'irréversible n'arrive tant que vous ne le dites pas.",
+    "connecting": "Connexion…",
+    "pauseListening": "Mettre l'écoute en pause",
+    "resumeListening": "Reprendre l'écoute",
+    "stop": "Arrêter"
   },
   "share": {
     "heading": "Partager",
@@ -227,7 +233,16 @@
     "draftingIsTheSafestThingIt": "Créer des brouillons est l'action la plus sûre par e-mail : rien n'est envoyé.",
     "googleStillClassesThePermissionAs": "Google considérant cette autorisation comme sensible, elle reste désactivée tant que vous ne l'activez pas.",
     "connected": "Connecté",
-    "comingSoon": "Bientôt disponible"
+    "comingSoon": "Bientôt disponible",
+    "connectYourTools": "Connectez vos outils",
+    "connectYourToolsHint": "AllTheWay fonctionne mieux quand il peut voir votre agenda et vos communications. Vous restez maître de ce à quoi il a accès.",
+    "permissions": "Autorisations",
+    "accounts": "Comptes",
+    "letItSaveDrafts": "Lui permettre d'enregistrer des brouillons Gmail",
+    "draftsUnlessYouAsk": "Le brouillon est l'action la plus sûre sur le mail — rien n'est envoyé tant que vous ne le demandez pas.",
+    "connect": "Connecter",
+    "reconnect": "Reconnecter",
+    "couldNotStart": "Impossible de lancer la connexion. Réessayez dans un moment."
   },
   "specialists": {
     "whatItCanDo": "Ce qu'il sait faire",
@@ -278,7 +293,11 @@
     "chipTalk": "Discuter d'un sujet",
     "chipDocument": "Lire un fichier",
     "chipMeetings": "Me rattraper",
-    "capabilityHeading": "Ce qu'il peut faire",
+    "goodMorning": "Bonjour",
+    "goodAfternoon": "Bon après-midi",
+    "goodEvening": "Bonsoir",
+    "tellMeWhatICanHelp": "Dites-moi en quoi je peux vous aider",
+    "capabilityHeading": "Ce que je peux faire maintenant",
     "capabilityImage": "Générer une image",
     "capabilityImageHint": "Une image, à partir d'une description.",
     "capabilityVideo": "Créer une vidéo",
@@ -303,6 +322,21 @@
     "welcomeSkipped": "Bon retour{{who}}. Demandez-moi quelque chose, ou choisissez par où commencer.",
     "welcomeGeneric": "Bon retour{{who}}. Demandez-moi quelque chose, ou corrigez-moi — j'apprends plus des corrections que des demandes.",
     "askHere": "Demandez, ou corrigez…"
+  },
+  "todo": {
+    "howToStart": "Comment voulez-vous commencer ?",
+    "howToStartHint": "Créez votre liste à la main, ou laissez AllTheWay trouver ce qui compte.",
+    "manualEntry": "Saisie manuelle",
+    "manualEntryHint": "Saisissez vos tâches rapidement.",
+    "addANewTask": "Ajouter une tâche",
+    "speakToAllTheWay": "Parler à AllTheWay",
+    "speakHint": "Ouvre une session en direct. Vous pouvez mettre en pause ou arrêter à tout moment.",
+    "generateFromConnections": "Générer depuis les connexions",
+    "generateFromConnectionsHint": "Construire une liste depuis Google Calendar, Gmail et Slack.",
+    "generateList": "Générer la liste",
+    "manualPrompt": "Ajoute ceci à ma liste de tâches : {{task}}. Garde-la comme une liste sur laquelle je peux avancer. Ne fais rien d'irréversible.",
+    "generatePrompt": "Propose une liste de tâches à partir de mon agenda et de mes e-mails pour les prochains jours. Propose seulement — ne crée pas d'événements et n'envoie rien tant que je n'ai pas confirmé.",
+    "templatesPrompt": "Aide-moi à préparer des modèles de messages pour des réponses rapides. Brouillons seulement — rien n'est envoyé tant que je ne le demande pas."
   },
   "plan": {
     "heading": "Plan"
@@ -349,7 +383,13 @@
     "libraries": "Documents et réunions",
     "whatsRunning": "Ce qui tourne",
     "whatsRunningHint": "Les agents et spécialistes que ce produit utilise, chacun avec une carte publiée.",
-    "seeRunning": "Voir les agents et spécialistes"
+    "seeRunning": "Voir les agents et spécialistes",
+    "displayName": "Votre nom",
+    "displayNameHint": "Utilisé dans les salutations. Tant que vous n'en définissez pas un, il vient de votre adresse e-mail.",
+    "saveName": "Enregistrer le nom",
+    "savingName": "Enregistrement…",
+    "nameSaved": "Nom enregistré.",
+    "nameSaveFailed": "Ce nom n'a pas été enregistré. Rien n'a changé — réessayez."
   },
   "work": {
     "listHint": "Les fils que vous et le compagnon êtes en train de traiter.",
@@ -370,6 +410,17 @@
     "nextLeaveNow": "Partez maintenant pour {{title}}",
     "nothingTimed": "Rien d'horaire avant {{time}}.",
     "nothingTimedEmpty": "Rien d'horaire dans les douze prochaines heures.",
+    "nothingTimedYet": "Rien d'horaire pour l'instant",
+    "timelineEmptyHint": "Votre agenda est vide. Connectez votre calendrier pour voir votre journée, ou dites-moi ce qui se passe aujourd'hui.",
+    "connectAccounts": "Connecter les comptes",
+    "waitSyncCalendar": "Synchroniser l'agenda",
+    "waitSyncCalendarHint": "Activer le suivi du planning",
+    "waitConnectEmail": "Connecter l'e-mail",
+    "waitConnectEmailHint": "Synchroniser les communications",
+    "waitCreateTodo": "Créer une première tâche",
+    "waitCreateTodoHint": "Commencer à suivre les tâches",
+    "waitTemplates": "Définir des modèles de messages",
+    "waitTemplatesHint": "Réponses rapides",
     "dayHeading": "Les 12 prochaines heures",
     "connectCalendar": "Connectez Google Calendar dans Vous, ou dites-moi le trajet scolaire.",
     "hatAll": "Tout",

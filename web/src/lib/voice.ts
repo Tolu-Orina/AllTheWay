@@ -197,15 +197,32 @@ export async function openVoiceSocket(
           return;
         }
         const closing = msg.closing as { reason?: string } | undefined;
-        if (closing?.reason) handlers.onClose?.(closing.reason);
+        if (typeof closing?.reason === "string" && closing.reason) {
+          // Deliberate end — spoken hang-up or Stop. Must not reconnect:
+          // a dropped socket retries, a hang-up must idle the overlay.
+          closed = true;
+          handlers.onClose?.(closing.reason);
+          try {
+            socket.close();
+          } catch {
+            /* already closing */
+          }
+          return;
+        }
       });
 
       socket.addEventListener("error", () => {
         /* close handler reconnects */
       });
 
-      socket.addEventListener("close", () => {
+      socket.addEventListener("close", (ev) => {
         if (closed) {
+          // Already notified via `{ closing }` or the client hangup() path.
+          // Calling onClose again would start a second drain.
+          return;
+        }
+        if (ev.code === 4000) {
+          closed = true;
           handlers.onClose?.("hangup");
           return;
         }

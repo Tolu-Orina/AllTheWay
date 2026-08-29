@@ -64,9 +64,10 @@ const CATALOGUE = [
   { id: "google_drive", label: "Google Drive", provider: "google", status: "available" },
   { id: "google_docs", label: "Google Docs", provider: "google", status: "available" },
   { id: "google_meet", label: "Google Meet", provider: "google", status: "available" },
-  { id: "github", label: "GitHub", provider: "github", status: "coming_soon" },
-  { id: "notion", label: "Notion", provider: "notion", status: "coming_soon" },
   { id: "slack", label: "Slack", provider: "slack", status: "coming_soon" },
+  { id: "notion", label: "Notion", provider: "notion", status: "coming_soon" },
+  { id: "github", label: "GitHub", provider: "github", status: "coming_soon" },
+  { id: "microsoft_teams", label: "Microsoft Teams", provider: "microsoft", status: "coming_soon" },
 ] as const;
 
 const grants = () => db.collection("connectorGrants");
@@ -84,6 +85,10 @@ function redirectUri(): string {
   const origin = env.webOrigins[0];
   if (!origin) throw new Error("WEB_ORIGINS is empty; cannot build a redirect URI.");
   return `${origin}/api/connectors/google/callback`;
+}
+
+function safeReturnTo(value: unknown): "/app" | "/app/you" {
+  return value === "/app" || value === "/app/you" ? value : "/app/you";
 }
 
 /* ------------------------------------------------------------------ *
@@ -129,6 +134,7 @@ connectorRoutes.post("/google/connect", requireUser, async (req, res) => {
   const state = randomBytes(32).toString("base64url");
   const connector = typeof req.body?.connector === "string" ? req.body.connector : "";
   const wantsDrafts = req.body?.drafts === true;
+  const returnTo = safeReturnTo(req.body?.returnTo);
 
   if (!GOOGLE_CONNECTOR_IDS.includes(connector)) {
     return res.status(400).json({
@@ -142,6 +148,7 @@ connectorRoutes.post("/google/connect", requireUser, async (req, res) => {
   await states().doc(state).set({
     uid: req.uid,
     connector,
+    returnTo,
     createdAt: FieldValue.serverTimestamp(),
     expiresAt: Timestamp.fromMillis(Date.now() + STATE_TTL_MS),
   });
@@ -170,8 +177,10 @@ connectorRoutes.post("/google/connect", requireUser, async (req, res) => {
  * ------------------------------------------------------------------ */
 
 connectorRoutes.get("/google/callback", async (req, res) => {
+  const origin = env.webOrigins[0] ?? "";
+  let returnTo: "/app" | "/app/you" = "/app/you";
   const done = (status: string) =>
-    res.redirect(`${env.webOrigins[0] ?? ""}/app/you?connected=${status}`);
+    res.redirect(`${origin}${returnTo}?connected=${status}`);
 
   const state = typeof req.query.state === "string" ? req.query.state : "";
   const code = typeof req.query.code === "string" ? req.query.code : "";
@@ -185,6 +194,7 @@ connectorRoutes.get("/google/callback", async (req, res) => {
   await stateRef.delete().catch(() => undefined);
 
   if (!stateDoc.exists) return done("failed");
+  returnTo = safeReturnTo(stateDoc.get("returnTo"));
 
   const expiresAt = stateDoc.get("expiresAt") as Timestamp | undefined;
   if (!expiresAt || expiresAt.toMillis() < Date.now()) return done("expired");

@@ -118,7 +118,7 @@ export function VoiceCaptions({
   variant = "live",
   className,
 }: {
-  variant?: "live" | "log";
+  variant?: "live" | "log" | "session";
   className?: string;
 }) {
   const t = useT();
@@ -126,21 +126,25 @@ export function VoiceCaptions({
   const { decide, status: decisionStatus } = useDecision(voice.sessionId);
   const logRef = useRef<HTMLDivElement>(null);
 
-  const live = voice.status === "live" || voice.status === "connecting";
   const open = voice.lines.filter((l) => !l.finished);
-  const shown = variant === "log" ? voice.lines : open;
+  const shown = variant === "live" ? open : voice.lines;
   const confirming = voice.turn?.decision === "confirm";
-  const listening = live && shown.length === 0 && !voice.turn && !voice.error;
-  const hasBody = shown.length > 0 || !!voice.turn || listening;
+  const connecting = voice.status === "connecting" && shown.length === 0 && !voice.error;
+  const listening =
+    voice.status === "live" && shown.length === 0 && !voice.turn && !voice.error;
+  const hasBody = shown.length > 0 || !!voice.turn || listening || connecting;
 
   useEffect(() => {
     logRef.current?.scrollTo({ top: logRef.current.scrollHeight, behavior: "smooth" });
   }, [voice.lines, voice.turn]);
 
-  if (!hasBody) return null;
+  if (variant !== "session" && (voice.status === "connecting" || voice.status === "live")) {
+    return null;
+  }
+  if (variant !== "session" && !hasBody) return null;
 
   return (
-    <div className={cn("px-4 pb-2", className)}>
+    <div className={cn(variant === "session" ? "flex min-h-0 flex-col" : "px-4 pb-2", className)}>
       <div
         ref={logRef}
         role="log"
@@ -149,8 +153,13 @@ export function VoiceCaptions({
         className={cn(
           "rounded-brand border bg-background px-3 py-2 text-[13px] leading-relaxed",
           variant === "log" && "max-h-48 overflow-y-auto",
+          variant === "session" &&
+            "min-h-0 flex-1 overflow-y-auto text-[15px] leading-relaxed",
         )}
       >
+        {connecting ? (
+          <p className="text-muted-foreground">{t("voice.connecting")}</p>
+        ) : null}
         {listening ? (
           <p className="text-muted-foreground">{t("voice.listening")}</p>
         ) : null}

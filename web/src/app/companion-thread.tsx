@@ -8,7 +8,7 @@ import {
   useState,
 } from "react";
 
-import { useAuth } from "@/auth/useAuth";
+import { firstNameFor, useAppUser } from "@/app/user";
 import { api } from "@/app/data";
 import { useT } from "@/app/i18n";
 import { useAsync } from "@/app/use-async";
@@ -39,7 +39,7 @@ type CompanionThread = {
    * would fire a second, typed turn.
    */
   recordSpoken: (role: "user" | "agent", text: string) => void;
-  /** Opens the companion: docked column on xl, sheet everywhere else. */
+  /** Opens the companion sheet. Same path on every screen size. */
   openCompanion: () => void;
   companionOpenNonce: number;
   working: boolean;
@@ -81,12 +81,11 @@ function fromStored(thread: ThreadMessage[]): CompanionMessage[] {
  * One companion thread for the shell.
  *
  * Home used to host its own composer. That forked the thread. Send, draft
- * and history live here so the docked column and the sheet stay one conversation.
+ * and history live here so the sheet is one conversation, not a fork per size.
  */
 export function CompanionThreadProvider({ children }: { children: React.ReactNode }) {
   const t = useT();
-  const { user } = useAuth();
-  const firstName = user?.displayName?.trim().split(/\s+/)[0];
+  const firstName = firstNameFor(useAppUser());
   const who = firstName ? `, ${firstName}` : "";
 
   const { state: onboarding, reload: refreshOnboarding } = useAsync(() => api.onboarding());

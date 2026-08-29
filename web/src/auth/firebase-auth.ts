@@ -9,6 +9,7 @@ import {
   signInWithPopup,
   signInWithRedirect,
   signOut as fbSignOut,
+  updateProfile,
 } from "firebase/auth";
 
 import { firebaseAuth } from "@/auth/firebase";
@@ -236,6 +237,20 @@ export function createFirebaseAuth(): AuthAdapter {
         return { ok: true };
       } catch (err) {
         return fromApi(err);
+      }
+    },
+
+    async updateDisplayName(name) {
+      const current = firebaseAuth.currentUser;
+      if (!current) return { ok: false, message: "You are not signed in." };
+      try {
+        const trimmed = name.trim();
+        await updateProfile(current, { displayName: trimmed || null });
+        await current.reload();
+        await current.getIdToken(true);
+        return { ok: true };
+      } catch (err) {
+        return { ok: false, message: toMessage(err) };
       }
     },
   };

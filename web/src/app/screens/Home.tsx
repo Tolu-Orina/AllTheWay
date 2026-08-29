@@ -1,7 +1,22 @@
 import { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router";
 import { useT } from "@/app/i18n";
-import { ArrowRight, Bell, Camera, Clapperboard, Clock, ExternalLink, Image, ListTodo, Loader2 } from "lucide-react";
+import {
+  AlarmClock,
+  ArrowRight,
+  CalendarDays,
+  CalendarCheck2,
+  Clapperboard,
+  ExternalLink,
+  Image,
+  ListTodo,
+  Loader2,
+  Mail,
+  MessageSquarePlus,
+  MessagesSquare,
+  Newspaper,
+  RefreshCw,
+} from "lucide-react";
 import type { Hat, Home as HomeData, LifeContext, OnboardingJob } from "@alltheway/contracts";
 
 import { Button } from "@/components/ui/button";
@@ -24,11 +39,14 @@ import {
   type WatcherRun,
 } from "@/app/data";
 import { timeOfDay } from "@/lib/format";
-import { useAuth } from "@/auth/useAuth";
+import { AccountMenu } from "@/app/AccountMenu";
+import { firstNameFor, useAppUser } from "@/app/user";
 import { Meetings } from "@/app/Meetings";
 import { cn } from "@/lib/utils";
 import { VoiceControl, VoiceCaptions } from "@/app/VoiceControl";
-import { Digest } from "@/app/Digest";
+import { Digest, digestIsQuiet } from "@/app/Digest";
+import { ConnectToolsModal } from "@/app/ConnectToolsModal";
+import { StartTodoModal } from "@/app/StartTodoModal";
 import { LanguageOffer } from "@/app/LanguageChoice";
 import { useCompanionThread } from "@/app/companion-thread";
 import { DocumentPickup, askAboutAdded } from "@/app/Documents";
@@ -69,6 +87,10 @@ export default function Home() {
   const [docsOpen, setDocsOpen] = useState(false);
   const [rhythmsOpen, setRhythmsOpen] = useState(false);
   const [remindOpen, setRemindOpen] = useState(false);
+  const [connectOpen, setConnectOpen] = useState(() =>
+    new URLSearchParams(window.location.search).has("connected"),
+  );
+  const [todoOpen, setTodoOpen] = useState(false);
   const [proposeAfterUpload, setProposeAfterUpload] = useState(false);
   const [hat, setHat] = useState<Hat | "all">("all");
 
@@ -107,7 +129,7 @@ export default function Home() {
 
   return (
     <div className="flex flex-col gap-6">
-      <HomeHeader day={home?.day ?? null} />
+      <HomeHeader />
       <VoiceCaptions variant="log" className="px-0 pb-0" />
       <BillingReturnBanner />
       <LifeTray />
@@ -121,14 +143,18 @@ export default function Home() {
           <PushOffer
             show={Boolean(home.day.nextLeave) || home.digest.awaitingDecision.length > 0}
           />
-          <DayTimeline
-            day={home.day}
-            hat={hat}
-            onHat={(next) => {
-              setHat(next);
-              void api.setHat(next === "all" ? null : next);
-            }}
-          />
+          {home.day.hours.length === 0 ? (
+            <EmptyTimeline onConnect={() => setConnectOpen(true)} />
+          ) : (
+            <DayTimeline
+              day={home.day}
+              hat={hat}
+              onHat={(next) => {
+                setHat(next);
+                void api.setHat(next === "all" ? null : next);
+              }}
+            />
+          )}
           <HomeRest
             job={home.onboarding.job ?? "skipped"}
             plan={home.plan}
@@ -141,6 +167,12 @@ export default function Home() {
               setDocsOpen(true);
             }}
             onReload={reloadAll}
+            onConnect={() => setConnectOpen(true)}
+            onTodo={() => setTodoOpen(true)}
+            onTemplates={() => {
+              openCompanion();
+              send(t("todo.templatesPrompt"));
+            }}
           />
         </>
       ) : null}
@@ -201,6 +233,13 @@ export default function Home() {
         </SheetContent>
       </Sheet>
 
+      <ConnectToolsModal open={connectOpen} onOpenChange={setConnectOpen} />
+      <StartTodoModal
+        open={todoOpen}
+        onOpenChange={setTodoOpen}
+        onNeedAccounts={() => setConnectOpen(true)}
+      />
+
       <Sheet open={remindOpen} onOpenChange={setRemindOpen}>
         <SheetContent side="bottom" className="gap-4 p-4">
           <SheetHeader className="p-0">
@@ -219,52 +258,126 @@ export default function Home() {
   );
 }
 
-function HomeHeader({ day }: { day: HomeData["day"] | null }) {
+function HomeHeader() {
   const t = useT();
-  const { user } = useAuth();
-  const now = new Date();
-  const today = now.toLocaleDateString(undefined, {
-    weekday: "long",
-    day: "numeric",
-    month: "long",
-  });
-  const hour = now.getHours();
+  const firstName = firstNameFor(useAppUser());
+  const hour = new Date().getHours();
   const greeting =
-    hour < 12 ? "Good morning" : hour < 18 ? "Good afternoon" : "Good evening";
-  const firstName = user?.displayName?.trim().split(/\s+/)[0];
-  const next = day?.nextLeave;
-  const standIn =
-    !next && day?.hours[0]
-      ? t("life.nothingTimed", {
-          time: new Date(day.hours[0].startsAt).toLocaleTimeString(undefined, {
-            hour: "numeric",
-            minute: "2-digit",
-          }),
-        })
-      : !next
-        ? t("life.nothingTimedEmpty")
-        : null;
+    hour < 12
+      ? t("today.goodMorning")
+      : hour < 18
+        ? t("today.goodAfternoon")
+        : t("today.goodEvening");
 
   return (
-    <header className="flex items-end justify-between gap-4">
-      <div className="min-w-0">
-        <p className="text-[13px] text-muted-foreground">{today}</p>
-        <h1 className="mt-1 text-[26px] leading-tight font-bold tracking-[-0.02em] sm:text-[30px]">
+    <header>
+      <div className="flex items-start justify-between gap-4">
+        <h1 className="min-w-0 text-[26px] leading-tight font-bold tracking-[-0.02em] sm:text-[30px]">
           {greeting}
           {firstName ? `, ${firstName}` : ""}
         </h1>
-        <p className="mt-2 text-[15px] leading-relaxed text-muted-foreground">
-          {!day
-            ? t("common.hereIsWhereThingsStand")
-            : next
-              ? next.minutes <= 0
-                ? t("life.nextLeaveNow", { title: next.title })
-                : t("life.nextLeave", { title: next.title, minutes: String(next.minutes) })
-              : standIn}
-        </p>
+        <AccountMenu className="mt-0.5 shrink-0" size={40} />
       </div>
-      <VoiceControl />
+      <div className="mt-2 flex items-center gap-3">
+        <p className="min-w-0 text-[15px] leading-relaxed text-muted-foreground">
+          {t("today.tellMeWhatICanHelp")}
+        </p>
+        <VoiceControl size="sm" className="items-center" />
+      </div>
     </header>
+  );
+}
+
+function EmptyTimeline({ onConnect }: { onConnect: () => void }) {
+  const t = useT();
+  return (
+    <section className="flex flex-col items-center px-4 py-10 text-center">
+      <span className="grid size-14 place-items-center rounded-full bg-muted">
+        <CalendarDays className="size-6 text-muted-foreground" aria-hidden="true" />
+      </span>
+      <h2 className="mt-4 text-[18px] font-semibold">{t("life.nothingTimedYet")}</h2>
+      <p className="mt-2 max-w-md text-[13.5px] leading-relaxed text-muted-foreground">
+        {t("life.timelineEmptyHint")}
+      </p>
+      <button
+        type="button"
+        onClick={onConnect}
+        className="mt-5 inline-flex items-center gap-2 rounded-brand bg-navy-deep px-4 py-2.5 text-[14px] font-semibold text-white transition-opacity hover:opacity-90"
+      >
+        <RefreshCw className="size-4" aria-hidden="true" />
+        {t("life.connectAccounts")}
+      </button>
+    </section>
+  );
+}
+
+function WaitingOnYou({
+  onConnect,
+  onTodo,
+  onTemplates,
+}: {
+  onConnect: () => void;
+  onTodo: () => void;
+  onTemplates: () => void;
+}) {
+  const t = useT();
+  const cards = [
+    {
+      key: "calendar",
+      icon: CalendarCheck2,
+      title: t("life.waitSyncCalendar"),
+      hint: t("life.waitSyncCalendarHint"),
+      onClick: onConnect,
+    },
+    {
+      key: "email",
+      icon: Mail,
+      title: t("life.waitConnectEmail"),
+      hint: t("life.waitConnectEmailHint"),
+      onClick: onConnect,
+    },
+    {
+      key: "todo",
+      icon: ListTodo,
+      title: t("life.waitCreateTodo"),
+      hint: t("life.waitCreateTodoHint"),
+      onClick: onTodo,
+    },
+    {
+      key: "templates",
+      icon: MessageSquarePlus,
+      title: t("life.waitTemplates"),
+      hint: t("life.waitTemplatesHint"),
+      onClick: onTemplates,
+    },
+  ] as const;
+
+  return (
+    <section aria-labelledby="waiting-heading" className="flex flex-col gap-3">
+      <h2 id="waiting-heading" className="flex items-center gap-2 text-[16px] font-semibold">
+        <CalendarCheck2 className="size-4 text-orange-light" aria-hidden="true" />
+        {t("life.waitingOnYou")}
+      </h2>
+      <ul className="flex flex-col gap-2">
+        {cards.map((card) => (
+          <li key={card.key}>
+            <button
+              type="button"
+              onClick={card.onClick}
+              className="flex w-full items-start gap-3 rounded-brand border bg-card px-4 py-3.5 text-left shadow-e1 transition-colors hover:border-primary/40"
+            >
+              <card.icon className="mt-0.5 size-4 shrink-0 text-muted-foreground" aria-hidden="true" />
+              <span className="min-w-0">
+                <span className="block text-[14px] font-semibold">{card.title}</span>
+                <span className="mt-0.5 block text-[12.5px] text-muted-foreground">
+                  {card.hint}
+                </span>
+              </span>
+            </button>
+          </li>
+        ))}
+      </ul>
+    </section>
   );
 }
 
@@ -370,6 +483,9 @@ function HomeRest({
   proposed,
   onAddFile,
   onReload,
+  onConnect,
+  onTodo,
+  onTemplates,
 }: {
   job: OnboardingJob;
   plan: SessionDetail | null;
@@ -379,22 +495,23 @@ function HomeRest({
   proposed: HomeData["proposed"];
   onAddFile: () => void;
   onReload: () => void;
+  onConnect: () => void;
+  onTodo: () => void;
+  onTemplates: () => void;
 }) {
   const t = useT();
   const firstWin = plan !== null || documents.length > 0;
   const indexing = documents.find((d) => d.status === "indexing" || d.status === "screening");
+  const quiet = digestIsQuiet(digest);
 
   return (
     <>
       <LanguageOffer show={firstWin} />
 
-      <section aria-labelledby="waiting-heading" className="flex flex-col gap-3">
-        <h2 id="waiting-heading" className="text-[16px] font-semibold">
-          {t("life.waitingOnYou")}
-        </h2>
-        <Digest digest={digest} />
-        <ProposedCommitments rows={proposed} onChange={onReload} />
-      </section>
+      <WaitingOnYou onConnect={onConnect} onTodo={onTodo} onTemplates={onTemplates} />
+
+      {quiet ? null : <Digest digest={digest} />}
+      <ProposedCommitments rows={proposed} onChange={onReload} />
 
       {indexing ? (
         <p role="status" className="text-[13px] text-muted-foreground">
@@ -423,7 +540,7 @@ function HomeRest({
         </section>
       ) : null}
 
-      <Overnight runs={runs} />
+      {runs.length > 0 ? <Overnight runs={runs} /> : null}
     </>
   );
 }
@@ -485,10 +602,10 @@ function CapabilityGrid({
 }) {
   const t = useT();
   const promoted = [
-    { key: "today", icon: Clock, title: t("life.whatsToday"), hint: t("life.capabilityTodayHint"), onClick: onToday },
-    { key: "remind", icon: Bell, title: t("life.remindMe"), hint: t("life.capabilityRemindHint"), onClick: onRemind },
-    { key: "photo", icon: Camera, title: t("life.addFromPhoto"), hint: t("life.capabilityPhotoHint"), onClick: onFile },
-    { key: "plan", icon: ListTodo, title: t("today.capabilityPlan"), hint: t("today.capabilityPlanHint"), onClick: onPlan },
+    { key: "today", icon: Newspaper, title: t("life.whatsToday"), hint: t("life.capabilityTodayHint"), onClick: onToday },
+    { key: "remind", icon: AlarmClock, title: t("life.remindMe"), hint: t("life.capabilityRemindHint"), onClick: onRemind },
+    { key: "photo", icon: Image, title: t("life.addFromPhoto"), hint: t("life.capabilityPhotoHint"), onClick: onFile },
+    { key: "plan", icon: MessagesSquare, title: t("today.capabilityPlan"), hint: t("today.capabilityPlanHint"), onClick: onPlan },
   ] as const;
   const demoted = [
     { key: "image", icon: Image, title: t("today.capabilityImage"), hint: t("today.capabilityImageHint"), onClick: onImage },
@@ -497,20 +614,32 @@ function CapabilityGrid({
 
   return (
     <section aria-labelledby="capability-heading">
-      <h2 id="capability-heading" className="mb-3 text-[16px] font-semibold">
-        {t("today.capabilityHeading")}
-      </h2>
-      <ul className="grid grid-cols-2 gap-4 xl:grid-cols-4">
+      <div className="mb-4">
+        <h2
+          id="capability-heading"
+          className="text-[12px] font-semibold tracking-[0.08em] text-muted-foreground uppercase"
+        >
+          {t("today.capabilityHeading")}
+        </h2>
+        <div className="mt-2 h-px bg-border" />
+      </div>
+      <ul className="grid grid-cols-1 gap-x-8 gap-y-4 sm:grid-cols-2">
         {promoted.map((card) => (
           <li key={card.key}>
             <button
               type="button"
               onClick={card.onClick}
-              className="flex h-full w-full flex-col items-start gap-2 rounded-brand-lg border bg-card px-4 py-4 text-left shadow-e1 transition-colors hover:border-primary/40"
+              className="flex w-full items-start gap-3 rounded-brand p-2 text-left transition-colors hover:bg-muted/70"
             >
-              <card.icon className="size-6 shrink-0" aria-hidden="true" />
-              <span className="text-[16px] font-semibold leading-snug">{card.title}</span>
-              <span className="text-[13.5px] leading-relaxed text-muted-foreground">{card.hint}</span>
+              <span className="grid size-11 shrink-0 place-items-center rounded-brand bg-muted">
+                <card.icon className="size-5" aria-hidden="true" />
+              </span>
+              <span className="min-w-0">
+                <span className="block text-[15px] font-semibold leading-snug">{card.title}</span>
+                <span className="mt-0.5 block text-[13px] leading-relaxed text-muted-foreground">
+                  {card.hint}
+                </span>
+              </span>
             </button>
           </li>
         ))}
@@ -625,7 +754,11 @@ function MeetingsJobCard() {
     setError(null);
     try {
       const target = google?.meet?.connected ? "google_calendar" : "google_meet";
-      const { url } = await api.connectGoogle({ connector: target, drafts: false });
+      const { url } = await api.connectGoogle({
+        connector: target,
+        drafts: false,
+        returnTo: "/app",
+      });
       window.location.assign(url);
     } catch {
       setStarting(false);

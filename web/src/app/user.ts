@@ -57,3 +57,8 @@ export function initialsFromName(name: string): string {
 export function nameFor(user: User): string {
   return user.displayName?.trim() || displayNameFromEmail(user.email);
 }
+
+/** First word of the display name — greetings, never the whole address. */
+export function firstNameFor(user: User): string {
+  return nameFor(user).split(/\s+/).filter(Boolean)[0] ?? "";
+}

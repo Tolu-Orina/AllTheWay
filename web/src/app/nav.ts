@@ -5,8 +5,8 @@ import { Clapperboard, House, LayoutGrid, Radar, User } from "lucide-react";
  * bar. Two lists would drift the moment a route is added.
  *
  * Five destinations. Studio is a maker, not a Home-card secret. Agents and
- * Profile are not the product — they live under You. TabBar treats `/app` as
- * exact so Work and Studio do not light Today.
+ * Profile are not the product — they live under Your Profile. TabBar treats
+ * `/app` as exact so Work and Studio do not light Today.
  */
 export type NavItem = {
   to: string;

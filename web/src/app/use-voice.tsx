@@ -75,6 +75,7 @@ export function VoiceProvider({ children }: { children: ReactNode }) {
   const epoch = useRef(0);
 
   const mutedRef = useRef(false);
+  const hangingUp = useRef(false);
   const linesRef = useRef<VoiceLine[]>([]);
   const spokenAt = useRef(0);
 
@@ -89,6 +90,7 @@ export function VoiceProvider({ children }: { children: ReactNode }) {
     // Invalidate any start still running: it will drop what it built.
     epoch.current += 1;
     mutedRef.current = false;
+    hangingUp.current = false;
     socket.current?.hangup();
     socket.current = null;
     const g = graph.current;
@@ -139,6 +141,7 @@ export function VoiceProvider({ children }: { children: ReactNode }) {
       linesRef.current = [];
       setLines([]);
       spokenAt.current = 0;
+      hangingUp.current = false;
       setTurn(null);
       setFake(false);
 
@@ -170,7 +173,7 @@ export function VoiceProvider({ children }: { children: ReactNode }) {
         const sessionId = resolveVoiceSessionId(pathname);
         await Promise.all([
           ctx.audioWorklet.addModule("/worklets/pcm-capture.js?v=2"),
-          ctx.audioWorklet.addModule("/worklets/pcm-play.js?v=2"),
+          ctx.audioWorklet.addModule("/worklets/pcm-play.js?v=3"),
         ]);
 
         if (!current()) {
@@ -194,7 +197,7 @@ export function VoiceProvider({ children }: { children: ReactNode }) {
             setStatus("live");
           },
           onPcm(pcm) {
-            if (!current() || mutedRef.current) return;
+            if (!current() || mutedRef.current || hangingUp.current) return;
             play.port.postMessage(pcm);
           },
           onInterrupted() {
@@ -249,11 +252,45 @@ export function VoiceProvider({ children }: { children: ReactNode }) {
             setError(message);
             setStatus("error");
           },
-          onClose() {
+          onClose(reason) {
+            if (!current()) return;
+            if (reason === "hangup") {
+              // Spoken hang-up (or a server close that used the hangup
+              // reason). Stop the mic, keep playing the farewell, then idle.
+              hangingUp.current = true;
+              const g = graph.current;
+              socket.current = null;
+              g?.stream.getTracks().forEach((track) => track.stop());
+              const play = g?.play;
+              if (!play || !g) {
+                teardown();
+                setMuted(false);
+                setStatus((s) => (s === "error" ? s : "idle"));
+                return;
+              }
+              let finished = false;
+              const finish = () => {
+                if (finished || epoch.current !== mine) return;
+                finished = true;
+                graph.current = null;
+                void g.ctx.close();
+                epoch.current += 1;
+                setMuted(false);
+                setStatus((s) => (s === "error" ? s : "idle"));
+              };
+              const timer = window.setTimeout(finish, 2_500);
+              play.port.onmessage = (ev) => {
+                if (ev.data && typeof ev.data === "object" && "drained" in ev.data) {
+                  window.clearTimeout(timer);
+                  finish();
+                }
+              };
+              play.port.postMessage("drain");
+              return;
+            }
             // A close we did not ask for — the network dropped, or the upstream
             // session ended. Without this the button still read "live" and
             // pressing it did nothing, because there was nothing left to stop.
-            if (!current()) return;
             teardown();
             setMuted(false);
             setStatus((s) => (s === "error" ? s : "idle"));
@@ -272,7 +309,7 @@ export function VoiceProvider({ children }: { children: ReactNode }) {
           const data = ev.data;
           // Muted means the room is not sent upstream at all. Dropping it here
           // rather than at the socket keeps it out of the transcript too.
-          if (mutedRef.current || !current()) return;
+          if (mutedRef.current || hangingUp.current || !current()) return;
           if (data instanceof Int16Array) voice.sendPcm(data);
         };
         } catch (err) {

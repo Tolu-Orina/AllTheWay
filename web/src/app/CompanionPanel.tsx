@@ -7,7 +7,6 @@ import {
   Loader2,
   MessageCircle,
   PanelRightClose,
-  PanelRightOpen,
   Send,
   Upload,
 } from "lucide-react";
@@ -29,19 +28,10 @@ import { cn } from "@/lib/utils";
 import { VoiceCaptions, VoiceControl } from "@/app/VoiceControl";
 
 /**
- * Tailwind's `xl`, as a media query.
- *
- * Duplicated from the class names below because there is no way to ask the
- * stylesheet where the docked layout starts. Kept next to the `xl:` classes it
- * mirrors so the two are changed together.
- */
-const DOCKED_FROM = "(min-width: 80rem)";
-
-/**
  * The conversation itself, with no opinion about what contains it.
  *
- * Extracted so the docked column and the sheet render the same thread
- * rather than two implementations that drift.
+ * Extracted so the sheet is the only presentation of the thread — a second
+ * copy of this markup is how a docked column and a sheet used to drift.
  */
 export function CompanionConversation({ autoFocus = false }: { autoFocus?: boolean }) {
   const { messages, send, working, steps, decide, decisionStatus } = useCompanionThread();
@@ -364,27 +354,16 @@ export function CompanionComposer({ autoFocus = false }: { autoFocus?: boolean }
 }
 
 /**
- * The third column of the concept shell: the live conversation, kept beside the
- * work rather than competing with it in a single chat column.
+ * The companion: a floating button that opens the conversation over the
+ * work, with the page behind it blurred. Full-bleed on a phone, a
+ * right-anchored sheet from tablet up. Studio hides the FAB so the stage
+ * keeps the width.
  *
- * Two presentations of one thread:
- *
- *  - **>= xl** — a docked column, collapsible to a rail.
- *  - **< xl** — a floating button that opens the same conversation over the
- *    work, with the page behind it blurred. Full-bleed on a phone, a
- *    right-anchored sheet on a tablet.
- *
- * On Home the FAB is the way in below xl. An on-page composer used to sit
- * under the digest as well; that was a second chat box on a phone, and the
- * FAB already opened this same thread.
+ * A docked third column used to take the right side on xl. That squeezed
+ * Today into a narrow well and made large screens a different product from
+ * the phone. One way in, every size.
  */
-export function CompanionPanel({
-  open,
-  onOpenChange,
-}: {
-  open: boolean;
-  onOpenChange: (open: boolean) => void;
-}) {
+export function CompanionPanel() {
   const { pathname } = useLocation();
   const studio = pathname.startsWith("/app/studio");
   const sessionId = pathname.match(/^\/app\/work\/([^/]+)$/)?.[1];
@@ -408,72 +387,25 @@ export function CompanionPanel({
   }, [sessionId, artifacts.state]);
 
   useEffect(() => {
-    const mq = window.matchMedia(DOCKED_FROM);
-    const sync = () => {
-      if (mq.matches) setSheetOpen(false);
-    };
-    sync();
-    mq.addEventListener("change", sync);
-    return () => mq.removeEventListener("change", sync);
-  }, []);
+    if (studio) setSheetOpen(false);
+  }, [studio]);
 
   useEffect(() => {
     if (companionOpenNonce === 0 || companionOpenNonce === seenOpenNonce.current) return;
     seenOpenNonce.current = companionOpenNonce;
-    const docked = window.matchMedia(DOCKED_FROM).matches;
-    if (docked) {
-      onOpenChange(true);
-    } else {
-      setMode("chat");
-      setSheetOpen(true);
-    }
-  }, [companionOpenNonce, onOpenChange]);
+    setMode("chat");
+    setSheetOpen(true);
+  }, [companionOpenNonce]);
 
   return (
     <>
-      {open ? (
-        <aside
-          aria-label="Companion"
-          className="hidden w-[340px] shrink-0 flex-col border-l bg-card/60 xl:sticky xl:top-0 xl:flex xl:h-dvh"
-        >
-          <div className="flex items-center justify-between border-b px-4 py-3">
-            <PanelSwitch mode={mode} onMode={setMode} />
-            <button
-              type="button"
-              onClick={() => onOpenChange(false)}
-              aria-label="Collapse companion panel"
-              aria-expanded={true}
-              className="grid size-8 place-items-center rounded-brand text-muted-foreground transition-colors hover:bg-muted hover:text-foreground"
-            >
-              <PanelRightClose className="size-[18px]" aria-hidden="true" />
-            </button>
-          </div>
-
-          {mode === "chat" ? <CompanionConversation /> : <CanvasPane key={sessionId ?? "all"} sessionId={sessionId} />}
-        </aside>
-      ) : (
-        <div className="hidden shrink-0 border-l bg-card/60 p-2 xl:sticky xl:top-0 xl:block xl:h-dvh">
-          <button
-            type="button"
-            onClick={() => onOpenChange(true)}
-            aria-label="Ask AllTheWay"
-            aria-expanded={false}
-            className="grid size-9 place-items-center rounded-brand text-muted-foreground transition-colors hover:bg-muted hover:text-foreground"
-          >
-            <PanelRightOpen className="size-[18px]" aria-hidden="true" />
-          </button>
-        </div>
-      )}
-
       {studio ? null : (
       <button
         type="button"
         onClick={() => setSheetOpen(true)}
         aria-label="Open companion"
         aria-expanded={sheetOpen}
-        className={cn(
-          "fixed right-4 bottom-[5.75rem] z-40 grid size-14 place-items-center rounded-full bg-primary text-primary-foreground shadow-e2 transition-transform hover:scale-105 active:scale-95 motion-reduce:transition-none motion-reduce:hover:scale-100 lg:right-6 lg:bottom-6 xl:hidden",
-        )}
+        className="fixed right-4 bottom-[5.75rem] z-40 grid size-14 place-items-center rounded-full bg-primary text-primary-foreground shadow-e2 transition-transform hover:scale-105 active:scale-95 motion-reduce:transition-none motion-reduce:hover:scale-100 lg:right-6 lg:bottom-6"
         style={{ marginBottom: "env(safe-area-inset-bottom, 0px)" }}
       >
         <MessageCircle className="size-6" aria-hidden="true" />
@@ -489,6 +421,7 @@ export function CompanionPanel({
           overlayClassName="bg-black/40 supports-backdrop-filter:backdrop-blur-sm"
         >
           <div className="flex items-center justify-between border-b px-4 py-3">
+            <h2 className="sr-only">Companion</h2>
             <PanelSwitch mode={mode} onMode={setMode} />
             <button
               type="button"

@@ -8,7 +8,7 @@
     "recents": "最近",
     "today": "今天",
     "work": "工作",
-    "you": "我的",
+    "you": "你的资料",
     "studio": "创作",
     "expand": "打开导航",
     "collapse": "收起导航"
@@ -89,7 +89,13 @@
     "unavailable": "当前语音不可用。您可以继续通过文字输入。",
     "you": "你。",
     "listening": "正在听…",
-    "captions": "刚才说的话"
+    "captions": "刚才说的话",
+    "sessionTitle": "正在与 AllTheWay 对话",
+    "sessionHint": "你开口确认之前，不会发生任何不可逆的事。",
+    "connecting": "正在连接…",
+    "pauseListening": "暂停聆听",
+    "resumeListening": "继续聆听",
+    "stop": "停止"
   },
   "share": {
     "heading": "分享",
@@ -221,7 +227,16 @@
     "draftingIsTheSafestThingIt": "起草是处理邮件时最安全的操作 — 不会发送任何内容。",
     "googleStillClassesThePermissionAs": "Google 仍将此权限归为受限权限，因此除非您主动开启，否则默认保持关闭。",
     "connected": "已连接",
-    "comingSoon": "即将推出"
+    "comingSoon": "即将推出",
+    "connectYourTools": "连接你的工具",
+    "connectYourToolsHint": "AllTheWay 在能看到你的日程和通讯时效果最好。你始终控制它可以访问什么。",
+    "permissions": "权限",
+    "accounts": "账号",
+    "letItSaveDrafts": "允许它保存 Gmail 草稿",
+    "draftsUnlessYouAsk": "起草是处理邮件最安全的方式 — 除非你要求，否则不会发送。",
+    "connect": "连接",
+    "reconnect": "重新连接",
+    "couldNotStart": "无法开始连接。请稍后再试。"
   },
   "specialists": {
     "whatItCanDo": "支持的功能",
@@ -272,7 +287,11 @@
     "chipTalk": "把一件事谈清楚",
     "chipDocument": "阅读文件",
     "chipMeetings": "会后跟上",
-    "capabilityHeading": "它能做什么",
+    "goodMorning": "早上好",
+    "goodAfternoon": "下午好",
+    "goodEvening": "晚上好",
+    "tellMeWhatICanHelp": "告诉我能帮你做什么",
+    "capabilityHeading": "我现在能做的",
     "capabilityImage": "生成一张图",
     "capabilityImageHint": "根据描述生成一张静态图。",
     "capabilityVideo": "起草一段视频",
@@ -297,6 +316,21 @@
     "welcomeSkipped": "欢迎回来{{who}}。问我一件事，或选一个起点。",
     "welcomeGeneric": "欢迎回来{{who}}。问我一件事，或纠正我——我从纠正里学到的，比从请求里多。",
     "askHere": "提问，或纠正它…"
+  },
+  "todo": {
+    "howToStart": "你想怎么开始？",
+    "howToStartHint": "自己写清单，或让 AllTheWay 帮你找出要紧的事。",
+    "manualEntry": "手动输入",
+    "manualEntryHint": "快速打出你的任务。",
+    "addANewTask": "添加任务",
+    "speakToAllTheWay": "对 AllTheWay 说",
+    "speakHint": "打开实时会话。你可以随时暂停或停止。",
+    "generateFromConnections": "从已连接的账号生成",
+    "generateFromConnectionsHint": "根据 Google 日历、Gmail 和 Slack 生成清单。",
+    "generateList": "生成清单",
+    "manualPrompt": "把这项加到我的待办：{{task}}。当作我可以推进的清单。不要做任何不可逆的事。",
+    "generatePrompt": "根据我已连接的日历和邮件，为接下来几天提出一份待办。只提出建议 — 在我确认之前不要创建日程或发送邮件。",
+    "templatesPrompt": "帮我设置快速回复的消息模板。只写草稿 — 除非我要求，否则不要发送。"
   },
   "plan": {
     "heading": "计划"
@@ -343,7 +377,13 @@
     "libraries": "文档与会议",
     "whatsRunning": "正在运行",
     "whatsRunningHint": "本产品使用的智能体与专家，各自带有已发布的卡片。",
-    "seeRunning": "查看智能体与专家"
+    "seeRunning": "查看智能体与专家",
+    "displayName": "你的名字",
+    "displayNameHint": "用于问候。在你自己设置之前，会从邮箱地址生成。",
+    "saveName": "保存姓名",
+    "savingName": "正在保存…",
+    "nameSaved": "姓名已保存。",
+    "nameSaveFailed": "姓名没有保存成功。什么都没改——请再试一次。"
   },
   "work": {
     "listHint": "你和同伴正在处理的线索。",
@@ -364,6 +404,17 @@
     "nextLeaveNow": "现在出发去 {{title}}",
     "nothingTimed": "{{time}} 之前没有定时事项。",
     "nothingTimedEmpty": "接下来十二小时没有定时事项。",
+    "nothingTimedYet": "还没有定时事项",
+    "timelineEmptyHint": "时间线是空的。连接日历查看日程，或告诉我今天发生什么。",
+    "connectAccounts": "连接账号",
+    "waitSyncCalendar": "同步日历",
+    "waitSyncCalendarHint": "启用日程跟踪",
+    "waitConnectEmail": "连接邮箱",
+    "waitConnectEmailHint": "同步通讯",
+    "waitCreateTodo": "创建第一个待办",
+    "waitCreateTodoHint": "开始跟踪任务",
+    "waitTemplates": "设置消息模板",
+    "waitTemplatesHint": "快速回复",
     "dayHeading": "接下来 12 小时",
     "connectCalendar": "在「你」里连接 Google 日历，或告诉我上学接送。",
     "hatAll": "全部",

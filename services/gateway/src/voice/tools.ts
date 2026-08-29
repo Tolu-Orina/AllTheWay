@@ -9,6 +9,7 @@ import {
   enforcementGrant,
   googleGrantId,
 } from "../google-scopes.js";
+import { END_THIS_CONVERSATION } from "./hangup.js";
 
 /**
  * What a voice session may look up for itself.
@@ -18,7 +19,8 @@ import {
  * Every tool below only reads. Anything that sends, pays, deletes, or writes a
  * record stays on `plan_turn`, which goes to the planner and stops at the
  * confirm gate — a spoken sentence must never be one mishearing away from an
- * irreversible action.
+ * irreversible action. Leaving the conversation is a third thing: it closes
+ * the socket, it does not confirm a plan, and it is not a read.
  *
  * That split is also why these exist at all. Routing "what's on today" through
  * a planning pass costs a second round trip while someone waits in silence, and
@@ -131,6 +133,27 @@ export const READ_TOOLS = [
 ] as const;
 
 export const READ_TOOL_NAMES: ReadonlySet<string> = new Set(READ_TOOLS.map((t) => t.name));
+
+/**
+ * Closes the live session. Not a read, and not `plan_turn`: hanging up must
+ * not be one mishearing away from sending mail, and it must not be folded
+ * into a lookup the model might call while still talking.
+ */
+export const SESSION_TOOLS = [
+  {
+    name: END_THIS_CONVERSATION,
+    description:
+      "End this live voice session. Call this only when they are leaving the conversation " +
+      "itself — goodbye, bye, that's all, you can stop, I'm done talking. Speak a short " +
+      "farewell in their language first, then call this. Do not wait for a yes. " +
+      "Do not call this when they want you to stop a task, a reminder, an email, or " +
+      "anything they asked you to do — that is plan_turn. Leaving is not confirmation of " +
+      "a pending plan.",
+    parameters: { type: "OBJECT", properties: {} },
+  },
+] as const;
+
+export const SESSION_TOOL_NAMES: ReadonlySet<string> = new Set(SESSION_TOOLS.map((t) => t.name));
 
 function num(value: unknown, fallback: number, max: number): number {
   const n = typeof value === "number" ? Math.floor(value) : Number.NaN;

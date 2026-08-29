@@ -368,7 +368,11 @@ export const api = {
    * minted and stored against this user. A client-built consent URL is a
    * client-chosen state, which is the whole CSRF hole.
    */
-  connectGoogle: (options: { connector: string; drafts?: boolean }) =>
+  connectGoogle: (options: {
+    connector: string;
+    drafts?: boolean;
+    returnTo?: "/app" | "/app/you";
+  }) =>
     apiPost("/connectors/google/connect", options, z.object({ url: z.string().url() })),
 
   setWatcherRunning: (id: string, running: boolean) =>

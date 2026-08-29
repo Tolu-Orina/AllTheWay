@@ -2,6 +2,7 @@ import { GoogleAuth } from "google-auth-library";
 import WebSocket from "ws";
 
 import { env } from "../env.js";
+import { END_THIS_CONVERSATION } from "./hangup.js";
 import {
   DEFAULT_LIVE_MODEL,
   liveModelResource,
@@ -61,6 +62,7 @@ export function openFakeLive(opts: { events: LiveEvents }): Promise<LiveSession>
   let closed = false;
   let heard = 0;
   let replied = false;
+  let askedToLeave = false;
 
   queueMicrotask(() => {
     if (!closed) events.onReady();
@@ -68,21 +70,40 @@ export function openFakeLive(opts: { events: LiveEvents }): Promise<LiveSession>
 
   return Promise.resolve({
     sendPcm(base64: string) {
-      if (closed || replied) return;
+      if (closed) return;
       heard += Buffer.from(base64, "base64").byteLength;
       // ~200ms of 16 kHz s16le. After that, one canned reply.
+      if (!replied) {
+        if (heard < 16_000 * 2 * 0.2) return;
+        replied = true;
+        heard = 0;
+        // Audio first: a persist that talks to Firestore must not hold up playback.
+        events.onPcm(tonePcmBase64());
+        events.onUserTranscript("testing voice locally", true);
+        events.onModelTranscript(
+          "This is a local voice session. The model is not connected, and nothing will be sent or changed.",
+          true,
+        );
+        return;
+      }
+      // There is no model here to recognise "bye". A second spoken burst is
+      // treated as leaving so the hang-up path can be exercised without Vertex.
+      if (askedToLeave) return;
       if (heard < 16_000 * 2 * 0.2) return;
-      replied = true;
-      // Audio first: a persist that talks to Firestore must not hold up playback.
-      events.onPcm(tonePcmBase64());
-      events.onUserTranscript("testing voice locally", true);
-      events.onModelTranscript(
-        "This is a local voice session. The model is not connected, and nothing will be sent or changed.",
-        true,
-      );
+      askedToLeave = true;
+      events.onUserTranscript("bye", true);
+      events.onToolCall({
+        id: "fake-end",
+        name: END_THIS_CONVERSATION,
+        args: {},
+      });
     },
-    sendToolResult() {
-      /* fake never issues tool calls */
+    sendToolResult(_id, name) {
+      if (closed) return;
+      if (name !== END_THIS_CONVERSATION) return;
+      events.onPcm(tonePcmBase64(330, 400));
+      events.onModelTranscript("Goodbye.", true);
+      events.onTurnComplete?.();
     },
     close() {
       if (closed) return;
@@ -193,7 +214,7 @@ async function openVertexLive(opts: {
         events.onModelTranscript(msg.modelTranscript.text, msg.modelTranscript.finished);
       }
       if (msg.interrupted) events.onInterrupted();
-      if (msg.turnComplete) events.onTurnComplete?.();
+      if (msg.turnComplete || msg.generationComplete) events.onTurnComplete?.();
       for (const call of msg.toolCalls ?? []) events.onToolCall(call);
       if (msg.toolCallCancellations?.length) events.onToolCancel(msg.toolCallCancellations);
       if (msg.resumeHandle) {

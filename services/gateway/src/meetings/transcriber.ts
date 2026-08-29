@@ -84,10 +84,10 @@ export function liveModelResource(model: string, project: string): string {
  *
  * Three things make it transcribe rather than converse, and each one matters:
  *
- *  - **No tools.** The voice relay declares `plan_turn`, which is how speech
- *    becomes an action. A meeting must never trigger one: the people talking
- *    have not asked this product for anything, and an overheard "just send it
- *    to them" is not an instruction.
+ *  - **No tools.** The voice relay declares `plan_turn` and
+ *    `end_this_conversation`. A meeting must never trigger either: the people
+ *    talking have not asked this product for anything, and an overheard
+ *    "just send it" or "that's all" is not an instruction.
  *  - **No automatic activity detection.** With VAD on, the model decides a turn
  *    has ended and answers it. Disabled, it never takes a turn — so it listens
  *    and cannot speak, which is FR-C4 enforced by configuration rather than by

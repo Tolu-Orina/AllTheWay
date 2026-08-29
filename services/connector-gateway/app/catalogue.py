@@ -203,6 +203,13 @@ CONNECTORS: tuple[Connector, ...] = (
         status=Status.COMING_SOON,
         summary="Messages and channels.",
     ),
+    Connector(
+        id="microsoft_teams",
+        label="Microsoft Teams",
+        provider="microsoft",
+        status=Status.COMING_SOON,
+        summary="Chats and channels.",
+    ),
 )
 
 BY_ID: dict[str, Connector] = {c.id: c for c in CONNECTORS}

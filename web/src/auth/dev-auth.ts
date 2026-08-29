@@ -194,5 +194,20 @@ export function createDevAuth(): AuthAdapter {
       write(USERS_KEY, all);
       return { ok: true };
     },
+
+    async updateDisplayName(name) {
+      await delay();
+      const email = read<string | null>(SESSION_KEY, null);
+      if (!email) return { ok: false, message: "You are not signed in." };
+      const all = users();
+      const u = all[email];
+      if (!u) return { ok: false, message: "You are not signed in." };
+      const trimmed = name.trim();
+      if (trimmed) u.displayName = trimmed;
+      else delete u.displayName;
+      write(USERS_KEY, all);
+      emit();
+      return { ok: true };
+    },
   };
 }

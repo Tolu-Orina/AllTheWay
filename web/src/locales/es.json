@@ -8,7 +8,7 @@
     "recents": "Recientes",
     "today": "Hoy",
     "work": "Trabajo",
-    "you": "Tú",
+    "you": "Tu perfil",
     "studio": "Estudio",
     "expand": "Abrir navegación",
     "collapse": "Cerrar navegación"
@@ -95,7 +95,13 @@
     "unavailable": "La voz no está disponible ahora mismo. Puedes seguir escribiendo.",
     "you": "Tú.",
     "listening": "Escuchando…",
-    "captions": "Lo que se acaba de decir"
+    "captions": "Lo que se acaba de decir",
+    "sessionTitle": "Hablar con AllTheWay",
+    "sessionHint": "No pasa nada irreversible hasta que lo digas.",
+    "connecting": "Conectando…",
+    "pauseListening": "Pausar la escucha",
+    "resumeListening": "Reanudar la escucha",
+    "stop": "Detener"
   },
   "share": {
     "heading": "Compartir",
@@ -227,7 +233,16 @@
     "draftingIsTheSafestThingIt": "Crear borradores es la acción más segura con el correo: no se envía nada.",
     "googleStillClassesThePermissionAs": "Google sigue considerando este permiso como restringido, por lo que permanecerá inactivo salvo que lo actives.",
     "connected": "Conectado",
-    "comingSoon": "Próximamente"
+    "comingSoon": "Próximamente",
+    "connectYourTools": "Conecta tus herramientas",
+    "connectYourToolsHint": "AllTheWay funciona mejor cuando puede ver tu agenda y tus comunicaciones. Tú controlas a qué puede acceder.",
+    "permissions": "Permisos",
+    "accounts": "Cuentas",
+    "letItSaveDrafts": "Permitir que guarde borradores de Gmail",
+    "draftsUnlessYouAsk": "Redactar borradores es lo más seguro que puede hacer con el correo: no se envía nada salvo que lo pidas.",
+    "connect": "Conectar",
+    "reconnect": "Volver a conectar",
+    "couldNotStart": "No se pudo empezar a conectar. Inténtalo en un momento."
   },
   "specialists": {
     "whatItCanDo": "Qué puede hacer",
@@ -278,7 +293,11 @@
     "chipTalk": "Hablar algo",
     "chipDocument": "Leer un archivo",
     "chipMeetings": "Ponerme al día",
-    "capabilityHeading": "Qué puede hacer",
+    "goodMorning": "Buenos días",
+    "goodAfternoon": "Buenas tardes",
+    "goodEvening": "Buenas noches",
+    "tellMeWhatICanHelp": "Dime en qué puedo ayudarte",
+    "capabilityHeading": "Lo que puedo hacer ahora",
     "capabilityImage": "Generar una imagen",
     "capabilityImageHint": "Una imagen, a partir de una descripción.",
     "capabilityVideo": "Crear un vídeo",
@@ -303,6 +322,21 @@
     "welcomeSkipped": "Hola de nuevo{{who}}. Pídeme algo, o elige por dónde empezar.",
     "welcomeGeneric": "Hola de nuevo{{who}}. Pídeme algo, o corrígeme — aprendo más de las correcciones que de las peticiones.",
     "askHere": "Pregunta, o corrígelo…"
+  },
+  "todo": {
+    "howToStart": "¿Cómo te gustaría empezar?",
+    "howToStartHint": "Crea tu lista a mano, o deja que AllTheWay encuentre lo importante.",
+    "manualEntry": "Entrada manual",
+    "manualEntryHint": "Escribe tus tareas rápido y fácil.",
+    "addANewTask": "Añadir una tarea",
+    "speakToAllTheWay": "Hablar con AllTheWay",
+    "speakHint": "Abre una sesión en directo. Puedes pausar o detener cuando quieras.",
+    "generateFromConnections": "Generar desde conexiones",
+    "generateFromConnectionsHint": "Crear una lista desde Google Calendar, Gmail y Slack.",
+    "generateList": "Generar lista",
+    "manualPrompt": "Añade esto a mi lista de tareas: {{task}}. Déjala como una lista en la que pueda trabajar. No hagas nada irreversible.",
+    "generatePrompt": "Propón una lista de tareas a partir de mi calendario y correo de los próximos días. Solo propone: no crees eventos ni envíes correo hasta que yo lo confirme.",
+    "templatesPrompt": "Ayúdame a preparar plantillas de mensajes para respuestas rápidas. Solo borradores: no se envía nada salvo que yo lo pida."
   },
   "plan": {
     "heading": "Plan"
@@ -349,7 +383,13 @@
     "libraries": "Documentos y reuniones",
     "whatsRunning": "Qué está en marcha",
     "whatsRunningHint": "Los agentes y especialistas que usa este producto, cada uno con una tarjeta publicada.",
-    "seeRunning": "Ver agentes y especialistas"
+    "seeRunning": "Ver agentes y especialistas",
+    "displayName": "Tu nombre",
+    "displayNameHint": "Se usa en los saludos. Hasta que pongas uno, sale de tu correo.",
+    "saveName": "Guardar nombre",
+    "savingName": "Guardando…",
+    "nameSaved": "Nombre guardado.",
+    "nameSaveFailed": "Ese nombre no se guardó. No cambió nada — inténtalo de nuevo."
   },
   "work": {
     "listHint": "Hilos que tú y el compañero estáis trabajando.",
@@ -370,6 +410,17 @@
     "nextLeaveNow": "Sal ahora para {{title}}",
     "nothingTimed": "Nada con hora hasta las {{time}}.",
     "nothingTimedEmpty": "Nada con hora en las próximas doce horas.",
+    "nothingTimedYet": "Nada con hora todavía",
+    "timelineEmptyHint": "Tu agenda está vacía. Conecta el calendario para ver tu horario, o dime qué pasa hoy.",
+    "connectAccounts": "Conectar cuentas",
+    "waitSyncCalendar": "Sincronizar calendario",
+    "waitSyncCalendarHint": "Activar el seguimiento de la agenda",
+    "waitConnectEmail": "Conectar el correo",
+    "waitConnectEmailHint": "Sincronizar comunicaciones",
+    "waitCreateTodo": "Crear la primera tarea",
+    "waitCreateTodoHint": "Empezar a seguir tareas",
+    "waitTemplates": "Definir plantillas de mensajes",
+    "waitTemplatesHint": "Respuestas rápidas",
     "dayHeading": "Próximas 12 horas",
     "connectCalendar": "Conecta Google Calendar en Tú, o dime la ruta escolar.",
     "hatAll": "Todo",

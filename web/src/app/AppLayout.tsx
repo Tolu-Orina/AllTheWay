@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import { Outlet, useLocation } from "react-router";
 
 import { Ambient } from "@/components/blocks/ambient";
@@ -11,6 +11,7 @@ import { TabBar } from "@/app/TabBar";
 import { CompanionPanel } from "@/app/CompanionPanel";
 import { CompanionThreadProvider } from "@/app/companion-thread";
 import { VoiceProvider } from "@/app/use-voice";
+import { VoiceSessionOverlay } from "@/app/VoiceSessionOverlay";
 import { LifeAlertsProvider } from "@/app/life/alerts";
 import { registerAppServiceWorker } from "@/app/pwa";
 import { cn } from "@/lib/utils";
@@ -18,7 +19,7 @@ import { cn } from "@/lib/utils";
 /**
  * The product shell.
  *
- * Desktop: sidebar, work, companion.
+ * Desktop: sidebar and work; the companion is a FAB that opens a sheet.
  * Mobile: a compact top bar and a floating tab bar, so it reads as an app
  * rather than a website squeezed onto a phone.
  *
@@ -28,13 +29,7 @@ import { cn } from "@/lib/utils";
 export function AppLayout() {
   const { pathname } = useLocation();
   const studio = pathname.startsWith("/app/studio");
-  // Studio is a maker: the stage needs the width. Companion stays a quiet
-  // reopen, not a third column that interviews them.
-  const [companionOpen, setCompanionOpen] = useState(() => !studio);
-
-  useEffect(() => {
-    if (studio) setCompanionOpen(false);
-  }, [studio]);
+  const today = pathname === "/app";
 
   useEffect(() => {
     registerAppServiceWorker();
@@ -57,7 +52,7 @@ export function AppLayout() {
           style={{ paddingTop: "max(env(safe-area-inset-top), 0.75rem)" }}
         >
           <Logo />
-          <AccountMenu />
+          {today ? null : <AccountMenu />}
         </header>
 
         {/* pb-28 clears the floating tab bar; dropped once the sidebar takes over. */}
@@ -68,25 +63,17 @@ export function AppLayout() {
             studio && "lg:px-5 lg:pt-4 lg:pb-6",
           )}
         >
-          {studio ? null : <AppTopBar />}
+          {studio || today ? null : <AppTopBar />}
           <div
-            className={cn(
-              "mx-auto w-full transition-[max-width] duration-200",
-              studio
-                ? "max-w-none"
-                : companionOpen
-                  ? "max-w-5xl xl:max-w-3xl"
-                  : "max-w-5xl",
-            )}
+            className={cn("mx-auto w-full", studio ? "max-w-none" : "max-w-5xl")}
           >
             <Outlet />
           </div>
         </main>
       </div>
 
-      {/* The concept's third column: the conversation, beside the work rather
-          than competing with it. Appears once there is room for it. */}
-      <CompanionPanel open={companionOpen} onOpenChange={setCompanionOpen} />
+      <CompanionPanel />
+      <VoiceSessionOverlay />
 
       <TabBar />
       </div>

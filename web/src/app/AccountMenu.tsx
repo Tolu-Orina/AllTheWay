@@ -23,7 +23,13 @@ import { cn } from "@/lib/utils";
  * you is worse than no menu, and on a phone an overlay you cannot dismiss reads
  * as the app having frozen.
  */
-export function AccountMenu({ className }: { className?: string }) {
+export function AccountMenu({
+  className,
+  size = 36,
+}: {
+  className?: string;
+  size?: number;
+}) {
   const t = useT();
   const user = useAppUser();
   const name = nameFor(user);
@@ -69,7 +75,7 @@ export function AccountMenu({ className }: { className?: string }) {
         aria-label={`Account: ${name}`}
         className="grid place-items-center rounded-full transition-transform active:scale-95"
       >
-        <Avatar />
+        <Avatar size={size} />
       </button>
 
       {open ? (
