@@ -393,6 +393,7 @@
     "whatsRunning": "Beth sy’n rhedeg",
     "whatsRunningHint": "Yr asiantau a’r arbenigwyr y mae’r cynnyrch hwn yn eu defnyddio, pob un â cherdyn cyhoeddedig.",
     "seeRunning": "Gweld asiantau ac arbenigwyr",
+    "registryUnavailable": "Ni ellid darllen y gofrestr yn yr amgylchedd hwn. Mae’r arbenigwyr isod yn dal i fodoli.",
     "displayName": "Eich enw",
     "displayNameHint": "Defnyddir mewn cyfarchion. Hyd nes i chi osod un, mae'n dod o'ch cyfeiriad e-bost.",
     "saveName": "Cadw'r enw",

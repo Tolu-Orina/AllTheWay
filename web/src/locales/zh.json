@@ -378,6 +378,7 @@
     "whatsRunning": "正在运行",
     "whatsRunningHint": "本产品使用的智能体与专家，各自带有已发布的卡片。",
     "seeRunning": "查看智能体与专家",
+    "registryUnavailable": "当前环境无法读取代理登记。下面的专项能力仍然存在。",
     "displayName": "你的名字",
     "displayNameHint": "用于问候。在你自己设置之前，会从邮箱地址生成。",
     "saveName": "保存姓名",

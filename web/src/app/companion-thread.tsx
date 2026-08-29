@@ -105,6 +105,10 @@ export function CompanionThreadProvider({ children }: { children: React.ReactNod
   const [companionOpenNonce, setCompanionOpenNonce] = useState(0);
   const settled = useRef<string>("");
   const hydrated = useRef(false);
+  /** Uploads that landed while a turn was already running. Dropping them is how
+   *  four PDFs became one summary. */
+  const pending = useRef<string[]>([]);
+  const draining = useRef(false);
 
   // The thread is stored on the companion session. Reload used to start from
   // the welcome bubble every time, which is how a conversation the person
@@ -166,25 +170,41 @@ export function CompanionThreadProvider({ children }: { children: React.ReactNod
               "Something went wrong and nothing was done. Try again in a moment."
             : turn.note || "Done.";
 
-    setHistory((prev) => [
-      ...prev,
-      {
-        id: prev.length + 1,
-        role: "agent",
-        text,
-        phase: turn.phase,
-        options: turn.options,
-        actions: turn.actions,
-        citations: turn.citations,
-        steps: turn.steps.length ? turn.steps : undefined,
-      },
-    ]);
+    setHistory((prev) => {
+      const last = prev[prev.length - 1];
+      if (last?.role === "agent" && last.phase === turn.phase && last.text === text) {
+        return prev;
+      }
+      // A write plan settles at confirm. A later `done` for the same request
+      // used to append a second bubble with the same words.
+      if (turn.phase === "done" && last?.role === "agent" && last.phase === "confirm") {
+        return prev;
+      }
+      return [
+        ...prev,
+        {
+          id: prev.length + 1,
+          role: "agent",
+          text,
+          phase: turn.phase,
+          options: turn.options,
+          actions: turn.actions,
+          citations: turn.citations,
+          steps: turn.steps.length ? turn.steps : undefined,
+        },
+      ];
+    });
   }, [turn]);
 
   const send = useCallback(
     (text: string) => {
       let trimmed = text.trim();
-      if (!trimmed || turn.phase === "working") return;
+      if (!trimmed) return;
+
+      if (turn.phase === "working") {
+        pending.current.push(trimmed);
+        return;
+      }
 
       const lastAgent = [...history].reverse().find((m) => m.role === "agent");
       if (lastAgent?.phase === "clarify" && lastAgent.options?.length) {
@@ -233,6 +253,20 @@ export function CompanionThreadProvider({ children }: { children: React.ReactNod
     },
     [runTurn, turn.phase, resetDecision, history, decide],
   );
+
+  useEffect(() => {
+    if (turn.phase === "working") {
+      draining.current = false;
+      return;
+    }
+    if (turn.phase === "confirm" || turn.phase === "clarify") return;
+    if (draining.current) return;
+    const next = pending.current[0];
+    if (!next) return;
+    draining.current = true;
+    pending.current = pending.current.slice(1);
+    send(next);
+  }, [turn.phase, send]);
 
   const recordSpoken = useCallback((role: "user" | "agent", text: string) => {
     const trimmed = text.trim();

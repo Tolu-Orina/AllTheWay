@@ -381,6 +381,7 @@
     "whatsRunning": "What's running",
     "whatsRunningHint": "The agents and specialists this product uses, each with a published card.",
     "seeRunning": "See agents and specialists",
+    "registryUnavailable": "The live registry could not be read in this environment. The specialists below still exist.",
     "displayName": "Your name",
     "displayNameHint": "Used in greetings. Until you set one, this comes from your email address.",
     "saveName": "Save name",

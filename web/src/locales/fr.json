@@ -384,6 +384,7 @@
     "whatsRunning": "Ce qui tourne",
     "whatsRunningHint": "Les agents et spécialistes que ce produit utilise, chacun avec une carte publiée.",
     "seeRunning": "Voir les agents et spécialistes",
+    "registryUnavailable": "Le registre n’est pas lisible dans cet environnement. Les spécialistes ci-dessous existent toujours.",
     "displayName": "Votre nom",
     "displayNameHint": "Utilisé dans les salutations. Tant que vous n'en définissez pas un, il vient de votre adresse e-mail.",
     "saveName": "Enregistrer le nom",

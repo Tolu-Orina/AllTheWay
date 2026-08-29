@@ -52,7 +52,24 @@ test("a meeting-notes question selects recent meetings, not the calendar", () =>
   );
 });
 
-test("a planning request that is not a lookup selects nothing", () => {
+test("a reminder request selects the calendar", () => {
+  assert.equal(selectReadTools("Remind me to call Sam at 3")[0]?.name, "whats_on_my_calendar");
+});
+
+test("an add-event request still reads the calendar first", () => {
+  assert.equal(selectReadTools("Add an event for lunch tomorrow")[0]?.name, "whats_on_my_calendar");
+});
+
+test("sending notes to Drive selects Drive", () => {
+  assert.equal(selectReadTools("Send these notes to Drive")[0]?.name, "find_in_my_drive");
+});
+
+test("a Gmail send or draft request selects the Gmail account status", () => {
+  assert.equal(selectReadTools("Send this in Gmail")[0]?.name, "gmail_account");
+  assert.equal(selectReadTools("Create a draft in Gmail")[0]?.name, "gmail_account");
+});
+
+test("drafting a wireframe is not a Gmail lookup", () => {
   assert.deepEqual(selectReadTools("Draft a nav wireframe for the desktop dashboard"), []);
 });
 

@@ -7,12 +7,11 @@ import { cn } from "@/lib/utils";
 import { useLifeAlerts } from "@/app/life/alerts";
 
 /**
- * Mobile tab bar: a floating glass pill where only the active tab carries its
- * label, so five destinations fit without crowding.
+ * Mobile tab bar: a floating glass pill with a label under every icon.
  *
- * The label is always in the accessibility tree — inactive tabs hide it
- * visually with sr-only rather than dropping it, so an icon-only tab is never
- * an unlabelled control.
+ * iOS, WhatsApp and Google Calendar all keep the name visible on every tab —
+ * hiding it until the tab is active is how a site-on-a-phone reads. QA and PM
+ * asked for the labels underneath, and present by default.
  */
 export function TabBar() {
   const t = useT();
@@ -26,7 +25,7 @@ export function TabBar() {
       className="fixed inset-x-0 bottom-0 z-50 px-3 lg:hidden"
       style={{ paddingBottom: "max(env(safe-area-inset-bottom), 0.75rem)" }}
     >
-      <div className="glass mx-auto flex max-w-lg items-center gap-0.5 rounded-full p-1.5 shadow-e2">
+      <div className="glass mx-auto flex max-w-lg items-end gap-0.5 rounded-[28px] px-1.5 py-1.5 shadow-e2">
         {NAV.map((item) => {
           // `end` on the index route only, or every child route would light it up.
           const active =
@@ -41,15 +40,15 @@ export function TabBar() {
               end={item.to === "/app"}
               aria-current={active ? "page" : undefined}
               className={cn(
-                "relative flex flex-1 items-center justify-center gap-1.5 rounded-full px-2 py-2.5 sm:px-3",
-                "text-[12px] font-semibold transition-colors",
+                "relative flex flex-1 flex-col items-center justify-center gap-0.5 rounded-full px-1 pt-2 pb-1.5",
+                "text-[10px] leading-tight font-semibold transition-colors",
                 active ? "text-foreground" : "text-muted-foreground",
               )}
             >
               {active ? (
                 <motion.span
                   layoutId={reduced ? undefined : "tab-pill"}
-                  className="absolute inset-0 rounded-full bg-card shadow-e1"
+                  className="absolute inset-0 rounded-[22px] bg-card shadow-e1"
                   transition={{ type: "spring", stiffness: 420, damping: 34 }}
                 />
               ) : null}
@@ -61,12 +60,12 @@ export function TabBar() {
               />
               {item.to === "/app" && count > 0 ? (
                 <span
-                  className="absolute top-1.5 right-2 size-1.5 rounded-full bg-primary"
+                  className="absolute top-1.5 right-[18%] size-1.5 rounded-full bg-primary"
                   aria-label={String(count)}
                 />
               ) : null}
-              <span className={cn("relative", active ? "inline" : "sr-only")}>
-                {t(item.labelKey)}
+              <span className="relative text-center">
+                {t(item.tabLabelKey ?? item.labelKey)}
               </span>
             </NavLink>
           );

@@ -17,7 +17,13 @@ import { Sheet, SheetContent } from "@/components/ui/sheet";
 import { CanvasPane } from "@/app/CanvasPane";
 import { useAsync } from "@/app/use-async";
 import { api } from "@/app/data";
-import { askAboutAdded, DOCUMENT_ACCEPT, DOCUMENT_MAX_BYTES } from "@/app/Documents";
+import { askAboutAdded } from "@/app/Documents";
+import {
+  DOCUMENT_ACCEPT,
+  DOCUMENT_CAMERA_ACCEPT,
+  DOCUMENT_MAX_BYTES,
+  prepareDocumentUpload,
+} from "@/lib/document-file";
 import { Recovery } from "@/app/Recovery";
 import { failureKindFrom } from "@alltheway/contracts";
 import { CitationChip } from "@/app/CitationChip";
@@ -66,20 +72,20 @@ export function CompanionConversation({ autoFocus = false }: { autoFocus?: boole
               <LogoMark className="mt-0.5 size-6 shrink-0" />
             ) : null}
             <div className="max-w-[19rem]">
+              {m.phase === "confirm" && m.id === last?.id ? null : m.phase === "error" ? null : (
               <p
                 className={cn(
                   "rounded-brand px-3 py-2 text-[13.5px] leading-relaxed",
                   m.role === "agent"
                     ? "rounded-tl-sm border bg-background"
                     : "rounded-tr-sm bg-accent text-accent-foreground",
-                  m.phase === "confirm" && "border-primary/40 bg-primary/5",
-                  m.phase === "error" && "border-destructive/40 bg-destructive/5",
                 )}
               >
                 {m.text}
               </p>
+              )}
 
-              {m.steps?.length ? (
+              {m.steps?.length && m.phase !== "confirm" ? (
                 <div className="mt-2">
                   <PlanStack steps={m.steps} />
                 </div>
@@ -233,23 +239,19 @@ export function CompanionComposer({ autoFocus = false }: { autoFocus?: boolean }
 
       if (file.size > DOCUMENT_MAX_BYTES) {
         setDropNote(
-          `${file.name} is larger than ${Math.round(DOCUMENT_MAX_BYTES / 1024 / 1024)}MB.`,
+          `${file.name || "That file"} is larger than ${Math.round(DOCUMENT_MAX_BYTES / 1024 / 1024)}MB.`,
         );
         return;
       }
 
-      setDropNote(t("documents.reading", { name: file.name }));
+      setDropNote(t("documents.reading", { name: file.name || "photo" }));
       try {
-        const buffer = new Uint8Array(await file.arrayBuffer());
-        let binary = "";
-        for (let i = 0; i < buffer.length; i += 8192) {
-          binary += String.fromCharCode(...buffer.subarray(i, i + 8192));
-        }
-        await api.uploadDocument(file.name, btoa(binary), file.type || "text/plain");
+        const prepared = await prepareDocumentUpload(file);
+        await api.uploadDocument(prepared.title, prepared.content, prepared.mimeType);
         setDropNote(null);
-        send(askAboutAdded(file.name));
+        send(askAboutAdded(prepared.title));
       } catch (err) {
-        setDropNote((err as { message?: string }).message || `${file.name} could not be added.`);
+        setDropNote((err as { message?: string }).message || `${file.name || "That file"} could not be added.`);
       }
     },
     [send, t, working],
@@ -302,7 +304,7 @@ export function CompanionComposer({ autoFocus = false }: { autoFocus?: boolean }
         <input
           ref={cameraRef}
           type="file"
-          accept="image/*"
+          accept={DOCUMENT_CAMERA_ACCEPT}
           capture="environment"
           className="sr-only"
           disabled={working}

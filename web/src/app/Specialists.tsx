@@ -94,7 +94,7 @@ const SPECIALISTS: Specialist[] = [
  * any of which may be scaling from zero. On a phone that doubled the wait for no
  * new information.
  */
-export function Specialists({ agents }: { agents: Agent[] }) {
+export function Specialists({ agents, pending = false }: { agents: Agent[]; pending?: boolean }) {
   const t = useT();
   const { startWork, starting } = useStartWork();
 
@@ -120,6 +120,7 @@ export function Specialists({ agents }: { agents: Agent[] }) {
                 promptOnly: specialist.promptOnly,
               })
             }
+            pending={pending}
           />
         ))}
       </ul>
@@ -132,11 +133,13 @@ function SpecialistRow({
   agent,
   starting,
   onStart,
+  pending,
 }: {
   specialist: Specialist;
   agent: Agent | undefined;
   starting: boolean;
   onStart: () => void;
+  pending?: boolean;
 }) {
   const t = useT();
   const trusted = agent?.signature?.trusted ?? false;
@@ -202,7 +205,7 @@ function SpecialistRow({
           )}
           {agent.skills.length ? ` · ${agent.skills.length} published skills` : ""}
         </p>
-      ) : (
+      ) : pending ? null : (
         // Said plainly rather than hidden. A specialist offered while nothing
         // stands behind it is the exact theatre this view exists to prevent.
         <p className="mt-2 text-[12px] text-destructive">

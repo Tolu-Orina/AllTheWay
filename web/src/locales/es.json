@@ -384,6 +384,7 @@
     "whatsRunning": "Qué está en marcha",
     "whatsRunningHint": "Los agentes y especialistas que usa este producto, cada uno con una tarjeta publicada.",
     "seeRunning": "Ver agentes y especialistas",
+    "registryUnavailable": "No se pudo leer el registro en este entorno. Los especialistas de abajo siguen existiendo.",
     "displayName": "Tu nombre",
     "displayNameHint": "Se usa en los saludos. Hasta que pongas uno, sale de tu correo.",
     "saveName": "Guardar nombre",

@@ -77,15 +77,26 @@ async function request(path: string, init?: RequestInit): Promise<Response> {
 
   if (!res.ok) {
     let code = "internal";
-    let message = "Something went wrong. Try again.";
+    let message =
+      res.status === 413
+        ? "That file is too large."
+        : "Something went wrong. Try again.";
     try {
-      const parsed = ApiErrorSchema.safeParse(await res.json());
+      const raw: unknown = await res.json();
+      const parsed = ApiErrorSchema.safeParse(raw);
       if (parsed.success) {
         code = parsed.data.code;
         message = parsed.data.message;
+      } else if (raw && typeof raw === "object" && "message" in raw) {
+        // A code this catalogue has not listed yet must still reach a person.
+        const body = raw as { code?: unknown; message?: unknown };
+        if (typeof body.message === "string" && body.message.trim()) {
+          message = body.message;
+          if (typeof body.code === "string" && body.code) code = body.code;
+        }
       }
     } catch {
-      /* non-JSON error body — keep the generic message */
+      /* non-JSON error body — keep the status-aware fallback */
     }
     throw new ApiError(code, message, res.status);
   }

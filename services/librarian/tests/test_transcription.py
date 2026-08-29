@@ -10,7 +10,7 @@ from __future__ import annotations
 
 import pytest
 
-from app.pipeline import IMAGE_TYPES, extract
+from app.pipeline import IMAGE_TYPES, extract, pages_from_transcription, sniff_mime
 from app.transcribe import SUPPORTED, TranscriptionFailed, transcribe
 
 
@@ -62,3 +62,60 @@ def test_text_and_pdf_still_take_the_mechanical_path():
     pages, count = extract(b"Clause 7.2 applies.", "text/plain")
     assert pages == [(1, "Clause 7.2 applies.")]
     assert count == 1
+
+
+def test_an_empty_type_jpeg_is_not_treated_as_text():
+    jpeg = b"\xff\xd8\xff\xe0" + b"\x00" * 32
+    assert sniff_mime(jpeg, "", "image.jpg") == "image/jpeg"
+    assert sniff_mime(jpeg, "text/plain", "photo") == "image/jpeg"
+    assert sniff_mime(b"%PDF-1.4\n", "text/plain", "scan.pdf") == "application/pdf"
+    assert sniff_mime(b"hello", "image/jpg", "x.jpg") == "image/jpeg"
+
+
+def test_a_digital_pdf_does_not_call_the_model(monkeypatch):
+    import pypdf
+
+    class FakePage:
+        def extract_text(self):
+            return "Clause 7.2"
+
+    class FakeReader:
+        pages = [FakePage()]
+
+    monkeypatch.setattr(pypdf, "PdfReader", lambda *a, **k: FakeReader())
+
+    def boom(*_a, **_k):
+        raise AssertionError("must not transcribe a PDF that already has text")
+
+    monkeypatch.setattr("app.transcribe.transcribe", boom)
+    pages, count = extract(b"%PDF-1.4 digital", "application/pdf")
+    assert pages == [(1, "Clause 7.2")]
+    assert count == 1
+
+
+def test_a_scanned_pdf_is_transcribed(monkeypatch):
+    import pypdf
+
+    class FakePage:
+        def extract_text(self):
+            return ""
+
+    class FakeReader:
+        pages = [FakePage(), FakePage()]
+
+    monkeypatch.setattr(pypdf, "PdfReader", lambda *a, **k: FakeReader())
+    monkeypatch.setattr(
+        "app.transcribe.transcribe",
+        lambda _body, mime: "--- page 1 ---\nScanned clause\n--- page 2 ---\nMore",
+    )
+    pages, count = extract(b"%PDF-1.4 scanned", "application/pdf")
+    assert pages == [(1, "Scanned clause"), (2, "More")]
+    assert count == 2
+
+
+def test_page_marks_split_a_transcription():
+    assert pages_from_transcription("--- page 1 ---\nA\n--- page 2 ---\nB") == [
+        (1, "A"),
+        (2, "B"),
+    ]
+    assert pages_from_transcription("just text") == [(1, "just text")]

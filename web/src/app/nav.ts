@@ -15,6 +15,11 @@ export type NavItem = {
    * language change re-renders the nav rather than leaving English behind.
    */
   labelKey: string;
+  /**
+   * Optional shorter label for the mobile tab bar, where the name sits under
+   * the icon. Desktop keeps `labelKey`.
+   */
+  tabLabelKey?: string;
   icon: React.ElementType;
 };
 
@@ -23,5 +28,5 @@ export const NAV: NavItem[] = [
   { to: "/app/work", labelKey: "nav.work", icon: LayoutGrid },
   { to: "/app/studio", labelKey: "nav.studio", icon: Clapperboard },
   { to: "/app/watchers", labelKey: "nav.watchers", icon: Radar },
-  { to: "/app/you", labelKey: "nav.you", icon: User },
+  { to: "/app/you", labelKey: "nav.you", tabLabelKey: "nav.profile", icon: User },
 ];

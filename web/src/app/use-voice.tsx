@@ -105,6 +105,9 @@ export function VoiceProvider({ children }: { children: ReactNode }) {
     teardown();
     setMuted(false);
     setStatus("idle");
+    setTurn(null);
+    linesRef.current = [];
+    setLines([]);
   }, [teardown]);
 
   /**
@@ -265,6 +268,7 @@ export function VoiceProvider({ children }: { children: ReactNode }) {
               if (!play || !g) {
                 teardown();
                 setMuted(false);
+                setTurn(null);
                 setStatus((s) => (s === "error" ? s : "idle"));
                 return;
               }
@@ -276,6 +280,7 @@ export function VoiceProvider({ children }: { children: ReactNode }) {
                 void g.ctx.close();
                 epoch.current += 1;
                 setMuted(false);
+                setTurn(null);
                 setStatus((s) => (s === "error" ? s : "idle"));
               };
               const timer = window.setTimeout(finish, 2_500);
@@ -293,6 +298,7 @@ export function VoiceProvider({ children }: { children: ReactNode }) {
             // pressing it did nothing, because there was nothing left to stop.
             teardown();
             setMuted(false);
+            setTurn(null);
             setStatus((s) => (s === "error" ? s : "idle"));
           },
         });

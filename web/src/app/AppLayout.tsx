@@ -55,11 +55,11 @@ export function AppLayout() {
           {today ? null : <AccountMenu />}
         </header>
 
-        {/* pb-28 clears the floating tab bar; dropped once the sidebar takes over. */}
+        {/* pb-32 clears the labelled floating tab bar; dropped once the sidebar takes over. */}
         <main
           id="app-main"
           className={cn(
-            "flex-1 px-4 pt-5 pb-28 sm:px-6 lg:px-8 lg:pt-6 lg:pb-10",
+            "flex-1 px-4 pt-5 pb-32 sm:px-6 lg:px-8 lg:pt-6 lg:pb-10",
             studio && "lg:px-5 lg:pt-4 lg:pb-6",
           )}
         >

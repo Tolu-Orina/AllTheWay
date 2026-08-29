@@ -20,12 +20,12 @@ import { runReadTool, type ToolResult } from "./voice/tools.js";
  * for the ones we *do* run, so a hung connector cannot stall the planner.
  */
 
-const LOOKUP_BUDGET_MS = 2_500;
+const LOOKUP_BUDGET_MS = 6_000;
 
 export type ReadCall = { name: string; args: Record<string, unknown> };
 
 const CALENDAR =
-  /\b(calendar|schedule|timetable|agenda|free|busy|what'?s on|what have i got|later today|this (morning|afternoon|evening|week)|tomorrow)\b/i;
+  /\b(calendar|schedule|timetable|agenda|free|busy|what'?s on|what have i got|later today|this (morning|afternoon|evening|week)|tomorrow|remind(er|ers| me)|events?)\b/i;
 const ABOUT_THE_DAY =
   /\b(today|tonight|tomorrow|this (morning|afternoon|evening|week)|scheduled)\b/i;
 const MEETING_SLOT = /\b(meetings?|appointments?)\b/i;
@@ -33,11 +33,13 @@ const DAY_WINDOW =
   /\b(today|tonight|this (morning|afternoon|evening)|did i have|have i got)\b/i;
 const LATER_ONLY = /\b(later today|upcoming|what's next|whats next)\b/i;
 const DRIVE =
-  /\b(drive|google drive|my files|find (the |a )?(file|doc|document|folder|spreadsheet|slide))\b/i;
+  /\b(drive|google drive|google docs|my files|find (the |a )?(file|doc|document|folder|spreadsheet|slide)|save (this |it |the )?(notes?|file|doc)? ?to (my )?drive|send (this |it |the )?(notes?|file|doc)? ?to (my )?drive|notes? to (my )?drive)\b/i;
 const WAITING =
   /\b(waiting( on me)?|needs? me|overnight|anything waiting|what happened|digest|catch me up)\b/i;
 const MEETINGS =
   /\b(what (did we|was) agree|meeting notes|last meeting|what we (said|agreed)|commitments?)\b/i;
+const GMAIL =
+  /\b(gmail|e-?mails?|inbox|send (this |it |a )?(mail|message|e-?mail)|create (a )?(mail |e-?mail )?draft|save (a )?draft|e-?mail (this|it|them|me)|mail (this|it) to)\b/i;
 
 function wantsCalendar(text: string): boolean {
   if (CALENDAR.test(text)) return true;
@@ -75,6 +77,7 @@ export function selectReadTools(message: string): ReadCall[] {
     out.push({ name: "whats_on_my_calendar", args });
   }
   if (DRIVE.test(text)) out.push({ name: "find_in_my_drive", args: { limit: 10 } });
+  if (GMAIL.test(text)) out.push({ name: "gmail_account", args: {} });
   if (WAITING.test(text)) out.push({ name: "whats_waiting_for_me", args: {} });
   if (MEETINGS.test(text)) out.push({ name: "my_recent_meetings", args: { limit: 5 } });
   return out;

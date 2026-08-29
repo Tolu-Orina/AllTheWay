@@ -7,7 +7,15 @@ import { Async } from "@/app/async";
 import { useAsync } from "@/app/use-async";
 import { api, type UserDocument } from "@/app/data";
 import { useCompanionThread } from "@/app/companion-thread";
+import {
+  DOCUMENT_ACCEPT,
+  DOCUMENT_CAMERA_ACCEPT,
+  DOCUMENT_MAX_BYTES,
+  prepareDocumentUpload,
+} from "@/lib/document-file";
 import { cn } from "@/lib/utils";
+
+export { DOCUMENT_ACCEPT, DOCUMENT_CAMERA_ACCEPT, DOCUMENT_MAX_BYTES };
 
 /**
  * The document library.
@@ -31,19 +39,6 @@ import { cn } from "@/lib/utils";
  * can believe that happened is if the interface says so.
  */
 
-const ACCEPT =
-  ".pdf,.txt,.md,.markdown,text/plain,text/markdown,application/pdf," +
-  // Photographs are transcribed rather than parsed. HEIC is here because it is
-  // what an iPhone produces by default, and omitting it would reject the single
-  // most likely file a phone user ever sends.
-  "image/jpeg,image/png,image/webp,image/heic,image/heif";
-export const DOCUMENT_ACCEPT = ACCEPT;
-
-//: Matched to the gateway's own ceiling so a rejection is immediate and legible
-//: rather than a 413 arriving after a long upload.
-const MAX_BYTES = 25 * 1024 * 1024;
-export const DOCUMENT_MAX_BYTES = MAX_BYTES;
-
 /**
  * After a successful upload, one turn. This is a user message, not chrome —
  * the planner reads it — so it stays English on purpose.
@@ -59,18 +54,6 @@ const STATUS: Record<UserDocument["status"], { label: string; tone: string }> = 
   blocked: { label: "Not accepted", tone: "text-destructive" },
 };
 
-async function toBase64(file: File): Promise<string> {
-  const buffer = await file.arrayBuffer();
-  // Chunked, because String.fromCharCode(...bytes) on a 25MB file blows the
-  // argument limit and throws a RangeError that reads as a mystery.
-  const bytes = new Uint8Array(buffer);
-  let binary = "";
-  for (let i = 0; i < bytes.length; i += 8192) {
-    binary += String.fromCharCode(...bytes.subarray(i, i + 8192));
-  }
-  return btoa(binary);
-}
-
 export function DocumentPickup({ onUploaded }: { onUploaded?: (name: string, documentId?: string) => void }) {
   const t = useT();
   const [busy, setBusy] = useState<string | null>(null);
@@ -85,21 +68,17 @@ export function DocumentPickup({ onUploaded }: { onUploaded?: (name: string, doc
       const file = Array.from(files)[0];
       if (!file) return;
 
-      if (file.size > MAX_BYTES) {
-        setError(`${file.name} is larger than ${Math.round(MAX_BYTES / 1024 / 1024)}MB.`);
-        return;
-      }
-
       setError(null);
-      setBusy(file.name);
+      setBusy(file.name || "photo");
       try {
+        const prepared = await prepareDocumentUpload(file);
         const result = await api.uploadDocument(
-          file.name,
-          await toBase64(file),
-          file.type || "text/plain",
+          prepared.title,
+          prepared.content,
+          prepared.mimeType,
           hat,
         );
-        onUploaded?.(file.name, result.documentId);
+        onUploaded?.(prepared.title, result.documentId);
       } catch (err) {
         const message = (err as { message?: string }).message;
         setError(message || "That document could not be added.");
@@ -161,7 +140,7 @@ export function DocumentPickup({ onUploaded }: { onUploaded?: (name: string, doc
         <input
           ref={input}
           type="file"
-          accept={ACCEPT}
+          accept={DOCUMENT_ACCEPT}
           className="sr-only"
           onChange={(e) => {
             if (e.target.files) void upload(e.target.files);
@@ -171,7 +150,7 @@ export function DocumentPickup({ onUploaded }: { onUploaded?: (name: string, doc
         <input
           ref={camera}
           type="file"
-          accept="image/*"
+          accept={DOCUMENT_CAMERA_ACCEPT}
           capture="environment"
           className="sr-only"
           onChange={(e) => {

@@ -181,7 +181,7 @@ export function VoiceCaptions({
             ) : null}
           </p>
         ))}
-        {voice.turn?.summary ? (
+        {voice.turn?.summary && !confirming ? (
           <p className="mt-1.5 font-medium">{voice.turn.summary}</p>
         ) : null}
         {voice.turn?.question ? <p className="mt-1.5">{voice.turn.question}</p> : null}

@@ -66,20 +66,99 @@ IMAGE_TYPES = frozenset(
     {"image/jpeg", "image/png", "image/webp", "image/heic", "image/heif"}
 )
 
+_JPEG = b"\xff\xd8\xff"
+_PNG = b"\x89PNG\r\n\x1a\n"
+_PDF = b"%PDF"
+_HEIC_BRANDS = {b"heic", b"heix", b"hevc", b"hevx"}
+_HEIF_BRANDS = {b"mif1", b"msf1"}
+_PAGE_MARK = re.compile(r"^-{2,}\s*page\s+(\d+)\s*-{2,}\s*$", re.IGNORECASE | re.MULTILINE)
+_EXT = {
+    ".pdf": "application/pdf",
+    ".txt": "text/plain",
+    ".md": "text/markdown",
+    ".markdown": "text/markdown",
+    ".jpg": "image/jpeg",
+    ".jpeg": "image/jpeg",
+    ".png": "image/png",
+    ".webp": "image/webp",
+    ".heic": "image/heic",
+    ".heif": "image/heif",
+}
 
-def extract(body: bytes, mime_type: str) -> tuple[list[tuple[int, str]], int]:
+
+def sniff_mime(body: bytes, claimed: str, title: str = "") -> str:
+    """What this file actually is, not what the camera claimed.
+
+    An iPhone photo often arrives as `""`, `image/jpg`, or
+    `application/octet-stream`. Treating those as text indexes JPEG bytes as
+    replacement characters and looks like a mysterious empty document.
+    """
+    claimed = (claimed or "").strip().lower()
+    if claimed == "image/jpg":
+        claimed = "image/jpeg"
+
+    if body.startswith(_PDF):
+        return "application/pdf"
+    if body.startswith(_JPEG):
+        return "image/jpeg"
+    if body.startswith(_PNG):
+        return "image/png"
+    if len(body) >= 12 and body[:4] == b"RIFF" and body[8:12] == b"WEBP":
+        return "image/webp"
+    if len(body) >= 12 and body[4:8] == b"ftyp":
+        brand = body[8:12]
+        if brand in _HEIC_BRANDS:
+            return "image/heic"
+        if brand in _HEIF_BRANDS:
+            return "image/heif"
+
+    lower = title.lower()
+    for suffix, mime in _EXT.items():
+        if lower.endswith(suffix):
+            if claimed in {"", "application/octet-stream", "text/plain"}:
+                return mime
+            break
+
+    if claimed in IMAGE_TYPES or claimed == "application/pdf":
+        return claimed
+    if claimed:
+        return claimed
+    return "text/plain"
+
+
+def pages_from_transcription(text: str) -> list[tuple[int, str]]:
+    """Split a model transcription that marked pages, or treat it as one page."""
+    text = text.strip()
+    if not text:
+        return []
+    parts = _PAGE_MARK.split(text)
+    if len(parts) <= 1:
+        return [(1, text)]
+    pages: list[tuple[int, str]] = []
+    i = 1
+    while i + 1 < len(parts):
+        body = parts[i + 1].strip()
+        if body:
+            pages.append((int(parts[i]), body))
+        i += 2
+    return pages or [(1, text)]
+
+
+def extract(body: bytes, mime_type: str, title: str = "") -> tuple[list[tuple[int, str]], int]:
     """(page number, text) pairs, and a page count.
 
-    Mechanical for every format but one. A parser cannot be talked into
+    Mechanical for every format but two. A parser cannot be talked into
     anything, which is what makes extraction safe to run before screening: an
     instruction inside a PDF is just text to `pypdf`.
 
-    Photographs are the exception, and a deliberate one — see `transcribe.py`
-    for what that costs and why it is contained. The containment is visible
+    Photographs, and PDFs that have no selectable text (a scan, a photographed
+    page exported as PDF), go through transcription. The containment is visible
     right here in the caller: whatever comes back goes through screening with
     everything else, so a subverted transcription is treated exactly like a
     hostile PDF.
     """
+    mime_type = sniff_mime(body, mime_type, title)
+
     if mime_type in IMAGE_TYPES:
         from .transcribe import transcribe
 
@@ -91,9 +170,24 @@ def extract(body: bytes, mime_type: str) -> tuple[list[tuple[int, str]], int]:
     if mime_type == "application/pdf":
         from pypdf import PdfReader
 
-        reader = PdfReader(io.BytesIO(body))
-        pages = [(i + 1, (page.extract_text() or "")) for i, page in enumerate(reader.pages)]
-        return [(n, t) for n, t in pages if t.strip()], len(reader.pages)
+        try:
+            reader = PdfReader(io.BytesIO(body))
+            pages = [(i + 1, (page.extract_text() or "")) for i, page in enumerate(reader.pages)]
+        except Exception as exc:
+            raise Blocked("That PDF could not be read.") from exc
+
+        nonempty = [(n, t) for n, t in pages if t.strip()]
+        if nonempty:
+            return nonempty, len(reader.pages)
+
+        # Image-only / scanned: the same Vertex path as a photograph, then
+        # screening as usual. A digital PDF with selectable text never takes
+        # this branch — that would put a model in front of unscreened text.
+        from .transcribe import transcribe
+
+        transcribed = transcribe(body, "application/pdf")
+        split = pages_from_transcription(transcribed)
+        return split, max(len(reader.pages), len(split), 1)
 
     # Everything else is treated as text. A decode failure is a real answer —
     # a file we cannot read is not a file we should guess at.
@@ -149,7 +243,8 @@ def ingest(
     caller reports as a refusal rather than as a failure — the difference
     matters to the person who uploaded it.
     """
-    pages, page_count = extract(body, mime_type)
+    mime_type = sniff_mime(body, mime_type, title)
+    pages, page_count = extract(body, mime_type, title)
     document_id = store.create_document(
         user, title=title, mime_type=mime_type, pages=page_count, hat=hat
     )

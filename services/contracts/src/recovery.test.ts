@@ -225,3 +225,13 @@ test("every kind a message can produce has routes", () => {
     ok(ROUTES[failureKindFrom(m)].length > 0, m);
   }
 });
+
+test("document error codes are part of the API error catalogue", async () => {
+  const { ApiErrorSchema } = await import("./index.js");
+  for (const code of ["blocked", "too_large", "plan_limit", "upstream_error", "not_configured"]) {
+    ok(
+      ApiErrorSchema.safeParse({ code, message: "That file could not be accepted." }).success,
+      `${code} must reach the client as a real sentence, not a generic failure`,
+    );
+  }
+});

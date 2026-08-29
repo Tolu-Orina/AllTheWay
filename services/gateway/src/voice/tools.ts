@@ -7,6 +7,7 @@ import { buildDigest } from "../repos/digest.js";
 import {
   connectorIsConnected,
   enforcementGrant,
+  GMAIL_DRAFTS_SCOPE,
   googleGrantId,
 } from "../google-scopes.js";
 import { END_THIS_CONVERSATION } from "./hangup.js";
@@ -54,7 +55,7 @@ export const READ_TOOLS = [
     name: "whats_on_my_calendar",
     description:
       "What is on the user's calendar. Use this whenever they ask about their day, " +
-      "their schedule, a meeting, or whether they are free. Read-only.",
+      "their schedule, a meeting, a reminder, an event, or whether they are free. Read-only.",
     parameters: {
       type: "OBJECT",
       properties: {
@@ -96,7 +97,7 @@ export const READ_TOOLS = [
     name: "find_in_my_drive",
     description:
       "List files in the user's Google Drive. Use this when they ask what they have, " +
-      "or to find a file by name before doing anything with it. Read-only.",
+      "to find a file by name, or before saving notes there. Read-only.",
     parameters: {
       type: "OBJECT",
       properties: {
@@ -129,6 +130,14 @@ export const READ_TOOLS = [
         limit: { type: "NUMBER", description: "How many recent meetings. Default 5." },
       },
     },
+  },
+  {
+    name: "gmail_account",
+    description:
+      "Whether Gmail is connected and whether saving drafts is allowed. Use this when they " +
+      "want to send mail, create a draft, or email something. Does not send, and does not read " +
+      "the inbox. Writes still go through plan_turn and wait for yes.",
+    parameters: { type: "OBJECT", properties: {} },
   },
 ] as const;
 
@@ -286,6 +295,27 @@ export async function runReadTool(
           awaitingDecision: digest.awaitingDecision,
           ranWatchers: digest.ranWatchers,
           artifactsChanged: digest.artifactsChanged,
+        };
+      }
+
+      case "gmail_account": {
+        const grant = await db.collection("connectorGrants").doc(googleGrantId(uid)).get();
+        const scopes: string[] = grant.exists ? (grant.get("scopes") ?? []) : [];
+        if (!grant.exists || !connectorIsConnected("google_gmail", scopes)) {
+          return {
+            cannot:
+              "Your Gmail account is not connected yet. Connect it from Profile. Sending and drafts both need that connection, and drafts need the extra drafts permission which is off unless you asked for it.",
+            connector: "google_gmail",
+          };
+        }
+        const drafts = scopes.includes(GMAIL_DRAFTS_SCOPE);
+        return {
+          connected: true,
+          send: true,
+          drafts,
+          note: drafts
+            ? "Gmail is connected. Sending and saving drafts both wait for the person to say yes."
+            : "Gmail is connected. Sending waits for the person to say yes. Saving drafts is off — they would need to turn on drafts on Profile.",
         };
       }
 

@@ -9,6 +9,7 @@ import { api, type LearnedPreference } from "@/app/data";
 import { Connections } from "@/app/Connections";
 import { Usage } from "@/app/Usage";
 import { Documents } from "@/app/Documents";
+import { RunningRoster } from "@/app/RunningRoster";
 import { VisualPreferences } from "@/app/VisualPreferences";
 import { Meetings } from "@/app/Meetings";
 import { SharedWithMe } from "@/app/SharedWithMe";
@@ -22,7 +23,7 @@ import { Button } from "@/components/ui/button";
  * Your Profile — account, memory, and what is running. Not the product.
  *
  * Section order is the design: name, learned memory, language, accounts, libraries,
- * plan & usage, registry collapsed, then sign out. Upgrade starts Checkout;
+ * plan & usage, what's running (specialists and cards), then sign out. Upgrade starts Checkout;
  * Manage plan opens the Stripe Customer Portal.
  */
 export default function Profile() {
@@ -236,13 +237,14 @@ export default function Profile() {
 
       <Usage heading={t("you.plan")} />
 
-      <details className="rounded-brand-lg border bg-card p-4 shadow-e1">
+      <details open className="rounded-brand-lg border bg-card p-4 shadow-e1">
         <summary className="cursor-pointer text-[16px] font-semibold tracking-[-0.01em]">
           {t("you.whatsRunning")}
         </summary>
         <p className="mt-2 text-[14px] leading-relaxed text-muted-foreground">
           {t("you.whatsRunningHint")}
         </p>
+        <RunningRoster />
         <Link
           to="/app/you/running"
           className="mt-3 inline-block text-[13px] text-muted-foreground underline-offset-2 hover:underline"

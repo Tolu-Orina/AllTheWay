@@ -517,6 +517,11 @@ export const DecisionResultSchema = z.object({
   did: z.array(ActOutcomeSchema).default([]),
 });
 export const ApiErrorSchema = z.object({
+  /**
+   * Codes the gateway actually returns. A document 422 used to send `blocked`
+   * and the client dropped the message because this enum did not include it —
+   * which is how "there was no readable text" became "Something went wrong."
+   */
   code: z.enum([
     "unauthenticated",
     "forbidden",
@@ -524,6 +529,12 @@ export const ApiErrorSchema = z.object({
     "invalid_request",
     "rate_limited",
     "internal",
+    "blocked",
+    "too_large",
+    "plan_limit",
+    "upstream_error",
+    "not_configured",
+    "not_self_serve",
   ]),
   message: z.string(),
 });

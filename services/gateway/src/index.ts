@@ -90,13 +90,42 @@ app.post(
   },
 );
 
-app.use(express.json({ limit: "1mb" }));
+/**
+ * Documents travel as base64 in JSON, same as every other write. A 25MB
+ * ceiling on the *decoded* file is ~33MB on the wire; Cloud Run itself stops
+ * at 32MB, so this matches that envelope. Every other route stays at 1MB —
+ * a 32MB JSON body on a turn or a preference write is not a document, it is
+ * a problem. The old global 1MB default 413'd a phone photo and the client
+ * had no JSON body to read, so it said "Something went wrong."
+ */
+app.use((req, res, next) => {
+  const limit = req.path.startsWith("/api/documents") ? "32mb" : "1mb";
+  express.json({ limit })(req, res, next);
+});
 
 /** Reflect CORS on every response so studio generate (POST, gateway host) is readable. */
 app.use((req, res, next) => {
   applyCors(req, res);
   next();
 });
+
+app.use(
+  (
+    err: { type?: string; status?: number },
+    req: express.Request,
+    res: express.Response,
+    next: express.NextFunction,
+  ) => {
+    if (err?.type === "entity.too.large" || err?.status === 413) {
+      applyCors(req, res);
+      return res.status(413).json({
+        code: "too_large",
+        message: "That file is too large.",
+      });
+    }
+    next(err);
+  },
+);
 
 /** Unauthenticated: Cloud Run needs this to consider the revision healthy. */
 // Both spellings, deliberately. Google's frontend on *.run.app swallows the
