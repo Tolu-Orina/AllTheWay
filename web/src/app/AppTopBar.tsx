@@ -1,5 +1,5 @@
 import { useEffect, useId, useRef, useState } from "react";
-import { Link, useLocation } from "react-router";
+import { Link } from "react-router";
 import { Plus, Search } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
@@ -19,13 +19,11 @@ import { useT } from "@/app/i18n";
  * of chrome: it looks finished and is not.
  */
 export function AppTopBar() {
-  const { pathname } = useLocation();
   const { startWork, starting } = useStartWork();
-  const onWork = pathname === "/app/work" || pathname.startsWith("/app/work/");
 
   return (
     <div className="mb-6 hidden items-center gap-3 lg:flex">
-      {onWork ? <WorkSearch /> : <div className="min-w-0 flex-1" />}
+      <WorkSearch />
 
       <div className="ml-auto flex items-center gap-3">
         <Button variant="brand" size="lg" disabled={starting} onClick={() => void startWork()}>

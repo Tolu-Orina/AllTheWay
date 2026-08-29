@@ -39,7 +39,6 @@ import {
   type WatcherRun,
 } from "@/app/data";
 import { timeOfDay } from "@/lib/format";
-import { AccountMenu } from "@/app/AccountMenu";
 import { firstNameFor, useAppUser } from "@/app/user";
 import { Meetings } from "@/app/Meetings";
 import { cn } from "@/lib/utils";
@@ -128,8 +127,9 @@ export default function Home() {
   const home = state.status === "ready" ? state.data : null;
 
   return (
-    <div className="flex flex-col gap-6">
+    <div className="flex flex-col">
       <HomeHeader />
+      <div className="mt-4 flex flex-col gap-6">
       <VoiceCaptions variant="log" className="px-0 pb-0" />
       <BillingReturnBanner />
       <LifeTray />
@@ -254,6 +254,7 @@ export default function Home() {
           />
         </SheetContent>
       </Sheet>
+      </div>
     </div>
   );
 }
@@ -271,14 +272,11 @@ function HomeHeader() {
 
   return (
     <header>
-      <div className="flex items-start justify-between gap-4">
-        <h1 className="min-w-0 text-[26px] leading-tight font-bold tracking-[-0.02em] sm:text-[30px]">
-          {greeting}
-          {firstName ? `, ${firstName}` : ""}
-        </h1>
-        <AccountMenu className="mt-0.5 shrink-0" size={40} />
-      </div>
-      <div className="mt-2 flex items-center gap-3">
+      <h1 className="text-[26px] leading-tight font-bold tracking-[-0.02em] sm:text-[30px]">
+        {greeting}
+        {firstName ? `, ${firstName}` : ""}
+      </h1>
+      <div className="mt-7 flex items-center gap-3">
         <p className="min-w-0 text-[15px] leading-relaxed text-muted-foreground">
           {t("today.tellMeWhatICanHelp")}
         </p>
@@ -358,18 +356,18 @@ function WaitingOnYou({
         <CalendarCheck2 className="size-4 text-orange-light" aria-hidden="true" />
         {t("life.waitingOnYou")}
       </h2>
-      <ul className="flex flex-col gap-2">
+      <ul className="grid grid-cols-1 gap-2 sm:grid-cols-2 lg:grid-cols-4">
         {cards.map((card) => (
           <li key={card.key}>
             <button
               type="button"
               onClick={card.onClick}
-              className="flex w-full items-start gap-3 rounded-brand border bg-card px-4 py-3.5 text-left shadow-e1 transition-colors hover:border-primary/40"
+              className="flex h-full w-full flex-col items-start gap-2 rounded-brand border bg-card px-4 py-3.5 text-left shadow-e1 transition-colors hover:border-primary/40"
             >
-              <card.icon className="mt-0.5 size-4 shrink-0 text-muted-foreground" aria-hidden="true" />
+              <card.icon className="size-4 shrink-0 text-muted-foreground" aria-hidden="true" />
               <span className="min-w-0">
                 <span className="block text-[14px] font-semibold">{card.title}</span>
-                <span className="mt-0.5 block text-[12.5px] text-muted-foreground">
+                <span className="mt-0.5 block text-[12.5px] leading-snug text-muted-foreground">
                   {card.hint}
                 </span>
               </span>

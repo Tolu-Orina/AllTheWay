@@ -29,7 +29,6 @@ import { cn } from "@/lib/utils";
 export function AppLayout() {
   const { pathname } = useLocation();
   const studio = pathname.startsWith("/app/studio");
-  const today = pathname === "/app";
 
   useEffect(() => {
     registerAppServiceWorker();
@@ -52,7 +51,7 @@ export function AppLayout() {
           style={{ paddingTop: "max(env(safe-area-inset-top), 0.75rem)" }}
         >
           <Logo />
-          {today ? null : <AccountMenu />}
+          <AccountMenu />
         </header>
 
         {/* pb-32 clears the labelled floating tab bar; dropped once the sidebar takes over. */}
@@ -63,10 +62,8 @@ export function AppLayout() {
             studio && "lg:px-5 lg:pt-4 lg:pb-6",
           )}
         >
-          {studio || today ? null : <AppTopBar />}
-          <div
-            className={cn("mx-auto w-full", studio ? "max-w-none" : "max-w-5xl")}
-          >
+          <div className="w-full">
+            {studio ? null : <AppTopBar />}
             <Outlet />
           </div>
         </main>
