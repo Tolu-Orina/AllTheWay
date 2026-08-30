@@ -12,6 +12,7 @@ import { api, type SessionDetail as Detail } from "@/app/data";
 import { SessionTranscript } from "@/app/VoiceTranscripts";
 import { CitationChip } from "@/app/CitationChip";
 import { ConfirmGate } from "@/app/ConfirmGate";
+import { composeKind } from "@/app/compose-fields";
 import { PlanStack } from "@/app/PlanStack";
 
 function DetailSkeleton() {
@@ -80,7 +81,7 @@ export default function SessionDetailScreen() {
     if (!trimmed || working) return;
     hadTurn.current = true;
     setDraft("");
-    if (turn.phase === "confirm" && turn.summary) {
+    if (turn.phase === "confirm" && turn.summary && composeKind(turn.actions) !== "email") {
       void (async () => {
         await decide("corrected", {
           summary: turn.summary,

@@ -43,6 +43,7 @@ from .models import Citation
 from .plan_validation import (
     align_plan_to_confirmation,
     attach_work_files,
+    fill_gmail_compose,
     fold_new_event_invites,
     prefer_gmail_draft,
     validate,
@@ -91,8 +92,11 @@ SYSTEM = (
     "create_event. send_invite is only for an existing event_id they already have — "
     "never with a blank or placeholder id. "
     "The first time they ask to email someone, always plan google_gmail.create_draft "
-    "with to, subject, and body filled from what they said — including a body they "
-    "actually spoke. Empty body is allowed; they can write it on the confirm form. "
+    "with to, subject, and body filled from what they said and from RECENT CONVERSATION. "
+    "Put every email address they spoke into to. A name without @ still goes in to so "
+    "the form can show it. A follow-up that adds the topic, the body, or an address is "
+    "the same draft — update those fields, do not start a second email. "
+    "Empty body is allowed; they can write it on the confirm form. "
     "Never plan send_email on that first turn, even if they said 'send'. "
     "send_email is only for a later turn that clearly refers to a draft that already "
     "exists and asks to send it ('send this draft', 'send that draft'). "
@@ -515,9 +519,12 @@ def _finish(
     planned, office_notes = attach_work_files(planned, request.message)
     planned, invite_notes = fold_new_event_invites(planned)
     planned, draft_notes = prefer_gmail_draft(planned, request.message)
+    planned, fill_notes = fill_gmail_compose(
+        planned, request.message, request.recent_thread
+    )
     planned = _without_fetched_reads(planned)
     emitted = len(planned)
-    for correction in corrections + office_notes + invite_notes + draft_notes:
+    for correction in corrections + office_notes + invite_notes + draft_notes + fill_notes:
         yield TurnEvent(kind="trace", text=correction)
 
     confirmation = confirmation_for(

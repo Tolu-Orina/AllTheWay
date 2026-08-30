@@ -17,6 +17,7 @@ import { useDecision } from "@/app/use-decision";
 import { useTurn, type ProposedAction, type TurnPhase } from "@/app/use-turn";
 import { useStartWork } from "@/app/use-start-work";
 import { useT } from "@/app/i18n";
+import { composeKind, composeSources } from "@/app/compose-fields";
 import { isSpokenYes } from "@/lib/spoken-confirm";
 import {
   DOCUMENT_ACCEPT,
@@ -316,7 +317,10 @@ function SessionWorkChat({
       hadTurn.current = true;
       setHistory((prev) => [...prev, { id: prev.length + 1, role: "user", text: trimmed }]);
       setDraft("");
-      if (lastAgent?.actions?.some((a) => a.connector && a.tool)) {
+      if (
+        lastAgent?.actions?.some((a) => a.connector && a.tool) &&
+        composeKind(composeSources(lastAgent.steps, lastAgent.actions)) !== "email"
+      ) {
         void (async () => {
           await decide("corrected", {
             summary: lastAgent.text,

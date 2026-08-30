@@ -169,6 +169,66 @@ def test_invites_for_a_new_event_fold_onto_create_event():
     assert notes
 
 
+def test_gmail_compose_fills_address_and_spoken_body():
+    from app.plan_validation import fill_gmail_compose
+
+    steps, notes = fill_gmail_compose(
+        [
+            PlanStep(
+                label="Email Blessing",
+                action="draft",
+                connector="google_gmail",
+                tool="create_draft",
+                arguments={"to": "", "subject": "", "body": ""},
+            )
+        ],
+        "Send an email to blessing@example.com about tomorrow's QA session",
+    )
+    assert steps[0].arguments["to"] == "blessing@example.com"
+    assert "QA" in steps[0].arguments["body"]
+    assert "QA" in steps[0].arguments["subject"]
+    assert notes
+
+
+def test_gmail_compose_keeps_a_name_when_there_is_no_address():
+    from app.plan_validation import fill_gmail_compose
+
+    steps, _ = fill_gmail_compose(
+        [
+            PlanStep(
+                label="Email Blessing",
+                action="draft",
+                connector="google_gmail",
+                tool="create_draft",
+                arguments={"to": "", "subject": "", "body": ""},
+            )
+        ],
+        "I want to send a message to Blessing",
+    )
+    assert steps[0].arguments["to"] == "Blessing"
+    assert steps[0].arguments["body"] == ""
+
+
+def test_gmail_compose_fills_a_follow_up_from_the_thread():
+    from app.plan_validation import fill_gmail_compose
+
+    steps, _ = fill_gmail_compose(
+        [
+            PlanStep(
+                label="Email Blessing",
+                action="draft",
+                connector="google_gmail",
+                tool="create_draft",
+                arguments={"to": "", "subject": "", "body": ""},
+            )
+        ],
+        "The message is about a QA session that we have tomorrow for AllTheWay",
+        ["user: I want to send a message to Blessing"],
+    )
+    assert steps[0].arguments["to"] == "Blessing"
+    assert "QA" in steps[0].arguments["body"]
+
+
 def test_the_first_email_turn_is_rewritten_to_a_draft():
     from app.plan_validation import prefer_gmail_draft
 

@@ -167,8 +167,24 @@ def test_confirmation_always_offers_a_way_to_say_no():
     assert any("no" in option.lower() for option in confirmation.options)
 
 
-def test_a_gmail_draft_always_stops_so_the_form_can_appear():
-    """DRAFT used to skip the gate, so create_draft never got a Yes."""
+def test_a_gmail_draft_without_an_address_asks_for_it():
+    plan = [
+        PlanStep(
+            label="Draft an email to Blessing",
+            action="draft",
+            connector="google_gmail",
+            tool="create_draft",
+            arguments={"to": "Blessing", "subject": "", "body": ""},
+        )
+    ]
+    confirmation = confirmation_for(plan, ceiling=Ceiling.SEND_AUTOMATICALLY, confidence=1.0)
+    assert confirmation is not None
+    assert "What's Blessing's email address?" in confirmation.summary
+    assert "What should the message say?" in confirmation.summary
+    assert "Should I save it?" not in confirmation.summary
+
+
+def test_a_gmail_draft_with_fields_asks_to_save():
     plan = [
         PlanStep(
             label="Draft an email to Ana",
@@ -182,6 +198,8 @@ def test_a_gmail_draft_always_stops_so_the_form_can_appear():
     assert confirmation is not None
     assert confirmation.actions[0].tool == "create_draft"
     assert confirmation.options[0] == "Save draft"
+    assert "Should I save it?" in confirmation.summary
+    assert "email address" not in confirmation.summary
 
 
 def test_a_generic_draft_without_gmail_still_needs_no_confirmation():

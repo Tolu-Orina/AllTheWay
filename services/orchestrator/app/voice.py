@@ -124,12 +124,44 @@ def _verb(action: Action, tool: str = "") -> str:
     }.get(action, "change something")
 
 
+def draft_summary(arguments: dict | None) -> str:
+    """Ask for the address or the body when those are still missing.
+
+    The form is the review. The spoken question should fill it, not stack a
+    second 'should I save it' on an empty To field.
+    """
+    args = arguments or {}
+    to = str(args.get("to") or "").strip()
+    subject = str(args.get("subject") or "").strip()
+    body = str(args.get("body") or "").strip()
+    who = to or "them"
+    lead = f"This will save a Gmail draft to {who}"
+    if subject:
+        lead += f" regarding {subject}"
+    lead += "."
+    asks: list[str] = []
+    if "@" not in to:
+        asks.append(
+            f"What's {to}'s email address?" if to else "What's the email address?"
+        )
+    if not body:
+        asks.append("What should the message say?")
+    if asks:
+        return f"{lead} {' '.join(asks)}"
+    return f"{lead} Should I save it?"
+
+
 def _summarise(actions: list[ProposedAction], readback: str | None) -> str:
     parts: list[str] = []
     if readback:
         # FR-V4: when we are less than sure, what we heard is stated as text the
         # user can correct, before it is acted on.
         parts.append(f'I heard: "{readback}".')
+
+    drafts = [a for a in actions if a.tool == "create_draft"]
+    if len(drafts) == 1:
+        parts.append(draft_summary(drafts[0].arguments))
+        return " ".join(parts)
 
     if len(actions) == 1:
         parts.append(f"This will {_verb(actions[0].action, actions[0].tool)} — {actions[0].label}.")

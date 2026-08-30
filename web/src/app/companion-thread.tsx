@@ -17,6 +17,7 @@ import { useTurn, type ProposedAction, type TurnPhase } from "@/app/use-turn";
 import { persistCompanionSessionId, readCompanionSessionId } from "@/app/work-id";
 import { ApiError } from "@/lib/api";
 import { pendingConfirmId } from "@/app/ConfirmGate";
+import { composeKind, composeSources } from "@/app/compose-fields";
 import { isSpokenYes } from "@/lib/spoken-confirm";
 import type { Citation, OnboardingJob, PlanStep, ThreadMessage } from "@alltheway/contracts";
 
@@ -269,7 +270,10 @@ export function CompanionThreadProvider({ children }: { children: React.ReactNod
         { id: prev.length + 1, role: "user", text: trimmed },
       ]);
       setDraft("");
-      if (lastAgent?.actions?.some((a) => a.connector && a.tool)) {
+      if (
+        lastAgent?.actions?.some((a) => a.connector && a.tool) &&
+        composeKind(composeSources(lastAgent.steps, lastAgent.actions)) !== "email"
+      ) {
         void (async () => {
           await decide("corrected", {
             summary: lastAgent.text,

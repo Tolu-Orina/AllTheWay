@@ -145,6 +145,22 @@ class FakeProvider:
 
         researchy = any(word in lowered for word in self.RESEARCHY)
         act = next((a for word, a in self.ACTIONS if word in lowered), "")
+        # A follow-up like "the message is about QA" is still the same Gmail
+        # draft. Without this, the fake plans a generic note and the form
+        # never gets the body they just spoke.
+        if act != "send_external" and any(
+            phrase in thread_tail
+            for phrase in (
+                "email",
+                "gmail",
+                "create_draft",
+                "message to",
+                "send a message",
+                "send an email",
+            )
+        ):
+            if not any(word in lowered for word in ("schedule", "pay", "delete", "invoice")):
+                act = "send_external"
 
         steps = [
             {"label": f"Scope: {user.strip()[:60]}", "action": ""},

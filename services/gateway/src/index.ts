@@ -33,6 +33,7 @@ import {
   patchPlanArguments,
   overlayConfirmOnPlan,
 } from "./repos/sessions.js";
+import { composeFollowUpTurn } from "./compose-followup.js";
 import { listPreferences, revertPreference, acceptPreference } from "./repos/preferences.js";
 import { listVisualPreferences, revertVisualPreference } from "./repos/visual.js";
 import { listConcepts, recordConcept, revertConcept } from "./repos/concepts.js";
@@ -507,7 +508,7 @@ api.get(
     // for itself — it is stateless, and only this service can scope a request
     // to a user. Fetched together so a turn makes one round of reads.
     const sessionId = param(req, "id");
-    const context = await loadTurnContext(req.uid!, sessionId, message);
+    const follow = composeFollowUpTurn((await getSession(req.uid!, sessionId))?.plan ?? [], message);
     const stream = openStream(req, res);
     const steps: PlanStep[] = [];
     let note = "";
@@ -517,39 +518,59 @@ api.get(
     let citations: ThreadMessage["citations"];
 
     try {
-      // Materialise the parent before the planner answers, so a hang still
-      // leaves a row titled from what they said.
-      await rememberWork(req.uid!, sessionId, { utterance: message });
-      await rememberThread(req.uid!, sessionId, [
-        { role: "user", text: message, at: isoNow() },
-      ]);
-
-      for await (const event of streamTurn(context)) {
-        if (event.kind === "step") steps.push(event.step);
-        if (event.kind === "done" && phase !== "confirm" && phase !== "clarify") {
-          note = event.note;
-          citations = event.citations;
-          phase = "done";
+      if (follow) {
+        await rememberWork(req.uid!, sessionId, { utterance: message });
+        await rememberThread(req.uid!, sessionId, [
+          { role: "user", text: message, at: isoNow() },
+        ]);
+        for (const step of follow.plan) {
+          steps.push(step);
+          if (stream.closed()) break;
+          stream.send({ kind: "step", step });
         }
-        if (event.kind === "confirm") {
-          note = note || event.summary;
-          options = event.options;
-          actions = event.actions;
-          phase = "confirm";
+        note = follow.confirm.summary;
+        options = follow.confirm.options;
+        actions = follow.confirm.actions;
+        phase = "confirm";
+        if (!stream.closed()) {
+          stream.send({
+            kind: "confirm",
+            summary: follow.confirm.summary,
+            options: follow.confirm.options,
+            actions: follow.confirm.actions,
+          });
         }
-        if (event.kind === "clarify") {
-          note = note || event.question;
-          options = event.options;
-          phase = "clarify";
+      } else {
+        const context = await loadTurnContext(req.uid!, sessionId, message);
+        await rememberWork(req.uid!, sessionId, { utterance: message });
+        await rememberThread(req.uid!, sessionId, [
+          { role: "user", text: message, at: isoNow() },
+        ]);
+        for await (const event of streamTurn(context)) {
+          if (event.kind === "step") steps.push(event.step);
+          if (event.kind === "done" && phase !== "confirm" && phase !== "clarify") {
+            note = event.note;
+            citations = event.citations;
+            phase = "done";
+          }
+          if (event.kind === "confirm") {
+            note = note || event.summary;
+            options = event.options;
+            actions = event.actions;
+            phase = "confirm";
+          }
+          if (event.kind === "clarify") {
+            note = note || event.question;
+            options = event.options;
+            phase = "clarify";
+          }
+          if (event.kind === "error") {
+            note = event.message;
+            phase = "error";
+          }
+          if (stream.closed()) break;
+          stream.send(event);
         }
-        if (event.kind === "error") {
-          note = event.message;
-          phase = "error";
-        }
-        // The reader left. Stop pulling from the agent rather than finishing a
-        // turn nobody is waiting for.
-        if (stream.closed()) break;
-        stream.send(event);
       }
     } catch (err) {
       // The response is already a 200 with headers sent, so the failure has to
@@ -604,6 +625,40 @@ api.post(
     // for itself — it is stateless, and only this service can scope a request
     // to a user. Fetched together so a turn makes one round of reads.
     const sessionId = param(req, "id");
+    const follow = composeFollowUpTurn(
+      (await getSession(req.uid!, sessionId))?.plan ?? [],
+      body.data.message,
+    );
+
+    if (follow) {
+      await rememberWork(req.uid!, sessionId, {
+        utterance: body.data.message,
+        plan: follow.plan,
+        companionNote: follow.confirm.summary,
+      });
+      await rememberThread(req.uid!, sessionId, [
+        { role: "user", text: body.data.message, at: isoNow() },
+        {
+          role: "agent",
+          text: follow.confirm.summary,
+          at: isoNow(),
+          phase: "confirm",
+          options: follow.confirm.options,
+          actions: follow.confirm.actions,
+          steps: follow.plan,
+        },
+      ]);
+      res.json({
+        decision: "confirm",
+        confirm: follow.confirm,
+        plan: follow.plan,
+        note: follow.confirm.summary,
+        trace: [],
+        citations: [],
+      });
+      return;
+    }
+
     const context = await loadTurnContext(req.uid!, sessionId, body.data.message);
 
     await rememberWork(req.uid!, sessionId, { utterance: body.data.message });

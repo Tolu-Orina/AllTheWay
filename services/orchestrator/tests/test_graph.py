@@ -73,6 +73,40 @@ def test_saying_send_an_email_is_still_a_draft():
     step = next(s for s in r.plan if s.connector == "google_gmail")
     assert step.tool == "create_draft"
     assert r.decision == "confirm"
+    assert "Ana" in step.arguments["to"]
+    assert "Northwind" in step.arguments["body"]
+
+
+def test_a_spoken_email_fills_the_address_and_asks_for_nothing_when_complete():
+    r = turn("Send an email to blessing@example.com about tomorrow's QA session for AllTheWay")
+    step = next(s for s in r.plan if s.connector == "google_gmail")
+    assert step.arguments["to"] == "blessing@example.com"
+    assert "QA" in step.arguments["body"]
+    assert "email address" not in r.confirm["summary"].lower()
+
+
+def test_emailing_a_name_asks_for_the_address():
+    r = turn("I want to send a message to Blessing")
+    step = next(s for s in r.plan if s.connector == "google_gmail")
+    assert step.tool == "create_draft"
+    assert step.arguments["to"] == "Blessing"
+    assert "email address" in r.confirm["summary"]
+
+
+def test_a_compose_follow_up_keeps_the_recipient_and_fills_the_body():
+    r = run_turn(
+        TurnRequest(
+            session_id="s1",
+            user_id="u1",
+            message="The message is about a QA session that we have tomorrow for AllTheWay",
+            recent_thread=["user: I want to send a message to Blessing"],
+        ),
+        provider,
+    )
+    step = next(s for s in r.plan if s.connector == "google_gmail")
+    assert step.arguments["to"] == "Blessing"
+    assert "QA" in step.arguments["body"]
+    assert "email address" in r.confirm["summary"]
 
 
 def test_a_model_send_email_is_rewritten_on_the_plan_yes_will_replay():
@@ -292,6 +326,7 @@ def test_the_clock_is_in_the_system_context_not_the_user_message():
     assert "2026-08-30T22:00:00.000Z" not in spy.user
     assert "create_event(title, starts_at, attendees, time_zone)" in spy.system
     assert "Never plan send_email on that first turn" in spy.system
+    assert "same draft" in spy.system
     assert spy.user == "QA tomorrow 10am UK"
 
 

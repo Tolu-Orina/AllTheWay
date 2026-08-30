@@ -16,6 +16,7 @@ import {
 import { readUsage, recordUsage } from "../repos/usage.js";
 import { recordLine } from "../repos/transcripts.js";
 import { appendThread, ensureSession, getSession, overlayConfirmOnPlan, touchSession, VOICE_TITLE } from "../repos/sessions.js";
+import { composeFollowUpTurn, composeNeedsAddress } from "../compose-followup.js";
 import { createLiveOpener, type LiveOpener } from "./backend.js";
 import {
   AUTH_TIMEOUT_MS,
@@ -376,6 +377,22 @@ async function pendingSummary(uid: string, sessionId: string): Promise<string> {
   return session?.companionNote?.trim() || "Should I go ahead?";
 }
 
+async function refuseDraftWithoutAddress(opts: {
+  live: { sendToolResult: (id: string, name: string, payload: unknown) => void };
+  uid: string;
+  sessionId: string;
+  call: { id: string; name: string };
+}): Promise<boolean> {
+  const session = await getSession(opts.uid, opts.sessionId);
+  if (!composeNeedsAddress(session?.plan ?? [])) return false;
+  opts.live.sendToolResult(opts.call.id, opts.call.name, {
+    carried_out: false,
+    speak:
+      "Ask for the recipient's email address before saving. Do not claim the draft was saved.",
+  });
+  return true;
+}
+
 async function runSpokenDecision(opts: {
   ws: WebSocket;
   live: { sendToolResult: (id: string, name: string, payload: unknown) => void };
@@ -405,6 +422,8 @@ async function runSpokenDecision(opts: {
       });
       return;
     }
+
+    if (await refuseDraftWithoutAddress({ live, uid, sessionId, call })) return;
 
     const result = await carryOutConfirmedPlan({
       uid,
@@ -458,6 +477,7 @@ async function runPlanTurn(opts: {
   // thread (voice did not persist one) and asked what they meant — which is
   // how "Yes, please" became "How would you like me to help with your calendar?"
   if (isSpokenYes(request)) {
+    if (await refuseDraftWithoutAddress({ live, uid, sessionId, call })) return;
     const result = await carryOutConfirmedPlan({
       uid,
       sessionId,
@@ -501,6 +521,54 @@ async function runPlanTurn(opts: {
   }
 
   try {
+    const session = await getSession(uid, sessionId);
+    const follow = composeFollowUpTurn(session?.plan ?? [], request);
+    if (follow) {
+      const companionNote = follow.confirm.summary;
+      try {
+        await touchSession(uid, sessionId, {
+          utterance: request,
+          plan: follow.plan,
+          companionNote,
+        });
+      } catch (err) {
+        console.error("[voice] persist compose follow-up", sessionId, err);
+      }
+      try {
+        await appendThread(uid, sessionId, [
+          { role: "user", text: request, at: new Date().toISOString() },
+          {
+            role: "agent",
+            text: companionNote,
+            at: new Date().toISOString(),
+            phase: "confirm",
+            options: follow.confirm.options,
+            actions: follow.confirm.actions,
+            steps: follow.plan,
+          },
+        ]);
+      } catch (err) {
+        console.error("[voice] persist compose thread", sessionId, err);
+      }
+      if (cancelled.has(call.id)) return;
+      send(ws, {
+        turn: {
+          decision: "confirm",
+          plan: follow.plan,
+          confirm: follow.confirm,
+          note: companionNote,
+        },
+      });
+      live.sendToolResult(call.id, call.name, {
+        ...follow,
+        speak:
+          "The overlay form has been updated with what they just said. Speak the subject and a short body. " +
+          "If you still need the email address, ask for it. Do not start a new email, and do not ask them " +
+          "to confirm a second save as if this were a different draft.",
+      });
+      return;
+    }
+
     const context = await loadTurnContext(uid, sessionId, request);
     const result = await runTurn(context);
     if (cancelled.has(call.id)) return;

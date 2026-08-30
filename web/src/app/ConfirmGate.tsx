@@ -80,6 +80,9 @@ export function ConfirmGate({
     kind === "email" ? t("compose.saveDraft") : kind === "calendar" ? t("compose.putOnCalendar") : confirmLabel;
 
   const compose = useComposeFields(sources, kind, sessionId);
+  const emailReady =
+    kind !== "email" ||
+    (compose !== null && "to" in compose.fields && compose.fields.to.includes("@"));
 
   return (
     <div
@@ -124,7 +127,7 @@ export function ConfirmGate({
           <div className="mt-3.5 flex flex-wrap gap-2">
             <button
               type="button"
-              disabled={busy}
+              disabled={busy || !emailReady}
               onClick={() => {
                 void (async () => {
                   await compose?.flush();
@@ -208,17 +211,48 @@ function useComposeFields(
   sessionId: string | undefined,
 ) {
   const step = kind ? composeStep(sources, kind) : null;
-  const [email, setEmail] = useState<EmailFields>(() => ({
+  const incomingEmail: EmailFields = {
     to: argString(step?.arguments, "to"),
     subject: argString(step?.arguments, "subject"),
     body: argString(step?.arguments, "body"),
-  }));
-  const [calendar, setCalendar] = useState<CalendarFields>(() => ({
+  };
+  const incomingCalendar: CalendarFields = {
     title: argString(step?.arguments, "title"),
     starts: toDatetimeLocal(argString(step?.arguments, "starts_at")),
     timeZone: argString(step?.arguments, "time_zone") || "Europe/London",
     attendees: argString(step?.arguments, "attendees"),
-  }));
+  };
+  const [email, setEmail] = useState<EmailFields>(incomingEmail);
+  const [calendar, setCalendar] = useState<CalendarFields>(incomingCalendar);
+
+  useEffect(() => {
+    if (kind !== "email") return;
+    setEmail((prev) =>
+      prev.to === incomingEmail.to &&
+      prev.subject === incomingEmail.subject &&
+      prev.body === incomingEmail.body
+        ? prev
+        : incomingEmail,
+    );
+  }, [kind, incomingEmail.to, incomingEmail.subject, incomingEmail.body]);
+
+  useEffect(() => {
+    if (kind !== "calendar") return;
+    setCalendar((prev) =>
+      prev.title === incomingCalendar.title &&
+      prev.starts === incomingCalendar.starts &&
+      prev.timeZone === incomingCalendar.timeZone &&
+      prev.attendees === incomingCalendar.attendees
+        ? prev
+        : incomingCalendar,
+    );
+  }, [
+    kind,
+    incomingCalendar.title,
+    incomingCalendar.starts,
+    incomingCalendar.timeZone,
+    incomingCalendar.attendees,
+  ]);
 
   const first = useRef(true);
   const pending = useRef(Promise.resolve());

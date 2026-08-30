@@ -327,6 +327,149 @@ _SEND_THIS_DRAFT = re.compile(
 _GMAIL = frozenset({"google_gmail", "gmail", ""})
 
 
+_EMAIL = re.compile(r"[\w.+-]+@[\w.-]+\.\w+", re.I)
+_TO_NAME = re.compile(
+    r"\bto\s+(?!the\b|an?\b|me\b|us\b|this\b|that\b|it\b)([A-Za-z][\w'.-]+)",
+    re.I,
+)
+_ABOUT = re.compile(r"\b(?:about|regarding|re:)\s+(.+)", re.I | re.S)
+_MESSAGE_IS = re.compile(
+    r"\b(?:the )?(?:message|email|mail|body)\s+(?:is|should be|says|should say)\s+(.+)",
+    re.I | re.S,
+)
+_TRAILING_POLITE = re.compile(r"\s+(please|today|tomorrow)\s*$", re.I)
+_WRAPPER_ONLY = re.compile(
+    r"^(?:please\s+|i (?:want|would like|'d like) to\s+|can you\s+|could you\s+)*"
+    r"(?:send|email|compose|draft)\s+(?:(?:an?\s+)?(?:email|message|mail|draft)\s+)?"
+    r"(?:to\s+[A-Za-z][\w'.-]+)?\s*$",
+    re.I,
+)
+
+
+def _user_lines(thread: list[str]) -> list[str]:
+    out: list[str] = []
+    for line in thread:
+        lowered = line.lower()
+        if lowered.startswith("user:"):
+            out.append(line.split(":", 1)[1].strip())
+        elif lowered.startswith("agent:") or lowered.startswith("options:"):
+            continue
+        elif line.strip():
+            out.append(line.strip())
+    return out
+
+
+def _corpus(user: str, thread: list[str]) -> str:
+    return "\n".join([*(_user_lines(thread)), user.strip()]).strip()
+
+
+def emails_in(text: str) -> list[str]:
+    seen: set[str] = set()
+    out: list[str] = []
+    for match in _EMAIL.findall(text):
+        key = match.lower()
+        if key in seen:
+            continue
+        seen.add(key)
+        out.append(match)
+    return out
+
+
+def _recipient_name(text: str) -> str:
+    matches = _TO_NAME.findall(text)
+    return matches[-1] if matches else ""
+
+
+def _about_clause(text: str) -> str:
+    match = _ABOUT.search(text)
+    if not match:
+        return ""
+    return _TRAILING_POLITE.sub("", match.group(1).strip()).strip(" .,")
+
+
+def body_from_utterance(text: str) -> str:
+    """The mail itself, not the 'send this to Blessing' wrapper."""
+    trimmed = text.strip()
+    if not trimmed or _EMAIL.fullmatch(trimmed):
+        return ""
+    match = _MESSAGE_IS.search(trimmed)
+    if match:
+        rest = match.group(1).strip()
+        about = _about_clause(rest)
+        return about or rest
+    about = _about_clause(trimmed)
+    if about:
+        return about
+    if _WRAPPER_ONLY.match(trimmed):
+        return ""
+    return trimmed
+
+
+def _as_to(value: object) -> str:
+    if isinstance(value, list):
+        return ", ".join(str(item).strip() for item in value if str(item).strip())
+    return str(value or "").strip()
+
+
+def fill_gmail_compose(
+    steps: list[PlanStep],
+    user: str,
+    thread: list[str] | None = None,
+) -> tuple[list[PlanStep], list[str]]:
+    """Put spoken names, addresses, subject, and body onto create_draft.
+
+    The live model often names the tool and leaves to/subject/body empty, so
+    the confirm form opens blank even after they have said who and what.
+    """
+    lines = thread or []
+    corpus = _corpus(user, lines)
+    found = emails_in(corpus)
+    notes: list[str] = []
+    out: list[PlanStep] = []
+    changed = False
+    for step in steps:
+        connector = step.connector or ""
+        if step.tool != "create_draft" or connector not in _GMAIL:
+            out.append(step)
+            continue
+        args = dict(step.arguments)
+        to = _as_to(args.get("to"))
+        if found:
+            args["to"] = ", ".join(found)
+        elif not to:
+            name = _recipient_name(corpus)
+            if name:
+                args["to"] = name
+
+        spoken = body_from_utterance(user)
+        if not spoken:
+            for line in reversed(_user_lines(lines)):
+                spoken = body_from_utterance(line)
+                if spoken:
+                    break
+        if spoken and not str(args.get("body") or "").strip():
+            args["body"] = spoken[:4000]
+
+        subject = str(args.get("subject") or "").strip()
+        raw = user.strip()[:80]
+        if not subject or subject == raw:
+            about = _about_clause(user) or _about_clause(corpus)
+            body = str(args.get("body") or "").strip()
+            if about:
+                args["subject"] = about[:80]
+            elif body:
+                args["subject"] = body.split("\n", 1)[0][:80]
+            elif subject == raw:
+                args["subject"] = ""
+
+        if args != dict(step.arguments):
+            changed = True
+        out.append(step.model_copy(update={"arguments": args}))
+    if changed:
+        notes.append("Filled the Gmail draft from what they said.")
+    return out, notes
+
+
 def prefer_gmail_draft(steps: list[PlanStep], user: str) -> tuple[list[PlanStep], list[str]]:
     """First email turn is always a draft. Sending is a later, explicit turn.
 

@@ -256,6 +256,8 @@ test("the voice instruction speaks the email on a compose confirm, never that it
   assert.match(s, /never say you cannot show the email/);
   assert.match(s, /saves a gmail draft/);
   assert.match(s, /it does not send/);
+  assert.match(s, /never refuse because saving drafts is off/);
+  assert.match(s, /later details belong on that email/);
 });
 
 test("the voice instruction hangs up only when they are leaving the conversation", () => {

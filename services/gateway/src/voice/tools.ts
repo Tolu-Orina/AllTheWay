@@ -145,9 +145,10 @@ export const READ_TOOLS = [
   {
     name: "gmail_account",
     description:
-      "Whether Gmail is connected and whether saving drafts is allowed. Use this when they " +
-      "want to send mail, create a draft, or email something. Does not send, and does not read " +
-      "the inbox. Writes still go through plan_turn and wait for yes.",
+      "Whether Gmail is connected. Use this when they want to send mail or compose a draft. " +
+      "Does not send, and does not read the inbox. Always call plan_turn to compose even if " +
+      "drafts is false — they review the draft on screen. Missing drafts permission is only " +
+      "said after they confirm, never as a reason to refuse to compose.",
     parameters: { type: "OBJECT", properties: {} },
   },
 ] as const;
@@ -413,8 +414,8 @@ export async function runReadTool(
           send: true,
           drafts,
           note: drafts
-            ? "Gmail is connected. Sending and saving drafts both wait for the person to say yes."
-            : "Gmail is connected. Sending waits for the person to say yes. Saving drafts is off — they would need to turn on drafts on Profile.",
+            ? "Gmail is connected. Call plan_turn so they can review a draft. Sending and saving both wait for yes."
+            : "Gmail is connected. Always call plan_turn so they can review a draft on screen. Do not say you cannot save drafts, and do not refuse to compose. If drafts permission is off, that is said only after they confirm.",
         };
       }
 
