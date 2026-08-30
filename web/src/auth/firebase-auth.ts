@@ -21,6 +21,7 @@ import {
   markGoogleRedirectPending,
   prefersGoogleRedirect,
 } from "@/auth/google-redirect";
+import { isAuthPath } from "@/auth/paths";
 
 export {
   rememberAfterAuth,
@@ -50,11 +51,13 @@ function toMessage(err: unknown, fallback = "Incorrect email or password."): str
       return "Choose a longer password — at least 8 characters.";
     case "auth/popup-closed-by-user":
     case "auth/cancelled-popup-request":
+    case "auth/redirect-cancelled-by-user":
       return "That sign-in window closed before it finished. Try again.";
     case "auth/popup-blocked":
       return "The sign-in window was blocked. Allow popups for this site, or try again.";
+    case "auth/argument-error":
     case "auth/operation-not-supported-in-this-environment":
-      return "Google sign-in is not available in this browser. Try the installed app, or use email.";
+      return "Google sign-in is not available in this browser. Try email.";
     case "auth/unauthorized-domain":
       return "This site is not authorised for Google sign-in. That is on us, not you.";
     case "auth/network-request-failed":
@@ -62,7 +65,7 @@ function toMessage(err: unknown, fallback = "Incorrect email or password."): str
     case "auth/too-many-requests":
       return "Too many attempts. Wait a moment and try again.";
     default:
-      return fallback;
+      return code.startsWith("auth/") ? `${fallback} (${code})` : fallback;
   }
 }
 
@@ -114,11 +117,12 @@ export function peekPersistedUser(): AuthUser | null {
 }
 
 function settleGoogleRedirect(): void {
-  // iframe.js (~260KB) loads when the popup resolver is used. Redirect does
-  // not need that iframe — the whole page goes to Google — so we neither
-  // pass the resolver nor call this on the landing page.
-  if (!googleRedirectPending()) return;
-  void getRedirectResult(firebaseAuth)
+  // iframe.js loads when the resolver is used. Landing must not pay that.
+  // Auth screens must: Firebase returns here after Google, and without the
+  // same resolver the session never completes.
+  if (typeof window === "undefined") return;
+  if (!googleRedirectPending() && !isAuthPath(window.location.pathname)) return;
+  void getRedirectResult(firebaseAuth, browserPopupRedirectResolver)
     .catch(() => {
       /* reported the next time they tap Google, not as a spinner on `/` */
     })
@@ -138,9 +142,13 @@ const POPUP_FALLBACK = new Set([
 async function redirectToGoogle(provider: GoogleAuthProvider): Promise<AuthResult> {
   markGoogleRedirectPending();
   const outcome = await Promise.race([
-    // No popup resolver: a full navigation must not download iframe.js first.
-    signInWithRedirect(firebaseAuth, provider).then(() => "started" as const),
-    new Promise<"timeout">((resolve) => setTimeout(() => resolve("timeout"), 12_000)),
+    // Same resolver as popup. initializeAuth does not include it, so every
+    // redirect/popup call must pass it or Firebase throws auth/argument-error
+    // — the "Google sign-in did not finish" report, before the page ever leaves.
+    signInWithRedirect(firebaseAuth, provider, browserPopupRedirectResolver).then(
+      () => "started" as const,
+    ),
+    new Promise<"timeout">((resolve) => setTimeout(() => resolve("timeout"), 20_000)),
   ]);
   if (outcome === "timeout") {
     return {
@@ -148,8 +156,6 @@ async function redirectToGoogle(provider: GoogleAuthProvider): Promise<AuthResul
       message: "Google sign-in is taking too long. Try email, or tap Google again.",
     };
   }
-  // The page is unloading. Login/Signup must not navigate — they pick the
-  // user up from onAuthStateChanged when they remount.
   return { ok: true, redirected: true };
 }
 
@@ -162,6 +168,7 @@ async function signInWithGoogle(): Promise<AuthResult> {
     return { ok: true };
   } catch (err) {
     const code = (err as { code?: string })?.code ?? "";
+    console.warn("[auth] Google sign-in failed", code || err);
     if (POPUP_FALLBACK.has(code) && !prefersGoogleRedirect()) {
       try {
         return await redirectToGoogle(provider);

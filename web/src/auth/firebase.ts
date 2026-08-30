@@ -35,8 +35,9 @@ export const firebaseApp = initializeApp(options);
  *
  * The popup redirect resolver is *not* passed here. Passing it makes Auth
  * download `iframe.js` (~260KB) on every page, including the first paint of
- * `/login`. It is passed only to `signInWithPopup`. Redirect is a full
- * navigation to Google and must not wait on that iframe first.
+ * `/app/login`. It is passed only to `signInWithPopup`, `signInWithRedirect`,
+ * and `getRedirectResult` — on click, and when Google returns to an auth
+ * screen. Landing never loads that iframe.
  */
 function createAuth(): Auth {
   try {
