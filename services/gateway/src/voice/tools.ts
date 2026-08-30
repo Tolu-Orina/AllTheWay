@@ -66,8 +66,10 @@ export const READ_TOOLS = [
         time_min: {
           type: "STRING",
           description:
-            "RFC 3339 start of the window. Use the start of today when they ask " +
-            "whether they already had a meeting, not only what is upcoming.",
+            "RFC 3339 start of the window. Use the start of today when they ask about " +
+            "today's meetings or whether they already had something today. Use the start " +
+            "of yesterday (midnight UTC the previous day) when they ask about yesterday, " +
+            "last night, or the day before.",
         },
       },
     },

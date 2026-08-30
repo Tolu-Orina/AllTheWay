@@ -29,10 +29,12 @@ const WEEKDAY =
 const CALENDAR =
   /\b(calendar|schedule|timetable|agenda|free|busy|available|what'?s on|what have i got|anything on|do i have|later today|this (morning|afternoon|evening|week)|next week|tomorrow|remind(er|ers| me)|events?)\b/i;
 const ABOUT_THE_DAY =
-  /\b(today|tonight|tomorrow|this (morning|afternoon|evening|week)|next week|scheduled)\b/i;
+  /\b(today|tonight|tomorrow|yesterday|last night|this (morning|afternoon|evening|week)|next week|scheduled)\b/i;
 const MEETING_SLOT = /\b(meetings?|appointments?)\b/i;
 const DAY_WINDOW =
   /\b(today|tonight|this (morning|afternoon|evening)|did i have|have i got)\b/i;
+const YESTERDAY =
+  /\b(yesterday|last night|the day before( today)?)\b/i;
 const LATER_ONLY = /\b(later today|upcoming|what's next|whats next)\b/i;
 const DRIVE =
   /\b(drive|google drive|google docs|my files|find (the |a )?(file|doc|document|folder|spreadsheet|slide)|save (this |it |the )?(notes?|file|doc)? ?to (my )?drive|send (this |it |the )?(notes?|file|doc)? ?to (my )?drive|notes? to (my )?drive)\b/i;
@@ -63,6 +65,12 @@ export function startOfUtcDay(now = new Date()): string {
   return d.toISOString().replace(/\.\d{3}Z$/, "Z");
 }
 
+/** Start of yesterday in UTC. */
+export function startOfYesterdayUtc(now = new Date()): string {
+  const d = new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate() - 1));
+  return d.toISOString().replace(/\.\d{3}Z$/, "Z");
+}
+
 /**
  * Which read tools this utterance is asking for.
  *
@@ -77,7 +85,11 @@ export function selectReadTools(message: string): ReadCall[] {
   const out: ReadCall[] = [];
   if (wantsCalendar(text)) {
     const args: Record<string, unknown> = { limit: 10 };
-    if (wantsDayWindow(text)) args.time_min = startOfUtcDay();
+    if (YESTERDAY.test(text)) {
+      args.time_min = startOfYesterdayUtc();
+    } else if (wantsDayWindow(text)) {
+      args.time_min = startOfUtcDay();
+    }
     out.push({ name: "whats_on_my_calendar", args });
   }
   if (DRIVE.test(text)) out.push({ name: "find_in_my_drive", args: { limit: 10 } });

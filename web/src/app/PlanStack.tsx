@@ -74,14 +74,52 @@ function PlanCard({
   index,
   live,
   total,
+  onSend,
 }: {
   step: PlanStep;
   index: number;
   live: boolean;
   total: number;
+  onSend?: (label: string) => void;
 }) {
   const reduced = useReducedMotion();
   const call = describeCall(step);
+  const clickable = Boolean(onSend) && !step.done;
+
+  const inner = (
+    <div className="flex items-start gap-3">
+      <span
+        aria-hidden="true"
+        className={cn(
+          "mt-0.5 grid size-5 shrink-0 place-items-center rounded-[6px] border text-[11px] font-semibold tabular-nums",
+          step.done
+            ? "border-primary bg-primary text-primary-foreground"
+            : "bg-background text-muted-foreground",
+        )}
+      >
+        {step.done ? <Check className="size-3" strokeWidth={3} /> : index + 1}
+      </span>
+      <div className="min-w-0 flex-1">
+        <div className="flex flex-wrap items-center gap-2">
+          <p
+            className={cn(
+              "text-[14px] leading-snug font-medium",
+              step.done && "text-muted-foreground line-through",
+            )}
+          >
+            {step.label}
+          </p>
+          {step.action ? <ActionBadge action={step.action} /> : null}
+        </div>
+        {call ? (
+          <p className="mt-1 flex items-start gap-2 text-[13px] leading-relaxed text-muted-foreground">
+            <StepIcon step={step} />
+            <span>{call}</span>
+          </p>
+        ) : null}
+      </div>
+    </div>
+  );
 
   return (
     <motion.li
@@ -90,45 +128,25 @@ function PlanCard({
       transition={{ duration: reduced ? 0 : 0.22, ease: "easeOut" }}
       style={{ zIndex: index + 1 }}
       className={cn(
-        "relative rounded-brand border bg-card px-4 py-3 shadow-e1",
+        "relative rounded-brand border bg-card shadow-e1",
         index > 0 && "-mt-2",
       )}
     >
-      <div className="flex items-start gap-3">
-        <span
-          aria-hidden="true"
-          className={cn(
-            "mt-0.5 grid size-5 shrink-0 place-items-center rounded-[6px] border text-[11px] font-semibold tabular-nums",
-            step.done
-              ? "border-primary bg-primary text-primary-foreground"
-              : "bg-background text-muted-foreground",
-          )}
+      {clickable ? (
+        <button
+          type="button"
+          onClick={() => onSend!(step.label)}
+          className="w-full px-4 py-3 text-left transition-colors hover:border-primary/40 hover:bg-muted/40"
         >
-          {step.done ? <Check className="size-3" strokeWidth={3} /> : index + 1}
-        </span>
-        <div className="min-w-0 flex-1">
-          <div className="flex flex-wrap items-center gap-2">
-            <p
-              className={cn(
-                "text-[14px] leading-snug font-medium",
-                step.done && "text-muted-foreground line-through",
-              )}
-            >
-              {step.label}
-            </p>
-            {step.action ? <ActionBadge action={step.action} /> : null}
-          </div>
-          {call ? (
-            <p className="mt-1 flex items-start gap-2 text-[13px] leading-relaxed text-muted-foreground">
-              <StepIcon step={step} />
-              <span>{call}</span>
-            </p>
-          ) : null}
-        </div>
-      </div>
+          {inner}
+        </button>
+      ) : (
+        <div className="px-4 py-3">{inner}</div>
+      )}
       <span className="sr-only">
         Step {index + 1} of {total}
         {step.done ? ", done" : ""}
+        {clickable ? ". Press to send." : ""}
       </span>
     </motion.li>
   );
@@ -137,9 +155,11 @@ function PlanCard({
 export function PlanStack({
   steps,
   live = false,
+  onSend,
 }: {
   steps: PlanStep[];
   live?: boolean;
+  onSend?: (label: string) => void;
 }) {
   const shown = steps.filter((step) => !isFetchedRead(step));
   if (shown.length === 0) return null;
@@ -152,6 +172,7 @@ export function PlanStack({
           index={i}
           live={live}
           total={shown.length}
+          onSend={onSend}
         />
       ))}
     </ol>
