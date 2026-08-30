@@ -1,9 +1,10 @@
 import { useCallback, useEffect, useId, useRef, useState } from "react";
-import { useLocation } from "react-router";
+import { Link, useLocation } from "react-router";
 import { useT } from "@/app/i18n";
 import {
   AlertTriangle,
   Camera,
+  ChevronRight,
   Loader2,
   MessageCircle,
   PanelRightClose,
@@ -14,9 +15,9 @@ import { motion, useReducedMotion } from "motion/react";
 
 import { LogoMark } from "@/components/primitives/logo";
 import { Sheet, SheetContent } from "@/components/ui/sheet";
-import { CanvasPane } from "@/app/CanvasPane";
 import { useAsync } from "@/app/use-async";
 import { api } from "@/app/data";
+import type { Session } from "@/app/data";
 import { askAboutAdded } from "@/app/Documents";
 import {
   DOCUMENT_ACCEPT,
@@ -371,25 +372,10 @@ export function CompanionPanel() {
   const { pathname } = useLocation();
   const studio = pathname.startsWith("/app/studio");
   const work = pathname.startsWith("/app/work");
-  const sessionId = pathname.match(/^\/app\/work\/([^/]+)$/)?.[1];
-  const artifacts = useAsync(
-    () => (sessionId ? api.artifacts(sessionId) : Promise.resolve([])),
-    [sessionId ?? ""],
-  );
   const [sheetOpen, setSheetOpen] = useState(false);
-  const [mode, setMode] = useState<"chat" | "work">("chat");
+  const [mode, setMode] = useState<"chat" | "history">("chat");
   const { companionOpenNonce } = useCompanionThread();
   const seenOpenNonce = useRef(0);
-
-  useEffect(() => {
-    if (!sessionId) {
-      setMode("chat");
-      return;
-    }
-    if (artifacts.state.status === "ready") {
-      setMode(artifacts.state.data.length > 0 ? "work" : "chat");
-    }
-  }, [sessionId, artifacts.state]);
 
   useEffect(() => {
     if (studio || work) setSheetOpen(false);
@@ -439,31 +425,25 @@ export function CompanionPanel() {
             </button>
           </div>
 
-          {mode === "chat" ? <CompanionConversation autoFocus={sheetOpen} /> : <CanvasPane key={sessionId ?? "all"} sessionId={sessionId} />}
+          {mode === "chat"
+            ? <CompanionConversation autoFocus={sheetOpen} />
+            : <PreviousChats onNavigate={() => setSheetOpen(false)} />}
         </SheetContent>
       </Sheet>
     </>
   );
 }
 
-/**
- * The panel's two nouns.
- *
- * Deliberately not navigation. The third column has always been here; what
- * changes is whether it is showing the conversation or the thing the
- * conversation is about. A tab bar would imply two places; this implies one
- * place with two views, which is what it is.
- */
 function PanelSwitch({
   mode,
   onMode,
 }: {
-  mode: "chat" | "work";
-  onMode: (mode: "chat" | "work") => void;
+  mode: "chat" | "history";
+  onMode: (mode: "chat" | "history") => void;
 }) {
   return (
     <div role="tablist" aria-label="Panel view" className="flex items-center gap-0.5 rounded-full border p-0.5">
-      {(["chat", "work"] as const).map((value) => (
+      {(["chat", "history"] as const).map((value) => (
         <button
           key={value}
           type="button"
@@ -477,9 +457,57 @@ function PanelSwitch({
               : "text-muted-foreground hover:text-foreground",
           )}
         >
-          {value === "chat" ? "Chat" : "Work"}
+          {value === "chat" ? "Current Chat" : "Previous Chats"}
         </button>
       ))}
     </div>
+  );
+}
+
+function PreviousChats({ onNavigate }: { onNavigate: () => void }) {
+  const { state } = useAsync(() => api.sessions());
+  const sessions: Session[] = state.status === "ready" ? state.data : [];
+
+  if (state.status === "loading") {
+    return (
+      <div className="flex-1 space-y-2 p-4">
+        {[...Array(4)].map((_, i) => (
+          <div key={i} className="h-14 animate-pulse rounded-brand bg-muted" />
+        ))}
+      </div>
+    );
+  }
+
+  if (sessions.length === 0) {
+    return (
+      <div className="flex flex-1 flex-col items-center justify-center gap-2 p-8 text-center">
+        <p className="text-[14px] font-medium">No previous chats yet</p>
+        <p className="text-[13px] text-muted-foreground">
+          Work sessions you start will appear here.
+        </p>
+      </div>
+    );
+  }
+
+  return (
+    <ul className="min-h-0 flex-1 divide-y overflow-y-auto">
+      {sessions.map((session) => (
+        <li key={session.id}>
+          <Link
+            to={`/app/work/${session.id}`}
+            onClick={onNavigate}
+            className="flex items-center gap-3 px-4 py-3.5 text-left transition-colors hover:bg-muted/50"
+          >
+            <div className="min-w-0 flex-1">
+              <p className="truncate text-[14px] font-medium">{session.title}</p>
+              <p className="mt-0.5 text-[12px] text-muted-foreground">
+                {session.done} of {session.total} steps
+              </p>
+            </div>
+            <ChevronRight className="size-4 shrink-0 text-muted-foreground" aria-hidden="true" />
+          </Link>
+        </li>
+      ))}
+    </ul>
   );
 }
