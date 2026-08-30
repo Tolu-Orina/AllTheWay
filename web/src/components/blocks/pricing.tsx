@@ -9,6 +9,8 @@ import {
 } from "@/components/primitives/reveal";
 import { cn } from "@/lib/utils";
 import table from "@/lib/plans.json";
+import { useSignedIn } from "@/auth/useSignedIn";
+import { APP_HOME, SIGNUP } from "@/auth/paths";
 
 type PlanRow = {
   tier: string;
@@ -55,7 +57,7 @@ const TIERS: Card[] = [
       count(free.limits.connector_calls, "connector calls"),
     ],
     cta: "Start free",
-    href: "/signup",
+    href: SIGNUP,
   },
   {
     name: plus.label,
@@ -69,7 +71,7 @@ const TIERS: Card[] = [
       count(plus.limits.connector_calls, "connector calls"),
     ],
     cta: "Get Plus",
-    href: "/signup",
+    href: SIGNUP,
     featured: true,
   },
   {
@@ -84,7 +86,7 @@ const TIERS: Card[] = [
       `${max.limits.draft_video_seconds}s draft / ${max.limits.final_video_seconds}s final video`,
     ],
     cta: "Get Max",
-    href: "/signup",
+    href: SIGNUP,
   },
   {
     name: "Team / Enterprise",
@@ -103,6 +105,8 @@ const TIERS: Card[] = [
 ];
 
 export function Pricing() {
+  const signedIn = useSignedIn();
+
   return (
     <section
       id="pricing"
@@ -168,12 +172,18 @@ export function Pricing() {
                 </ul>
 
                 <Button
-                  render={<Link href={tier.href} />}
+                  render={
+                    <Link
+                      href={
+                        signedIn && tier.href === SIGNUP ? APP_HOME : tier.href
+                      }
+                    />
+                  }
                   size="xl"
                   variant={tier.featured ? "brand" : "outline"}
                   className="mt-auto w-full"
                 >
-                  {tier.cta}
+                  {signedIn && tier.href === SIGNUP ? "Open Work" : tier.cta}
                 </Button>
               </div>
             </RevealItem>

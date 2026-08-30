@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button";
 import { useAuth } from "@/auth/useAuth";
 import { isEmail } from "@/auth/types";
 import { rememberAfterAuth, takeAfterAuth } from "@/auth/firebase-auth";
+import { SIGNUP, FORGOT_PASSWORD, afterAuthPath } from "@/auth/paths";
 import {
   AuthShell,
   Field,
@@ -18,7 +19,7 @@ export default function Login() {
   const { adapter, user, loading } = useAuth();
   const navigate = useNavigate();
   const location = useLocation() as { state?: { from?: string } };
-  const from = location.state?.from ?? "/app";
+  const from = afterAuthPath(location.state?.from);
 
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -28,9 +29,10 @@ export default function Login() {
     password?: string;
   }>({});
   const [busy, setBusy] = useState(false);
+  const [googleBusy, setGoogleBusy] = useState(false);
 
   // Google redirect unloads this page. When they come back signed in, send
-  // them on — including the case where they opened /login already signed in.
+  // them on — including the case where they opened /app/login already signed in.
   useEffect(() => {
     if (loading || !user) return;
     navigate(takeAfterAuth(from), { replace: true });
@@ -56,12 +58,17 @@ export default function Login() {
 
   async function google() {
     setError(null);
-    setBusy(true);
+    setGoogleBusy(true);
     rememberAfterAuth(from);
     const res = await adapter.signInWithGoogle();
-    setBusy(false);
-    if (res.ok) navigate(from, { replace: true });
-    else setError(res.message);
+    if (!res.ok) {
+      setGoogleBusy(false);
+      setError(res.message);
+      return;
+    }
+    if (res.redirected) return;
+    setGoogleBusy(false);
+    navigate(from, { replace: true });
   }
 
   return (
@@ -72,7 +79,7 @@ export default function Login() {
         <>
           New here?{" "}
           <Link
-            to="/signup"
+            to={SIGNUP}
             className="font-medium text-blue-deep underline-offset-4 hover:underline dark:text-blue-bright"
           >
             {t("auth.createAnAccount")}
@@ -82,7 +89,7 @@ export default function Login() {
     >
       <GoogleButton
         onClick={google}
-        disabled={busy}
+        disabled={busy || googleBusy}
         label="Sign in with Google"
       />
 
@@ -119,7 +126,7 @@ export default function Login() {
 
         <div className="mb-5 text-right">
           <Link
-            to="/forgot-password"
+            to={FORGOT_PASSWORD}
             className="text-[13px] text-muted-foreground underline-offset-4 hover:text-foreground hover:underline"
           >
             {t("auth.forgotYourPassword")}
@@ -131,7 +138,7 @@ export default function Login() {
           variant="brand"
           size="xl"
           className="w-full"
-          disabled={busy}
+          disabled={busy || googleBusy}
         >
           {busy ? "Signing in…" : "Sign in"}
         </Button>

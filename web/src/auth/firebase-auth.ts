@@ -15,6 +15,18 @@ import {
 import { firebaseAuth } from "@/auth/firebase";
 import { ApiError, apiPost } from "@/lib/api";
 import type { AuthAdapter, AuthResult, AuthUser } from "@/auth/types";
+import {
+  clearGoogleRedirectPending,
+  googleRedirectPending,
+  markGoogleRedirectPending,
+  prefersGoogleRedirect,
+} from "@/auth/google-redirect";
+
+export {
+  rememberAfterAuth,
+  takeAfterAuth,
+  prefersGoogleRedirect,
+} from "@/auth/google-redirect";
 
 /**
  * Firebase Auth for identity, the gateway for the six-digit codes.
@@ -25,55 +37,11 @@ import type { AuthAdapter, AuthResult, AuthUser } from "@/auth/types";
  */
 
 /**
- * Where to send the person after a Google redirect comes back.
- *
- * Popup sign-in returns in-page. Redirect unloads the page, so the destination
- * has to survive in sessionStorage rather than in React state.
- */
-const AFTER_AUTH_KEY = "alltheway:after-auth";
-
-export function rememberAfterAuth(path: string): void {
-  try {
-    sessionStorage.setItem(AFTER_AUTH_KEY, path);
-  } catch {
-    /* private windows throw; they will land on /app */
-  }
-}
-
-export function takeAfterAuth(fallback = "/app"): string {
-  try {
-    const stored = sessionStorage.getItem(AFTER_AUTH_KEY);
-    if (stored) sessionStorage.removeItem(AFTER_AUTH_KEY);
-    return stored || fallback;
-  } catch {
-    return fallback;
-  }
-}
-
-/**
- * Popup Google sign-in is the right desktop path. On a phone it is the wrong
- * one: iOS Safari and installed PWAs block or stall the popup, and even when
- * it opens, the iframe round-trip is the "Firebase is slow" report.
- *
- * Redirect is what Google's own mobile guidance uses. Coarse pointer, iOS,
- * or an installed PWA — any one is enough.
- */
-export function prefersGoogleRedirect(): boolean {
-  if (typeof window === "undefined" || typeof navigator === "undefined") return false;
-  const coarse = window.matchMedia?.("(pointer: coarse)")?.matches ?? false;
-  const standalone = window.matchMedia?.("(display-mode: standalone)")?.matches ?? false;
-  const iOS =
-    /iPad|iPhone|iPod/.test(navigator.userAgent) ||
-    (navigator.platform === "MacIntel" && navigator.maxTouchPoints > 1);
-  return Boolean(coarse || standalone || iOS);
-}
-
-/**
  * Firebase error codes are specific enough to enumerate accounts
  * (`user-not-found` vs `wrong-password`), so sign-in collapses them into one
  * message. Only genuinely actionable states get their own wording.
  */
-function toMessage(err: unknown): string {
+function toMessage(err: unknown, fallback = "Incorrect email or password."): string {
   const code = (err as { code?: string })?.code ?? "";
   switch (code) {
     case "auth/email-already-in-use":
@@ -94,7 +62,7 @@ function toMessage(err: unknown): string {
     case "auth/too-many-requests":
       return "Too many attempts. Wait a moment and try again.";
     default:
-      return "Incorrect email or password.";
+      return fallback;
   }
 }
 
@@ -106,6 +74,57 @@ const toUser = (u: NonNullable<typeof firebaseAuth.currentUser>): AuthUser => ({
   emailVerified: u.emailVerified,
 });
 
+export function currentAuthUser(): AuthUser | null {
+  const u = firebaseAuth.currentUser;
+  return u ? toUser(u) : null;
+}
+
+/**
+ * Restore a session for the first paint without waiting on Firebase's
+ * listener. `currentUser` is often still null until `authStateReady()`.
+ * Persistence writes `firebase:authUser:{apiKey}:[DEFAULT]` to localStorage;
+ * reading it here is how signed-in landing CTAs are correct immediately.
+ */
+export function peekPersistedUser(): AuthUser | null {
+  const live = currentAuthUser();
+  if (live) return live;
+  try {
+    const apiKey = import.meta.env.VITE_FIREBASE_API_KEY as string | undefined;
+    if (!apiKey) return null;
+    const raw = localStorage.getItem(`firebase:authUser:${apiKey}:[DEFAULT]`);
+    if (!raw) return null;
+    const parsed = JSON.parse(raw) as {
+      uid?: string;
+      email?: string;
+      displayName?: string;
+      photoURL?: string;
+      emailVerified?: boolean;
+    };
+    if (!parsed.uid) return null;
+    return {
+      uid: parsed.uid,
+      email: parsed.email ?? "",
+      displayName: parsed.displayName ?? undefined,
+      photoURL: parsed.photoURL ?? undefined,
+      emailVerified: Boolean(parsed.emailVerified),
+    };
+  } catch {
+    return null;
+  }
+}
+
+function settleGoogleRedirect(): void {
+  // iframe.js (~260KB) loads when the popup resolver is used. Redirect does
+  // not need that iframe — the whole page goes to Google — so we neither
+  // pass the resolver nor call this on the landing page.
+  if (!googleRedirectPending()) return;
+  void getRedirectResult(firebaseAuth)
+    .catch(() => {
+      /* reported the next time they tap Google, not as a spinner on `/` */
+    })
+    .finally(() => clearGoogleRedirectPending());
+}
+
 const fromApi = (err: unknown): AuthResult =>
   err instanceof ApiError
     ? { ok: false, message: err.message }
@@ -113,35 +132,44 @@ const fromApi = (err: unknown): AuthResult =>
 
 const POPUP_FALLBACK = new Set([
   "auth/popup-blocked",
-  "auth/popup-closed-by-user",
-  "auth/cancelled-popup-request",
   "auth/operation-not-supported-in-this-environment",
 ]);
 
+async function redirectToGoogle(provider: GoogleAuthProvider): Promise<AuthResult> {
+  markGoogleRedirectPending();
+  const outcome = await Promise.race([
+    // No popup resolver: a full navigation must not download iframe.js first.
+    signInWithRedirect(firebaseAuth, provider).then(() => "started" as const),
+    new Promise<"timeout">((resolve) => setTimeout(() => resolve("timeout"), 12_000)),
+  ]);
+  if (outcome === "timeout") {
+    return {
+      ok: false,
+      message: "Google sign-in is taking too long. Try email, or tap Google again.",
+    };
+  }
+  // The page is unloading. Login/Signup must not navigate — they pick the
+  // user up from onAuthStateChanged when they remount.
+  return { ok: true, redirected: true };
+}
+
 async function signInWithGoogle(): Promise<AuthResult> {
+  const googleFail = "Google sign-in did not finish. Try again, or use email.";
   const provider = new GoogleAuthProvider();
   try {
-    if (prefersGoogleRedirect()) {
-      await signInWithRedirect(firebaseAuth, provider, browserPopupRedirectResolver);
-      // The page is unloading. The adapter never returns; Login/Signup pick
-      // the user up from onAuthStateChanged when they remount.
-      return { ok: true };
-    }
+    if (prefersGoogleRedirect()) return await redirectToGoogle(provider);
     await signInWithPopup(firebaseAuth, provider, browserPopupRedirectResolver);
     return { ok: true };
   } catch (err) {
     const code = (err as { code?: string })?.code ?? "";
-    // A phone that we failed to classify as redirect still gets a second
-    // chance rather than a stuck popup error.
     if (POPUP_FALLBACK.has(code) && !prefersGoogleRedirect()) {
       try {
-        await signInWithRedirect(firebaseAuth, provider, browserPopupRedirectResolver);
-        return { ok: true };
+        return await redirectToGoogle(provider);
       } catch (redirectErr) {
-        return { ok: false, message: toMessage(redirectErr) };
+        return { ok: false, message: toMessage(redirectErr, googleFail) };
       }
     }
-    return { ok: false, message: toMessage(err) };
+    return { ok: false, message: toMessage(err, googleFail) };
   }
 }
 
@@ -163,10 +191,7 @@ export function createFirebaseAuth(): AuthAdapter {
         onChange(u ? toUser(u) : null),
       );
 
-      void getRedirectResult(firebaseAuth, browserPopupRedirectResolver).catch(() => {
-        // A failed redirect is reported the next time they tap Google, not as
-        // a stuck spinner on a page they just landed on.
-      });
+      void settleGoogleRedirect();
 
       return () => {
         unsubAuth();

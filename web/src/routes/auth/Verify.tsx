@@ -4,6 +4,7 @@ import { Link, useLocation, useNavigate } from "react-router";
 
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/auth/useAuth";
+import { APP_HOME, LOGIN } from "@/auth/paths";
 import { AuthShell, FormError } from "@/routes/auth/AuthShell";
 import { CodeInput } from "@/routes/auth/CodeInput";
 
@@ -33,7 +34,7 @@ export default function Verify() {
     setError(null);
     const res = await adapter.verifyCode(email, candidate);
     setBusy(false);
-    if (res.ok) navigate("/app", { replace: true });
+    if (res.ok) navigate(APP_HOME, { replace: true });
     else {
       setError(res.message);
       setCode("");
@@ -54,7 +55,7 @@ export default function Verify() {
         subtitle="Start from sign-in and we will send a fresh code."
       >
         <Button
-          render={<Link to="/login" />}
+          render={<Link to={LOGIN} />}
           variant="brand"
           size="xl"
           className="w-full"
@@ -77,7 +78,7 @@ export default function Verify() {
       }
       footer={
         <Link
-          to="/login"
+          to={LOGIN}
           className="underline-offset-4 hover:text-foreground hover:underline"
         >
           {t("auth.useADifferentEmail")}

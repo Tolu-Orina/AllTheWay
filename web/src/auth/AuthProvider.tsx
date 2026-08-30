@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useState, type ReactNode } from "react";
 
 import { createDevAuth } from "@/auth/dev-auth";
-import { createFirebaseAuth } from "@/auth/firebase-auth";
+import { createFirebaseAuth, peekPersistedUser } from "@/auth/firebase-auth";
 import { firebaseConfigured } from "@/auth/firebase";
 import { AuthContext } from "@/auth/context";
 import type { AuthAdapter, AuthUser } from "@/auth/types";
@@ -42,8 +42,9 @@ function createAuth(): AuthAdapter {
 
 export function AuthProvider({ children }: { children: ReactNode }) {
   const adapter = useMemo(() => createAuth(), []);
-  const [user, setUser] = useState<AuthUser | null>(null);
-  const [loading, setLoading] = useState(true);
+  const restored = firebaseConfigured ? peekPersistedUser() : null;
+  const [user, setUser] = useState<AuthUser | null>(restored);
+  const [loading, setLoading] = useState(!restored);
 
   useEffect(() => {
     const stop = adapter.init((next) => {

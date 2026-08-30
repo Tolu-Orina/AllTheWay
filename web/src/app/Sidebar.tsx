@@ -9,6 +9,7 @@ import { useAsync } from "@/app/use-async";
 import { api } from "@/app/data";
 import { nameFor, useAppUser } from "@/app/user";
 import { useAuth } from "@/auth/useAuth";
+import { LOGIN } from "@/auth/paths";
 import { useSidebar } from "@/app/sidebar-state";
 import { cn } from "@/lib/utils";
 import { useLifeAlerts } from "@/app/life/alerts";
@@ -36,7 +37,7 @@ export function Sidebar() {
 
   async function signOut() {
     await adapter.signOut();
-    navigate("/login", { replace: true });
+    navigate(LOGIN, { replace: true });
   }
 
   return (

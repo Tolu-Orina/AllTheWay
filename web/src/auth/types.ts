@@ -6,7 +6,7 @@ export type AuthUser = {
   emailVerified: boolean;
 };
 
-export type AuthResult = { ok: true } | { ok: false; message: string };
+export type AuthResult = { ok: true; redirected?: boolean } | { ok: false; message: string };
 
 /**
  * The seam between the app and whatever actually authenticates.

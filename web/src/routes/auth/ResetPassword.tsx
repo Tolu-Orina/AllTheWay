@@ -5,6 +5,7 @@ import { Link, useLocation, useNavigate } from "react-router";
 
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/auth/useAuth";
+import { LOGIN, FORGOT_PASSWORD } from "@/auth/paths";
 import { PASSWORD_RULES, passwordProblems } from "@/auth/types";
 import { AuthShell, Field, FormError } from "@/routes/auth/AuthShell";
 import { CodeInput } from "@/routes/auth/CodeInput";
@@ -43,7 +44,7 @@ export default function ResetPassword() {
     setBusy(true);
     const res = await adapter.resetPassword(email, code, password);
     setBusy(false);
-    if (res.ok) navigate("/login", { replace: true });
+    if (res.ok) navigate(LOGIN, { replace: true });
     else setError(res.message);
   }
 
@@ -54,7 +55,7 @@ export default function ResetPassword() {
         subtitle="We need the email on your account before we can reset it."
       >
         <Button
-          render={<Link to="/forgot-password" />}
+          render={<Link to={FORGOT_PASSWORD} />}
           variant="brand"
           size="xl"
           className="w-full"
@@ -76,7 +77,7 @@ export default function ResetPassword() {
       }
       footer={
         <Link
-          to="/login"
+          to={LOGIN}
           className="underline-offset-4 hover:text-foreground hover:underline"
         >
           {t("auth.backToSignIn")}

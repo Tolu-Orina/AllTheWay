@@ -2,6 +2,9 @@ import { getMessaging, getToken, isSupported } from "firebase/messaging";
 
 import { firebaseApp } from "@/auth/firebase";
 import { api } from "@/app/data";
+import { isStandaloneDisplay } from "@/lib/standalone";
+
+export { isStandaloneDisplay } from "@/lib/standalone";
 
 /**
  * Web push, for the morning digest.
@@ -24,14 +27,6 @@ import { api } from "@/app/data";
 export type PushOutcome =
   | { ok: true; token: string }
   | { ok: false; reason: string };
-
-export function isStandaloneDisplay(): boolean {
-  if (typeof window === "undefined") return false;
-  return (
-    window.matchMedia("(display-mode: standalone)").matches ||
-    Boolean((navigator as { standalone?: boolean }).standalone)
-  );
-}
 
 export function iosNeedsHomeScreen(): boolean {
   if (typeof navigator === "undefined") return false;

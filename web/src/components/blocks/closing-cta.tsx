@@ -3,8 +3,11 @@ import { ArrowRight } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import { Reveal } from "@/components/primitives/reveal";
+import { useSignedIn } from "@/auth/useSignedIn";
+import { SIGNUP } from "@/auth/paths";
 
 export function ClosingCta() {
+  const signedIn = useSignedIn();
   return (
     <section className="relative isolate overflow-hidden border-b bg-accent py-20 sm:py-24">
       <div className="mx-auto w-full max-w-[1280px] px-4 text-center sm:px-6 lg:px-8">
@@ -18,8 +21,12 @@ export function ClosingCta() {
             better.
           </p>
           <div className="mt-8 flex flex-wrap justify-center gap-3">
-            <Button render={<Link href="/signup" />} variant="brand" size="xl">
-              Start free
+            <Button
+              render={<Link href={signedIn ? "/app" : SIGNUP} />}
+              variant="brand"
+              size="xl"
+            >
+              {signedIn ? "Open Work" : "Start free"}
               <ArrowRight />
             </Button>
             <Button

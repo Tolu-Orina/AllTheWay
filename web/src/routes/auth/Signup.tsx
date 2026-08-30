@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useT } from "@/app/i18n";
 import { Check, X } from "lucide-react";
 import { Link, useNavigate } from "react-router";
@@ -7,6 +7,7 @@ import { Button } from "@/components/ui/button";
 import { useAuth } from "@/auth/useAuth";
 import { PASSWORD_RULES, isEmail, passwordProblems } from "@/auth/types";
 import { rememberAfterAuth, takeAfterAuth } from "@/auth/firebase-auth";
+import { APP_HOME, LOGIN, VERIFY } from "@/auth/paths";
 import {
   AuthShell,
   Field,
@@ -55,10 +56,16 @@ export default function Signup() {
     password?: string;
   }>({});
   const [busy, setBusy] = useState(false);
+  const [googleBusy, setGoogleBusy] = useState(false);
+  const submitting = useRef(false);
 
   useEffect(() => {
-    if (loading || !user) return;
-    navigate(takeAfterAuth("/app"), { replace: true });
+    if (loading || !user || submitting.current) return;
+    if (!user.emailVerified) {
+      navigate(VERIFY, { state: { email: user.email }, replace: true });
+      return;
+    }
+    navigate(takeAfterAuth(APP_HOME), { replace: true });
   }, [user, loading, navigate]);
 
   async function submit(e: React.FormEvent) {
@@ -74,8 +81,10 @@ export default function Signup() {
     if (Object.keys(next).length) return;
 
     setBusy(true);
+    submitting.current = true;
     const created = await adapter.signUp(email, password);
     if (!created.ok) {
+      submitting.current = false;
       setBusy(false);
       setError(created.message);
       return;
@@ -83,17 +92,22 @@ export default function Signup() {
     // Send the code immediately: the next screen is where it gets entered.
     await adapter.sendVerificationCode(email);
     setBusy(false);
-    navigate("/verify", { state: { email }, replace: true });
+    navigate(VERIFY, { state: { email }, replace: true });
   }
 
   async function google() {
     setError(null);
-    setBusy(true);
-    rememberAfterAuth("/app");
+    setGoogleBusy(true);
+    rememberAfterAuth(APP_HOME);
     const res = await adapter.signInWithGoogle();
-    setBusy(false);
-    if (res.ok) navigate("/app", { replace: true });
-    else setError(res.message);
+    if (!res.ok) {
+      setGoogleBusy(false);
+      setError(res.message);
+      return;
+    }
+    if (res.redirected) return;
+    setGoogleBusy(false);
+    navigate(APP_HOME, { replace: true });
   }
 
   return (
@@ -104,7 +118,7 @@ export default function Signup() {
         <>
           Already have an account?{" "}
           <Link
-            to="/login"
+            to={LOGIN}
             className="font-medium text-blue-deep underline-offset-4 hover:underline dark:text-blue-bright"
           >
             {t("auth.signIn")}
@@ -114,7 +128,7 @@ export default function Signup() {
     >
       <GoogleButton
         onClick={google}
-        disabled={busy}
+        disabled={busy || googleBusy}
         label="Sign up with Google"
       />
 
@@ -155,7 +169,7 @@ export default function Signup() {
           variant="brand"
           size="xl"
           className="mt-2 w-full"
-          disabled={busy}
+          disabled={busy || googleBusy}
         >
           {busy ? "Creating your account…" : "Create account"}
         </Button>

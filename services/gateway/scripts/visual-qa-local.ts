@@ -1,9 +1,10 @@
 /**
- * Local e2e: planner → worker (stills + PPTX + LibreOffice) → independent judge.
+ * Local e2e: planner (multimodal RAG) → worker → independent judge.
  *
  *   npx tsx scripts/visual-qa-local.ts
  *
- * Needs soffice, ADC, and GOOGLE_CLOUD_PROJECT (not alltheway-local).
+ * Needs soffice, ADC, GOOGLE_CLOUD_PROJECT (not alltheway-local), and the
+ * prod slideDesigns catalog. Unsets the Firestore emulator so retrieval is real.
  */
 import { mkdir, writeFile } from "node:fs/promises";
 import path from "node:path";
@@ -13,7 +14,13 @@ import { generateStill } from "../src/document-images.js";
 import { renderPptxPagesOrThrow } from "../src/document-libreoffice.js";
 import { critiqueDeck, vertexVision } from "../src/document-critic.js";
 import { vertexPlanner } from "../src/document-planner.js";
+import { groupRetrievedDecks, loadCoherenceImages, retrieveSlideDesigns } from "../src/document-design-rag.js";
 import { runDocumentQuality } from "../src/document-quality.js";
+import { parseDeck } from "../src/office-ir.js";
+
+process.env.GOOGLE_CLOUD_PROJECT ||= "alltheway-rinegan";
+process.env.SLIDE_DESIGN_BUCKET ||= "alltheway-rinegan-slide-designs-prod";
+delete process.env.FIRESTORE_EMULATOR_HOST;
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "../../..");
 const OUT = path.join(ROOT, ".local-artifacts", "qa-adversarial");
@@ -102,11 +109,30 @@ const DECK = {
 
 async function main(): Promise<void> {
   await mkdir(OUT, { recursive: true });
+  const brief = parseDeck(DECK as unknown as Record<string, unknown>);
+  const neighbors = await retrieveSlideDesigns(
+    `PowerPoint ${brief.title} for ${brief.audience}. layouts: ${brief.slides.map((s) => s.layout).join(", ")}. Need designed slides: type hierarchy, photograph placement, and exact box coordinates.`,
+    3,
+  );
+  const decks = groupRetrievedDecks(neighbors);
+  const images = await loadCoherenceImages(neighbors, 3);
+  const rag = {
+    slides: neighbors.length,
+    decks: decks.map((d) => ({ id: d.id, slides: d.slides.length, canvas: `${d.width}×${d.height}` })),
+    screenshots: images.map((img) => img.role),
+  };
+  console.error(`multimodal RAG: ${JSON.stringify(rag)}`);
+  if (!neighbors.length || !images.length) {
+    throw new Error("multimodal RAG returned no slides or screenshots — refusing to run a planner-only e2e");
+  }
+  await writeFile(path.join(OUT, "rag.json"), JSON.stringify(rag, null, 2));
+
   let turn = 0;
   const result = await runDocumentQuality({
     tool: "create_slides",
-    args: DECK,
+    args: DECK as unknown as Record<string, unknown>,
     imagesRemaining: 8,
+    budget: { wallClockMs: 720_000 },
     planner: vertexPlanner,
     generateImage: generateStill,
     critic: async (deck, pages) => critiqueDeck(deck, pages, vertexVision),
@@ -132,6 +158,7 @@ async function main(): Promise<void> {
         compiles: result.compiles,
         degraded: result.degraded,
         imagesGenerated: result.imagesGenerated,
+        rag,
         trace: result.trace,
       },
       null,
@@ -147,6 +174,7 @@ async function main(): Promise<void> {
         compiles: result.compiles,
         degraded: result.degraded,
         imagesGenerated: result.imagesGenerated,
+        rag,
         bytes: result.body.length,
         trace: result.trace,
       },

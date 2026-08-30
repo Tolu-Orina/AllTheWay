@@ -3,6 +3,9 @@ import { Link } from "react-router";
 
 import { Ambient } from "@/components/blocks/ambient";
 import { Logo } from "@/components/primitives/logo";
+import { APP_HOME, LOGIN } from "@/auth/paths";
+import { useSignedIn } from "@/auth/useSignedIn";
+import { isStandaloneDisplay } from "@/lib/standalone";
 
 /** One shell for every auth screen, so they cannot drift apart. */
 export function AuthShell({
@@ -16,11 +19,14 @@ export function AuthShell({
   children: ReactNode;
   footer?: ReactNode;
 }) {
+  const signedIn = useSignedIn();
+  const logoTo = signedIn ? APP_HOME : isStandaloneDisplay() ? LOGIN : "/";
+
   return (
     <div className="relative isolate flex min-h-dvh flex-col items-center justify-center bg-background px-4 py-10">
       <Ambient />
 
-      <Link to="/" className="mb-8 rounded-sm" aria-label="AllTheWay home">
+      <Link to={logoTo} className="mb-8 rounded-sm" aria-label="AllTheWay home">
         <Logo />
       </Link>
 
@@ -138,7 +144,7 @@ export function GoogleButton({
           d="M9 3.58c1.32 0 2.5.45 3.44 1.35l2.58-2.58C13.46.89 11.43 0 9 0A9 9 0 0 0 .96 4.95l3.01 2.33C4.68 5.16 6.66 3.58 9 3.58Z"
         />
       </svg>
-      {label}
+      {disabled ? "Taking you to Google…" : label}
     </button>
   );
 }

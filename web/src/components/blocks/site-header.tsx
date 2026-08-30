@@ -11,6 +11,8 @@ import {
 } from "@/components/ui/sheet";
 import { Logo } from "@/components/primitives/logo";
 import { cn } from "@/lib/utils";
+import { useSignedIn } from "@/auth/useSignedIn";
+import { LOGIN, SIGNUP } from "@/auth/paths";
 
 const NAV = [
   { label: "Voice", href: "#voice" },
@@ -21,6 +23,7 @@ const NAV = [
 
 export function SiteHeader() {
   const [lifted, setLifted] = useState(false);
+  const signedIn = useSignedIn();
 
   // The nav only earns its border once content sits behind it.
   useEffect(() => {
@@ -55,17 +58,25 @@ export function SiteHeader() {
         </nav>
 
         <div className="flex items-center gap-2">
-          <Button
-            render={<Link href="/login" />}
-            variant="ghost"
-            size="lg"
-            className="hidden sm:inline-flex"
-          >
-            Log in
-          </Button>
-          <Button render={<Link href="/signup" />} variant="brand" size="lg">
-            Start free
-          </Button>
+          {signedIn ? (
+            <Button render={<Link href="/app" />} variant="brand" size="lg">
+              Open Work
+            </Button>
+          ) : (
+            <>
+              <Button
+                render={<Link href={LOGIN} />}
+                variant="ghost"
+                size="lg"
+                className="hidden sm:inline-flex"
+              >
+                Log in
+              </Button>
+              <Button render={<Link href={SIGNUP} />} variant="brand" size="lg">
+                Start free
+              </Button>
+            </>
+          )}
 
           <Sheet>
             <SheetTrigger
@@ -92,12 +103,29 @@ export function SiteHeader() {
                     {item.label}
                   </Link>
                 ))}
-                <Link
-                  href="/login"
-                  className="rounded-brand px-3 py-3 text-lg font-medium transition-colors hover:bg-muted"
-                >
-                  Log in
-                </Link>
+                {signedIn ? (
+                  <Link
+                    href="/app"
+                    className="rounded-brand px-3 py-3 text-lg font-medium transition-colors hover:bg-muted"
+                  >
+                    Open Work
+                  </Link>
+                ) : (
+                  <>
+                    <Link
+                      href={LOGIN}
+                      className="rounded-brand px-3 py-3 text-lg font-medium transition-colors hover:bg-muted"
+                    >
+                      Log in
+                    </Link>
+                    <Link
+                      href={SIGNUP}
+                      className="rounded-brand px-3 py-3 text-lg font-medium transition-colors hover:bg-muted"
+                    >
+                      Start free
+                    </Link>
+                  </>
+                )}
               </nav>
             </SheetContent>
           </Sheet>

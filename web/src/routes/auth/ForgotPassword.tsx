@@ -4,6 +4,7 @@ import { Link, useNavigate } from "react-router";
 
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/auth/useAuth";
+import { LOGIN, RESET_PASSWORD } from "@/auth/paths";
 import { isEmail } from "@/auth/types";
 import { AuthShell, Field, FormError } from "@/routes/auth/AuthShell";
 
@@ -29,7 +30,7 @@ export default function ForgotPassword() {
     setBusy(false);
     // Always advances, whether or not the address is registered: telling an
     // unauthenticated caller which emails exist is an account-enumeration leak.
-    if (res.ok) navigate("/reset-password", { state: { email } });
+    if (res.ok) navigate(RESET_PASSWORD, { state: { email } });
     else setError(res.message);
   }
 
@@ -39,7 +40,7 @@ export default function ForgotPassword() {
       subtitle="Give us the email on your account and we will send a six-digit code."
       footer={
         <Link
-          to="/login"
+          to={LOGIN}
           className="underline-offset-4 hover:text-foreground hover:underline"
         >
           {t("auth.backToSignIn")}

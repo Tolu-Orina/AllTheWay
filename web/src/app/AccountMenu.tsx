@@ -6,6 +6,7 @@ import { useNavigate } from "react-router";
 import { Avatar } from "@/app/Avatar";
 import { nameFor, useAppUser } from "@/app/user";
 import { useAuth } from "@/auth/useAuth";
+import { LOGIN } from "@/auth/paths";
 import { cn } from "@/lib/utils";
 
 /**
@@ -61,7 +62,7 @@ export function AccountMenu({
   async function signOut() {
     setOpen(false);
     await adapter.signOut();
-    navigate("/login", { replace: true });
+    navigate(LOGIN, { replace: true });
   }
 
   return (

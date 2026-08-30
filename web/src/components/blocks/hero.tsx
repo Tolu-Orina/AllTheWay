@@ -6,9 +6,12 @@ import { Button } from "@/components/ui/button";
 import { Ambient } from "@/components/blocks/ambient";
 import { ProductPanel } from "@/components/blocks/product-panel";
 import { Walkways } from "@/components/blocks/walkways";
+import { useSignedIn } from "@/auth/useSignedIn";
+import { SIGNUP } from "@/auth/paths";
 
 export function Hero() {
   const reduced = useReducedMotion();
+  const signedIn = useSignedIn();
 
   // One orchestrated page-load beat: copy, then CTA, then the product panel.
   const rise = (delay: number) => ({
@@ -49,12 +52,12 @@ export function Hero() {
             className="mt-8 flex flex-col gap-3 sm:flex-row sm:items-center"
           >
             <Button
-              render={<Link href="/signup" />}
+              render={<Link href={signedIn ? "/app" : SIGNUP} />}
               variant="brand"
               size="xl"
               className="w-full sm:w-auto"
             >
-              Start free
+              {signedIn ? "Open Work" : "Start free"}
               <ArrowRight />
             </Button>
             <Button
@@ -72,8 +75,9 @@ export function Hero() {
             {...rise(0.24)}
             className="mt-5 text-[13px] text-muted-foreground"
           >
-            Free plan, no card required. Nothing irreversible happens without
-            your say-so.
+            {signedIn
+              ? "You're signed in. Pick up where you left off."
+              : "Free plan, no card required. Nothing irreversible happens without your say-so."}
           </motion.p>
         </div>
 

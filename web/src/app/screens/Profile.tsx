@@ -17,6 +17,7 @@ import { VoiceTranscripts } from "@/app/VoiceTranscripts";
 import { LanguageChoice, LanguageOffer } from "@/app/LanguageChoice";
 import { nameFor, useAppUser } from "@/app/user";
 import { useAuth } from "@/auth/useAuth";
+import { LOGIN } from "@/auth/paths";
 import { Button } from "@/components/ui/button";
 
 /**
@@ -57,7 +58,7 @@ export default function Profile() {
 
   async function signOut() {
     await adapter.signOut();
-    navigate("/login", { replace: true });
+    navigate(LOGIN, { replace: true });
   }
 
   const visible = (rows: LearnedPreference[]) =>

@@ -15,12 +15,12 @@ const codeFromLog = () => {
   return (/(\d{6})\s*$/.exec(last) ?? [])[1] ?? null;
 };
 
-await page.goto(`${BASE}/signup`, { waitUntil: "networkidle" });
+await page.goto(`${BASE}/app/signup`, { waitUntil: "networkidle" });
 await page.fill("#email", email);
 await page.fill("#password", "compiler1");
 await page.getByRole("button", { name: "Create account" }).click();
-await page.waitForURL("**/verify", { timeout: 20000 });
-check("signup creates the account and advances to /verify", page.url().endsWith("/verify"));
+await page.waitForURL("**/app/verify", { timeout: 20000 });
+check("signup creates the account and advances to /app/verify", page.url().endsWith("/app/verify"));
 
 // Give the gateway a beat to issue and "send" the code.
 await new Promise((r) => setTimeout(r, 1500));
@@ -43,7 +43,7 @@ await page.evaluate((c) => {
   dt.setData("text", c);
   document.activeElement.dispatchEvent(new ClipboardEvent("paste", { clipboardData: dt, bubbles: true }));
 }, code);
-await page.waitForURL("**/app", { timeout: 20000 });
-check("correct code verifies and lands in /app", page.url().endsWith("/app"));
+await page.waitForURL((url) => /\/app\/?$/.test(url.pathname), { timeout: 20000 });
+check("correct code verifies and lands in /app", /\/app\/?$/.test(new URL(page.url()).pathname));
 
 await b.close();

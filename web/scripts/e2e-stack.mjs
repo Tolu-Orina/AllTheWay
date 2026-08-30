@@ -17,14 +17,14 @@ page.on("request", (r) => {
 
 const check = (n, ok) => console.log(`  ${ok ? "PASS" : "FAIL"}  ${n}`);
 
-// Signed out, the guard sends us to /login (this is a non-localhost check only
-// in production; here we verify the sign-in path itself works).
-await page.goto(`${BASE}/login`, { waitUntil: "networkidle" });
+// Signed out, the guard sends us to /app/login in production. Here we prove
+// the sign-in path itself, which now lives inside the PWA scope.
+await page.goto(`${BASE}/app/login`, { waitUntil: "networkidle" });
 await page.fill("#email", "ada.lovelace@example.com");
 await page.fill("#password", "analytic1");
 await page.getByRole("button", { name: "Sign in", exact: true }).click();
-await page.waitForURL("**/app", { timeout: 15000 });
-check("sign in with Firebase Auth emulator lands in /app", page.url().endsWith("/app"));
+await page.waitForURL((url) => /\/app\/?$/.test(url.pathname), { timeout: 15000 });
+check("sign in with Firebase Auth emulator lands in /app", /\/app\/?$/.test(new URL(page.url()).pathname));
 
 // The data on screen must have come from Firestore, not a mock.
 await page.waitForSelector("text=Nav wireframe", { timeout: 15000 });

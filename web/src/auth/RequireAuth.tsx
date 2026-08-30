@@ -1,6 +1,7 @@
 import { Navigate, Outlet, useLocation } from "react-router";
 
 import { useAuth } from "@/auth/useAuth";
+import { LOGIN, afterAuthPath } from "@/auth/paths";
 import { useT } from "@/app/i18n";
 
 /**
@@ -28,7 +29,7 @@ export function RequireAuth() {
   if (isLocal()) return <Outlet />;
 
   // Never redirect while the adapter is still resolving, or a signed-in user
-  // gets bounced to /login on every refresh.
+  // gets bounced to /app/login on every refresh.
   if (loading) {
     return (
       <div className="grid min-h-dvh place-items-center bg-background">
@@ -41,7 +42,13 @@ export function RequireAuth() {
 
   if (!user) {
     // Remember where they were headed so sign-in can return them there.
-    return <Navigate to="/login" state={{ from: location.pathname }} replace />;
+    return (
+      <Navigate
+        to={LOGIN}
+        state={{ from: afterAuthPath(location.pathname) }}
+        replace
+      />
+    );
   }
 
   return <Outlet />;
