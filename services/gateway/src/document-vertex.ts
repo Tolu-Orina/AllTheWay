@@ -12,6 +12,7 @@ export async function vertexJson(opts: {
   parts: VertexPart[];
   temperature: number;
   maxOutputTokens: number;
+  model?: string;
 }): Promise<unknown> {
   const project = await vertexProject();
   if (!project || project === "alltheway-local") {
@@ -21,7 +22,7 @@ export async function vertexJson(opts: {
   const auth = new GoogleAuth({ scopes: ["https://www.googleapis.com/auth/cloud-platform"] });
   const token = (await (await auth.getClient()).getAccessToken()).token;
   if (!token) throw new Error("visual QA could not authenticate");
-  const model = process.env.GEMINI_MODEL || "gemini-3.7-flash";
+  const model = opts.model || process.env.GEMINI_MODEL || "gemini-3.7-flash";
   const response = await fetch(
     `https://aiplatform.googleapis.com/v1/projects/${project}` +
       `/locations/global/publishers/google/models/${model}:generateContent`,

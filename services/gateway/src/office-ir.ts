@@ -9,10 +9,11 @@
 export const DECK_IR = "deck.v1";
 export const REPORT_IR = "report.v1";
 export const MAX_SLIDES = 20;
-export const MAX_CRITIQUE_ROUNDS = 6;
+export const MAX_CRITIQUE_ROUNDS = 3;
 export const MAX_IMAGES = 8;
 export const MAX_SUPPORTS = 4;
-export const VISUAL_PASS_SCORE = 95;
+export const CONTENT_PASS_BAND = 4;
+export const DESIGN_PASS_BAND = 4;
 export const SLIDE_W = 13.333;
 export const SLIDE_H = 7.5;
 
@@ -37,6 +38,7 @@ export type Box = { x: number; y: number; w: number; h: number };
 export type TextRole = "title" | "subtitle" | "body" | "caption" | "kicker" | "number";
 
 export type TextBox = Box & {
+  id?: string;
   role: TextRole;
   text: string;
   fontSize?: number;
@@ -258,6 +260,69 @@ export function applyDeckPatch(deck: DeckIr, patch: unknown): DeckIr {
   return validateDeck(next);
 }
 
+export type DeckEdit = {
+  op: "replace_text" | "resize_box" | "swap_picture" | "drop_box";
+  slideIndex: number;
+  elementId: string;
+  text?: string;
+  x?: number;
+  y?: number;
+  w?: number;
+  h?: number;
+  prompt?: string;
+};
+
+export function applyDeckEdits(deck: DeckIr, edits: unknown): DeckIr {
+  if (!Array.isArray(edits) || !edits.length) return deck;
+  const slides = deck.slides.map((slide) => ({
+    ...slide,
+    boxes: slide.boxes.map((box) => ({ ...box })),
+    pictures: slide.pictures?.map((picture) => ({ ...picture })),
+    shapes: slide.shapes?.map((shape) => ({ ...shape })),
+    chart: slide.chart ? { ...slide.chart } : undefined,
+  }));
+  for (const raw of edits) {
+    if (!raw || typeof raw !== "object") continue;
+    const rec = raw as Record<string, unknown>;
+    const op = asString(rec.op);
+    const slideIndex = Number(rec.slideIndex ?? rec.index);
+    const elementId = asString(rec.elementId);
+    if (!Number.isInteger(slideIndex) || slideIndex < 0 || slideIndex >= slides.length || !elementId) {
+      continue;
+    }
+    const slide = slides[slideIndex]!;
+    if (op === "replace_text") {
+      const box = findBox(slide, elementId);
+      const text = asString(rec.text);
+      if (box && text) box.text = text;
+    } else if (op === "resize_box") {
+      const box = findBox(slide, elementId) ?? (slide.pictures ?? []).find((p) => p.id === elementId);
+      if (box) {
+        if (rec.x !== undefined) box.x = asNum(rec.x);
+        if (rec.y !== undefined) box.y = asNum(rec.y);
+        if (rec.w !== undefined) box.w = asNum(rec.w);
+        if (rec.h !== undefined) box.h = asNum(rec.h);
+      }
+    } else if (op === "swap_picture") {
+      const picture = (slide.pictures ?? []).find((p) => p.id === elementId);
+      const prompt = asString(rec.prompt);
+      if (picture && prompt) picture.prompt = prompt;
+    } else if (op === "drop_box") {
+      slide.boxes = slide.boxes.filter((box, i) => boxId(box, slideIndex, i) !== elementId);
+      if (slide.pictures) slide.pictures = slide.pictures.filter((p) => p.id !== elementId);
+    }
+  }
+  return validateDeck({ ...deck, slides });
+}
+
+function findBox(slide: SlideIr, elementId: string): TextBox | undefined {
+  return slide.boxes.find((box, i) => boxId(box, 0, i) === elementId || box.id === elementId);
+}
+
+function boxId(box: TextBox, slideIndex: number, i: number): string {
+  return box.id || `s${slideIndex}-${box.role}-${i}`;
+}
+
 export function structuralIssues(deck: DeckIr): string[] {
   const issues: string[] = [];
   if (deck.slides.length === 0) issues.push("deck has no slides");
@@ -283,7 +348,7 @@ export function structuralIssues(deck: DeckIr): string[] {
 
 export function validateDeck(deck: DeckIr): DeckIr {
   const title = clipTitle(deck.title || "Presentation");
-  const slides = (deck.slides ?? []).slice(0, MAX_SLIDES).map((slide) => {
+  const slides = (deck.slides ?? []).slice(0, MAX_SLIDES).map((slide, index) => {
     const normalized = slideFromUnknown(slide);
     const next = {
       ...normalized,
@@ -292,7 +357,10 @@ export function validateDeck(deck: DeckIr): DeckIr {
       cards: (normalized.cards ?? []).slice(0, MAX_SUPPORTS),
       metrics: (normalized.metrics ?? []).slice(0, MAX_SUPPORTS),
       asks: (normalized.asks ?? []).slice(0, MAX_SUPPORTS),
-      boxes: (normalized.boxes ?? []).slice(0, 16).map(clampTextBox),
+      boxes: (normalized.boxes ?? []).slice(0, 16).map((box, i) => {
+        const clamped = clampTextBox(box);
+        return { ...clamped, id: clamped.id || `s${index}-${clamped.role}-${i}` };
+      }),
       shapes: (normalized.shapes ?? []).slice(0, 16).map(clampShape),
       pictures: (normalized.pictures ?? []).slice(0, 4).map((picture, i) => clampPicture(picture, i)),
     };
@@ -453,6 +521,7 @@ function textBoxFromUnknown(item: unknown): TextBox | null {
   const role = asString(rec.role);
   return {
     ...box,
+    id: asString(rec.id) || undefined,
     role: isTextRole(role) ? role : "body",
     text,
     fontSize: asNum(rec.fontSize) || undefined,
@@ -632,7 +701,7 @@ function asMetrics(
     .slice(0, MAX_SUPPORTS);
 }
 
-function isTextRole(value: string): value is TextRole {
+export function isTextRole(value: string): value is TextRole {
   return value === "title" || value === "subtitle" || value === "body" || value === "caption" || value === "kicker" || value === "number";
 }
 

@@ -7,7 +7,7 @@
 import { MAX_CRITIQUE_ROUNDS, MAX_IMAGES } from "./office-ir.js";
 
 export type DocumentBudget = {
-  /** 6 turns → planner + compile + screenshot + judge each turn. */
+  /** 3 turns → planner + repair + optional compile + screenshot + judge. */
   critiqueRounds: number;
   maxImages: number;
   wallClockMs: number;

@@ -9,7 +9,7 @@
  * Screenshots live in GCS; Firestore holds the vector and the graph.
  */
 
-import { OFFICE_LAYOUTS, type SlideLayout } from "./office-ir.js";
+import { OFFICE_LAYOUTS, type SlideIr, type SlideLayout } from "./office-ir.js";
 import type { PptxBox } from "./document-pptx-geometry.js";
 
 export const SLIDE_DESIGN_COLLECTION = "slideDesigns";
@@ -85,7 +85,86 @@ export type SlideDesignNode = {
   imagePath?: string;
   gcsUri?: string;
   embedding?: number[];
+  slotSchema?: SlotSchema;
 };
+
+export type SlotSchema = {
+  layout: SlideLayout;
+  titles: number;
+  bodies: number;
+  pictures: number;
+  charts: number;
+  numbers: number;
+};
+
+export function slotSchemaFromDescription(
+  layout: SlideLayout,
+  desc: SlideDesignDescription,
+  geometry: PptxBox[] = [],
+): SlotSchema {
+  const boxes = desc.boxes ?? [];
+  return {
+    layout,
+    titles: boxes.filter((b) => b.role === "title").length || (desc.title ? 1 : 0),
+    bodies: boxes.filter((b) => b.role === "body" || b.role === "subtitle").length,
+    pictures: (desc.images ?? []).length,
+    charts: geometry.filter((g) => (g.kind as string) === "chart").length,
+    numbers: boxes.filter((b) => b.role === "number").length,
+  };
+}
+
+export function slotSchemaOfNode(node: SlideDesignNode): SlotSchema {
+  return node.slotSchema ?? slotSchemaFromDescription(node.layout, node.description, node.geometry);
+}
+
+export function slotSchemaOfSlide(slide: SlideIr): SlotSchema {
+  const boxes = slide.boxes ?? [];
+  return {
+    layout: slide.layout,
+    titles: boxes.filter((b) => b.role === "title").length || (slide.title ? 1 : 0),
+    bodies:
+      boxes.filter((b) => b.role === "body").length ||
+      (slide.bullets?.length ? 1 : 0) + (slide.cards?.length ? 1 : 0),
+    pictures: (slide.pictures?.length ?? 0) || (slide.image?.kind === "generate" ? 1 : 0),
+    charts: slide.chart ? 1 : 0,
+    numbers: slide.metrics?.length ?? boxes.filter((b) => b.role === "number").length,
+  };
+}
+
+export function schemaScore(a: SlotSchema, b: SlotSchema): number {
+  let s = 0;
+  if (a.layout === b.layout) s += 3;
+  s += 1 - Math.min(1, Math.abs(a.titles - b.titles) / 2);
+  s += 1 - Math.min(1, Math.abs(a.bodies - b.bodies) / 3);
+  s += 1 - Math.min(1, Math.abs(a.pictures - b.pictures) / 2);
+  s += 1 - Math.min(1, Math.abs(a.charts - b.charts));
+  s += 1 - Math.min(1, Math.abs(a.numbers - b.numbers) / 4);
+  return s;
+}
+
+export function rerankBySlotSchema(nodes: SlideDesignNode[], brief: { slides: SlideIr[] }): SlideDesignNode[] {
+  if (!nodes.length) return [];
+  const used = new Set<string>();
+  const picked: SlideDesignNode[] = [];
+  for (const slide of brief.slides) {
+    const want = slotSchemaOfSlide(slide);
+    let best: SlideDesignNode | undefined;
+    let bestScore = -1;
+    for (const node of nodes) {
+      if (used.has(node.id)) continue;
+      const score = schemaScore(want, slotSchemaOfNode(node));
+      if (score > bestScore) {
+        best = node;
+        bestScore = score;
+      }
+    }
+    if (best && bestScore >= 3) {
+      picked.push(best);
+      used.add(best.id);
+    }
+  }
+  return [...picked, ...nodes.filter((n) => !used.has(n.id))];
+}
 
 export function slideKey(index: number): string {
   return `slide-${String(index + 1).padStart(2, "0")}`;
@@ -112,6 +191,7 @@ export function flattenDeckGraph(deck: DeckGraph): SlideDesignNode[] {
       geometry: slide.coordinates,
       imagePath: slide.image,
       gcsUri: slide.gcsUri,
+      slotSchema: slotSchemaFromDescription(slide.description.layout, slide.description, slide.coordinates),
     };
   });
 }

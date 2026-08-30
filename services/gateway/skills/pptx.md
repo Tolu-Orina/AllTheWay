@@ -37,7 +37,7 @@ Pick **one layout per slide**: `title-slide`, `section-header`,
 - Prompts describe a specific photograph that belongs on that slide.
 - Do not generate images at plan time. After Yes the cell planner places
   boxes, the worker fills stills, screenshots the PPTX in LibreOffice, and
-  an independent judge scores until >= 95 or 6 turns.
+  an independent judge scores Content and Design until both are ≥ 4 or 3 turns.
 - Titles are action titles: a complete-sentence takeaway, not a topic label.
   Reading only the titles must tell the recommendation story.
 - Max ~8 slides unless they asked for more. At most four supports per slide.

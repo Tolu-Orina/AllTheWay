@@ -28,7 +28,9 @@ test("the judge prompt cannot rewrite the plan", () => {
   assert.match(s, /do not talk to the person/);
   assert.match(s, /do not rewrite/);
   assert.match(s, /no irpatch/);
-  assert.match(s, /score >= 95/);
   assert.match(s, /libreoffice/);
+  assert.match(s, /content/);
+  assert.match(s, /design/);
+  assert.doesNotMatch(s, /score >= 95/);
   assert.doesNotMatch(s, /irpatch\.slides/);
 });

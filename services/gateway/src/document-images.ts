@@ -1,3 +1,5 @@
+import { createHash } from "node:crypto";
+import { decode as decodeJpeg } from "jpeg-js";
 import { GoogleAuth } from "google-auth-library";
 
 /**
@@ -19,6 +21,89 @@ const SLIDE_STYLE =
 
 export const IMAGE_BACKOFF_MS = [1_000, 2_000, 4_000, 8_000, 16_000];
 export const IMAGE_RETRY_CAP = IMAGE_BACKOFF_MS.length;
+
+export type StillAsset = {
+  hash: string;
+  prompt: string;
+  bytes: Buffer;
+  width: number;
+  height: number;
+  luminance: number;
+};
+
+export type StillCache = Map<string, StillAsset>;
+
+export type StillMeta = {
+  hash: string;
+  prompt: string;
+  width: number;
+  height: number;
+  luminance: number;
+};
+
+export function promptHash(prompt: string): string {
+  return createHash("sha256")
+    .update(prompt.trim().toLowerCase().replace(/\s+/g, " "))
+    .digest("hex")
+    .slice(0, 16);
+}
+
+export function imageDimensions(bytes: Buffer): { width: number; height: number } {
+  if (bytes.length >= 24 && bytes[0] === 0x89 && bytes[1] === 0x50 && bytes[2] === 0x4e) {
+    return { width: bytes.readUInt32BE(16), height: bytes.readUInt32BE(20) };
+  }
+  if (bytes.length >= 3 && bytes[0] === 0xff && bytes[1] === 0xd8) {
+    try {
+      const jpeg = decodeJpeg(bytes, { useTArray: true });
+      return { width: jpeg.width, height: jpeg.height };
+    } catch {
+      /* fall through */
+    }
+  }
+  return { width: 1024, height: 1024 };
+}
+
+export function meanLuminance(bytes: Buffer): number {
+  if (bytes.length >= 3 && bytes[0] === 0xff && bytes[1] === 0xd8) {
+    try {
+      const jpeg = decodeJpeg(bytes, { useTArray: true });
+      const data = jpeg.data;
+      let sum = 0;
+      let n = 0;
+      const step = Math.max(4, Math.floor(data.length / 4000) * 4);
+      for (let i = 0; i + 2 < data.length; i += step) {
+        sum += 0.2126 * (data[i] ?? 0) + 0.7152 * (data[i + 1] ?? 0) + 0.0722 * (data[i + 2] ?? 0);
+        n += 1;
+      }
+      return n ? Math.round(sum / n) : 128;
+    } catch {
+      return 128;
+    }
+  }
+  return 128;
+}
+
+export function stillFromBytes(prompt: string, bytes: Buffer): StillAsset {
+  const size = imageDimensions(bytes);
+  return {
+    hash: promptHash(prompt),
+    prompt: prompt.trim(),
+    bytes,
+    width: size.width,
+    height: size.height,
+    luminance: meanLuminance(bytes),
+  };
+}
+
+export function stillMeta(asset: StillAsset): StillMeta {
+  return {
+    hash: asset.hash,
+    prompt: asset.prompt,
+    width: asset.width,
+    height: asset.height,
+    luminance: asset.luminance,
+  };
+}
 
 export async function vertexProject(): Promise<string> {
   const named = process.env.MEDIA_PROJECT || process.env.VERTEX_PROJECT || "";

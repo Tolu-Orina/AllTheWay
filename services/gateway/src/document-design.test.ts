@@ -10,6 +10,9 @@ import {
   flattenDeckGraph,
   nearestDesigns,
   slideKey,
+  schemaScore,
+  slotSchemaOfNode,
+  slotSchemaOfSlide,
   validateDescription,
   type DeckGraph,
   type SlideDesignNode,
@@ -122,4 +125,16 @@ test("a description is valid when its boxes sit on the extracted geometry", () =
   assert.equal(result.ok, true);
   assert.ok(descriptionToText(desc).includes("Consulting Proposal"));
   assert.ok(boxDistance(geometry[0]!, desc.boxes[0]!) < 0.05);
+});
+
+test("slot schema prefers a matching layout over a topic-only neighbour", () => {
+  const coverSchema = slotSchemaOfNode(cover);
+  const agendaSlide = {
+    layout: "title-and-body" as const,
+    title: "Agenda",
+    bullets: ["One", "Two"],
+    boxes: [],
+  };
+  assert.ok(coverSchema.pictures >= 1);
+  assert.ok(schemaScore(slotSchemaOfSlide(agendaSlide), slotSchemaOfNode(agenda)) > schemaScore(slotSchemaOfSlide(agendaSlide), coverSchema));
 });

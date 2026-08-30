@@ -3,11 +3,12 @@ import assert from "node:assert/strict";
 import { test } from "node:test";
 
 import {
+  CONTENT_PASS_BAND,
+  DESIGN_PASS_BAND,
   MAX_CRITIQUE_ROUNDS,
   MAX_SLIDES,
   MAX_SUPPORTS,
   OFFICE_LAYOUTS,
-  VISUAL_PASS_SCORE,
   applyDeckPatch,
   imageSlots,
   knownLayout,
@@ -99,18 +100,19 @@ test("a healthy run compiles a deck and the judge can pass", async () => {
     planner: identityPlanner,
     generateImage: async () => TINY_PNG,
     renderPages: stubPages,
-    critic: async () => ({ score: 96, pass: true, issues: [] }),
+    critic: async () => ({ content: 5, design: 5, issues: [] }),
   });
   assert.equal(result.compiles, 1);
   assert.equal(result.criticPassed, true);
-  assert.equal(result.criticScore, 96);
+  assert.equal(result.contentScore, 5);
+  assert.equal(result.designScore, 5);
   assert.equal(result.imagesGenerated, 1);
   assert.ok(isZip(result.body));
   assert.ok(result.trace.some((line) => /visual QA/i.test(line)));
   assert.ok(result.trace.some((line) => /planner turn 1/i.test(line)));
 });
 
-test("a seventh judge turn is impossible", async () => {
+test("a fourth judge turn is impossible", async () => {
   let criticCalls = 0;
   let plannerCalls = 0;
   const result = await runDocumentQuality({
@@ -127,12 +129,12 @@ test("a seventh judge turn is impossible", async () => {
       return { score: 40, pass: false, issues: ["too much text"] };
     },
   });
-  assert.equal(MAX_CRITIQUE_ROUNDS, 6);
-  assert.equal(plannerCalls, 6);
-  assert.equal(criticCalls, 6);
-  assert.equal(result.compiles, 6);
+  assert.equal(MAX_CRITIQUE_ROUNDS, 3);
+  assert.equal(plannerCalls, 3);
+  assert.equal(criticCalls, 3);
+  assert.equal(result.compiles, 3);
   assert.equal(result.criticPassed, false);
-  assert.ok(result.criticScore < VISUAL_PASS_SCORE);
+  assert.ok(result.contentScore < CONTENT_PASS_BAND || result.designScore < DESIGN_PASS_BAND);
   assert.ok(isZip(result.body));
 });
 
@@ -145,7 +147,8 @@ test("the judge cannot rewrite the plan", async () => {
     generateImage: async () => TINY_PNG,
     renderPages: stubPages,
     critic: async () => ({
-      score: 96,
+      content: 5,
+      design: 5,
       issues: [],
       irPatch: { title: "HACKED", slides: [{ title: "HACKED" }] },
     } as never),
@@ -172,15 +175,15 @@ test("a failing judge sends issues to a fresh planner, not a patch", async () =>
     },
     critic: async () =>
       plannerCalls === 1
-        ? { score: 40, issues: ["empty lower half"] }
-        : { score: 96, issues: [] },
+        ? { content: 2, design: 2, issues: ["empty lower half"] }
+        : { content: 5, design: 5, issues: [] },
   });
   assert.equal(plannerCalls, 2);
   assert.equal(result.compiles, 2);
   assert.equal(result.criticPassed, true);
 });
 
-test("score 94 never auto-passes even with a photograph", async () => {
+test("content 4 design 3 never auto-passes even with a photograph", async () => {
   const result = await runDocumentQuality({
     tool: "create_slides",
     args: DECK,
@@ -188,10 +191,10 @@ test("score 94 never auto-passes even with a photograph", async () => {
     planner: identityPlanner,
     generateImage: async () => TINY_PNG,
     renderPages: stubPages,
-    critic: async () => ({ score: 94, pass: true, issues: ["topic titles"] }),
+    critic: async () => ({ content: 4, design: 3, pass: true, issues: ["topic titles"] }),
   });
   assert.equal(result.criticPassed, false);
-  assert.equal(result.criticScore, 94);
+  assert.equal(result.designScore, 3);
   assert.equal(result.imagesGenerated, 1);
   assert.ok(isZip(result.body));
 });
@@ -226,7 +229,7 @@ test("a hung critic returns the first compile", async () => {
   assert.equal(result.degraded, true);
   assert.equal(result.criticPassed, false);
   assert.ok(isZip(result.body));
-  assert.ok(result.trace.some((line) => /timed out|0\/100/i.test(line)));
+  assert.ok(result.trace.some((line) => /timed out|0\/5/i.test(line)));
 });
 
 test("zero remaining images still produces a deck and never generates", async () => {
@@ -241,7 +244,7 @@ test("zero remaining images still produces a deck and never generates", async ()
       return TINY_PNG;
     },
     renderPages: stubPages,
-    critic: async () => ({ score: 96, pass: true, issues: [] }),
+    critic: async () => ({ content: 5, design: 5, issues: [] }),
   });
   assert.equal(calls, 0);
   assert.equal(result.imagesGenerated, 0);
@@ -329,10 +332,10 @@ test("code caps a pass when a planned still is missing", async () => {
     planner: identityPlanner,
     generateImage: async () => null,
     renderPages: stubPages,
-    critic: async () => ({ score: 96, pass: true, issues: [] }),
+    critic: async () => ({ content: 5, design: 5, pass: true, issues: [] }),
   });
   assert.equal(result.criticPassed, false);
-  assert.ok(result.criticScore < VISUAL_PASS_SCORE);
+  assert.ok(result.trace.some((line) => /planned still|missing/i.test(line)));
   assert.ok(isZip(result.body));
 });
 
@@ -379,7 +382,7 @@ test("a planner that retags a still keeps the generated bytes", async () => {
       return plannerCalls === 1 ? first : second;
     },
     critic: async () =>
-      plannerCalls === 1 ? { score: 40, issues: ["empty lower half"] } : { score: 96, issues: [] },
+      plannerCalls === 1 ? { content: 2, design: 2, issues: ["empty lower half"] } : { content: 5, design: 5, issues: [] },
   });
   assert.equal(imageCalls, 1);
   assert.equal(result.imagesGenerated, 1);
@@ -387,11 +390,67 @@ test("a planner that retags a still keeps the generated bytes", async () => {
   assert.equal(result.criticPassed, true);
 });
 
-test("code, not the model boolean, decides pass at 95", () => {
-  assert.equal(normalizeCritique({ score: 94, pass: true, issues: [] }).pass, false);
-  assert.equal(normalizeCritique({ score: 95, pass: false, issues: [] }).pass, true);
-  assert.equal(normalizeCritique({ pass: true, issues: [] }).score, 100);
-  assert.equal(VISUAL_PASS_SCORE, 95);
+test("code, not the model boolean, decides Content and Design bands", () => {
+  assert.equal(normalizeCritique({ content: 4, design: 3, pass: true, issues: [] }).pass, false);
+  assert.equal(normalizeCritique({ content: 4, design: 4, pass: false, issues: [] }).pass, true);
+  assert.equal(normalizeCritique({ pass: true, issues: [] }).content, 5);
+  assert.equal(CONTENT_PASS_BAND, 4);
+  assert.equal(DESIGN_PASS_BAND, 4);
+});
+
+test("one Yes generates each unique prompt once across failing turns", async () => {
+  let imageCalls = 0;
+  const result = await runDocumentQuality({
+    tool: "create_slides",
+    args: DECK,
+    imagesRemaining: 8,
+    planner: identityPlanner,
+    generateImage: async () => {
+      imageCalls += 1;
+      return TINY_PNG;
+    },
+    renderPages: stubPages,
+    critic: async () => ({ content: 2, design: 2, issues: ["empty lower half"] }),
+  });
+  assert.equal(imageCalls, 1);
+  assert.equal(result.imagesGenerated, 1);
+  assert.equal(result.compiles, 3);
+  assert.equal(result.criticPassed, false);
+});
+
+test("overlapping IR is repaired or never reaches the judge", async () => {
+  let criticCalls = 0;
+  const overlapping = parseDeck({
+    ir: "deck.v1",
+    title: "Overlap",
+    slides: [
+      {
+        layout: "title-and-body",
+        title: "Stacked",
+        boxes: [
+          { id: "t", role: "title", text: "Stacked boxes fail structure", x: 1, y: 1, w: 8, h: 3, fontSize: 32, color: "111111" },
+          { id: "b", role: "body", text: "The body sits on the title.", x: 1.2, y: 1.4, w: 8, h: 3, fontSize: 18, color: "111111" },
+        ],
+      },
+    ],
+  });
+  const result = await runDocumentQuality({
+    tool: "create_slides",
+    args: overlapping as unknown as Record<string, unknown>,
+    imagesRemaining: 0,
+    planner: async () => overlapping,
+    renderPages: stubPages,
+    critic: async () => {
+      criticCalls += 1;
+      return { content: 5, design: 5, issues: [] };
+    },
+  });
+  assert.ok(isZip(result.body));
+  if (criticCalls === 0) {
+    assert.ok(result.trace.some((line) => /structure turn/i.test(line)));
+  } else {
+    assert.ok(result.trace.some((line) => /repaired/i.test(line)));
+  }
 });
 
 test("LibreOffice exports each slide as a PNG", { skip: !isLibreOfficeAvailable() }, async () => {

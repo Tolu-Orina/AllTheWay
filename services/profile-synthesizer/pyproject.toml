@@ -3,6 +3,11 @@ name = "alltheway-profile-synthesizer"
 version = "0.0.0"
 requires-python = ">=3.11"
 dependencies = [
+  # `memory_bank.py` calls google.auth.default and AuthorizedSession. The
+  # `[requests]` extra is what carries the transport -- without it the import
+  # raises and the memory bank silently does nothing, which is the same failure
+  # that took the orchestrator and the registry down.
+  "google-auth[requests]>=2.35",
   "fastapi>=0.115",
   "uvicorn[standard]>=0.34",
   "pydantic>=2.9",

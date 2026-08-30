@@ -47,6 +47,8 @@ export async function invokeDocumentCell(payload: {
       compiles?: number;
       criticPassed?: boolean;
       criticScore?: number;
+      contentScore?: number;
+      designScore?: number;
     };
     if (!json.body || !json.mimeType || !json.title) return null;
     return {
@@ -60,6 +62,8 @@ export async function invokeDocumentCell(payload: {
       compiles: Number(json.compiles ?? 1),
       criticPassed: Boolean(json.criticPassed),
       criticScore: Number(json.criticScore ?? 0),
+      contentScore: Number(json.contentScore ?? 0),
+      designScore: Number(json.designScore ?? 0),
     };
   } catch {
     return null;

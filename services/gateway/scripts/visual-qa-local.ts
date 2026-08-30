@@ -155,6 +155,8 @@ async function main(): Promise<void> {
       {
         criticPassed: result.criticPassed,
         criticScore: result.criticScore,
+        contentScore: result.contentScore,
+        designScore: result.designScore,
         compiles: result.compiles,
         degraded: result.degraded,
         imagesGenerated: result.imagesGenerated,
@@ -171,6 +173,8 @@ async function main(): Promise<void> {
         out: OUT,
         criticPassed: result.criticPassed,
         criticScore: result.criticScore,
+        contentScore: result.contentScore,
+        designScore: result.designScore,
         compiles: result.compiles,
         degraded: result.degraded,
         imagesGenerated: result.imagesGenerated,

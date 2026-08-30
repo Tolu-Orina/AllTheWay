@@ -148,7 +148,15 @@ def third_party_roots(text: str) -> set[str]:
             or head.startswith("_")
         ):
             continue
-        imported = [n.strip() for n in names.replace("(", "").split(",") if n.strip()]
+        # `from google.cloud import firestore as fs` names the distribution on
+        # the left of `as`. Without stripping the alias the root became
+        # "firestore as fs", which no mapping can match -- so a real dependency
+        # was reported as unmapped and the check could not speak to it.
+        imported = [
+            n.strip().split(" as ")[0].strip()
+            for n in names.replace("(", "").split(",")
+            if n.strip()
+        ]
         roots |= _distribution_root(module, imported)
 
     return roots

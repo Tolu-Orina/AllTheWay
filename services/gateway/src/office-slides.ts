@@ -94,6 +94,7 @@ function blitPicture(page: Page, picture: Picture, images: SlideImages): void {
     y: picture.y,
     w: picture.w,
     h: picture.h,
+    sizing: { type: "cover", w: picture.w, h: picture.h },
   });
 }
 

@@ -7,9 +7,14 @@ import {
   expandTheme,
   flattenDeckGraph,
   nearestDesigns,
+  rerankBySlotSchema,
+  schemaScore,
+  slotSchemaOfNode,
+  slotSchemaOfSlide,
   type DeckGraph,
   type SlideDesignNode,
 } from "./document-design.js";
+import type { DeckIr } from "./office-ir.js";
 import { downloadGcsUri } from "./document-design-gcs.js";
 import { embedSlideQuery } from "./document-multimodal-embed.js";
 
@@ -96,6 +101,9 @@ export type RetrievedDeck = {
     nextId: string | null;
     coordinates: SlideDesignNode["geometry"];
     description: SlideDesignNode["description"];
+    slotSchema: ReturnType<typeof slotSchemaOfNode>;
+    boxes: SlideDesignNode["description"]["boxes"];
+    images: SlideDesignNode["description"]["images"];
   }>;
 };
 
@@ -122,6 +130,9 @@ export function groupRetrievedDecks(nodes: SlideDesignNode[]): RetrievedDeck[] {
         nextId: slide.nextId,
         coordinates: slide.geometry,
         description: slide.description,
+        slotSchema: slotSchemaOfNode(slide),
+        boxes: slide.description.boxes,
+        images: slide.description.images,
       })),
     });
   }
@@ -183,7 +194,11 @@ async function loadSlideImageBytes(
   }
 }
 
-export async function retrieveSlideDesigns(query: string, limit = 3): Promise<SlideDesignNode[]> {
+export async function retrieveSlideDesigns(
+  query: string,
+  limit = 3,
+  brief?: DeckIr,
+): Promise<SlideDesignNode[]> {
   const fromStore = await retrieveFromFirestore(query, limit).catch(() => [] as SlideDesignNode[]);
   if (fromStore[0]) {
     const theme = await loadThemeOrHits(fromStore[0], fromStore);
@@ -196,7 +211,8 @@ export async function retrieveSlideDesigns(query: string, limit = 3): Promise<Sl
       extra.push(...expandTheme(hit, siblings, 4));
       if (extra.length >= 4) break;
     }
-    return [...expandTheme(fromStore[0], theme, 12), ...extra];
+    const nodes = [...expandTheme(fromStore[0], theme, 12), ...extra];
+    return brief ? rerankBySlotSchema(nodesWithSchema(nodes), brief) : nodes;
   }
   const catalog = loadDesignCatalog();
   const hits = nearestDesigns(query, catalog, limit);
@@ -210,7 +226,12 @@ export async function retrieveSlideDesigns(query: string, limit = 3): Promise<Sl
     extra.push(...expandTheme(next, catalog, 4));
     if (extra.length >= 4) break;
   }
-  return [...expandTheme(hit, catalog, 12), ...extra];
+  const nodes = [...expandTheme(hit, catalog, 12), ...extra];
+  return brief ? rerankBySlotSchema(nodesWithSchema(nodes), brief) : nodes;
+}
+
+function nodesWithSchema(nodes: SlideDesignNode[]): SlideDesignNode[] {
+  return nodes.map((node) => ({ ...node, slotSchema: slotSchemaOfNode(node) }));
 }
 
 async function loadThemeOrHits(hit: SlideDesignNode, fallback: SlideDesignNode[]): Promise<SlideDesignNode[]> {
@@ -256,3 +277,5 @@ export async function embedQuery(text: string): Promise<number[] | null> {
 export async function embedDocument(text: string): Promise<number[] | null> {
   return embedSlideQuery(text);
 }
+
+export { rerankBySlotSchema, schemaScore, slotSchemaOfNode, slotSchemaOfSlide };

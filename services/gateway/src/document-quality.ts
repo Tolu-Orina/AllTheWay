@@ -11,17 +11,28 @@ import { renderPptxPagesOrThrow, type RenderPagesFn } from "./document-libreoffi
 import { vertexPlanner, type PlannerFn, type PlannerInput } from "./document-planner.js";
 import { realizeDeck } from "./office-layouts.js";
 import { compileDeck, type SlideImages } from "./office-slides.js";
-import { VISUAL_PASS_SCORE, imageSlots, parseDeck, validateDeck, type DeckIr, type NamedImage } from "./office-ir.js";
+import {
+  CONTENT_PASS_BAND,
+  DESIGN_PASS_BAND,
+  imageSlots,
+  parseDeck,
+  validateDeck,
+  type DeckIr,
+} from "./office-ir.js";
+import { promptHash, stillFromBytes, stillMeta, type StillCache } from "./document-images.js";
+import { validateLayout, violationNotes } from "./document-validate.js";
+import { repairLayout, snapChrome } from "./document-repair.js";
 
 /**
  * Bounded document-cell graph. One call, workers invisible.
  *
  * 1. Parse the story brief
- * 2. For at most 6 turns:
- *    planner (fresh Gemini call) → worker (generate stills, compile, LibreOffice)
- *    → judge (fresh Gemini call, no rewrite)
- * 3. Stop when score >= 95. Visual QA is never skipped or auto-passed.
- * 4. After 6 turns, persist the last compile; criticPassed stays false if < 95
+ * 2. Generate stills once (prompt hash cache)
+ * 3. For at most 3 turns:
+ *    planner (edit retrieved boxes) → repair → validate
+ *    if structure fails: skip compile and judge
+ *    else: compile → LibreOffice → Content/Design judge
+ * 4. Pass when structure holds and Content ≥ 4 and Design ≥ 4
  */
 
 export type GenerateImageFn = (prompt: string) => Promise<Buffer | null>;
@@ -46,6 +57,8 @@ export type DocumentQualityResult = OfficeFile & {
   compiles: number;
   criticPassed: boolean;
   criticScore: number;
+  contentScore: number;
+  designScore: number;
 };
 
 export async function compileWorkFile(opts: {
@@ -78,6 +91,8 @@ export async function compileWorkFile(opts: {
       compiles: 1,
       criticPassed: false,
       criticScore: 0,
+      contentScore: 0,
+      designScore: 0,
     };
   }
 }
@@ -98,6 +113,8 @@ export async function runDocumentQuality(opts: DocumentQualityInput): Promise<Do
       compiles: 1,
       criticPassed: true,
       criticScore: 100,
+      contentScore: 5,
+      designScore: 5,
     };
   }
 
@@ -114,17 +131,31 @@ export async function runDocumentQuality(opts: DocumentQualityInput): Promise<Do
   const quota =
     opts.imagesRemaining === null ? budget.maxImages : Math.max(0, Math.min(budget.maxImages, opts.imagesRemaining));
 
+  const cache: StillCache = new Map();
   let images: SlideImages = {};
   let imagesGenerated = 0;
   let last: OfficeFile | undefined;
   let compiles = 0;
   let criticPassed = false;
   let criticScore = 0;
+  let contentScore = 0;
+  let designScore = 0;
+  let lastDesign = 0;
   let degraded = false;
   let lastIssues: string[] = [];
-  let lastSlots: NamedImage[] = imageSlots(deck);
+  let overlapCount = 0;
+  let offCanvasCount = 0;
+  let turnsUsed = 0;
+
+  imagesGenerated += await generateBriefStills(deck, cache, {
+    generateImage: opts.generateImage,
+    quota,
+    trace,
+  });
+  const vertexImageHits = imagesGenerated;
 
   for (let turn = 0; turn < budget.critiqueRounds; turn++) {
+    turnsUsed = turn + 1;
     const remaining = remainingDeadline(started, budget, now());
     if (turn > 0 && remaining < MORE_TURN_MS) {
       trace.push("wall clock exhausted; keeping last compile");
@@ -138,6 +169,8 @@ export async function runDocumentQuality(opts: DocumentQualityInput): Promise<Do
           brief,
           previous: turn > 0 ? deck : undefined,
           issues: turn > 0 ? lastIssues : undefined,
+          stills: [...cache.values()].map(stillMeta),
+          editMode: turn > 0,
         } satisfies PlannerInput),
         budget.plannerTimeoutMs,
       );
@@ -148,13 +181,36 @@ export async function runDocumentQuality(opts: DocumentQualityInput): Promise<Do
       if (turn === 0) deck = realizeDeck(brief);
     }
 
-    images = remapImages(images, lastSlots, deck);
-    lastSlots = imageSlots(deck);
-    imagesGenerated += await fillImages(deck, images, {
+    imagesGenerated += await generateMissingStills(deck, cache, {
       generateImage: opts.generateImage,
       quota,
+      already: imagesGenerated,
       trace,
     });
+    images = bindStills(deck, cache);
+
+    const beforeRepair = JSON.stringify(deck);
+    let report = validateLayout(deck, images, cache, quota > 0 && imageSlots(deck).length > 0);
+    if (!report.ok) {
+      const repaired = repairLayout(deck, report.failures);
+      deck = snapChrome(repaired.deck);
+      if (repaired.changed || JSON.stringify(deck) !== beforeRepair) {
+        trace.push(`repaired turn ${turn + 1}`);
+      }
+      report = validateLayout(deck, images, cache, quota > 0 && imageSlots(deck).length > 0);
+    } else {
+      deck = snapChrome(deck);
+    }
+    overlapCount = report.overlapCount;
+    offCanvasCount = report.offCanvasCount;
+
+    if (!report.ok) {
+      lastIssues = violationNotes(report);
+      trace.push(
+        `structure turn ${turn + 1}: fail overlap=${report.overlapCount} offCanvas=${report.offCanvasCount} — ${lastIssues.slice(0, 3).join("; ")}`,
+      );
+      continue;
+    }
 
     last = await compileDeck(deck, images);
     compiles += 1;
@@ -166,8 +222,10 @@ export async function runDocumentQuality(opts: DocumentQualityInput): Promise<Do
     } catch (err) {
       const reason = (err as Error).message || "LibreOffice render failed";
       criticScore = 0;
+      contentScore = 0;
+      designScore = 0;
       lastIssues = [reason];
-      trace.push(`visual QA turn ${turn + 1}: 0/100 (${reason})`);
+      trace.push(`visual QA turn ${turn + 1}: 0/5 (${reason})`);
       if (/not installed/i.test(reason)) {
         degraded = true;
         break;
@@ -183,34 +241,41 @@ export async function runDocumentQuality(opts: DocumentQualityInput): Promise<Do
     try {
       critique = normalizeCritique(await withTimeout(critic(deck, pages), budget.criticTimeoutMs));
     } catch {
-      critique = { score: 0, pass: false, issues: ["visual QA timed out"] };
+      criticScore = 0;
+      contentScore = 0;
+      designScore = 0;
+      lastIssues = ["visual QA timed out"];
+      degraded = true;
+      trace.push(`visual QA turn ${turn + 1}: timed out`);
+      break;
     }
-    const missing = missingPlannedStills(deck, images);
-    if (missing) {
-      critique = {
-        ...critique,
-        score: Math.min(critique.score, 79),
-        pass: false,
-        issues: [...critique.issues, `${missing} planned still(s) have no image`],
-      };
-    }
+    contentScore = critique.content;
+    designScore = critique.design;
     criticScore = critique.score;
     lastIssues = critique.issues;
-    if (critique.pass) {
+    const pairwiseOk = lastDesign === 0 || critique.design >= lastDesign;
+    lastDesign = critique.design;
+    if (critique.pass || (pairwiseOk && critique.content >= CONTENT_PASS_BAND && critique.design >= DESIGN_PASS_BAND)) {
       criticPassed = true;
-      trace.push(`visual QA turn ${turn + 1}: ${critique.score}/100 pass`);
-      console.info(`[document-cell] visual QA turn ${turn + 1}: ${critique.score}/100 pass`);
+      trace.push(
+        `visual QA turn ${turn + 1}: content ${critique.content}/5 design ${critique.design}/5 pass`,
+      );
+      console.info(
+        `[document-cell] visual QA turn ${turn + 1}: content ${critique.content}/5 design ${critique.design}/5 pass`,
+      );
       break;
     }
     trace.push(
-      `visual QA turn ${turn + 1}: ${critique.score}/100 — ${(critique.issues ?? []).join("; ") || `below ${VISUAL_PASS_SCORE}`}`,
+      `visual QA turn ${turn + 1}: content ${critique.content}/5 design ${critique.design}/5 — ${(critique.issues ?? []).join("; ") || `need ${CONTENT_PASS_BAND}+ / ${DESIGN_PASS_BAND}+`}`,
     );
     console.info(
-      `[document-cell] visual QA turn ${turn + 1}: ${critique.score}/100 — ${(critique.issues ?? []).slice(0, 3).join("; ")}`,
+      `[document-cell] visual QA turn ${turn + 1}: content ${critique.content}/5 design ${critique.design}/5 — ${(critique.issues ?? []).slice(0, 3).join("; ")}`,
     );
     if (turn === budget.critiqueRounds - 1) {
       degraded = true;
-      trace.push(`visual QA still below ${VISUAL_PASS_SCORE} after ${budget.critiqueRounds} turns; keeping last compile`);
+      trace.push(
+        `visual QA still below Content ${CONTENT_PASS_BAND} Design ${DESIGN_PASS_BAND} after ${budget.critiqueRounds} turns; keeping last compile`,
+      );
       break;
     }
   }
@@ -225,9 +290,15 @@ export async function runDocumentQuality(opts: DocumentQualityInput): Promise<Do
     trace.push("visual QA did not pass; keeping last compile");
   }
 
+  const wallMs = now() - started;
   trace.unshift(
     `Compiled ${deck.slides.length} slides, ${imagesGenerated} images, ` +
-      (criticPassed ? `critic passed ${criticScore}/100` : `critic ${criticScore}/100 (need ${VISUAL_PASS_SCORE})`),
+      (criticPassed
+        ? `critic passed content ${contentScore}/5 design ${designScore}/5`
+        : `critic content ${contentScore}/5 design ${designScore}/5 (need ${CONTENT_PASS_BAND}+)`),
+  );
+  trace.push(
+    `run: turns=${turnsUsed} imagesGenerated=${imagesGenerated} vertexImageHits=${vertexImageHits} content=${contentScore} design=${designScore} structure=${criticPassed ? "pass" : "fail"} degrade=${degraded} wallMs=${wallMs} overlap=${overlapCount} offCanvas=${offCanvasCount}`,
   );
 
   return {
@@ -238,75 +309,94 @@ export async function runDocumentQuality(opts: DocumentQualityInput): Promise<Do
     compiles,
     criticPassed,
     criticScore,
+    contentScore,
+    designScore,
   };
 }
 
-async function fillImages(
+async function generateBriefStills(
   deck: DeckIr,
-  images: SlideImages,
+  cache: StillCache,
+  opts: { generateImage?: GenerateImageFn; quota: number; trace: string[] },
+): Promise<number> {
+  const slots = uniqueByHash(imageSlots(deck));
+  if (slots.length && opts.quota === 0) {
+    opts.trace.push("skipped images: meter empty");
+    return 0;
+  }
+  if (!opts.generateImage || opts.quota <= 0 || !slots.length) return 0;
+  return fillCache(slots.slice(0, opts.quota), cache, opts.generateImage, opts.trace);
+}
+
+async function generateMissingStills(
+  deck: DeckIr,
+  cache: StillCache,
   opts: {
     generateImage?: GenerateImageFn;
     quota: number;
+    already: number;
     trace: string[];
   },
 ): Promise<number> {
-  const already = Object.values(images).filter((bytes) => bytes?.length).length;
-  const slots = imageSlots(deck);
-  if (slots.length && opts.quota === 0 && already === 0) {
-    if (!opts.trace.some((line) => /meter empty/i.test(line))) {
-      opts.trace.push("skipped images: meter empty");
-    }
-    return 0;
-  }
-  if (!opts.generateImage || opts.quota <= already) return 0;
-  const missing = slots.filter((slot) => !images[slot.id]?.length).slice(0, opts.quota - already);
+  if (!opts.generateImage || opts.already >= opts.quota) return 0;
+  const missing = uniqueByHash(imageSlots(deck)).filter((slot) => !cache.has(promptHash(slot.prompt)));
   if (!missing.length) return 0;
+  opts.trace.push(`planner invented ${missing.length} new still prompt(s)`);
+  return fillCache(missing.slice(0, opts.quota - opts.already), cache, opts.generateImage, opts.trace);
+}
 
+async function fillCache(
+  slots: Array<{ id: string; prompt: string }>,
+  cache: StillCache,
+  generateImage: GenerateImageFn,
+  trace: string[],
+): Promise<number> {
   const settled = await Promise.all(
-    missing.map(async (slot) => {
+    slots.map(async (slot) => {
+      const hash = promptHash(slot.prompt);
+      if (cache.has(hash)) return 0;
       try {
-        const bytes = await opts.generateImage!(slot.prompt);
-        return { slot, bytes };
+        const bytes = await generateImage(slot.prompt);
+        if (!bytes?.length) {
+          trace.push(`image ${slot.id} failed; compiling without it`);
+          return 0;
+        }
+        cache.set(hash, stillFromBytes(slot.prompt, bytes));
+        return 1;
       } catch {
-        opts.trace.push(`image ${slot.id} failed; compiling without it`);
-        return { slot, bytes: null as Buffer | null };
+        trace.push(`image ${slot.id} failed; compiling without it`);
+        return 0;
       }
     }),
   );
   let added = 0;
-  for (const { slot, bytes } of settled) {
-    if (bytes?.length) {
-      images[slot.id] = bytes;
-      added += 1;
-    }
-  }
-  if (added) {
-    opts.trace.push(`resolved ${added} image ${added === 1 ? "slot" : "slots"}`);
-  } else if (slots.length && opts.quota > 0 && already === 0) {
-    opts.trace.push("image generator returned nothing; compiling without stills");
+  for (const n of settled) added += n;
+  if (added) trace.push(`resolved ${added} image ${added === 1 ? "slot" : "slots"}`);
+  else if (slots.length && !cache.size) {
+    trace.push("image generator returned nothing; compiling without stills");
   }
   return added;
 }
 
-function missingPlannedStills(deck: DeckIr, images: SlideImages): number {
-  return imageSlots(deck).filter((slot) => !images[slot.id]?.length).length;
+function bindStills(deck: DeckIr, cache: StillCache): SlideImages {
+  const images: SlideImages = {};
+  for (const slot of imageSlots(deck)) {
+    const asset = cache.get(promptHash(slot.prompt));
+    if (asset) images[slot.id] = asset.bytes;
+  }
+  return images;
 }
 
-function remapImages(images: SlideImages, previous: NamedImage[], deck: DeckIr): SlideImages {
-  const byPrompt = new Map<string, Buffer>();
-  for (const slot of previous) {
-    const bytes = images[slot.id];
-    if (bytes?.length) byPrompt.set(slot.prompt, bytes);
+function uniqueByHash(slots: Array<{ id: string; prompt: string }>): Array<{ id: string; prompt: string }> {
+  const seen = new Set<string>();
+  const out: Array<{ id: string; prompt: string }> = [];
+  for (const slot of slots) {
+    const hash = promptHash(slot.prompt);
+    if (seen.has(hash)) continue;
+    seen.add(hash);
+    out.push(slot);
   }
-  const next: SlideImages = {};
-  for (const slot of imageSlots(deck)) {
-    if (images[slot.id]?.length) next[slot.id] = images[slot.id]!;
-    else {
-      const bytes = byPrompt.get(slot.prompt);
-      if (bytes) next[slot.id] = bytes;
-    }
-  }
-  return next;
+  return out;
 }
 
 function withTimeout<T>(promise: Promise<T>, ms: number): Promise<T> {

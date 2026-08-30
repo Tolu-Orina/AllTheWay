@@ -6,17 +6,16 @@ workers invisible, bounds in code, degrade instead of looping.
 It is **not** a second product orchestrator. The turn graph still plans.
 The person still confirms. After Yes this service:
 
-1. **Planner** (Gemini 3.7 Flash, fresh call) maps the story brief onto the
-   eleven Office layouts, backgrounds, stills, and x/y.
-2. **Worker** (code) generates planned stills, compiles the PPTX, screenshots
-   it in LibreOffice.
-3. **Judge** (Gemini 3.7 Flash, a different call, no planner transcript) scores
-   the screenshots. It cannot rewrite the plan. Fail → planner again.
+1. **Worker** generates stills once from the confirmed brief (prompt hash).
+2. **Planner** (Gemini 3.7 Flash, fresh call) edits retrieved boxes around
+   those pixels. Code repairs overlap and snaps chrome.
+3. If structure fails: skip LibreOffice and the judge. Else compile, screenshot,
+   and **Judge** (a different Flash call) scores Content and Design 1–5.
 
-Neither model talks to the person (FR-10). Visual QA is never skipped. If
-the score is below 95, the planner runs again, up to 6 turns. After 6 turns
-the last valid compile is persisted even if the score is still below 95
-(`criticPassed` stays false).
+Neither model talks to the person (FR-10). Visual QA is never skipped when
+structure passed. Pass is Content ≥ 4 and Design ≥ 4 on 1–5 bands. After 3
+turns the last valid compile is persisted even if the bands are still below
+4 (`criticPassed` stays false).
 
 Locally this machine needs LibreOffice (`soffice`). Set `LIBREOFFICE_BIN`
 if it is not in the default install path. The Cloud Run image installs
@@ -29,9 +28,9 @@ Planner and judge both see them. They never share a conversation.
 
 | Bound | Cap |
 |---|---|
-| Turns | 6 (plan + compile + screenshot + judge each turn) |
-| Pass threshold | score >= 95 |
-| Images | 8 per artifact |
+| Turns | 3 (plan + repair + optional compile + screenshot + judge) |
+| Pass threshold | Content ≥ 4 and Design ≥ 4 |
+| Images | 8 per artifact (generated once per unique prompt) |
 | Supports per slide | 4 |
 | Wall clock | 240s without images, 420s with |
 | Recursion | none |

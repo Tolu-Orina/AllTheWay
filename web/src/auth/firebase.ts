@@ -14,9 +14,44 @@ import {
  * correct rather than lazy — there is no secret to leak here. Real deployments
  * supply the project's public web config through VITE_ vars at build time.
  */
+/** The custom domain the product is served from in production. */
+const PRIMARY_HOST = "alltheway.rinegansolutions.com";
+
+/**
+ * The domain Firebase sends people to for Google sign-in.
+ *
+ * Built as `alltheway-rinegan.firebaseapp.com` while the app is served from
+ * `alltheway.rinegansolutions.com`, which makes the whole OAuth handshake
+ * cross-origin. That arrangement depends on third-party cookies, and Chrome and
+ * Safari now block them by default: the popup opens, Google authenticates, and
+ * the result never gets back to the page that asked. Nothing throws on our
+ * side, which is why it reads as "Google sign-in did not finish".
+ *
+ * Firebase Hosting serves `/__/auth/*` on *every* domain attached to the
+ * project — verified against all three of ours — so pointing this at whatever
+ * host the page is already on makes the handshake same-origin and removes the
+ * dependency on third-party cookies entirely.
+ *
+ * The configured value is still the fallback, and is what a local dev server or
+ * an unrecognised origin uses.
+ */
+function authDomainForThisOrigin(): string {
+  const configured = import.meta.env.VITE_FIREBASE_AUTH_DOMAIN ?? "localhost";
+  if (typeof window === "undefined") return configured;
+
+  const host = window.location.hostname;
+  // Only domains this project actually serves the handler from. An arbitrary
+  // host must never be trusted here: it is where credentials are returned.
+  const servesHandler =
+    host.endsWith(".web.app") || host.endsWith(".firebaseapp.com") || host === PRIMARY_HOST;
+
+  return servesHandler ? host : configured;
+}
+
+
 const options: FirebaseOptions = {
   apiKey: import.meta.env.VITE_FIREBASE_API_KEY ?? "demo-api-key",
-  authDomain: import.meta.env.VITE_FIREBASE_AUTH_DOMAIN ?? "localhost",
+  authDomain: authDomainForThisOrigin(),
   projectId: import.meta.env.VITE_FIREBASE_PROJECT_ID ?? "alltheway-local",
 };
 

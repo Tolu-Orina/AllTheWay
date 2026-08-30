@@ -15,7 +15,7 @@ import { generateStill } from "./document-images.js";
 import { isLibreOfficeAvailable } from "./document-libreoffice.js";
 import { vertexPlanner } from "./document-planner.js";
 import { runDocumentQuality } from "./document-quality.js";
-import { MAX_CRITIQUE_ROUNDS, MAX_IMAGES, VISUAL_PASS_SCORE } from "./office-ir.js";
+import { MAX_CRITIQUE_ROUNDS, MAX_IMAGES, CONTENT_PASS_BAND, DESIGN_PASS_BAND } from "./office-ir.js";
 
 const PORT = Number(process.env.PORT ?? 8095);
 const PUBLIC_URL = (process.env.PUBLIC_URL ?? `http://localhost:${PORT}`).replace(/\/$/, "");
@@ -23,8 +23,8 @@ const PUBLIC_URL = (process.env.PUBLIC_URL ?? `http://localhost:${PORT}`).replac
 export const agentCard = {
   name: "AllTheWay Document Cell",
   description:
-    "After Yes: planner maps Office layout, background, and x/y; worker generates stills and compiles; an independent judge scores LibreOffice screenshots. Never talks to the person.",
-  version: "1.4.0",
+    "After Yes: generate stills once, planner edits retrieved boxes, worker compiles, an independent judge scores Content and Design. Never talks to the person.",
+  version: "1.5.0",
   protocolVersion: "0.3.0",
   url: PUBLIC_URL,
   skills: [
@@ -32,7 +32,7 @@ export const agentCard = {
       id: "compile_document",
       name: "Compile a document",
       description:
-        "Planner writes layout, background, and coordinates. Worker generates planned stills, compiles PPTX, screenshots in LibreOffice. Independent judge (fresh call, no rewrite) scores against the same eight archetypes. Bounded: 240s without images, 420s with, 6 turns, pass at score >= 95.",
+        "Planner writes layout, background, and coordinates. Worker generates planned stills once, compiles PPTX, screenshots in LibreOffice. Independent judge (fresh call, no rewrite) scores Content and Design 1–5. Bounded: 240s without images, 420s with, 3 turns, pass at Content ≥ 4 and Design ≥ 4.",
       tags: ["document", "slides", "bounded"],
       inputModes: ["application/json"],
       outputModes: ["application/json"],
@@ -70,6 +70,8 @@ async function compile(req: express.Request, res: express.Response): Promise<voi
       compiles: result.compiles,
       criticPassed: result.criticPassed,
       criticScore: result.criticScore,
+      contentScore: result.contentScore,
+      designScore: result.designScore,
     });
   } catch (err) {
     res.status(500).json({ error: (err as Error).message });
@@ -99,7 +101,8 @@ function health(_req: express.Request, res: express.Response): void {
       critiqueRounds: MAX_CRITIQUE_ROUNDS,
       maxImages: MAX_IMAGES,
       wallClockS: WALL_MS_WITH_IMAGES / 1000,
-      visualPassScore: VISUAL_PASS_SCORE,
+      contentPass: CONTENT_PASS_BAND,
+      designPass: DESIGN_PASS_BAND,
       libreOffice: isLibreOfficeAvailable(),
     },
   });
