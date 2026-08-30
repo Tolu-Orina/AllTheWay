@@ -170,7 +170,6 @@ export default function Home() {
             onConnect={() => setConnectOpen(true)}
             onTodo={() => setTodoOpen(true)}
             onTemplates={() => {
-              openCompanion();
               send(t("todo.templatesPrompt"));
             }}
           />
@@ -356,7 +355,7 @@ function WaitingOnYou({
         <CalendarCheck2 className="size-4 text-orange-light" aria-hidden="true" />
         {t("life.waitingOnYou")}
       </h2>
-      <ul className="grid grid-cols-1 gap-2 sm:grid-cols-2 lg:grid-cols-4">
+      <ul className="grid grid-cols-2 gap-2 lg:grid-cols-4">
         {cards.map((card) => (
           <li key={card.key}>
             <button
@@ -621,7 +620,7 @@ function CapabilityGrid({
         </h2>
         <div className="mt-2 h-px bg-border" />
       </div>
-      <ul className="grid grid-cols-1 gap-x-8 gap-y-4 sm:grid-cols-2">
+      <ul className="grid grid-cols-2 gap-x-8 gap-y-4">
         {promoted.map((card) => (
           <li key={card.key}>
             <button
@@ -671,10 +670,21 @@ function CapabilityGrid({
   );
 }
 
+const REPEAT_OPTIONS = [
+  { value: "once", label: "Once" },
+  { value: "daily", label: "Daily" },
+  { value: "weekly", label: "Weekly" },
+  { value: "biweekly", label: "Every 2 weeks" },
+  { value: "bimonthly", label: "Twice a month" },
+  { value: "monthly", label: "Monthly" },
+  { value: "yearly", label: "Yearly" },
+] as const;
+
 function RemindForm({ onSaved }: { onSaved: () => void }) {
   const t = useT();
   const [title, setTitle] = useState("");
   const [when, setWhen] = useState("");
+  const [repeat, setRepeat] = useState<"once" | "daily" | "weekly" | "biweekly" | "bimonthly" | "monthly" | "yearly">("once");
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -687,6 +697,7 @@ function RemindForm({ onSaved }: { onSaved: () => void }) {
         title: title.trim(),
         kind: "start",
         fireAt: new Date(when).toISOString(),
+        repeat,
       });
       onSaved();
     } catch {
@@ -720,6 +731,18 @@ function RemindForm({ onSaved }: { onSaved: () => void }) {
           onChange={(e) => setWhen(e.target.value)}
           className="mt-1 block w-full rounded-brand border bg-background px-3 py-2 text-[14px]"
         />
+      </label>
+      <label className="text-[13px] text-muted-foreground">
+        Repeat
+        <select
+          value={repeat}
+          onChange={(e) => setRepeat(e.target.value as typeof repeat)}
+          className="mt-1 block w-full rounded-brand border bg-background px-3 py-2 text-[14px] text-foreground"
+        >
+          {REPEAT_OPTIONS.map((opt) => (
+            <option key={opt.value} value={opt.value}>{opt.label}</option>
+          ))}
+        </select>
       </label>
       {error ? (
         <p role="alert" className="text-[13px] text-destructive">

@@ -31,6 +31,10 @@
       button { width: 100%; padding: 8px; font: inherit; border-radius: 8px;
                border: 1px solid var(--line); background: transparent; color: inherit; cursor: pointer; }
       .empty { color: var(--muted); font-size: 12px; }
+      .live { margin-bottom: 12px; }
+      .live-label { font-size: 11px; text-transform: uppercase; letter-spacing: .06em; color: var(--muted); margin: 0 0 4px; }
+      .live-text { font-size: 12px; color: var(--fg); background: var(--line); border-radius: 6px;
+                   padding: 6px 8px; min-height: 1.4em; white-space: pre-wrap; word-break: break-word; }
     </style>
   </head>
   <body>
@@ -39,6 +43,11 @@
       Only things you could not already know from being in the room. Silence is
       normal.
     </p>
+
+    <div class="live" id="live-section" hidden>
+      <p class="live-label">Hearing</p>
+      <div class="live-text" id="live-text"></div>
+    </div>
 
     <div id="insights"><p class="empty">Nothing yet.</p></div>
 

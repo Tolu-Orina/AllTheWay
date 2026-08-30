@@ -58,11 +58,17 @@ async function startCapture({ tabId, meetingId, disclosed }) {
     TOKEN_KEY,
     GATEWAY_KEY,
   ]);
-  if (!token || !gateway) {
+  if (!token) {
     return {
       ok: false,
       reason: "Open AllTheWay in a tab and sign in, then try again.",
       needsSignIn: true,
+    };
+  }
+  if (!gateway) {
+    return {
+      ok: false,
+      reason: "Could not reach AllTheWay. Reload the AllTheWay tab, then try again.",
     };
   }
 

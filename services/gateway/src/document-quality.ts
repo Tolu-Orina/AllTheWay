@@ -22,6 +22,7 @@ import {
 import { promptHash, stillFromBytes, stillMeta, type StillCache } from "./document-images.js";
 import { validateLayout, violationNotes } from "./document-validate.js";
 import { repairLayout, snapChrome } from "./document-repair.js";
+import { extractPptxGeometry, textCollisions } from "./document-pptx-geometry.js";
 
 /**
  * Bounded document-cell graph. One call, workers invisible.
@@ -214,6 +215,28 @@ export async function runDocumentQuality(opts: DocumentQualityInput): Promise<Do
 
     last = await compileDeck(deck, images);
     compiles += 1;
+
+    // The same question, asked of the file rather than the plan.
+    //
+    // `validateLayout` above reads the deck IR, and is the right check for
+    // a planner that stacks two boxes. It cannot see a compiler that does:
+    // a deck passed here with overlap=0 while slide 2 shipped its title and
+    // both column titles at one origin, three deep and unreadable -- and the
+    // critic scored it 4/5 for design while looking straight at it.
+    //
+    // Text against text only: a background is meant to sit under everything,
+    // and a caption over an image is a design rather than a fault.
+    const collisions = textCollisions(await extractPptxGeometry(last.body));
+    if (collisions.length > 0) {
+      overlapCount = collisions.length;
+      lastIssues = collisions
+        .slice(0, 6)
+        .map((c) => `slide ${c.slide}: ${c.a} overlaps ${c.b} (${c.area}in2)`);
+      trace.push(
+        `compiled geometry turn ${turn + 1}: fail overlap=${collisions.length} - ${lastIssues.slice(0, 3).join("; ")}`,
+      );
+      continue;
+    }
 
     let pages: Buffer[] = [];
     try {

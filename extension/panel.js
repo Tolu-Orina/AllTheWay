@@ -23,6 +23,8 @@
 
 const list = document.getElementById("insights");
 const now = document.getElementById("now");
+const liveSection = document.getElementById("live-section");
+const liveText = document.getElementById("live-text");
 
 function render(insights) {
   if (!insights.length) return;
@@ -81,6 +83,12 @@ now.addEventListener("click", () => {
 chrome.runtime.onMessage.addListener((message) => {
   if (message?.type === "insights" && Array.isArray(message.insights)) {
     render(message.insights);
+  }
+  if (message?.type === "transcript" && typeof message.text === "string") {
+    liveSection.hidden = false;
+    // Keep only the last ~200 chars so the box stays glanceable.
+    const combined = `${liveText.textContent}${message.text} `;
+    liveText.textContent = combined.slice(-200);
   }
   return false;
 });

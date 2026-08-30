@@ -209,10 +209,50 @@ async function connectorRead(
     metadata: undefined,
   });
 
-  return { result: textOfTask(result) };
+  // The connector-gateway returns data via A2A data parts, not text parts.
+  // Attempt structured extraction first; fall back to text for error messages.
+  const data = dataOfTask(result);
+  if (data) return data;
+  const text = textOfTask(result);
+  return text ? { result: text } : { cannot: "The connector returned no data." };
 }
 
-/** The readable text of whatever the agent sent back. */
+/**
+ * Extract the structured payload from an A2A data part.
+ *
+ * The connector-gateway wraps connector results as:
+ *   part.content.{ $case: "data", value: { data: <actual_result>, trace: {...} } }
+ *
+ * `textOfTask` cannot find this because calendar events have `title`/`startsAt`,
+ * Drive files have `name`/`link` — neither has a property called `text`.
+ */
+function dataOfTask(task: unknown): Record<string, unknown> | null {
+  const walk = (node: unknown): Record<string, unknown> | null => {
+    if (!node || typeof node !== "object") return null;
+    const rec = node as Record<string, unknown>;
+    // Protobuf oneof: content.$case === "data"
+    if (rec.$case === "data" && rec.value && typeof rec.value === "object") {
+      const val = rec.value as Record<string, unknown>;
+      // connector-gateway always wraps: { data: <result>, trace: {...} }
+      const payload = val.data && typeof val.data === "object" ? val.data : val;
+      const p = payload as Record<string, unknown>;
+      // Only return if the payload has something useful beyond trace metadata
+      if (Object.keys(p).some((k) => k !== "trace")) {
+        return p;
+      }
+    }
+    for (const v of Object.values(rec)) {
+      const found = Array.isArray(v)
+        ? v.reduce<Record<string, unknown> | null>((acc, item) => acc ?? walk(item), null)
+        : walk(v);
+      if (found) return found;
+    }
+    return null;
+  };
+  return walk(task);
+}
+
+/** The readable text of whatever the agent sent back. Used for error messages and docs. */
 function textOfTask(task: unknown): string {
   const parts: string[] = [];
   const walk = (node: unknown): void => {

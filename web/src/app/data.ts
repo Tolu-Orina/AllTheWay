@@ -21,6 +21,7 @@ import {
   RhythmSchema,
   ReminderSchema,
   ProposedCommitmentSchema,
+  TaskSchema,
   ArtifactPreviewSchema,
   type OnboardingJob,
   type LifeContext,
@@ -463,6 +464,7 @@ export const api = {
     kind?: "leave" | "start" | "prepare";
     fireAt: string;
     hat?: "work" | "home" | "church";
+    repeat?: "once" | "daily" | "weekly" | "biweekly" | "bimonthly" | "monthly" | "yearly";
   }) => apiPost("/life/reminders", body, ReminderSchema),
   dismissReminder: (id: string) =>
     apiPost(`/life/reminders/${encodeURIComponent(id)}/dismiss`, {}, ReminderSchema),
@@ -473,6 +475,12 @@ export const api = {
     apiPost(`/life/proposed/${encodeURIComponent(id)}/accept`, {}, ProposedCommitmentSchema),
   declineProposed: (id: string) =>
     apiPost(`/life/proposed/${encodeURIComponent(id)}/decline`, {}, ProposedCommitmentSchema),
+  tasks: () => apiGet("/life/tasks", z.array(TaskSchema)),
+  createTask: (text: string, hat?: "work" | "home" | "church") =>
+    apiPost("/life/tasks", { text, hat }, TaskSchema),
+  completeTask: (id: string) =>
+    apiPost(`/life/tasks/${encodeURIComponent(id)}/complete`, {}, TaskSchema),
+  deleteTask: (id: string) => apiDelete(`/life/tasks/${encodeURIComponent(id)}`),
   locale: () => apiGet("/settings/locale", z.object({ locale: z.string().nullable() })),
   setLocale: (locale: string) => apiPost("/settings/locale", { locale }),
   onboarding: () => apiGet("/settings/onboarding", OnboardingSchema),

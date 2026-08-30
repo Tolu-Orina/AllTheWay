@@ -41,7 +41,7 @@ export type PlannerFn = (input: PlannerInput) => Promise<DeckIr>;
 
 export async function vertexPlanner(input: PlannerInput): Promise<DeckIr> {
   const refs = await loadReferencePages();
-  const neighbors = await retrieveSlideDesigns(queryFrom(input.brief), 3, input.brief).catch(
+  const neighbors = await retrieveSlideDesigns(queryFrom(input.brief), 8, input.brief).catch(
     () => [] as SlideDesignNode[],
   );
   const starting = input.startingIr ?? startingIrFromRetrieved(input.brief, neighbors);
@@ -123,6 +123,7 @@ export function startingIrFromRetrieved(brief: DeckIr, nodes: SlideDesignNode[])
 }
 
 function applyNodeGeometry(slide: SlideIr, node: SlideDesignNode, index: number): SlideIr {
+  if (node.layout !== slide.layout) return slide;
   const scaleX = SLIDE_W / (node.width || SLIDE_W);
   const scaleY = SLIDE_H / (node.height || SLIDE_H);
   const boxes: TextBox[] = (node.description.boxes ?? []).map((box, j) => {

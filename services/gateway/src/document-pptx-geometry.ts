@@ -264,3 +264,75 @@ function norm(target: string): string {
 function slideNum(file: string): number {
   return Number(file.match(/slide(\d+)\.xml$/i)?.[1] ?? 0);
 }
+
+/** Two boxes that occupy the same space in the compiled file. */
+export type PptxCollision = {
+  slide: number;
+  a: string;
+  b: string;
+  /** Square inches of intersection. */
+  area: number;
+};
+
+/**
+ * Ignore anything below this. Text frames carry internal padding, so boxes that
+ * merely abut overlap by a hair without a reader ever seeing it. A tenth of a
+ * square inch is far below "two titles on top of each other" and far above the
+ * noise of adjacent cells.
+ */
+const COLLISION_FLOOR_SQIN = 0.1;
+
+function area(a: PptxBox, b: PptxBox): number {
+  const w = Math.min(a.x + a.w, b.x + b.w) - Math.max(a.x, b.x);
+  const h = Math.min(a.y + a.h, b.y + b.h) - Math.max(a.y, b.y);
+  return w > 0 && h > 0 ? w * h : 0;
+}
+
+function label(box: PptxBox, index: number): string {
+  const text = (box.text ?? "").trim().replace(/\s+/g, " ");
+  if (text) return `"${text.slice(0, 32)}"`;
+  return box.name || box.placeholder || `${box.kind} ${index}`;
+}
+
+/**
+ * Text boxes that overlap in the file the reader opens.
+ *
+ * ## Why this is not the same check the planner already passes
+ *
+ * `validateLayout` reads the deck IR — the plan. This reads the compiled PPTX.
+ * They disagree exactly when the compiler is at fault, and that is the case
+ * nothing was catching: a deck passed structure with `overlap=0` while slide 2
+ * shipped a main title and both column titles at the identical origin
+ * (0.80, 0.85), three deep and unreadable. The plan was clean; the file was not.
+ *
+ * ## Text against text only
+ *
+ * Backgrounds and rules are supposed to sit under everything — a full-bleed
+ * shape at (0,0) overlaps every box on the slide and always will. Comparing
+ * pictures would flag every deliberate caption-over-image. What no design ever
+ * wants is two pieces of text in the same place, so that is what is reported.
+ */
+export function textCollisions(deck: PptxDeckGeometry): PptxCollision[] {
+  const found: PptxCollision[] = [];
+
+  for (const slide of deck.slides) {
+    const boxes = slide.boxes
+      .map((box, index) => ({ box, index }))
+      .filter(({ box }) => box.kind === "text" && box.w > 0 && box.h > 0);
+
+    for (let i = 0; i < boxes.length; i++) {
+      for (let j = i + 1; j < boxes.length; j++) {
+        const overlap = area(boxes[i]!.box, boxes[j]!.box);
+        if (overlap < COLLISION_FLOOR_SQIN) continue;
+        found.push({
+          slide: slide.index + 1,
+          a: label(boxes[i]!.box, boxes[i]!.index),
+          b: label(boxes[j]!.box, boxes[j]!.index),
+          area: Math.round(overlap * 100) / 100,
+        });
+      }
+    }
+  }
+
+  return found;
+}

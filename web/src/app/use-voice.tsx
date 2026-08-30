@@ -77,7 +77,10 @@ export function VoiceProvider({ children }: { children: ReactNode }) {
   const mutedRef = useRef(false);
   const hangingUp = useRef(false);
   const linesRef = useRef<VoiceLine[]>([]);
-  const spokenAt = useRef(0);
+  // Set of all texts already handed to recordSpoken this session. Not reset
+  // on reconnect so the same utterance cannot be stored twice if the socket
+  // drops and comes back with the same final transcript.
+  const spokenTexts = useRef<Set<string>>(new Set());
 
   const socket = useRef<VoiceSocket | null>(null);
   const graph = useRef<{
@@ -108,6 +111,7 @@ export function VoiceProvider({ children }: { children: ReactNode }) {
     setTurn(null);
     linesRef.current = [];
     setLines([]);
+    spokenTexts.current.clear();
   }, [teardown]);
 
   /**
@@ -143,7 +147,6 @@ export function VoiceProvider({ children }: { children: ReactNode }) {
       setError("");
       linesRef.current = [];
       setLines([]);
-      spokenAt.current = 0;
       hangingUp.current = false;
       setTurn(null);
       setFake(false);
@@ -215,8 +218,8 @@ export function VoiceProvider({ children }: { children: ReactNode }) {
             if (finished) {
               const last = [...next].reverse().find((l) => l.side === side);
               const spoken = last?.text.trim();
-              if (spoken && last && spokenAt.current !== last.id) {
-                spokenAt.current = last.id;
+              if (spoken && !spokenTexts.current.has(spoken)) {
+                spokenTexts.current.add(spoken);
                 recordSpoken(side === "user" ? "user" : "agent", spoken);
               }
             }

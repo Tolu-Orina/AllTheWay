@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Keyboard, Mic, Plus, Sparkles, SquarePen } from "lucide-react";
+import { Check, Keyboard, Mic, Plus, Sparkles, SquarePen } from "lucide-react";
 
 import { useT } from "@/app/i18n";
 import { useAsync } from "@/app/use-async";
@@ -13,11 +13,6 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 
-/**
- * First to-do. There is no separate list store — items become a companion
- * turn, which proposes and waits. Generate from calendar/mail does the same
- * rather than writing anything until they confirm.
- */
 export function StartTodoModal({
   open,
   onOpenChange,
@@ -28,13 +23,15 @@ export function StartTodoModal({
   onNeedAccounts: () => void;
 }) {
   const t = useT();
-  const { send, openCompanion } = useCompanionThread();
+  const { send } = useCompanionThread();
   const voice = useVoice();
   const connectors = useAsync(
     () => api.connectors(),
     [open],
   );
   const [task, setTask] = useState("");
+  const [added, setAdded] = useState<string[]>([]);
+  const [saving, setSaving] = useState(false);
 
   const connected = connectors.state.status === "ready"
     ? connectors.state.data.connectors.filter((c) => c.connected).map((c) => c.id)
@@ -44,15 +41,21 @@ export function StartTodoModal({
 
   function finish() {
     setTask("");
+    setAdded([]);
     onOpenChange(false);
   }
 
-  function addManual() {
+  async function addManual() {
     const trimmed = task.trim();
-    if (!trimmed) return;
-    openCompanion();
-    send(t("todo.manualPrompt", { task: trimmed }));
-    finish();
+    if (!trimmed || saving) return;
+    setSaving(true);
+    try {
+      await api.createTask(trimmed);
+      setAdded((prev) => [...prev, trimmed]);
+      setTask("");
+    } finally {
+      setSaving(false);
+    }
   }
 
   function speak() {
@@ -66,7 +69,6 @@ export function StartTodoModal({
       onNeedAccounts();
       return;
     }
-    openCompanion();
     send(t("todo.generatePrompt"));
     finish();
   }
@@ -92,14 +94,24 @@ export function StartTodoModal({
               <Keyboard className="size-4 text-foreground" aria-hidden="true" />
             </span>
             <p className="mt-4 text-[16px] font-semibold">{t("todo.manualEntry")}</p>
-            <p className="mt-1 flex-1 text-[13px] leading-relaxed text-muted-foreground">
+            <p className="mt-1 text-[13px] leading-relaxed text-muted-foreground">
               {t("todo.manualEntryHint")}
             </p>
+            {added.length > 0 ? (
+              <ul className="mt-3 flex flex-col gap-1">
+                {added.map((text, i) => (
+                  <li key={i} className="flex items-center gap-2 text-[13px]">
+                    <Check className="size-3.5 shrink-0 text-green-500" aria-hidden="true" />
+                    <span className="truncate">{text}</span>
+                  </li>
+                ))}
+              </ul>
+            ) : null}
             <form
               className="mt-5 flex items-center gap-2"
               onSubmit={(e) => {
                 e.preventDefault();
-                addManual();
+                void addManual();
               }}
             >
               <input
@@ -111,7 +123,7 @@ export function StartTodoModal({
               />
               <button
                 type="submit"
-                disabled={!task.trim()}
+                disabled={!task.trim() || saving}
                 aria-label={t("todo.addANewTask")}
                 className="grid size-9 shrink-0 place-items-center rounded-brand bg-navy-deep text-white transition-opacity disabled:opacity-40"
               >

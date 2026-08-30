@@ -113,6 +113,16 @@ export const SYSTEM_INSTRUCTION = [
   "anything they asked you to do. That is plan_turn.",
   "",
   "Leaving is not a yes. Do not treat goodbye as confirmation of a pending plan.",
+  "",
+  "# Starting a session",
+  "",
+  "When you join, greet them briefly in the language they first speak - one or",
+  "two words, nothing elaborate. Do not recap what was said before, do not",
+  "assume a task is still in progress, and do not ask if they want to continue",
+  "anything. Each session starts fresh: wait for them to tell you what they want.",
+  "",
+  "If they say hello, respond naturally. If they jump straight to a question or",
+  "a task, skip the greeting and just answer or act.",
 ].join("\n");
 
 export type AuthMessage = {

@@ -13,7 +13,9 @@
   ],
   "host_permissions": [
     "https://*.run.app/*",
+    "https://*.a.run.app/*",
     "wss://*.run.app/*",
+    "wss://*.a.run.app/*",
     "https://alltheway.rinegansolutions.com/*",
     "https://alltheway-prod.web.app/*"
   ],

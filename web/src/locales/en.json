@@ -68,7 +68,9 @@
     "photograph": "Photograph a page",
     "none": "No documents yet. Add a contract, a spec or a policy and ask about it.",
     "reading": "Reading {{name}}. A long document takes a minute; a photo is quicker.",
-    "askAboutThis": "Ask about this"
+    "askAboutThis": "Ask about this",
+    "namePlaceholder": "Name this document (optional)",
+    "organiseHint": "Name your documents clearly, or tell AllTheWay to move them into named folders to keep things organised."
   },
   "citations": {
     "passage": "Passage",
@@ -305,7 +307,7 @@
     "capabilityPlanHint": "Talk it through. Nothing happens until you say so.",
     "capabilityFile": "Read a file",
     "capabilityFileHint": "A contract, a spec, a page you photograph.",
-    "addAFile": "Add a file or photo",
+    "addAFile": "Add a document",
     "addAFileHint": "Anything you add, it can read and cite.",
     "meetingsTitle": "After meetings",
     "meetingsListen": "It listens and takes notes. It cannot speak in the room, and everyone is asked before it connects.",
@@ -485,10 +487,10 @@
     "proposedEmpty": "Nothing proposed from files.",
     "remindMe": "Remind me",
     "whatsToday": "What's today",
-    "addFromPhoto": "Add from a photo",
+    "addFromPhoto": "Add a document",
     "capabilityRemindHint": "A clock for you. Not a watcher.",
     "capabilityTodayHint": "The next twelve hours, from your calendar.",
-    "capabilityPhotoHint": "A flyer or school letter. It proposes; you confirm.",
+    "capabilityPhotoHint": "Name your documents clearly, or tell AllTheWay to move them into named folders.",
     "rhythms": "Rhythms",
     "noRhythms": "No school run or church yet. Add one so leave-now knows the week.",
     "save": "Save",

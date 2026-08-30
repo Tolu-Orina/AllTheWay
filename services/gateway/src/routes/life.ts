@@ -8,16 +8,20 @@ import { retrieve } from "../repos/retrieval.js";
 import { hatFromTitle } from "../calendar-day.js";
 import { actOnConfirmed } from "../act.js";
 import {
+  completeTask,
   createPerson,
   createPlace,
   createProposed,
   createReminder,
   createRhythm,
+  createTask,
   deleteRhythm,
+  deleteTask,
   dismissReminder,
   listPeople,
   listPlaces,
   listProposed,
+  listTasks,
   listReminders,
   listRhythms,
   setProposedState,
@@ -58,6 +62,14 @@ const ReminderBody = z.object({
   title: z.string().min(1).max(200),
   kind: z.enum(["leave", "start", "prepare"]).default("start"),
   fireAt: z.string().min(1),
+  hat: HatSchema.optional(),
+  repeat: z
+    .enum(["once", "daily", "weekly", "biweekly", "bimonthly", "monthly", "yearly"])
+    .default("once"),
+});
+
+const TaskBody = z.object({
+  text: z.string().min(1).max(500),
   hat: HatSchema.optional(),
 });
 
@@ -164,6 +176,35 @@ lifeRoutes.post("/proposed/:id/decline", requireUser, async (req, res) => {
   const row = await setProposedState(req.uid!, param(req, "id"), "declined");
   if (!row) return res.status(404).json({ code: "not_found", message: "That proposal is not here." });
   res.json(row);
+});
+
+lifeRoutes.get("/tasks", requireUser, async (req, res) => {
+  res.json(await listTasks(req.uid!));
+});
+
+lifeRoutes.post("/tasks", requireUser, async (req, res) => {
+  const body = TaskBody.safeParse(req.body);
+  if (!body.success) return res.status(400).json({ code: "invalid_request", message: "Task text is required." });
+  try {
+    res.json(await createTask(req.uid!, body.data.text, body.data.hat));
+  } catch (err) {
+    if ((err as NodeJS.ErrnoException).code === "invalid_request") {
+      return res.status(400).json({ code: "invalid_request", message: "Task text is required." });
+    }
+    throw err;
+  }
+});
+
+lifeRoutes.post("/tasks/:id/complete", requireUser, async (req, res) => {
+  const row = await completeTask(req.uid!, param(req, "id"));
+  if (!row) return res.status(404).json({ code: "not_found", message: "That task is not here." });
+  res.json(row);
+});
+
+lifeRoutes.delete("/tasks/:id", requireUser, async (req, res) => {
+  const deleted = await deleteTask(req.uid!, param(req, "id"));
+  if (!deleted) return res.status(404).json({ code: "not_found", message: "That task is not here." });
+  res.json({ ok: true });
 });
 
 function param(req: express.Request, name: string): string {

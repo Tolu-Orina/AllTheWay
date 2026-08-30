@@ -127,6 +127,9 @@ async function start({ streamId, token, meetingId, origin, gateway }) {
     if (Array.isArray(message?.insights) && message.insights.length > 0) {
       chrome.runtime.sendMessage({ type: "insights", insights: message.insights });
     }
+    if (message?.transcript?.text) {
+      chrome.runtime.sendMessage({ type: "transcript", text: message.transcript.text });
+    }
   };
 
   socket.onclose = () => {

@@ -640,6 +640,17 @@ export const ReminderSchema = z.object({
   hat: HatSchema.default("home"),
   rhythmId: z.string().default(""),
   commitmentId: z.string().default(""),
+  repeat: z
+    .enum(["once", "daily", "weekly", "biweekly", "bimonthly", "monthly", "yearly"])
+    .default("once"),
+});
+
+export const TaskSchema = z.object({
+  id: z.string(),
+  text: z.string(),
+  createdAt: z.string(),
+  completedAt: z.string().nullable().default(null),
+  hat: HatSchema.nullable().default(null),
 });
 
 export const ProposedCommitmentSchema = z.object({
@@ -678,6 +689,7 @@ export type Person = z.infer<typeof PersonSchema>;
 export type Place = z.infer<typeof PlaceSchema>;
 export type Rhythm = z.infer<typeof RhythmSchema>;
 export type Reminder = z.infer<typeof ReminderSchema>;
+export type Task = z.infer<typeof TaskSchema>;
 export type ProposedCommitment = z.infer<typeof ProposedCommitmentSchema>;
 
 /** Human-facing labels live with the enum so both sides agree on wording. */

@@ -4,12 +4,14 @@ import {
   ProposedCommitmentSchema,
   ReminderSchema,
   RhythmSchema,
+  TaskSchema,
   type Day,
   type Person,
   type Place,
   type ProposedCommitment,
   type Reminder,
   type Rhythm,
+  type Task,
 } from "@alltheway/contracts";
 import { FieldValue, Timestamp } from "firebase-admin/firestore";
 
@@ -28,6 +30,7 @@ export const places = (uid: string) => userDoc(uid).collection("places");
 export const rhythms = (uid: string) => userDoc(uid).collection("rhythms");
 export const reminders = (uid: string) => userDoc(uid).collection("reminders");
 export const proposedCommitments = (uid: string) => userDoc(uid).collection("proposedCommitments");
+export const tasks = (uid: string) => userDoc(uid).collection("tasks");
 export const reminderDue = () => db.collection("reminderDue");
 
 export const reminderDueId = (uid: string, reminderId: string) => `${uid}_${reminderId}`;
@@ -142,6 +145,7 @@ export async function createReminder(
     hat?: Reminder["hat"];
     rhythmId?: string;
     commitmentId?: string;
+    repeat?: Reminder["repeat"];
   },
 ): Promise<Reminder> {
   const title = input.title.trim();
@@ -166,6 +170,7 @@ export async function createReminder(
     hat: input.hat ?? "home",
     rhythmId: input.rhythmId ?? "",
     commitmentId: input.commitmentId ?? "",
+    repeat: input.repeat ?? "once",
   };
   await ref.set({ ...row, createdAt: FieldValue.serverTimestamp() });
   await reminderDue()
@@ -181,6 +186,56 @@ export async function createReminder(
     ...row,
     fireAt: fire.toISOString(),
   });
+}
+
+export async function listTasks(uid: string): Promise<Task[]> {
+  const snap = await tasks(uid).orderBy("createdAt", "desc").limit(200).get();
+  return snap.docs.flatMap((d) => {
+    const parsed = TaskSchema.safeParse({
+      id: d.id,
+      ...d.data(),
+      createdAt: toIso(d.get("createdAt"), new Date(0).toISOString()),
+      completedAt: d.get("completedAt") ? toIso(d.get("completedAt")) : null,
+    });
+    return parsed.success ? [parsed.data] : [];
+  });
+}
+
+export async function createTask(uid: string, text: string, hat?: Task["hat"]): Promise<Task> {
+  const trimmed = text.trim();
+  if (!trimmed) throw Object.assign(new Error("task_invalid"), { code: "invalid_request" });
+  const ref = tasks(uid).doc();
+  const now = FieldValue.serverTimestamp();
+  await ref.set({ text: trimmed, hat: hat ?? null, completedAt: null, createdAt: now });
+  return TaskSchema.parse({
+    id: ref.id,
+    text: trimmed,
+    hat: hat ?? null,
+    completedAt: null,
+    createdAt: new Date().toISOString(),
+  });
+}
+
+export async function completeTask(uid: string, id: string): Promise<Task | null> {
+  const ref = tasks(uid).doc(id);
+  const snap = await ref.get();
+  if (!snap.exists) return null;
+  const now = new Date();
+  await ref.update({ completedAt: Timestamp.fromDate(now) });
+  return TaskSchema.parse({
+    id,
+    ...snap.data(),
+    createdAt: toIso(snap.get("createdAt"), new Date(0).toISOString()),
+    completedAt: now.toISOString(),
+  });
+}
+
+export async function deleteTask(uid: string, id: string): Promise<boolean> {
+  const ref = tasks(uid).doc(id);
+  const snap = await ref.get();
+  if (!snap.exists) return false;
+  await ref.delete();
+  return true;
 }
 
 export async function dismissReminder(uid: string, id: string): Promise<Reminder | null> {

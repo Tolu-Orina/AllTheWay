@@ -24,10 +24,12 @@ const LOOKUP_BUDGET_MS = 6_000;
 
 export type ReadCall = { name: string; args: Record<string, unknown> };
 
+const WEEKDAY =
+  /\b(monday|tuesday|wednesday|thursday|friday|saturday|sunday|mon|tue|wed|thu|fri|sat|sun)\b/i;
 const CALENDAR =
-  /\b(calendar|schedule|timetable|agenda|free|busy|what'?s on|what have i got|later today|this (morning|afternoon|evening|week)|tomorrow|remind(er|ers| me)|events?)\b/i;
+  /\b(calendar|schedule|timetable|agenda|free|busy|available|what'?s on|what have i got|anything on|do i have|later today|this (morning|afternoon|evening|week)|next week|tomorrow|remind(er|ers| me)|events?)\b/i;
 const ABOUT_THE_DAY =
-  /\b(today|tonight|tomorrow|this (morning|afternoon|evening|week)|scheduled)\b/i;
+  /\b(today|tonight|tomorrow|this (morning|afternoon|evening|week)|next week|scheduled)\b/i;
 const MEETING_SLOT = /\b(meetings?|appointments?)\b/i;
 const DAY_WINDOW =
   /\b(today|tonight|this (morning|afternoon|evening)|did i have|have i got)\b/i;
@@ -46,6 +48,8 @@ function wantsCalendar(text: string): boolean {
   // "Did I have any meeting today?" is a calendar question. "What did we agree
   // in the last meeting?" is notes, and must not steal the calendar read.
   if (MEETINGS.test(text)) return false;
+  // "Meetings on Thursday?" — weekday + meeting slot both present
+  if (MEETING_SLOT.test(text) && WEEKDAY.test(text)) return true;
   return MEETING_SLOT.test(text) && ABOUT_THE_DAY.test(text);
 }
 

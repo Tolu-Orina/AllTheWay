@@ -1,7 +1,6 @@
 import { useCallback, useRef, useState } from "react";
 import { useT } from "@/app/i18n";
 import { Camera, Loader2, ShieldAlert, Trash2, Upload } from "lucide-react";
-import type { Hat } from "@alltheway/contracts";
 
 import { Async } from "@/app/async";
 import { useAsync } from "@/app/use-async";
@@ -59,7 +58,7 @@ export function DocumentPickup({ onUploaded }: { onUploaded?: (name: string, doc
   const [busy, setBusy] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [dragging, setDragging] = useState(false);
-  const [hat, setHat] = useState<Hat | null>(null);
+  const [docName, setDocName] = useState("");
   const input = useRef<HTMLInputElement>(null);
   const camera = useRef<HTMLInputElement>(null);
 
@@ -69,16 +68,15 @@ export function DocumentPickup({ onUploaded }: { onUploaded?: (name: string, doc
       if (!file) return;
 
       setError(null);
-      setBusy(file.name || "photo");
+      const fallback = file.name?.trim() || (file.type.startsWith("image/") ? "photo" : "document");
+      // Use whatever the user typed; fall back to the file's own name
+      const title = docName.trim() || fallback;
+      setBusy(title);
       try {
         const prepared = await prepareDocumentUpload(file);
-        const result = await api.uploadDocument(
-          prepared.title,
-          prepared.content,
-          prepared.mimeType,
-          hat,
-        );
-        onUploaded?.(prepared.title, result.documentId);
+        const result = await api.uploadDocument(title, prepared.content, prepared.mimeType);
+        setDocName("");
+        onUploaded?.(title, result.documentId);
       } catch (err) {
         const message = (err as { message?: string }).message;
         setError(message || "That document could not be added.");
@@ -86,7 +84,7 @@ export function DocumentPickup({ onUploaded }: { onUploaded?: (name: string, doc
         setBusy(null);
       }
     },
-    [onUploaded, hat],
+    [onUploaded, docName],
   );
 
   return (
@@ -119,24 +117,6 @@ export function DocumentPickup({ onUploaded }: { onUploaded?: (name: string, doc
           </button>
         </p>
         <p className="text-[12px] text-muted-foreground">{t("documents.types")}</p>
-        <p className="text-[12px] text-muted-foreground">{t("memory.documentHatHint")}</p>
-        <div className="flex flex-wrap justify-center gap-1.5" role="group" aria-label={t("memory.documentHat")}>
-          {([null, "work", "home", "church"] as const).map((value) => (
-            <button
-              key={value ?? "all"}
-              type="button"
-              onClick={() => setHat(value)}
-              className={cn(
-                "rounded-full px-3 py-1 text-[12px] font-medium transition-colors",
-                hat === value
-                  ? "bg-primary text-primary-foreground"
-                  : "bg-muted text-muted-foreground hover:text-foreground",
-              )}
-            >
-              {value ? t(`life.hat${value[0]!.toUpperCase()}${value.slice(1)}`) : t("memory.everywhere")}
-            </button>
-          ))}
-        </div>
         <input
           ref={input}
           type="file"
@@ -167,6 +147,16 @@ export function DocumentPickup({ onUploaded }: { onUploaded?: (name: string, doc
           {t("documents.photograph")}
         </button>
       </div>
+
+      <input
+        type="text"
+        value={docName}
+        onChange={(e) => setDocName(e.target.value)}
+        placeholder={t("documents.namePlaceholder")}
+        className="w-full rounded-brand border bg-background px-3 py-2 text-[13px] outline-none placeholder:text-muted-foreground"
+        aria-label={t("documents.namePlaceholder")}
+      />
+      <p className="text-[12px] text-muted-foreground">{t("documents.organiseHint")}</p>
 
       {busy ? (
         <p role="status" className="flex items-center gap-2 text-[12.5px] text-muted-foreground">
