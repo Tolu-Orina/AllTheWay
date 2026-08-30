@@ -17,7 +17,7 @@ import {
   Newspaper,
   RefreshCw,
 } from "lucide-react";
-import type { Hat, Home as HomeData, LifeContext, OnboardingJob } from "@alltheway/contracts";
+import type { Day, Hat, Home as HomeData, LifeContext, OnboardingJob } from "@alltheway/contracts";
 
 import { Button } from "@/components/ui/button";
 import {
@@ -28,7 +28,7 @@ import {
   SheetTitle,
 } from "@/components/ui/sheet";
 import { ErrorState } from "@/app/async";
-import { useAsync } from "@/app/use-async";
+import { useAsync, type AsyncState } from "@/app/use-async";
 import { RUN_STATE_LABELS } from "@alltheway/contracts";
 
 import {
@@ -83,6 +83,7 @@ export default function Home() {
   const { send, openCompanion } = useCompanionThread();
   const { refresh: refreshAlerts } = useLifeAlerts();
   const { state, reload } = useAsync(() => api.home());
+  const { state: dayState, reload: reloadDay } = useAsync(() => api.homeDay());
   const [docsOpen, setDocsOpen] = useState(false);
   const [rhythmsOpen, setRhythmsOpen] = useState(false);
   const [remindOpen, setRemindOpen] = useState(false);
@@ -114,6 +115,7 @@ export default function Home() {
 
   function reloadAll() {
     reload();
+    reloadDay();
     refreshAlerts();
   }
 
@@ -138,23 +140,30 @@ export default function Home() {
       {state.status === "error" ? (
         <ErrorState message={state.message} onRetry={reloadAll} />
       ) : null}
+
+      {/* Timeline: loads independently so it never blocks the rest of the page */}
+      <DaySection
+        dayState={dayState}
+        hat={hat}
+        onHat={(next) => {
+          setHat(next);
+          void api.setHat(next === "all" ? null : next);
+        }}
+        onConnect={() => setConnectOpen(true)}
+      />
+
+      {/* "Waiting on you" has no data dependency — renders immediately */}
+      <WaitingOnYou
+        onConnect={() => setConnectOpen(true)}
+        onTodo={() => setTodoOpen(true)}
+        onTemplates={() => send(t("todo.templatesPrompt"))}
+      />
+
       {home ? (
         <>
           <PushOffer
-            show={Boolean(home.day.nextLeave) || home.digest.awaitingDecision.length > 0}
+            show={Boolean(home.digest.awaitingDecision.length > 0)}
           />
-          {home.day.hours.length === 0 ? (
-            <EmptyTimeline onConnect={() => setConnectOpen(true)} />
-          ) : (
-            <DayTimeline
-              day={home.day}
-              hat={hat}
-              onHat={(next) => {
-                setHat(next);
-                void api.setHat(next === "all" ? null : next);
-              }}
-            />
-          )}
           <HomeRest
             job={home.onboarding.job ?? "skipped"}
             plan={home.plan}
@@ -167,11 +176,6 @@ export default function Home() {
               setDocsOpen(true);
             }}
             onReload={reloadAll}
-            onConnect={() => setConnectOpen(true)}
-            onTodo={() => setTodoOpen(true)}
-            onTemplates={() => {
-              send(t("todo.templatesPrompt"));
-            }}
           />
         </>
       ) : null}
@@ -282,6 +286,36 @@ function HomeHeader() {
         <VoiceControl size="sm" className="items-center" />
       </div>
     </header>
+  );
+}
+
+function DaySection({
+  dayState,
+  hat,
+  onHat,
+  onConnect,
+}: {
+  dayState: AsyncState<Day>;
+  hat: Hat | "all";
+  onHat: (next: Hat | "all") => void;
+  onConnect: () => void;
+}) {
+  if (dayState.status === "loading") {
+    return <div className="h-44 animate-pulse rounded-brand-lg bg-muted" />;
+  }
+  if (dayState.status === "error") {
+    return <EmptyTimeline onConnect={onConnect} />;
+  }
+  const day = dayState.data;
+  if (day.calendar === "missing" || day.hours.length === 0) {
+    return <EmptyTimeline onConnect={onConnect} />;
+  }
+  return (
+    <DayTimeline
+      day={day}
+      hat={hat}
+      onHat={onHat}
+    />
   );
 }
 
@@ -480,9 +514,6 @@ function HomeRest({
   proposed,
   onAddFile,
   onReload,
-  onConnect,
-  onTodo,
-  onTemplates,
 }: {
   job: OnboardingJob;
   plan: SessionDetail | null;
@@ -492,9 +523,6 @@ function HomeRest({
   proposed: HomeData["proposed"];
   onAddFile: () => void;
   onReload: () => void;
-  onConnect: () => void;
-  onTodo: () => void;
-  onTemplates: () => void;
 }) {
   const t = useT();
   const firstWin = plan !== null || documents.length > 0;
@@ -504,8 +532,6 @@ function HomeRest({
   return (
     <>
       <LanguageOffer show={firstWin} />
-
-      <WaitingOnYou onConnect={onConnect} onTodo={onTodo} onTemplates={onTemplates} />
 
       {quiet ? null : <Digest digest={digest} />}
       <ProposedCommitments rows={proposed} onChange={onReload} />

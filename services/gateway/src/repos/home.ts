@@ -1,6 +1,6 @@
 import { HomeSchema, type Home } from "@alltheway/contracts";
 
-import { buildDay } from "../calendar-day.js";
+import { buildDayFromParts } from "../calendar-day.js";
 import { getOnboarding } from "./onboarding.js";
 import { getActiveHat } from "./hat.js";
 import { buildDigest } from "./digest.js";
@@ -12,18 +12,25 @@ import { listPeople, listPlaces, listProposed, listReminders, listRhythms, ensur
 /**
  * Everything Today needs, in one round trip.
  *
- * Greeting and the capture cards do not need this; the day, digest,
- * continue card and overnight do.
+ * The calendar day is intentionally excluded — it requires an external network
+ * call to the connector-gateway which can take up to 8 seconds (cold start +
+ * Google Calendar API). Everything else here is local Firestore reads and
+ * responds in under a second. The browser fetches the calendar day separately
+ * via GET /home/day so the page shell renders immediately.
+ *
+ * Day items from local rhythms are still included so the timeline is not
+ * completely empty while the calendar loads.
  */
 export async function buildHome(uid: string): Promise<Home> {
-  const [onboarding, digest, sessions, runs, documents, day, proposed, people, places, rhythms, hat] =
+  const now = new Date();
+  const [onboarding, digest, sessions, runs, documents, reminders, proposed, people, places, rhythms, hat] =
     await Promise.all([
       getOnboarding(uid),
       buildDigest(uid),
       listSessions(uid),
       listRuns(uid),
       listHomeDocuments(uid),
-      buildDay(uid),
+      listReminders(uid, ["scheduled", "fired"]),
       listProposed(uid),
       listPeople(uid),
       listPlaces(uid),
@@ -34,10 +41,14 @@ export async function buildHome(uid: string): Promise<Home> {
   const row = sessions.find((s) => s.done < s.total) ?? sessions[0];
   const plan = row ? await getSession(uid, row.id) : null;
 
-  await ensureLeaveReminders(uid, day).catch((err) => {
+  // Rhythm-only day: instant, no external calls. Calendar events come via /home/day.
+  const day = buildDayFromParts(places, rhythms, people, { status: "missing", events: [] }, now);
+
+  // Fire-and-forget: creates leave reminders for upcoming rhythm items.
+  // Does not block the response — reminders appear on next reload.
+  ensureLeaveReminders(uid, day).catch((err) => {
     console.warn(`[home] leave reminders: ${(err as Error).message}`);
   });
-  const reminders = await listReminders(uid, ["scheduled", "fired"]);
 
   return HomeSchema.parse({
     onboarding,

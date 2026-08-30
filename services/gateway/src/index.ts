@@ -47,6 +47,7 @@ import { listRecent, record } from "./repos/ledger.js";
 import { readUsage } from "./repos/usage.js";
 import { buildDigest } from "./repos/digest.js";
 import { buildHome } from "./repos/home.js";
+import { buildDay } from "./calendar-day.js";
 import { registerToken, removeToken } from "./repos/push.js";
 import {
   forgetTranscript,
@@ -735,6 +736,13 @@ api.get(
   "/home",
   handle(async (req, res) => {
     res.json(await buildHome(req.uid!));
+  }),
+);
+
+api.get(
+  "/home/day",
+  handle(async (req, res) => {
+    res.json(await buildDay(req.uid!));
   }),
 );
 

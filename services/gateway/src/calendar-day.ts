@@ -98,14 +98,21 @@ function parseEventsJson(raw: string): Array<{ id: string; title: string; starts
   }
 }
 
-export async function buildDay(uid: string, now = new Date()): Promise<Day> {
+/**
+ * Assemble a Day from pre-fetched local data and a resolved calendar result.
+ *
+ * Used by both `buildDay` (which fetches everything itself) and `buildHome`
+ * (which already has places/rhythms/people and wants a calendar-free snapshot
+ * that responds without waiting for the external API).
+ */
+export function buildDayFromParts(
+  places: Place[],
+  rhythms: Rhythm[],
+  people: Array<{ id: string; name: string }>,
+  calendar: { status: Day["calendar"]; events: Array<{ id: string; title: string; startsAt: string }> },
+  now: Date,
+): Day {
   const until = new Date(now.getTime() + WINDOW_MS);
-  const [places, rhythms, people, calendar] = await Promise.all([
-    listPlaces(uid),
-    listRhythms(uid),
-    listPeople(uid),
-    readCalendar(uid, now),
-  ]);
 
   const placeById = new Map(places.map((p) => [p.id, p]));
   const personById = new Map(people.map((p) => [p.id, p]));
@@ -165,6 +172,16 @@ export async function buildDay(uid: string, now = new Date()): Promise<Day> {
         }
       : null,
   };
+}
+
+export async function buildDay(uid: string, now = new Date()): Promise<Day> {
+  const [places, rhythms, people, calendar] = await Promise.all([
+    listPlaces(uid),
+    listRhythms(uid),
+    listPeople(uid),
+    readCalendar(uid, now),
+  ]);
+  return buildDayFromParts(places, rhythms, people, calendar, now);
 }
 
 async function readCalendar(
