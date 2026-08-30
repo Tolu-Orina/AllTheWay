@@ -147,7 +147,7 @@ async def invoke(
     )
     # A poll is a look at a video already started and metered. Charging it as
     # another connector call would spend the monthly budget on waiting.
-    skip_call_meter = connector == "media" and tool == "poll_draft_video"
+    skip_call_meter = connector == "media" and tool in {"poll_draft_video", "poll_final_video"}
     if not skip_call_meter and not allowance.allowed:
         trace.append(allowance.summary())
         return Outcome(
@@ -277,6 +277,7 @@ async def invoke(
         "draft_video",
         "poll_draft_video",
         "render_video",
+        "poll_final_video",
     }:
         data = result.json()
         if "error" in data:

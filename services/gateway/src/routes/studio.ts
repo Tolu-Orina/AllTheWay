@@ -51,6 +51,8 @@ const GenerateSchema = z.object({
   artifactId: z.string().max(128).optional(),
   costAcknowledged: z.boolean().optional(),
   shots: z.array(ShotSchema).max(15).optional(),
+  quality: z.enum(["draft", "final"]).default("draft"),
+  referenceImage: z.string().max(10_000_000).optional(),
 });
 
 const PlanSchema = z.object({
@@ -94,7 +96,7 @@ studioRoutes.post("/generate", requireUser, async (req, res) => {
     });
   }
 
-  const { prompt, mode, artifactId } = body.data;
+  const { prompt, mode, artifactId, quality, referenceImage } = body.data;
   const uid = req.uid!;
 
   if (!env.connectorGatewayUrl) {
@@ -114,16 +116,21 @@ studioRoutes.post("/generate", requireUser, async (req, res) => {
       seconds: body.data.seconds ?? 6,
       artifactId,
       shots: body.data.shots,
+      quality,
     });
   }
 
   try {
+    const imageArgs: Record<string, unknown> = { prompt, style: "" };
+    if (referenceImage) {
+      imageArgs.reference_image_b64 = referenceImage;
+    }
     const task = await runConnectorTool({
       uid,
       sessionId: STUDIO_SESSION_ID,
       connector: "media",
       tool: "generate_image",
-      arguments: { prompt, style: "" },
+      arguments: imageArgs,
       confirmed: true,
       timeoutMs: IMAGE_TIMEOUT_MS,
     });
@@ -235,10 +242,13 @@ async function startVideo(
     seconds: number;
     artifactId?: string;
     shots?: Array<{ prompt: string; seconds: number }>;
+    quality?: "draft" | "final";
   },
 ) {
   const seconds = Math.max(1, Math.min(SEQUENCE_CAP_SECONDS, Math.floor(opts.seconds)));
   const shots = (opts.shots ?? []).filter((s) => s.prompt.trim() && s.seconds >= 1);
+  const rung = opts.quality ?? "draft";
+  const isFinal = rung === "final";
 
   // Confirmed plan: store the shots. The first GET starts Veo under a lock,
   // so a double-mounted poll cannot bill twice.
@@ -249,6 +259,7 @@ async function startVideo(
       model: "",
       prompt: opts.prompt,
       seconds: shots.reduce((sum, s) => sum + s.seconds, 0),
+      rung,
       artifactId: opts.artifactId,
       shots,
     });
@@ -268,6 +279,7 @@ async function startVideo(
       model: "",
       prompt: opts.prompt,
       seconds,
+      rung,
       artifactId: opts.artifactId,
     });
     return res.json({
@@ -282,9 +294,10 @@ async function startVideo(
       uid: opts.uid,
       sessionId: STUDIO_SESSION_ID,
       connector: "media",
-      tool: "draft_video",
+      tool: isFinal ? "render_video" : "draft_video",
       arguments: { prompt: opts.prompt, seconds },
       confirmed: true,
+      costAcknowledged: isFinal,
       timeoutMs: VIDEO_START_TIMEOUT_MS,
     });
 
@@ -313,6 +326,7 @@ async function startVideo(
       model: started.model ?? "",
       prompt: opts.prompt,
       seconds,
+      rung,
       artifactId: opts.artifactId,
     });
 

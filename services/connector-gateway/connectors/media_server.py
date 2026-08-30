@@ -125,12 +125,21 @@ def _vertex_refusal(response: httpx.Response) -> str:
 
 
 @mcp.tool()
-def generate_image(prompt: str, style: str = "") -> str:
+def generate_image(
+    prompt: str,
+    style: str = "",
+    reference_image_b64: str = "",
+    reference_mime: str = "image/jpeg",
+) -> str:
     """Generate an image from a description. Cheap enough to iterate on.
 
     `style` carries the user's remembered visual preferences — palette,
     density, corner radius. It is appended rather than merged into the prompt
     so that a correction can change it without rewriting what was asked for.
+
+    `reference_image_b64` is an optional base64-encoded image the model should
+    use as a visual reference (person, object, style). When present the model
+    receives it as a multimodal part alongside the text instruction.
     """
     if not prompt.strip():
         return _fail("Nothing to draw.")
@@ -141,13 +150,20 @@ def generate_image(prompt: str, style: str = "") -> str:
         f"/locations/{LOCATION}/publishers/google/models/{IMAGE_MODEL}:generateContent"
     )
 
+    parts: list[dict] = []
+    if reference_image_b64.strip():
+        parts.append(
+            {"inlineData": {"mimeType": reference_mime or "image/jpeg", "data": reference_image_b64.strip()}}
+        )
+    parts.append({"text": instruction})
+
     try:
         with httpx.Client(timeout=IMAGE_TIMEOUT) as http:
             response = http.post(
                 url,
                 headers={"Authorization": f"Bearer {_token()}"},
                 json={
-                    "contents": [{"role": "user", "parts": [{"text": instruction}]}],
+                    "contents": [{"role": "user", "parts": parts}],
                     "generationConfig": {"responseModalities": ["IMAGE"]},
                 },
             )
@@ -354,8 +370,19 @@ def render_video(prompt: str, seconds: int = 6) -> str:
     metaphor: at fifteen times the draft price, an 8-second render costs about
     six dollars, and the autonomy floor should treat it exactly as it treats
     moving money.
+
+    Starts the generation and returns the operation name immediately. The
+    gateway polls with `poll_final_video` — the same async pattern as drafts.
+    The old `_wait_for_video` blocking loop would exceed Cloud Run's 300s
+    timeout for anything over four seconds.
     """
-    return _wait_for_video(prompt, "final", max(1, min(int(seconds), 8)))
+    return _start_video(prompt, "final", max(1, min(int(seconds), 8)))
+
+
+@mcp.tool()
+def poll_final_video(operation: str, model: str = "", seconds: int = 0) -> str:
+    """One look at a final render already started. Unmetered: the start paid."""
+    return _poll_video(operation, model, max(0, int(seconds or 0)))
 
 
 if __name__ == "__main__":

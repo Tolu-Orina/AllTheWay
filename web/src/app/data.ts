@@ -368,6 +368,8 @@ export const api = {
     seconds?: number;
     artifactId?: string;
     shots?: Array<{ prompt: string; seconds: number }>;
+    quality?: "draft" | "final";
+    referenceImage?: string;
   }) => apiPost("/studio/generate", body, StudioGenerateSchema),
 
   studioJob: (id: string) =>

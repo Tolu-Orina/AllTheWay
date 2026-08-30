@@ -140,14 +140,16 @@ async function startCurrentShot(uid: string, job: StudioJob): Promise<StudioAdva
   const prompt = shot?.prompt ?? job.prompt;
   const seconds = shot?.seconds ?? job.seconds;
 
+  const isFinal = job.rung === "final";
   try {
     const task = await runConnectorTool({
       uid,
       sessionId: STUDIO_SESSION_ID,
       connector: "media",
-      tool: "draft_video",
+      tool: isFinal ? "render_video" : "draft_video",
       arguments: { prompt, seconds },
       confirmed: true,
+      costAcknowledged: isFinal,
       timeoutMs: VIDEO_START_TIMEOUT_MS,
     });
 
@@ -241,7 +243,7 @@ async function pollCurrent(uid: string, job: StudioJob): Promise<StudioAdvance> 
       uid,
       sessionId: STUDIO_SESSION_ID,
       connector: "media",
-      tool: "poll_draft_video",
+      tool: job.rung === "final" ? "poll_final_video" : "poll_draft_video",
       arguments: {
         operation: job.operation,
         model: job.model,
@@ -322,7 +324,7 @@ async function pollCurrent(uid: string, job: StudioJob): Promise<StudioAdvance> 
     const saved = await persistGeneratedMedia({
       uid,
       sessionId: STUDIO_SESSION_ID,
-      tool: "draft_video",
+      tool: job.rung === "final" ? "render_video" : "draft_video",
       prompt: job.prompt,
       task,
       artifactId: job.artifactId || undefined,

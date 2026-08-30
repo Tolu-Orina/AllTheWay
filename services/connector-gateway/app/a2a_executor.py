@@ -215,7 +215,7 @@ class ConnectorExecutor(AgentExecutor):
             # exhaust its own allowance by being denied.
             if self._subscriptions is not None:
                 specific = meter_for(connector, tool)
-                if not (connector == "media" and tool == "poll_draft_video"):
+                if not (connector == "media" and tool in {"poll_draft_video", "poll_final_video"}):
                     self._subscriptions.record(user, Meter.CONNECTOR_CALLS, 1)
 
                 # A tool with its own meter also charges that. Video charges

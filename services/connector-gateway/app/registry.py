@@ -60,6 +60,8 @@ TOOL_ACTIONS: dict[str, dict[str, Action | None]] = {
         "draft_video": Action.CREATE_TASK,
         # A read of an operation the user already paid to start.
         "poll_draft_video": None,
+        # A read of a final render already started and billed.
+        "poll_final_video": None,
         # ~$0.75/second — an 8-second render is about six dollars.
         #
         # MAKE_PAYMENT is not a metaphor here. It is the highest rung of the

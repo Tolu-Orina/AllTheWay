@@ -1,7 +1,7 @@
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { Link, useSearchParams } from "react-router";
 import { useReducedMotion } from "motion/react";
-import { Loader2, PanelLeft } from "lucide-react";
+import { ImagePlus, Loader2, PanelLeft, X } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import { useT } from "@/app/i18n";
@@ -104,6 +104,9 @@ export default function Studio() {
   const [filter, setFilter] = useState<LibraryFilter>("all");
   const [clipNotice, setClipNotice] = useState<"drafting" | "ready" | "failed" | null>(null);
   const [readyClipId, setReadyClipId] = useState<string | null>(null);
+  const [referenceImage, setReferenceImage] = useState<string | null>(null);
+  const [showRefNudge, setShowRefNudge] = useState(false);
+  const refInputRef = useRef<HTMLInputElement>(null);
   const resumed = useRef(false);
   const submitting = useRef(false);
   const modeRef = useRef(mode);
@@ -293,6 +296,7 @@ export default function Studio() {
   const quotaEmpty = mode === "image" && imagesLeft === 0;
   const quotaVideoEmpty =
     mode === "video" && draftLeft !== null && draftLeft < seconds;
+  const quotaFinalEmpty = mode === "video" && finalLeft === 0;
   const busy =
     mode === "image"
       ? stage === "generating"
@@ -314,6 +318,14 @@ export default function Studio() {
     shots.every((s) => s.prompt.trim().length > 0) &&
     !busy &&
     !quotaVideoEmpty &&
+    !planDirty;
+  const canRenderFinal =
+    mode === "video" &&
+    stage === "reviewing" &&
+    shots.length > 0 &&
+    shots.every((s) => s.prompt.trim().length > 0) &&
+    !busy &&
+    !quotaFinalEmpty &&
     !planDirty;
 
   useEffect(() => {
@@ -366,9 +378,32 @@ export default function Studio() {
     setSearchParams({ mode: nextMode, artifact: item.id }, { replace: true });
   }
 
+  const PERSONAL_RE = /\b(my face|my style|my photo|my image|my look|i look|i am|i'm|myself|my body)\b/i;
+
+  const pickRef = useCallback(() => refInputRef.current?.click(), []);
+
+  const handleRefFile = useCallback((file: File) => {
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      const result = e.target?.result;
+      if (typeof result === "string") {
+        const b64 = result.split(",")[1] ?? "";
+        setReferenceImage(b64);
+        setShowRefNudge(false);
+      }
+    };
+    reader.readAsDataURL(file);
+  }, []);
+
   async function generate() {
     if (!canGenerate && stage !== "error") return;
     if (!prompt.trim() || quotaEmpty) return;
+
+    if (PERSONAL_RE.test(prompt) && !referenceImage) {
+      setShowRefNudge(true);
+      return;
+    }
+    setShowRefNudge(false);
     setStage("generating");
     setError(null);
     try {
@@ -376,6 +411,7 @@ export default function Studio() {
         prompt: prompt.trim(),
         mode: "image",
         artifactId: artifact?.kind === "image" ? artifact.id : undefined,
+        referenceImage: referenceImage ?? undefined,
       });
       if (result.status === "ready" && result.artifact) {
         setArtifact(result.artifact);
@@ -441,6 +477,58 @@ export default function Studio() {
       if (result.status === "quota") {
         setStage("error");
         setError(t("studio.quotaVideoEmpty"));
+        return;
+      }
+      if (result.status === "declined") {
+        setStage("error");
+        setError(t("studio.declined"));
+        return;
+      }
+      if ((result.status === "queued" || result.status === "rendering") && result.jobId) {
+        setJobId(result.jobId);
+        setStage(result.status);
+        setShotCount(shots.length > 1 ? shots.length : null);
+        setShotIndex(0);
+        writeStoredJob({ jobId: result.jobId, prompt: prompt.trim(), seconds });
+        return;
+      }
+      if (result.status === "ready" && result.artifact) {
+        setArtifact(result.artifact);
+        setViewing(result.artifact.currentVersion);
+        setStage("ready");
+        void usage.reload();
+        void library.reload();
+        return;
+      }
+      setStage("error");
+      setError(result.message || t("studio.jobLost"));
+    } catch (err) {
+      setStage("error");
+      setError(err instanceof ApiError ? err.message : t("studio.jobLost"));
+    } finally {
+      submitting.current = false;
+    }
+  }
+
+  async function renderFinal() {
+    if (!canRenderFinal) return;
+    if (!shots.length || quotaFinalEmpty) return;
+    if (submitting.current) return;
+    submitting.current = true;
+    setStage("queued");
+    setError(null);
+    try {
+      const result = await api.studioGenerate({
+        prompt: prompt.trim(),
+        mode: "video",
+        seconds,
+        shots,
+        quality: "final",
+        artifactId: artifact?.kind === "video" ? artifact.id : undefined,
+      });
+      if (result.status === "quota") {
+        setStage("error");
+        setError(t("studio.finalQuotaEmpty"));
         return;
       }
       if (result.status === "declined") {
@@ -754,11 +842,63 @@ export default function Studio() {
         <textarea
           id="studio-prompt"
           value={prompt}
-          onChange={(event) => setPrompt(event.target.value)}
+          onChange={(event) => {
+            setPrompt(event.target.value);
+            if (showRefNudge) setShowRefNudge(false);
+          }}
           placeholder={mode === "image" ? t("studio.placeholderImage") : t("studio.placeholderVideo")}
           rows={2}
           className="w-full resize-none rounded-brand border bg-background px-3 py-2.5 text-[14px] leading-relaxed outline-none placeholder:text-muted-foreground focus-visible:ring-2 focus-visible:ring-ring/50"
         />
+
+        {mode === "image" ? (
+          <div className="flex items-center gap-2">
+            <input
+              ref={refInputRef}
+              type="file"
+              accept="image/*"
+              className="sr-only"
+              onChange={(e) => {
+                const file = e.target.files?.[0];
+                if (file) handleRefFile(file);
+                e.target.value = "";
+              }}
+            />
+            {referenceImage ? (
+              <div className="flex items-center gap-2">
+                <img
+                  src={`data:image/jpeg;base64,${referenceImage}`}
+                  alt={t("studio.attachRef")}
+                  className="size-9 rounded-brand object-cover ring-1 ring-border"
+                />
+                <button
+                  type="button"
+                  onClick={() => { setReferenceImage(null); setShowRefNudge(false); }}
+                  className="flex items-center gap-1 text-[12.5px] text-muted-foreground hover:text-foreground"
+                  aria-label={t("studio.removeRef")}
+                >
+                  <X className="size-3.5" aria-hidden="true" />
+                  {t("studio.removeRef")}
+                </button>
+              </div>
+            ) : (
+              <button
+                type="button"
+                onClick={pickRef}
+                className="flex items-center gap-1.5 rounded-brand border px-2.5 py-1.5 text-[12.5px] text-muted-foreground transition-colors hover:bg-muted hover:text-foreground"
+              >
+                <ImagePlus className="size-3.5" aria-hidden="true" />
+                {t("studio.attachRef")}
+              </button>
+            )}
+            {showRefNudge ? (
+              <p className="text-[12.5px] text-amber-600 dark:text-amber-400">
+                {t("studio.refNudge")}
+              </p>
+            ) : null}
+          </div>
+        ) : null}
+
         <div className="flex flex-wrap items-center gap-3">
           {hasLook ? (
             <p className="text-[12.5px] text-muted-foreground">{t("studio.yourLook")}</p>
@@ -820,6 +960,7 @@ export default function Studio() {
                 finalLeft={finalLeft}
                 canPlan={canPlan}
                 canDraft={canDraft}
+                canRenderFinal={canRenderFinal}
                 planDirty={planDirty}
                 reviewing={stage === "reviewing"}
                 busy={busy}
@@ -831,6 +972,7 @@ export default function Studio() {
                   setPlannedBrief("");
                   setPlannedSeconds(null);
                 }}
+                onRenderFinal={() => void renderFinal()}
               />
             )}
           </div>
@@ -851,23 +993,27 @@ function VideoActions({
   finalLeft,
   canPlan,
   canDraft,
+  canRenderFinal,
   planDirty,
   reviewing,
   busy,
   planning,
   quotaEmpty,
   onEditBrief,
+  onRenderFinal,
 }: {
   seconds: number;
   finalLeft: number;
   canPlan: boolean;
   canDraft: boolean;
+  canRenderFinal: boolean;
   planDirty: boolean;
   reviewing: boolean;
   busy: boolean;
   planning: boolean;
   quotaEmpty: boolean;
   onEditBrief: () => void;
+  onRenderFinal: () => void;
 }) {
   const t = useT();
   const reduced = useReducedMotion();
@@ -912,8 +1058,15 @@ function VideoActions({
             submitLabel
           )}
         </Button>
-        <Button type="button" variant="outline" size="lg" className="rounded-brand" disabled>
-          {t("studio.renderFinal")}
+        <Button
+          type="button"
+          variant="outline"
+          size="lg"
+          className="rounded-brand"
+          disabled={!canRenderFinal}
+          onClick={onRenderFinal}
+        >
+          {t("studio.renderFinalSeconds", { n: seconds })}
         </Button>
       </div>
     </div>

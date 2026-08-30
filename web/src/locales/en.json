@@ -220,7 +220,12 @@
     "clipReady": "Your clip is ready.",
     "clipLost": "That clip did not finish. It has not been cancelled.",
     "openVideo": "Open Video",
-    "showClip": "Show clip"
+    "showClip": "Show clip",
+    "attachRef": "Add reference",
+    "removeRef": "Remove reference",
+    "refNudge": "This looks personal — add a reference photo to match your face or style.",
+    "renderFinalSeconds": "Render final · {{n}}s",
+    "finalQuotaEmpty": "No final seconds left this month."
   },
   "comments": {
     "comments": "Comments",

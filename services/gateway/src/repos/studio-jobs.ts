@@ -25,7 +25,7 @@ export type StudioJob = {
   model: string;
   prompt: string;
   seconds: number;
-  rung: "draft";
+  rung: "draft" | "final";
   artifactId: string;
   resultArtifactId: string;
   error: string;
@@ -63,7 +63,7 @@ function toJob(id: string, data: FirebaseFirestore.DocumentData): StudioJob {
     model: data.model ?? "",
     prompt: data.prompt ?? "",
     seconds: data.seconds ?? 0,
-    rung: "draft",
+    rung: data.rung === "final" ? "final" : "draft",
     artifactId: data.artifactId ?? "",
     resultArtifactId: data.resultArtifactId ?? "",
     error: data.error ?? "",
@@ -86,6 +86,7 @@ export async function createStudioJob(opts: {
   model: string;
   prompt: string;
   seconds: number;
+  rung?: "draft" | "final";
   artifactId?: string;
   shots?: StudioJobShot[];
 }): Promise<StudioJob> {
@@ -97,7 +98,7 @@ export async function createStudioJob(opts: {
     model: opts.model,
     prompt: opts.prompt,
     seconds: opts.seconds,
-    rung: "draft",
+    rung: opts.rung ?? "draft",
     artifactId: opts.artifactId ?? "",
     resultArtifactId: "",
     error: "",
