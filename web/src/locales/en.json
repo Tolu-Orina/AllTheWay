@@ -342,7 +342,24 @@
     "generateList": "Generate list",
     "manualPrompt": "Add this to my to-do list: {{task}}. Keep it as a list I can work through. Don't do anything irreversible.",
     "generatePrompt": "Propose a to-do list from my connected calendar and email for the next few days. Propose only — do not create events or send mail until I confirm.",
-    "templatesPrompt": "Help me set up messaging templates for quick replies. Drafting only — nothing is sent unless I ask."
+    "templatesPrompt": "Help me set up messaging templates for quick replies. Drafting only — nothing is sent unless I ask.",
+    "yourTodos": "Your to-dos",
+    "complete": "Mark complete",
+    "delete": "Delete",
+    "allDone": "All done! Add another task above.",
+    "completedCount": "{{n}} completed"
+  },
+  "templates": {
+    "title": "Message Templates",
+    "hint": "Reusable quick-reply messages for common situations",
+    "newTemplate": "New template",
+    "namePlaceholder": "e.g. Follow-up after meeting",
+    "bodyPlaceholder": "Template message body…",
+    "aiDraft": "AI draft",
+    "save": "Save template",
+    "copy": "Copy",
+    "copied": "Copied!",
+    "draftFailed": "Couldn't generate — try again."
   },
   "plan": {
     "heading": "Plan"
@@ -455,6 +472,7 @@
     "waitConnectEmailHint": "Sync communications",
     "waitCreateTodo": "Create first to-do",
     "waitCreateTodoHint": "Start tracking tasks",
+    "waitHasTodos": "You've got todos here",
     "waitTemplates": "Set messaging templates",
     "waitTemplatesHint": "Quick replies setup",
     "dayHeading": "Next 12 hours",

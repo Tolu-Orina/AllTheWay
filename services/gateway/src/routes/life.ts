@@ -207,6 +207,25 @@ lifeRoutes.delete("/tasks/:id", requireUser, async (req, res) => {
   res.json({ ok: true });
 });
 
+const TemplateDraftBody = z.object({ name: z.string().min(1).max(200) });
+
+lifeRoutes.post("/templates/draft", requireUser, async (req, res) => {
+  const body = TemplateDraftBody.safeParse(req.body);
+  if (!body.success) return res.status(400).json({ code: "invalid_request" });
+  try {
+    const { vertexJson } = await import("../document-vertex.js");
+    const result = await vertexJson({
+      system: `Write a short, professional reusable message template. Return JSON with this exact shape: { "body": "the template text" }. Use [Placeholder] notation for variable parts such as [Name] or [Topic]. Plain text only, no markdown.`,
+      parts: [{ text: `Template name: "${body.data.name}"` }],
+      temperature: 0.7,
+      maxOutputTokens: 400,
+    }) as { body?: unknown };
+    res.json({ body: typeof result.body === "string" ? result.body : "" });
+  } catch {
+    res.json({ body: "" });
+  }
+});
+
 function param(req: express.Request, name: string): string {
   const raw = req.params[name];
   return Array.isArray(raw) ? raw[0]! : raw!;

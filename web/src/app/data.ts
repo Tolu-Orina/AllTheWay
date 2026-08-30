@@ -485,6 +485,8 @@ export const api = {
   completeTask: (id: string) =>
     apiPost(`/life/tasks/${encodeURIComponent(id)}/complete`, {}, TaskSchema),
   deleteTask: (id: string) => apiDelete(`/life/tasks/${encodeURIComponent(id)}`),
+  draftTemplate: (name: string) =>
+    apiPost("/life/templates/draft", { name }, z.object({ body: z.string() })),
   locale: () => apiGet("/settings/locale", z.object({ locale: z.string().nullable() })),
   setLocale: (locale: string) => apiPost("/settings/locale", { locale }),
   onboarding: () => apiGet("/settings/onboarding", OnboardingSchema),

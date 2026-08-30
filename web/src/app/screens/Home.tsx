@@ -46,6 +46,8 @@ import { VoiceControl, VoiceCaptions } from "@/app/VoiceControl";
 import { Digest, digestIsQuiet } from "@/app/Digest";
 import { ConnectToolsModal } from "@/app/ConnectToolsModal";
 import { StartTodoModal } from "@/app/StartTodoModal";
+import { TodoListModal } from "@/app/TodoListModal";
+import { MessageTemplatesModal } from "@/app/MessageTemplatesModal";
 import { LanguageOffer } from "@/app/LanguageChoice";
 import { useCompanionThread } from "@/app/companion-thread";
 import { DocumentPickup, askAboutAdded } from "@/app/Documents";
@@ -91,6 +93,8 @@ export default function Home() {
     new URLSearchParams(window.location.search).has("connected"),
   );
   const [todoOpen, setTodoOpen] = useState(false);
+  const [todoListOpen, setTodoListOpen] = useState(false);
+  const [templatesOpen, setTemplatesOpen] = useState(false);
   const [proposeAfterUpload, setProposeAfterUpload] = useState(false);
   const [hat, setHat] = useState<Hat | "all">("all");
 
@@ -156,7 +160,8 @@ export default function Home() {
       <WaitingOnYou
         onConnect={() => setConnectOpen(true)}
         onTodo={() => setTodoOpen(true)}
-        onTemplates={() => send(t("todo.templatesPrompt"))}
+        onTodoList={() => setTodoListOpen(true)}
+        onTemplates={() => setTemplatesOpen(true)}
       />
 
       {home ? (
@@ -242,6 +247,8 @@ export default function Home() {
         onOpenChange={setTodoOpen}
         onNeedAccounts={() => setConnectOpen(true)}
       />
+      <TodoListModal open={todoListOpen} onOpenChange={setTodoListOpen} />
+      <MessageTemplatesModal open={templatesOpen} onOpenChange={setTemplatesOpen} />
 
       <Sheet open={remindOpen} onOpenChange={setRemindOpen}>
         <SheetContent side="bottom" className="gap-4 p-4">
@@ -345,13 +352,20 @@ function EmptyTimeline({ onConnect }: { onConnect: () => void }) {
 function WaitingOnYou({
   onConnect,
   onTodo,
+  onTodoList,
   onTemplates,
 }: {
   onConnect: () => void;
   onTodo: () => void;
+  onTodoList: () => void;
   onTemplates: () => void;
 }) {
   const t = useT();
+  const { state: tasksState } = useAsync(() => api.tasks());
+  const allTasks = tasksState.status === "ready" ? tasksState.data : [];
+  const pending = allTasks.filter((task) => task.completedAt === null);
+  const hasTasks = pending.length > 0;
+
   const cards = [
     {
       key: "calendar",
@@ -370,9 +384,9 @@ function WaitingOnYou({
     {
       key: "todo",
       icon: ListTodo,
-      title: t("life.waitCreateTodo"),
-      hint: t("life.waitCreateTodoHint"),
-      onClick: onTodo,
+      title: hasTasks ? t("life.waitHasTodos") : t("life.waitCreateTodo"),
+      hint: hasTasks ? (pending[0]?.text ?? t("life.waitCreateTodoHint")) : t("life.waitCreateTodoHint"),
+      onClick: hasTasks ? onTodoList : onTodo,
     },
     {
       key: "templates",
@@ -381,7 +395,7 @@ function WaitingOnYou({
       hint: t("life.waitTemplatesHint"),
       onClick: onTemplates,
     },
-  ] as const;
+  ];
 
   return (
     <section aria-labelledby="waiting-heading" className="flex flex-col gap-3">
