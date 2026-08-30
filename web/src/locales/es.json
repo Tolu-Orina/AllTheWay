@@ -394,6 +394,13 @@
     "nameSaved": "Nombre guardado.",
     "nameSaveFailed": "Ese nombre no se guardó. No cambió nada — inténtalo de nuevo."
   },
+  "companion": {
+    "newChat": "Chat nuevo",
+    "currentChat": "Chat actual",
+    "previousChats": "Chats anteriores",
+    "previousEmpty": "Aún no hay chats anteriores",
+    "previousHint": "Los chats que empieces aquí se quedan aquí, aparte de Trabajo."
+  },
   "work": {
     "listHint": "Hilos que tú y el compañero estáis trabajando.",
     "bringAFile": "Traer un archivo",

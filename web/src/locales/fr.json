@@ -394,6 +394,13 @@
     "nameSaved": "Nom enregistré.",
     "nameSaveFailed": "Ce nom n'a pas été enregistré. Rien n'a changé — réessayez."
   },
+  "companion": {
+    "newChat": "Nouveau chat",
+    "currentChat": "Chat actuel",
+    "previousChats": "Chats précédents",
+    "previousEmpty": "Pas encore de chats précédents",
+    "previousHint": "Les chats commencés ici restent ici, séparés de Travail."
+  },
   "work": {
     "listHint": "Les fils que vous et le compagnon êtes en train de traiter.",
     "bringAFile": "Apporter un fichier",

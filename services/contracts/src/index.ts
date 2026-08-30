@@ -147,6 +147,13 @@ export const SessionSchema = z.object({
   updatedAt: z.string().datetime(),
   done: z.number().int().nonnegative(),
   total: z.number().int().positive(),
+  /**
+   * Work threads and companion chats are different lists.
+   *
+   * Absent on rows written before this field existed — those are work, except
+   * the legacy id `"companion"`.
+   */
+  surface: z.enum(["work", "companion"]).default("work"),
 });
 
 /**

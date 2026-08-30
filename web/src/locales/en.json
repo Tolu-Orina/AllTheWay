@@ -415,6 +415,13 @@
     "nameSaved": "Name saved.",
     "nameSaveFailed": "That name did not save. Nothing changed — try again."
   },
+  "companion": {
+    "newChat": "New chat",
+    "currentChat": "Current Chat",
+    "previousChats": "Previous Chats",
+    "previousEmpty": "No previous chats yet",
+    "previousHint": "Chats you start here stay here, separate from Work."
+  },
   "work": {
     "listHint": "Threads you and the companion are working through.",
     "bringAFile": "Bring a file",

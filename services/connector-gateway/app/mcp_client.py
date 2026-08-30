@@ -131,6 +131,20 @@ async def _connect(connector: str, credentials: dict[str, str] | None = None):
             yield session
 
 
+#: Process-lifetime. Connectors do not change without a deploy, and spawning
+#: a Python subprocess just to ask the same four names on every call is what
+#: made a calendar read miss a six-second budget on a cold instance.
+_offered: dict[str, frozenset[str]] = {}
+
+
+def forget_tools(connector: str | None = None) -> None:
+    """Drop the offered-tools cache. Tests, and nothing in production."""
+    if connector is None:
+        _offered.clear()
+        return
+    _offered.pop(connector, None)
+
+
 async def list_tools(connector: str) -> frozenset[str]:
     """What this connector actually offers.
 
@@ -138,9 +152,14 @@ async def list_tools(connector: str) -> frozenset[str]:
     does not offer before it consults the grant, so a stale grant naming a
     removed tool produces a clear answer instead of a confusing one.
     """
+    cached = _offered.get(connector)
+    if cached is not None:
+        return cached
     async with _connect(connector) as session:
         listed = await session.list_tools()
-        return frozenset(tool.name for tool in listed.tools)
+        names = frozenset(tool.name for tool in listed.tools)
+    _offered[connector] = names
+    return names
 
 
 async def call_tool(

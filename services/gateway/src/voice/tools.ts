@@ -40,6 +40,12 @@ import { END_THIS_CONVERSATION } from "./hangup.js";
 
 /** Long enough for a cold service, short enough not to strand a conversation. */
 const TOOL_TIMEOUT_MS = 8_000;
+/**
+ * A calendar read is: A2A to the connector gateway + OAuth refresh + two MCP
+ * subprocesses + Google. Six seconds used to lose to a Cloud Run cold start
+ * and come back as "I could not reach your calendar".
+ */
+const CONNECTOR_READ_MS = 20_000;
 
 export type ToolResult = Record<string, unknown>;
 
@@ -199,23 +205,53 @@ async function connectorRead(
   }
 
   const client = await connectorClient();
-  const result = await client.sendMessage({
-    tenant: uid,
-    message: connectorInvokeMessage(`voice-${Date.now().toString(36)}`, {
-      connector,
-      tool,
-      arguments: args,
-      grant: enforcementGrant(connector, tool),
+  const result = await Promise.race([
+    client.sendMessage({
+      tenant: uid,
+      message: connectorInvokeMessage(`voice-${Date.now().toString(36)}`, {
+        connector,
+        tool,
+        arguments: args,
+        grant: enforcementGrant(connector, tool),
+      }),
+      configuration: undefined,
+      metadata: undefined,
     }),
-    configuration: undefined,
-    metadata: undefined,
-  });
+    new Promise<never>((_, reject) =>
+      setTimeout(() => reject(new Error("the connector did not answer in time")), CONNECTOR_READ_MS),
+    ),
+  ]);
 
   // The connector-gateway returns data via A2A data parts, not text parts.
   // Attempt structured extraction first; fall back to text for error messages.
-  const data = dataOfTask(result);
-  if (data) return data;
-  const text = textOfTask(result);
+  return toolResultFromConnector(dataOfTask(result), textOfTask(result));
+}
+
+/**
+ * Turn a connector task into something the model can speak.
+ *
+ * A refusal used to be returned as `{ error, refusal, reason }` without
+ * `cannot`, so the planner treated a revoked grant as a successful empty
+ * calendar. AUTH_REQUIRED and REJECTED both land here.
+ */
+export function toolResultFromConnector(
+  data: Record<string, unknown> | null,
+  text: string,
+): ToolResult {
+  if (data) {
+    if (typeof data.cannot === "string" && data.cannot.trim()) {
+      return { cannot: data.cannot };
+    }
+    const refusal = typeof data.refusal === "string" ? data.refusal : "";
+    const reason =
+      (typeof data.reason === "string" && data.reason.trim()) ||
+      (typeof data.error === "string" && data.error.trim()) ||
+      "";
+    if (refusal || reason) {
+      return { cannot: reason || "That connection could not be used just now." };
+    }
+    return data;
+  }
   return text ? { result: text } : { cannot: "The connector returned no data." };
 }
 
@@ -377,6 +413,16 @@ export async function runReadTool(
     // The message is for the model to relay, so it says what happened in a
     // sentence a person could hear without alarm.
     console.warn(`[voice-tools] ${name} failed: ${(err as Error).message}`);
+    const msg = (err as Error).message || "";
+    if (/did not answer in time/i.test(msg)) {
+      return { cannot: "I could not reach that just now. Ask me again in a moment." };
+    }
+    if (/auth|consent|connect|grant/i.test(msg)) {
+      return {
+        cannot:
+          "That Google account needs to be connected again. You can do that from Profile.",
+      };
+    }
     return { cannot: "I could not reach that just now. Ask me again in a moment." };
   }
 }

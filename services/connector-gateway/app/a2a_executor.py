@@ -183,28 +183,39 @@ class ConnectorExecutor(AgentExecutor):
             else None
         )
 
-        outcome = await invoke(
-            connector=connector,
-            tool=tool,
-            arguments=payload.get("arguments") or {},
-            grant=_grant_from(payload),
-            usage=self._usage.usage(key),
-            confirmed=bool(payload.get("confirmed", False)),
-            # A separate field from `confirmed`, and separate on the wire too.
-            # Deriving one from the other anywhere along this path would undo
-            # the distinction the two gates exist to make.
-            cost_acknowledged=bool(payload.get("costAcknowledged", False)),
-            waiver=waiver,
-            user=user,
-            token_store=self._token_store,
-            # The organisation this call belongs to. Sent by the caller, which
-            # is the only party that knows it — the connector gateway sees a
-            # user id, not a directory. Absent means the strict default.
-            org=str(payload.get("org", "")).strip(),
-            policy_store=self._policy_store,
-            subscriptions=self._subscriptions,
-            visual=self._visual,
-        )
+        try:
+            outcome = await invoke(
+                connector=connector,
+                tool=tool,
+                arguments=payload.get("arguments") or {},
+                grant=_grant_from(payload),
+                usage=self._usage.usage(key),
+                confirmed=bool(payload.get("confirmed", False)),
+                # A separate field from `confirmed`, and separate on the wire too.
+                # Deriving one from the other anywhere along this path would undo
+                # the distinction the two gates exist to make.
+                cost_acknowledged=bool(payload.get("costAcknowledged", False)),
+                waiver=waiver,
+                user=user,
+                token_store=self._token_store,
+                # The organisation this call belongs to. Sent by the caller, which
+                # is the only party that knows it — the connector gateway sees a
+                # user id, not a directory. Absent means the strict default.
+                org=str(payload.get("org", "")).strip(),
+                policy_store=self._policy_store,
+                subscriptions=self._subscriptions,
+                visual=self._visual,
+            )
+        except Exception as exc:
+            # An uncaught raise used to become a JSON-RPC error, which the
+            # gateway reported as "I could not reach your calendar" — the same
+            # sentence as a timeout, with no way to reconnect.
+            await updater.failed(
+                updater.new_agent_message(
+                    [Part(text=str(exc)[:400] or "The connector could not finish.")]
+                )
+            )
+            return
 
         if outcome.ok:
             # Counted only when it actually ran. Charging for refused calls

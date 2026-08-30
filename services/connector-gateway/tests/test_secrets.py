@@ -36,9 +36,54 @@ def test_an_unavailable_secret_never_falls_back_to_an_environment_variable(monke
         get("calendar_oauth", source=DevFileSource("/definitely/not/here"))
 
 
-def test_secret_manager_is_not_silently_approximated():
+class _FakeSecretClient:
+    def __init__(self, payload=b"from-sm", names=None):
+        self.payload = payload
+        self.names = names if names is not None else []
+
+    def access_secret_version(self, request):
+        self.names.append(request["name"])
+        if isinstance(self.payload, Exception):
+            raise self.payload
+        payload = self.payload
+
+        class Payload:
+            data = payload
+
+        class Resp:
+            payload = Payload()
+
+        return Resp()
+
+
+def test_secret_manager_reads_the_payload_by_secret_id():
+    client = _FakeSecretClient(b"  token-from-sm \n")
+    source = SecretManagerSource("alltheway-rinegan", client=client)
+    assert source.fetch("google_oauth_client_id") == "token-from-sm"
+    assert client.names == [
+        "projects/alltheway-rinegan/secrets/google_oauth_client_id/versions/latest"
+    ]
+
+
+def test_secret_manager_accepts_a_full_resource_name():
+    client = _FakeSecretClient(b"id-value")
+    source = SecretManagerSource("p", client=client)
+    name = "projects/p/secrets/google_oauth_client_id/versions/latest"
+    assert source.fetch(name) == "id-value"
+    assert client.names == [name]
+
+
+def test_secret_manager_a_missing_secret_raises_rather_than_returning_empty():
+    client = _FakeSecretClient(payload=RuntimeError("404"))
     with pytest.raises(SecretUnavailable):
-        SecretManagerSource("some-project").fetch("calendar_oauth")
+        SecretManagerSource("p", client=client).fetch("calendar_oauth")
+
+
+def test_secret_manager_never_falls_back_to_an_environment_variable(monkeypatch):
+    monkeypatch.setenv("google_oauth_client_id", "from-the-environment")
+    client = _FakeSecretClient(payload=RuntimeError("denied"))
+    with pytest.raises(SecretUnavailable):
+        SecretManagerSource("p", client=client).fetch("google_oauth_client_id")
 
 
 def test_repeat_reads_inside_the_ttl_are_served_from_cache():

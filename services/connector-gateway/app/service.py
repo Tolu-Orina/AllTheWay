@@ -35,6 +35,7 @@ from .visual import NoVisualPreferences, VisualStore
 from .a2a_card import CARD_VERSION
 from .audit import record_waiver
 from .oauth import ConsentRequired, RefreshTokenStore, access_token_for
+from .secrets import SecretUnavailable
 from .org_policy import PolicyStore, resolve
 from .subscription import FREE, SubscriptionStore
 from alltheway_metering import Meter, check
@@ -261,6 +262,9 @@ async def invoke(
             return Outcome(
                 False, reason=str(exc), refusal=Refusal.NEEDS_CONSENT, trace=trace
             )
+        except SecretUnavailable as exc:
+            trace.append(f"{connector} could not load its OAuth client")
+            return Outcome(False, reason=str(exc), trace=trace)
         credentials = {"GOOGLE_OAUTH_ACCESS_TOKEN": token}
         trace.append(f"Resolved a short-lived credential for {connector}")
 

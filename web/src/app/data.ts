@@ -188,12 +188,14 @@ export const DocumentListSchema = z.object({ documents: z.array(DocumentSchema) 
 export type UserDocument = z.infer<typeof DocumentSchema>;
 
 export const api = {
-  sessions: () => apiGet("/sessions", z.array(SessionSchema)),
+  sessions: (surface?: "work" | "companion") =>
+    apiGet(surface ? `/sessions?surface=${surface}` : "/sessions", z.array(SessionSchema)),
   home: () => apiGet("/home", HomeSchema),
   homeDay: () => apiGet("/home/day", DaySchema),
   session: (id: string) =>
     apiGet(`/sessions/${encodeURIComponent(id)}`, SessionDetailSchema.nullable()),
-  createSession: () => apiPost("/sessions", {}, z.object({ id: z.string().min(1) })),
+  createSession: (surface?: "work" | "companion") =>
+    apiPost("/sessions", surface ? { surface } : {}, z.object({ id: z.string().min(1) })),
   endSession: (id: string) =>
     apiPost(
       `/sessions/${encodeURIComponent(id)}/end`,

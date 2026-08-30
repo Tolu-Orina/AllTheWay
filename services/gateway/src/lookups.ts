@@ -20,7 +20,7 @@ import { runReadTool, type ToolResult } from "./voice/tools.js";
  * for the ones we *do* run, so a hung connector cannot stall the planner.
  */
 
-const LOOKUP_BUDGET_MS = 6_000;
+const LOOKUP_BUDGET_MS = 20_000;
 
 export type ReadCall = { name: string; args: Record<string, unknown> };
 
@@ -129,7 +129,7 @@ export async function connectedLookups(uid: string, message: string): Promise<st
   const lines = await Promise.all(
     calls.map(async (call) => {
       const result = await withBudget(runReadTool(uid, call.name, call.args), {
-        cannot: "I could not reach that just now.",
+        cannot: "I could not reach that just now. Ask me again in a moment.",
       });
       return asLine(call.name, result);
     }),

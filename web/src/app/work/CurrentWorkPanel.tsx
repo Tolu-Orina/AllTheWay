@@ -13,7 +13,7 @@ import { cn } from "@/lib/utils";
 const STUDIO_SESSION_ID = "studio";
 
 function isListedWork(session: Session): boolean {
-  return session.id !== COMPANION_SESSION_ID && session.id !== STUDIO_SESSION_ID;
+  return session.surface !== "companion" && session.id !== COMPANION_SESSION_ID && session.id !== STUDIO_SESSION_ID;
 }
 
 /**

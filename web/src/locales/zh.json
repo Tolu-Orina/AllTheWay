@@ -388,6 +388,13 @@
     "nameSaved": "姓名已保存。",
     "nameSaveFailed": "姓名没有保存成功。什么都没改——请再试一次。"
   },
+  "companion": {
+    "newChat": "新对话",
+    "currentChat": "当前对话",
+    "previousChats": "以往对话",
+    "previousEmpty": "还没有以往对话",
+    "previousHint": "这里开始的对话会留在这里，和工作分开。"
+  },
   "work": {
     "listHint": "你和同伴正在处理的线索。",
     "bringAFile": "带上一个文件",

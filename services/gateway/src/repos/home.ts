@@ -13,7 +13,7 @@ import { listPeople, listPlaces, listProposed, listReminders, listRhythms, ensur
  * Everything Today needs, in one round trip.
  *
  * The calendar day is intentionally excluded — it requires an external network
- * call to the connector-gateway which can take up to 8 seconds (cold start +
+ * call to the connector-gateway which can take up to 20 seconds (cold start +
  * Google Calendar API). Everything else here is local Firestore reads and
  * responds in under a second. The browser fetches the calendar day separately
  * via GET /home/day so the page shell renders immediately.

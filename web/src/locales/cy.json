@@ -403,6 +403,13 @@
     "nameSaved": "Enw wedi'i gadw.",
     "nameSaveFailed": "Ni chadwyd yr enw hwnnw. Ni newidiodd dim — ceisiwch eto."
   },
+  "companion": {
+    "newChat": "Sgwrs newydd",
+    "currentChat": "Sgwrs gyfredol",
+    "previousChats": "Sgyrsiau blaenorol",
+    "previousEmpty": "Dim sgyrsiau blaenorol eto",
+    "previousHint": "Mae sgyrsiau a ddechreuwch yma yn aros yma, ar wahân i Waith."
+  },
   "work": {
     "listHint": "Edau rydych chi a’r cydymaith yn gweithio drwyddynt.",
     "bringAFile": "Dewch â ffeil",

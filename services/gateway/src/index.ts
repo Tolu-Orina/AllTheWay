@@ -260,7 +260,9 @@ api.post(
 api.get(
   "/sessions",
   handle(async (req, res) => {
-    res.json(await listSessions(req.uid!));
+    const raw = typeof req.query.surface === "string" ? req.query.surface : "";
+    const surface = raw === "companion" ? "companion" : "work";
+    res.json(await listSessions(req.uid!, surface));
   }),
 );
 
@@ -272,8 +274,15 @@ api.get(
 api.post(
   "/sessions",
   handle(async (req, res) => {
+    const body = z
+      .object({ surface: z.enum(["work", "companion"]).optional() })
+      .safeParse(req.body ?? {});
+    const surface = body.success && body.data.surface === "companion" ? "companion" : "work";
     const id = crypto.randomUUID();
-    await ensureSession(req.uid!, id, { title: "New work" });
+    await ensureSession(req.uid!, id, {
+      title: surface === "companion" ? "New chat" : "New work",
+      surface,
+    });
     res.status(201).json({ id });
   }),
 );

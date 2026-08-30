@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useId, useRef, useState } from "react";
-import { Link, useLocation } from "react-router";
+import { useLocation } from "react-router";
 import { useT } from "@/app/i18n";
 import {
   AlertTriangle,
@@ -8,6 +8,7 @@ import {
   Loader2,
   MessageCircle,
   PanelRightClose,
+  Plus,
   Send,
   Upload,
 } from "lucide-react";
@@ -34,6 +35,7 @@ import { useCompanionThread } from "@/app/companion-thread";
 import { Markdown } from "@/app/Markdown";
 import { VoiceCaptions, VoiceControl } from "@/app/VoiceControl";
 import { cn } from "@/lib/utils";
+import { relativeTime } from "@/lib/format";
 
 /**
  * The conversation itself, with no opinion about what contains it.
@@ -42,12 +44,11 @@ import { cn } from "@/lib/utils";
  * copy of this markup is how a docked column and a sheet used to drift.
  */
 export function CompanionConversation({ autoFocus = false }: { autoFocus?: boolean }) {
-  const { messages, send, working, steps, decide, decisionStatus } = useCompanionThread();
+  const { messages, send, working, steps, decide, decisionStatus, sessionId } = useCompanionThread();
   // Recovery rows are keyed by turn. Message ids are numbers and restart with
-  // each thread, so they are scoped by the session in the path — otherwise two
-  // different sessions would write recovery offers under the same id.
-  const { pathname } = useLocation();
-  const threadId = pathname.match(/^\/app\/work\/([^/]+)$/)?.[1] ?? "home";
+  // each thread, so they are scoped by the companion session — otherwise two
+  // different chats would write recovery offers under the same id.
+  const threadId = sessionId || "home";
   const confirmId = pendingConfirmId(messages);
   const last = messages.at(-1);
   const reduced = useReducedMotion();
@@ -369,12 +370,13 @@ export function CompanionComposer({ autoFocus = false }: { autoFocus?: boolean }
  * the phone. One way in, every size.
  */
 export function CompanionPanel() {
+  const t = useT();
   const { pathname } = useLocation();
   const studio = pathname.startsWith("/app/studio");
   const work = pathname.startsWith("/app/work");
   const [sheetOpen, setSheetOpen] = useState(false);
   const [mode, setMode] = useState<"chat" | "history">("chat");
-  const { companionOpenNonce } = useCompanionThread();
+  const { companionOpenNonce, startNewChat, startingNew } = useCompanionThread();
   const seenOpenNonce = useRef(0);
 
   useEffect(() => {
@@ -415,19 +417,34 @@ export function CompanionPanel() {
           <div className="flex items-center justify-between border-b px-4 py-3">
             <h2 className="sr-only">Companion</h2>
             <PanelSwitch mode={mode} onMode={setMode} />
-            <button
-              type="button"
-              onClick={() => setSheetOpen(false)}
-              aria-label="Close companion"
-              className="grid size-8 place-items-center rounded-brand text-muted-foreground transition-colors hover:bg-muted hover:text-foreground"
-            >
-              <PanelRightClose className="size-[18px]" aria-hidden="true" />
-            </button>
+            <div className="flex items-center gap-0.5">
+              <button
+                type="button"
+                onClick={() => {
+                  void startNewChat();
+                  setMode("chat");
+                }}
+                disabled={startingNew}
+                aria-label={t("companion.newChat")}
+                title={t("companion.newChat")}
+                className="grid size-8 place-items-center rounded-brand text-muted-foreground transition-colors hover:bg-muted hover:text-foreground disabled:opacity-40"
+              >
+                <Plus className="size-[18px]" aria-hidden="true" />
+              </button>
+              <button
+                type="button"
+                onClick={() => setSheetOpen(false)}
+                aria-label="Close companion"
+                className="grid size-8 place-items-center rounded-brand text-muted-foreground transition-colors hover:bg-muted hover:text-foreground"
+              >
+                <PanelRightClose className="size-[18px]" aria-hidden="true" />
+              </button>
+            </div>
           </div>
 
           {mode === "chat"
             ? <CompanionConversation autoFocus={sheetOpen} />
-            : <PreviousChats onNavigate={() => setSheetOpen(false)} />}
+            : <PreviousChats onOpen={() => setMode("chat")} />}
         </SheetContent>
       </Sheet>
     </>
@@ -441,6 +458,7 @@ function PanelSwitch({
   mode: "chat" | "history";
   onMode: (mode: "chat" | "history") => void;
 }) {
+  const t = useT();
   return (
     <div role="tablist" aria-label="Panel view" className="flex items-center gap-0.5 rounded-full border p-0.5">
       {(["chat", "history"] as const).map((value) => (
@@ -457,15 +475,17 @@ function PanelSwitch({
               : "text-muted-foreground hover:text-foreground",
           )}
         >
-          {value === "chat" ? "Current Chat" : "Previous Chats"}
+          {value === "chat" ? t("companion.currentChat") : t("companion.previousChats")}
         </button>
       ))}
     </div>
   );
 }
 
-function PreviousChats({ onNavigate }: { onNavigate: () => void }) {
-  const { state } = useAsync(() => api.sessions());
+function PreviousChats({ onOpen }: { onOpen: () => void }) {
+  const t = useT();
+  const { sessionId, openChat, chatsVersion } = useCompanionThread();
+  const { state } = useAsync(() => api.sessions("companion"), [chatsVersion]);
   const sessions: Session[] = state.status === "ready" ? state.data : [];
 
   if (state.status === "loading") {
@@ -481,10 +501,8 @@ function PreviousChats({ onNavigate }: { onNavigate: () => void }) {
   if (sessions.length === 0) {
     return (
       <div className="flex flex-1 flex-col items-center justify-center gap-2 p-8 text-center">
-        <p className="text-[14px] font-medium">No previous chats yet</p>
-        <p className="text-[13px] text-muted-foreground">
-          Work sessions you start will appear here.
-        </p>
+        <p className="text-[14px] font-medium">{t("companion.previousEmpty")}</p>
+        <p className="text-[13px] text-muted-foreground">{t("companion.previousHint")}</p>
       </div>
     );
   }
@@ -493,19 +511,25 @@ function PreviousChats({ onNavigate }: { onNavigate: () => void }) {
     <ul className="min-h-0 flex-1 divide-y overflow-y-auto">
       {sessions.map((session) => (
         <li key={session.id}>
-          <Link
-            to={`/app/work/${session.id}`}
-            onClick={onNavigate}
-            className="flex items-center gap-3 px-4 py-3.5 text-left transition-colors hover:bg-muted/50"
+          <button
+            type="button"
+            onClick={() => {
+              openChat(session.id);
+              onOpen();
+            }}
+            className={cn(
+              "flex w-full items-center gap-3 px-4 py-3.5 text-left transition-colors hover:bg-muted/50",
+              session.id === sessionId && "bg-muted/60",
+            )}
           >
             <div className="min-w-0 flex-1">
               <p className="truncate text-[14px] font-medium">{session.title}</p>
               <p className="mt-0.5 text-[12px] text-muted-foreground">
-                {session.done} of {session.total} steps
+                {session.updatedAt ? relativeTime(session.updatedAt) : ""}
               </p>
             </div>
             <ChevronRight className="size-4 shrink-0 text-muted-foreground" aria-hidden="true" />
-          </Link>
+          </button>
         </li>
       ))}
     </ul>

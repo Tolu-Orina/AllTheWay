@@ -39,7 +39,7 @@ from typing import Protocol
 import httpx
 
 from . import catalogue
-from .secrets import get as secret
+from .secrets import SecretUnavailable, get as secret
 
 #: Google's OAuth 2.0 token endpoint. The refresh grant is a plain form POST;
 #: no SDK is needed for one request, and one that ships its own HTTP client and
@@ -233,12 +233,20 @@ async def access_token_for(
 
     refresh = granted.refresh_token
 
-    form = {
-        "grant_type": "refresh_token",
-        "refresh_token": refresh,
-        "client_id": secret(client.client_id_secret),
-        "client_secret": secret(client.client_secret_secret),
-    }
+    try:
+        form = {
+            "grant_type": "refresh_token",
+            "refresh_token": refresh,
+            "client_id": secret(client.client_id_secret),
+            "client_secret": secret(client.client_secret_secret),
+        }
+    except SecretUnavailable as exc:
+        # A missing OAuth client is an outage, not a consent problem — but
+        # raising anything else here used to crash the A2A handler, which
+        # the gateway reported as "I could not reach your calendar".
+        raise ConsentRequired(
+            f"Could not refresh access to {label} just now. Ask again in a moment."
+        ) from exc
 
     async with httpx.AsyncClient(timeout=_EXCHANGE_TIMEOUT_SECONDS) as http:
         response = await http.post(TOKEN_URL, data=form)

@@ -1,4 +1,4 @@
-import { FieldValue } from "firebase-admin/firestore";
+import { FieldValue, type DocumentSnapshot } from "firebase-admin/firestore";
 import {
   PlanStepSchema,
   SessionDetailSchema,
@@ -24,10 +24,11 @@ import type { ActiveHat } from "../hat.js";
  */
 
 export const DEFAULT_TITLE = "New work";
+export const COMPANION_TITLE = "New chat";
 export const VOICE_TITLE = "Voice";
 
 /** Titles that the next utterance is still allowed to replace. */
-const UNLOCKED = new Set(["", DEFAULT_TITLE, VOICE_TITLE]);
+const UNLOCKED = new Set(["", DEFAULT_TITLE, COMPANION_TITLE, VOICE_TITLE]);
 
 const toIso = (value: unknown): string =>
   value && typeof value === "object" && "toDate" in value
@@ -97,6 +98,13 @@ function planFields(plan: PlanStep[]) {
   };
 }
 
+export type SessionSurface = "work" | "companion";
+
+export function sessionSurface(id: string, data: { surface?: unknown } = {}): SessionSurface {
+  if (id === "companion" || data.surface === "companion") return "companion";
+  return "work";
+}
+
 export type TouchInput = {
   /** First user utterance. Titles a new row; ignored once the title is locked. */
   utterance?: string;
@@ -114,13 +122,14 @@ export type TouchInput = {
 export async function ensureSession(
   uid: string,
   id: string,
-  opts: { title?: string } = {},
+  opts: { title?: string; surface?: SessionSurface } = {},
 ): Promise<void> {
   const ref = sessions(uid).doc(id);
   const snap = await ref.get();
   if (snap.exists) return;
 
-  const title = opts.title?.trim() || DEFAULT_TITLE;
+  const surface = opts.surface ?? sessionSurface(id);
+  const title = opts.title?.trim() || (surface === "companion" ? COMPANION_TITLE : DEFAULT_TITLE);
   await ref.set({
     title,
     updatedAt: FieldValue.serverTimestamp(),
@@ -128,6 +137,7 @@ export async function ensureSession(
     scope: "",
     companionNote: "",
     correction: null,
+    surface,
   });
 }
 
@@ -167,6 +177,8 @@ export async function touchSession(uid: string, id: string, input: TouchInput = 
         ? existing.scope
         : "";
 
+  const surface = sessionSurface(id, existing);
+
   await ref.set(
     {
       title,
@@ -175,6 +187,7 @@ export async function touchSession(uid: string, id: string, input: TouchInput = 
       scope,
       companionNote,
       correction: existing.correction ?? null,
+      surface,
     },
     { merge: true },
   );
@@ -258,13 +271,35 @@ export async function clearPendingConfirm(uid: string, id: string): Promise<void
   await sessions(uid).doc(id).set({ pendingConfirm: FieldValue.delete() }, { merge: true });
 }
 
-export async function listSessions(uid: string): Promise<Session[]> {
+export async function listSessions(
+  uid: string,
+  surface: SessionSurface = "work",
+): Promise<Session[]> {
+  if (surface === "companion") {
+    const snap = await sessions(uid).where("surface", "==", "companion").limit(50).get();
+    const docs: DocumentSnapshot[] = [...snap.docs];
+    const legacy = await sessions(uid).doc("companion").get();
+    if (legacy.exists && !docs.some((d) => d.id === "companion")) {
+      docs.push(legacy);
+    }
+    return docs
+      .map(asListedSession)
+      .sort((a, b) => b.updatedAt.localeCompare(a.updatedAt));
+  }
+
   const snap = await sessions(uid).orderBy("updatedAt", "desc").limit(50).get();
-  // Parsed on the way out: a malformed document fails here, in one place,
-  // rather than as a mystery undefined in the UI.
-  return snap.docs.map((d) =>
-    SessionSchema.parse({ id: d.id, ...d.data(), updatedAt: toIso(d.get("updatedAt")) }),
-  );
+  return snap.docs
+    .filter((d) => sessionSurface(d.id, d.data() ?? {}) === "work")
+    .map(asListedSession);
+}
+
+function asListedSession(d: DocumentSnapshot): Session {
+  return SessionSchema.parse({
+    id: d.id,
+    ...d.data(),
+    updatedAt: toIso(d.get("updatedAt")),
+    surface: sessionSurface(d.id, d.data() ?? {}),
+  });
 }
 
 export async function getSession(uid: string, id: string): Promise<SessionDetail | null> {
@@ -281,5 +316,6 @@ export async function getSession(uid: string, id: string): Promise<SessionDetail
     thread: asThread(doc.get("thread")),
     done: doc.get("done") ?? 0,
     total: Math.max(Number(doc.get("total")) || 0, 1),
+    surface: sessionSurface(doc.id, doc.data() ?? {}),
   });
 }

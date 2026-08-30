@@ -29,6 +29,10 @@ dependencies = [
   # Where a user's refresh token lives. Read here, written by the gateway's
   # consent callback.
   "google-cloud-firestore>=2.19",
+  # OAuth client id/secret are fetched by name at the moment of a calendar
+  # (or Gmail, Drive, Docs) call. The class that does this used to raise on
+  # every fetch, so every Google connector failed in production.
+  "google-cloud-secret-manager>=2.20",
   # The media connector authenticates to Vertex with the service's own
   # identity. Declared rather than inherited: today it arrives only as a
   # transitive of google-cloud-firestore, and a package that is present because

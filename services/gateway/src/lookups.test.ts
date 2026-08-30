@@ -80,3 +80,23 @@ test("blank input selects nothing", () => {
 test("startOfUtcDay is midnight Z", () => {
   assert.equal(startOfUtcDay(new Date("2026-08-28T15:51:00.000Z")), "2026-08-28T00:00:00Z");
 });
+
+test("a connector refusal is something the model can say, not empty events", async () => {
+  const { toolResultFromConnector } = await import("./voice/tools.js");
+  const refused = toolResultFromConnector(
+    {
+      refusal: "needs_consent",
+      reason: "Your Google Calendar connection is no longer valid. Connect it again.",
+      error: "Your Google Calendar connection is no longer valid. Connect it again.",
+    },
+    "",
+  );
+  assert.equal(
+    refused.cannot,
+    "Your Google Calendar connection is no longer valid. Connect it again.",
+  );
+
+  const events = toolResultFromConnector({ events: [{ id: "1", title: "Standup" }] }, "");
+  assert.equal(events.cannot, undefined);
+  assert.equal((events.events as { title: string }[])[0]?.title, "Standup");
+});

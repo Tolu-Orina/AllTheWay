@@ -14,7 +14,8 @@ import { useT } from "@/app/i18n";
 import { useAsync } from "@/app/use-async";
 import { useDecision } from "@/app/use-decision";
 import { useTurn, type ProposedAction, type TurnPhase } from "@/app/use-turn";
-import { COMPANION_SESSION_ID } from "@/app/work-id";
+import { persistCompanionSessionId, readCompanionSessionId } from "@/app/work-id";
+import { ApiError } from "@/lib/api";
 import { pendingConfirmId } from "@/app/ConfirmGate";
 import type { Citation, OnboardingJob, PlanStep, ThreadMessage } from "@alltheway/contracts";
 
@@ -31,10 +32,15 @@ export type CompanionMessage = {
 };
 
 type CompanionThread = {
+  sessionId: string;
   messages: CompanionMessage[];
   draft: string;
   setDraft: (text: string) => void;
   send: (text: string) => void;
+  startNewChat: () => Promise<void>;
+  openChat: (id: string) => void;
+  chatsVersion: number;
+  startingNew: boolean;
   /**
    * Spoken line that already ran through Live — do not `send()` it or it
    * would fire a second, typed turn.
@@ -105,10 +111,12 @@ export function CompanionThreadProvider({ children }: { children: React.ReactNod
 
   const welcome = t(welcomeKey(job), { who });
 
-  const { turn, send: runTurn } = useTurn(COMPANION_SESSION_ID);
-  const { decide, reset: resetDecision, status: decisionStatus } = useDecision(
-    COMPANION_SESSION_ID,
-  );
+  const [sessionId, setSessionId] = useState(readCompanionSessionId);
+  const [chatsVersion, setChatsVersion] = useState(0);
+  const [startingNew, setStartingNew] = useState(false);
+
+  const { turn, send: runTurn, reset: resetTurn } = useTurn(sessionId);
+  const { decide, reset: resetDecision, status: decisionStatus } = useDecision(sessionId);
   const [history, setHistory] = useState<CompanionMessage[]>(() => [
     { id: 1, role: "agent", text: welcome },
   ]);
@@ -121,13 +129,20 @@ export function CompanionThreadProvider({ children }: { children: React.ReactNod
   const pending = useRef<string[]>([]);
   const draining = useRef(false);
 
-  // The thread is stored on the companion session. Reload used to start from
+  // The thread is stored on this companion session. Reload used to start from
   // the welcome bubble every time, which is how a conversation the person
-  // had just had vanished.
+  // had just had vanished. Switching chats must load that session, not the last.
   useEffect(() => {
     let live = true;
+    settled.current = "";
+    pending.current = [];
+    draining.current = false;
+    hydrated.current = false;
+    setHistory([{ id: 1, role: "agent", text: welcome }]);
+    resetTurn();
+    resetDecision();
     void api
-      .session(COMPANION_SESSION_ID)
+      .session(sessionId)
       .then((detail) => {
         if (!live || !detail?.thread?.length) return;
         setHistory((prev) => {
@@ -137,13 +152,21 @@ export function CompanionThreadProvider({ children }: { children: React.ReactNod
           return fromStored(detail.thread);
         });
       })
-      .catch(() => {
-        // No session yet, or offline. The welcome bubble stays.
+      .catch((err) => {
+        // Offline or a missing row. A stored uuid that 404s must not be
+        // recreated as Work by the next turn — allocate a companion row instead.
+        if (!(err instanceof ApiError) || err.status !== 404) return;
+        if (sessionId === "companion") return;
+        void api.createSession("companion").then((created) => {
+          if (!live) return;
+          persistCompanionSessionId(created.id);
+          setSessionId(created.id);
+        });
       });
     return () => {
       live = false;
     };
-  }, []);
+  }, [sessionId, resetTurn, resetDecision]);
 
   // Replace the opening bubble while it is still the only message. After they
   // have spoken — or after a stored thread has been restored — a job-aware
@@ -294,12 +317,37 @@ export function CompanionThreadProvider({ children }: { children: React.ReactNod
     setCompanionOpenNonce((n) => n + 1);
   }, []);
 
+  const openChat = useCallback((id: string) => {
+    const next = id.trim();
+    if (!next) return;
+    persistCompanionSessionId(next);
+    setSessionId(next);
+  }, []);
+
+  const startNewChat = useCallback(async () => {
+    if (startingNew) return;
+    setStartingNew(true);
+    try {
+      const created = await api.createSession("companion");
+      persistCompanionSessionId(created.id);
+      setSessionId(created.id);
+      setChatsVersion((n) => n + 1);
+    } finally {
+      setStartingNew(false);
+    }
+  }, [startingNew]);
+
   const value = useMemo<CompanionThread>(
     () => ({
+      sessionId,
       messages: history,
       draft,
       setDraft,
       send,
+      startNewChat,
+      openChat,
+      chatsVersion,
+      startingNew,
       recordSpoken,
       openCompanion,
       companionOpenNonce,
@@ -311,7 +359,7 @@ export function CompanionThreadProvider({ children }: { children: React.ReactNod
       decide,
       decisionStatus,
     }),
-    [history, draft, send, recordSpoken, openCompanion, companionOpenNonce, turn.phase, turn.trace, turn.steps, job, refreshOnboarding, decide, decisionStatus],
+    [sessionId, history, draft, send, startNewChat, openChat, chatsVersion, startingNew, recordSpoken, openCompanion, companionOpenNonce, turn.phase, turn.trace, turn.steps, job, refreshOnboarding, decide, decisionStatus],
   );
 
   return <Context.Provider value={value}>{children}</Context.Provider>;

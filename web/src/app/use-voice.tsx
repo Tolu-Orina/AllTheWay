@@ -51,7 +51,7 @@ export function useVoice(): VoiceState {
 export function VoiceProvider({ children }: { children: ReactNode }) {
   const t = useT();
   const { pathname } = useLocation();
-  const { recordSpoken } = useCompanionThread();
+  const { recordSpoken, sessionId: companionSessionId } = useCompanionThread();
   const [status, setStatus] = useState<VoiceStatus>("idle");
   const [error, setError] = useState("");
   const [lines, setLines] = useState<VoiceLine[]>([]);
@@ -176,7 +176,7 @@ export function VoiceProvider({ children }: { children: ReactNode }) {
 
         await ctx.resume();
 
-        const sessionId = resolveVoiceSessionId(pathname);
+        const sessionId = resolveVoiceSessionId(pathname, companionSessionId);
         await Promise.all([
           ctx.audioWorklet.addModule("/worklets/pcm-capture.js?v=2"),
           ctx.audioWorklet.addModule("/worklets/pcm-play.js?v=3"),
@@ -338,7 +338,7 @@ export function VoiceProvider({ children }: { children: ReactNode }) {
         );
       }
     })();
-  }, [pathname, status, stop, teardown, t, recordSpoken]);
+  }, [pathname, companionSessionId, status, stop, teardown, t, recordSpoken]);
 
   return (
     <VoiceContext.Provider
@@ -348,7 +348,7 @@ export function VoiceProvider({ children }: { children: ReactNode }) {
         lines,
         fake,
         turn,
-        sessionId: resolveVoiceSessionId(pathname),
+        sessionId: resolveVoiceSessionId(pathname, companionSessionId),
         muted,
         start,
         stop,

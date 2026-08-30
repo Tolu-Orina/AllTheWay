@@ -61,21 +61,52 @@ TTL_SECONDS = 300
 class SecretManagerSource:
     """Google Secret Manager, read with the service's own ADC identity.
 
-    Deliberately unimplemented rather than approximated: the call is trivial,
-    and a trivial call that has never run against a real project is exactly the
-    kind of code that looks finished and is not. It lands with Phase 0.
+    `secret` is a secret *id* (as Terraform passes it) or a full resource
+    name. The value is fetched at the moment of use — never mounted as an
+    env var, which is the whole point of this module.
     """
 
     name = "secret-manager"
 
-    def __init__(self, project: str) -> None:
+    def __init__(self, project: str, *, client: object | None = None) -> None:
         self.project = project
+        self._client = client
 
     def fetch(self, secret: str) -> str:
-        raise SecretUnavailable(
-            f"Secret Manager is not configured; cannot read {secret!r}. "
-            "Set GOOGLE_CLOUD_PROJECT and deploy with secretmanager.secretAccessor."
-        )
+        name = secret.strip()
+        if not name:
+            raise SecretUnavailable("A secret name is required.")
+        if not name.startswith("projects/"):
+            name = f"projects/{self.project}/secrets/{name}/versions/latest"
+        elif "/versions/" not in name:
+            name = f"{name}/versions/latest"
+
+        try:
+            response = self._sm().access_secret_version(request={"name": name})
+        except SecretUnavailable:
+            raise
+        except Exception as exc:
+            raise SecretUnavailable(f"Could not read {secret!r}.") from exc
+
+        payload = getattr(getattr(response, "payload", None), "data", None)
+        if payload is None:
+            raise SecretUnavailable(f"Secret {secret!r} has no payload.")
+        if isinstance(payload, bytes):
+            value = payload.decode("UTF-8").strip()
+        else:
+            value = str(payload).strip()
+        if not value:
+            raise SecretUnavailable(f"Secret {secret!r} is empty.")
+        return value
+
+    def _sm(self):
+        if self._client is None:
+            # Imported lazily so tests that never fetch do not need the client
+            # library on the path, matching FirestoreRefreshTokens.
+            from google.cloud import secretmanager
+
+            self._client = secretmanager.SecretManagerServiceClient()
+        return self._client
 
 
 class DevFileSource:

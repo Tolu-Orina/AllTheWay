@@ -388,6 +388,13 @@
     "nameSaved": "Name saved.",
     "nameSaveFailed": "That name did not save. Nothing changed — try again."
   },
+  "companion": {
+    "newChat": "Ìjíròrò tuntun",
+    "currentChat": "Ìjíròrò lọ́wọ́lọ́wọ́",
+    "previousChats": "Àwọn ìjíròrò tẹ́lẹ̀",
+    "previousEmpty": "Kò sí ìjíròrò tẹ́lẹ̀ síbẹ̀",
+    "previousHint": "Àwọn ìjíròrò tí o bẹ̀rẹ̀ níbí yóò wà níbí, yàtọ̀ sí Iṣẹ́."
+  },
   "work": {
     "listHint": "Àwọn okùn tí ìwọ àti ẹlẹgbẹ́ ń ṣiṣẹ́ lórí.",
     "bringAFile": "Mú fáìlì wá",

@@ -8,6 +8,7 @@ import {
   ensureSession,
   getSession,
   listSessions,
+  sessionSurface,
   touchSession,
   appendThread,
   conversationContext,
@@ -50,6 +51,12 @@ test("clipTitle collapses whitespace and caps at 80 characters", () => {
   assert.equal(clipTitle("   "), "");
 });
 
+test("the legacy companion id is a companion chat, not work", () => {
+  assert.equal(sessionSurface("companion"), "companion");
+  assert.equal(sessionSurface("abc-uuid"), "work");
+  assert.equal(sessionSurface("abc-uuid", { surface: "companion" }), "companion");
+});
+
 test("conversationContext keeps role, text, and options for the planner", () => {
   const lines = conversationContext([
     { role: "user", text: "I want to generate an image.", at: "2026-01-01T00:00:00.000Z" },
@@ -65,15 +72,32 @@ test("conversationContext keeps role, text, and options for the planner", () => 
   assert.equal(lines[2], "options: Anime character illustration | A landscape");
 });
 
+test("companion chats do not appear in the work list", emulated, async () => {
+  const workId = `work-${Date.now()}`;
+  const chatId = `chat-${Date.now()}`;
+  await ensureSession(UID, workId, { title: DEFAULT_TITLE, surface: "work" });
+  await ensureSession(UID, chatId, { title: "New chat", surface: "companion" });
+  await touchSession(UID, workId, { utterance: "Draft the nav" });
+  await touchSession(UID, chatId, { utterance: "What is on today" });
+
+  const work = await listSessions(UID, "work");
+  const chats = await listSessions(UID, "companion");
+  assert.ok(work.some((s) => s.id === workId));
+  assert.ok(!work.some((s) => s.id === chatId));
+  assert.ok(chats.some((s) => s.id === chatId));
+  assert.ok(!chats.some((s) => s.id === workId));
+});
+
 test("a first turn materialises a parent the list query can see", emulated, async () => {
   const id = "companion";
   await touchSession(UID, id, { utterance: "Draft the nav for Friday" });
 
-  const listed = await listSessions(UID);
+  const listed = await listSessions(UID, "companion");
   const row = listed.find((s) => s.id === id);
-  assert.ok(row, "the parent must appear in orderBy(updatedAt)");
+  assert.ok(row, "the parent must appear in the companion list");
   assert.equal(row.title, "Draft the nav for Friday");
   assert.equal(row.total, 1);
+  assert.equal(row.surface, "companion");
 
   const detail = await getSession(UID, id);
   assert.ok(detail);
