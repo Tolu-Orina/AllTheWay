@@ -235,6 +235,115 @@ export function correctionFields(
   return { ok: true, was, now: next };
 }
 
+export type PlanArgPatch = {
+  connector: string;
+  tool: string;
+  arguments: Record<string, unknown>;
+};
+
+type ConfirmWrite = {
+  label?: string;
+  action?: string;
+  connector?: string;
+  tool?: string;
+  arguments?: Record<string, unknown>;
+};
+
+function isGmail(connector: string): boolean {
+  return !connector || connector === "google_gmail" || connector === "gmail";
+}
+
+function sameWrite(step: PlanStep, action: ConfirmWrite): boolean {
+  const connector = step.connector ?? "";
+  const other = action.connector ?? "";
+  const tool = action.tool ?? "";
+  if (step.tool === tool && (!connector || !other || connector === other)) return true;
+  if (step.tool === "send_email" && tool === "create_draft" && isGmail(connector) && isGmail(other)) {
+    return true;
+  }
+  if (step.label === action.label && step.tool && tool) return true;
+  return false;
+}
+
+/**
+ * Replay the calls the confirm gate showed.
+ *
+ * Streamed steps are the model's first pass. The gate may rewrite send_email
+ * to create_draft. Yes used to replay the streamed step and send.
+ */
+export function overlayConfirmOnPlan(steps: PlanStep[], actions: ConfirmWrite[]): PlanStep[] {
+  const writes = actions.filter((a) => a.connector && a.tool);
+  if (!writes.length) return steps;
+  const taken = new Set<number>();
+  return steps.map((step) => {
+    const idx = writes.findIndex((action, i) => !taken.has(i) && sameWrite(step, action));
+    if (idx < 0) return step;
+    taken.add(idx);
+    const action = writes[idx];
+    return {
+      ...step,
+      connector: action.connector || step.connector,
+      tool: action.tool || step.tool,
+      action: action.action || step.action,
+      arguments: { ...(step.arguments ?? {}), ...(action.arguments ?? {}) },
+    };
+  });
+}
+
+/**
+ * Merge edited compose fields onto the stored plan.
+ *
+ * Connector and tool are identity, never an update. The browser cannot rename
+ * create_draft to send_email by PATCHing arguments.
+ */
+export function mergePlanArguments(
+  plan: PlanStep[],
+  patches: PlanArgPatch[],
+): { ok: true; plan: PlanStep[] } | { ok: false; reason: "mismatch" } {
+  if (!patches.length) return { ok: true, plan };
+  const next = plan.map((step) => ({
+    ...step,
+    arguments: { ...(step.arguments ?? {}) },
+  }));
+  for (const patch of patches) {
+    const idx = next.findIndex(
+      (step) =>
+        step.tool === patch.tool &&
+        (step.connector === patch.connector || !step.connector),
+    );
+    if (idx < 0) return { ok: false, reason: "mismatch" };
+    next[idx] = {
+      ...next[idx],
+      arguments: { ...next[idx].arguments, ...patch.arguments },
+    };
+  }
+  return { ok: true, plan: next };
+}
+
+export async function patchPlanArguments(
+  uid: string,
+  id: string,
+  patches: PlanArgPatch[],
+): Promise<"ok" | "missing" | "mismatch"> {
+  const ref = sessions(uid).doc(id);
+  return db.runTransaction(async (tx) => {
+    const snap = await tx.get(ref);
+    if (!snap.exists) return "missing";
+    const plan = asPlan(snap.get("plan"));
+    // An empty plan has already been claimed. Writing args back would
+    // resurrect a write after Yes had taken it.
+    if (!plan.length) return "mismatch";
+    const merged = mergePlanArguments(plan, patches);
+    if (!merged.ok) return "mismatch";
+    tx.set(
+      ref,
+      { ...planFields(merged.plan), updatedAt: FieldValue.serverTimestamp() },
+      { merge: true },
+    );
+    return "ok";
+  });
+}
+
 /**
  * The learning signal for this session.
  *

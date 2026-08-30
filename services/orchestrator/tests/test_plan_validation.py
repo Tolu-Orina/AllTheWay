@@ -139,3 +139,119 @@ def test_a_correction_is_explained_rather_than_applied_silently():
     # to. A step whose meaning we changed is exactly that.
     _, notes = validate([_step("Delete the archive")])
     assert notes and "Delete the archive" in notes[0]
+
+
+def test_invites_for_a_new_event_fold_onto_create_event():
+    from app.plan_validation import fold_new_event_invites
+
+    steps, notes = fold_new_event_invites(
+        [
+            PlanStep(
+                label="Put QA on the calendar",
+                action="create_task",
+                connector="google_calendar",
+                tool="create_event",
+                arguments={"title": "QA", "starts_at": "2026-08-31T10:00:00+01:00"},
+            ),
+            PlanStep(
+                label="Invite Blessing",
+                action="send_external",
+                connector="google_calendar",
+                tool="send_invite",
+                arguments={"event_id": "", "email": "blessing.ojubeli@conquerorfoundation.com"},
+            ),
+        ]
+    )
+    assert len(steps) == 1
+    assert steps[0].tool == "create_event"
+    assert "blessing.ojubeli@conquerorfoundation.com" in str(steps[0].arguments.get("attendees"))
+    assert steps[0].action == str(Action.SEND_EXTERNAL)
+    assert notes
+
+
+def test_the_first_email_turn_is_rewritten_to_a_draft():
+    from app.plan_validation import prefer_gmail_draft
+
+    steps, notes = prefer_gmail_draft(
+        [
+            PlanStep(
+                label="Email Blessing",
+                action="send_external",
+                connector="google_gmail",
+                tool="send_email",
+                arguments={"to": "blessing@example.com", "subject": "Work", "body": "cake"},
+            )
+        ],
+        "Send an email to Blessing about work",
+    )
+    assert steps[0].tool == "create_draft"
+    assert steps[0].action == str(Action.DRAFT)
+    assert steps[0].arguments["body"] == "cake"
+    assert notes
+
+
+def test_send_this_draft_is_left_as_send_email():
+    from app.plan_validation import prefer_gmail_draft
+
+    steps, notes = prefer_gmail_draft(
+        [
+            PlanStep(
+                label="Send the draft to Ana",
+                action="send_external",
+                connector="google_gmail",
+                tool="send_email",
+                arguments={"to": "ana@example.com", "subject": "Hi", "body": "Yes"},
+            )
+        ],
+        "Send this draft",
+    )
+    assert steps[0].tool == "send_email"
+    assert notes == []
+
+
+def test_go_ahead_and_send_an_email_is_still_a_draft():
+    from app.plan_validation import prefer_gmail_draft
+
+    steps, notes = prefer_gmail_draft(
+        [
+            PlanStep(
+                label="Email Blessing",
+                action="send_external",
+                connector="google_gmail",
+                tool="send_email",
+                arguments={"to": "blessing@example.com", "subject": "Work", "body": ""},
+            )
+        ],
+        "Go ahead and send an email to Blessing",
+    )
+    assert steps[0].tool == "create_draft"
+    assert notes
+
+
+def test_streamed_send_email_is_aligned_to_the_draft_the_gate_showed():
+    from app.plan_validation import align_plan_to_confirmation
+
+    plan = [
+        PlanStep(
+            label="Email Blessing",
+            action="send_external",
+            connector="google_gmail",
+            tool="send_email",
+            arguments={"to": "blessing@example.com", "subject": "Work", "body": ""},
+        )
+    ]
+    aligned = align_plan_to_confirmation(
+        plan,
+        [
+            {
+                "label": "Email Blessing",
+                "action": "draft",
+                "connector": "google_gmail",
+                "tool": "create_draft",
+                "arguments": {"to": "blessing@example.com", "subject": "Work", "body": "cake"},
+            }
+        ],
+    )
+    assert aligned[0].tool == "create_draft"
+    assert aligned[0].arguments["body"] == "cake"
+

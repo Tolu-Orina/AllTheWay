@@ -167,6 +167,43 @@ def test_confirmation_always_offers_a_way_to_say_no():
     assert any("no" in option.lower() for option in confirmation.options)
 
 
+def test_a_gmail_draft_always_stops_so_the_form_can_appear():
+    """DRAFT used to skip the gate, so create_draft never got a Yes."""
+    plan = [
+        PlanStep(
+            label="Draft an email to Ana",
+            action="draft",
+            connector="google_gmail",
+            tool="create_draft",
+            arguments={"to": "ana@example.com", "subject": "Hi", "body": "See you."},
+        )
+    ]
+    confirmation = confirmation_for(plan, ceiling=Ceiling.SEND_AUTOMATICALLY, confidence=1.0)
+    assert confirmation is not None
+    assert confirmation.actions[0].tool == "create_draft"
+    assert confirmation.options[0] == "Save draft"
+
+
+def test_a_generic_draft_without_gmail_still_needs_no_confirmation():
+    assert confirmation_for(DRAFT, ceiling=Ceiling.DRAFT_ONLY, confidence=1.0) is None
+
+
+def test_creating_a_calendar_event_always_stops_for_the_form():
+    plan = [
+        PlanStep(
+            label="Lunch with Ana",
+            action="create_task",
+            connector="google_calendar",
+            tool="create_event",
+            arguments={"title": "Lunch", "starts_at": "2026-08-31T10:00:00", "time_zone": "Europe/London"},
+        )
+    ]
+    confirmation = confirmation_for(plan, ceiling=Ceiling.SEND_AUTOMATICALLY, confidence=1.0)
+    assert confirmation is not None
+    assert confirmation.actions[0].tool == "create_event"
+    assert confirmation.options[0] == "Put on calendar"
+
+
 # ------------------------------------------------- the gates inside the graph
 
 from app.graph import run_turn  # noqa: E402

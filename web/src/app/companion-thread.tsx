@@ -17,6 +17,7 @@ import { useTurn, type ProposedAction, type TurnPhase } from "@/app/use-turn";
 import { persistCompanionSessionId, readCompanionSessionId } from "@/app/work-id";
 import { ApiError } from "@/lib/api";
 import { pendingConfirmId } from "@/app/ConfirmGate";
+import { isSpokenYes } from "@/lib/spoken-confirm";
 import type { Citation, OnboardingJob, PlanStep, ThreadMessage } from "@alltheway/contracts";
 
 export type CompanionMessage = {
@@ -250,10 +251,7 @@ export function CompanionThreadProvider({ children }: { children: React.ReactNod
           if (picked) trimmed = picked;
         }
       }
-      if (
-        lastAgent?.actions?.length &&
-        /^(1|y|yes|ok|go ahead|do it)$/i.test(trimmed)
-      ) {
+      if (lastAgent?.actions?.length && (trimmed === "1" || isSpokenYes(trimmed))) {
         setHistory((prev) => [
           ...prev,
           { id: prev.length + 1, role: "user", text: trimmed },

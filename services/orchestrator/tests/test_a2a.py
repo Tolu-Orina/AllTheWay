@@ -407,3 +407,17 @@ def test_steps_carry_their_action_across_the_boundary():
         and "step" in json_format.MessageToDict(p.data)
     ]
     assert "send_external" in actions, actions
+
+
+def test_steps_carry_the_call_across_the_boundary():
+    queue = run(CONFIRMS)
+    calls = [
+        json_format.MessageToDict(p.data)["step"]
+        for e in artifact_events(queue)
+        for p in e.artifact.parts
+        if p.WhichOneof("content") == "data"
+        and "step" in json_format.MessageToDict(p.data)
+    ]
+    named = [c for c in calls if c.get("connector") and c.get("tool")]
+    assert named, calls
+    assert any(c.get("tool") in ("create_draft", "send_email") for c in named)

@@ -17,6 +17,7 @@ import { useDecision } from "@/app/use-decision";
 import { useTurn, type ProposedAction, type TurnPhase } from "@/app/use-turn";
 import { useStartWork } from "@/app/use-start-work";
 import { useT } from "@/app/i18n";
+import { isSpokenYes } from "@/lib/spoken-confirm";
 import {
   DOCUMENT_ACCEPT,
   DOCUMENT_CAMERA_ACCEPT,
@@ -302,7 +303,7 @@ function SessionWorkChat({
         [...history].reverse().find((m) => m.role === "agent");
       if (
         lastAgent?.actions?.length &&
-        /^(1|y|yes|ok|go ahead|do it)$/i.test(trimmed)
+        (trimmed === "1" || isSpokenYes(trimmed))
       ) {
         hadTurn.current = true;
         setHistory((prev) => [...prev, { id: prev.length + 1, role: "user", text: trimmed }]);
@@ -513,6 +514,8 @@ function ChatBubble({
               declineLabel={m.options?.[1] ?? "No, stop"}
               busy={working || Boolean(decisionStatus)}
               status={decisionStatus}
+              sessionId={threadId}
+              steps={m.steps}
               onConfirm={onConfirm}
               onDecline={onDecline}
               onCorrect={(now) => onSend(now)}

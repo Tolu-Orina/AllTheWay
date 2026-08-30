@@ -8,6 +8,7 @@ import {
   scopesToRequest,
   googleGrantId,
   GMAIL_DRAFTS_SCOPE,
+  createDraftSkipReason,
 } from "./google-scopes.js";
 
 test("a Gmail-only grant does not mark Calendar, Drive or Docs connected", () => {
@@ -51,6 +52,13 @@ test("drafts adds the restricted compose scope only for Gmail", () => {
   assert.ok(gmail.includes(GMAIL_DRAFTS_SCOPE));
   const calendar = scopesToRequest("google_calendar", true);
   assert.ok(!calendar.includes(GMAIL_DRAFTS_SCOPE));
+});
+
+test("a connected Gmail without compose does not silently send", () => {
+  const sendOnly = ["https://www.googleapis.com/auth/gmail.send"];
+  assert.equal(connectorIsConnected("google_gmail", sendOnly), true);
+  assert.match(createDraftSkipReason(sendOnly) ?? "", /drafts is off/i);
+  assert.equal(createDraftSkipReason([...sendOnly, GMAIL_DRAFTS_SCOPE]), null);
 });
 
 test("an unknown connector is not connected and requests nothing", () => {

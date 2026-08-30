@@ -244,9 +244,18 @@ test("the voice instruction does not let an English plan be read out in English"
 });
 
 test("the voice instruction still refuses to claim work it has not done", () => {
-  assert.match(SYSTEM_INSTRUCTION, /Never claim you have sent, paid, or deleted anything\./);
+  assert.match(SYSTEM_INSTRUCTION, /Never claim you have sent, paid, created, or deleted anything/);
+  assert.match(SYSTEM_INSTRUCTION, /they_said_yes/);
   // Honesty about languages it cannot speak, rather than bad output in them.
   assert.match(SYSTEM_INSTRUCTION, /Igbo/);
+});
+
+test("the voice instruction speaks the email on a compose confirm, never that it cannot show it", () => {
+  const s = SYSTEM_INSTRUCTION.toLowerCase();
+  assert.match(s, /speak the subject and a short version/);
+  assert.match(s, /never say you cannot show the email/);
+  assert.match(s, /saves a gmail draft/);
+  assert.match(s, /it does not send/);
 });
 
 test("the voice instruction hangs up only when they are leaving the conversation", () => {
@@ -255,6 +264,7 @@ test("the voice instruction hangs up only when they are leaving the conversation
   assert.match(s, /ending this conversation/);
   assert.match(s, /that is plan_turn/);
   assert.match(s, /leaving is not a yes/);
+  assert.match(s, /they_said_yes/);
 });
 
 
@@ -309,10 +319,16 @@ test("voice can look things up, and every lookup is read-only", () => {
   assert.ok(names.includes("whats_waiting_for_me"));
   assert.ok(names.includes("my_recent_meetings"));
   assert.ok(names.includes("plan_turn"), "the planner must remain");
+  assert.ok(names.includes("they_said_yes"), "a spoken yes must execute the pending plan");
+  assert.ok(names.includes("they_said_no"));
   assert.ok(names.includes(END_THIS_CONVERSATION), "voice must be able to leave");
   assert.ok(
     names.indexOf(END_THIS_CONVERSATION) > names.indexOf("plan_turn"),
     "hanging up must not be preferred over looking up or planning",
+  );
+  assert.ok(
+    names.indexOf("they_said_yes") > names.indexOf("plan_turn"),
+    "confirming is after planning, not a write of its own",
   );
 
   // The safety property, stated as a test: nothing that changes the world is

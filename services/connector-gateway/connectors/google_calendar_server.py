@@ -39,6 +39,7 @@ from typing import Any
 from mcp.server.fastmcp import FastMCP
 
 from _google import capped, fail as _fail_json, message_from as _message_from, ok, request
+from _calendar_event import attendee_payload, emails_from, event_times
 
 mcp = FastMCP("alltheway-google-calendar")
 
@@ -93,23 +94,41 @@ def list_events(limit: int = 10, time_min: str = "") -> str:
 
 
 @mcp.tool()
-def create_event(title: str, starts_at: str) -> str:
-    """Create an event. `starts_at` is RFC 3339, e.g. 2026-08-27T09:00:00Z."""
+def create_event(title: str, starts_at: str, attendees: str = "", time_zone: str = "") -> str:
+    """Create an event. `starts_at` is RFC 3339. Optional `attendees` are emails
+    to invite (comma-separated). Optional `time_zone` is IANA, or UK/London.
+
+    Invites go out when attendees are present (`sendUpdates=all`). There is no
+    event id yet, so do not follow this with send_invite for the same people.
+    """
+    people = attendee_payload(attendees)
+    start, end = event_times(starts_at, time_zone)
+    body: dict[str, object] = {
+        "summary": title,
+        "start": start,
+        "end": end,
+    }
+    if people:
+        body["attendees"] = people
+
+    kwargs: dict[str, object] = {"json": body}
+    if people:
+        kwargs["params"] = {"sendUpdates": "all"}
     status, payload = _request(
         "POST",
         f"/calendars/{CALENDAR_ID}/events",
-        json={
-            "summary": title,
-            "start": {"dateTime": starts_at},
-            # One hour, because the Calendar API requires an end and the tool
-            # deliberately does not ask for one. A tool with fewer arguments is
-            # a tool the model gets right more often.
-            "end": {"dateTime": _plus_one_hour(starts_at)},
-        },
+        **kwargs,
     )
     if status not in (200, 201):
         return _fail_json(_message_from(payload, "Could not create the event."), status=status)
-    return json.dumps({"id": payload.get("id"), "title": payload.get("summary")})
+    invited = emails_from(attendees)
+    return json.dumps(
+        {
+            "id": payload.get("id"),
+            "title": payload.get("summary"),
+            "attendees": invited,
+        }
+    )
 
 
 @mcp.tool()
@@ -152,18 +171,6 @@ def _now_rfc3339() -> str:
     from datetime import datetime, timezone
 
     return datetime.now(timezone.utc).replace(microsecond=0).isoformat().replace("+00:00", "Z")
-
-
-def _plus_one_hour(starts_at: str) -> str:
-    from datetime import datetime, timedelta
-
-    try:
-        parsed = datetime.fromisoformat(starts_at.replace("Z", "+00:00"))
-    except ValueError:
-        # Hand it back unchanged and let Calendar reject it with its own
-        # message, which is more useful than one this module invents.
-        return starts_at
-    return (parsed + timedelta(hours=1)).isoformat().replace("+00:00", "Z")
 
 
 if __name__ == "__main__":

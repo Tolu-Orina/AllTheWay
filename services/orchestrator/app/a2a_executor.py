@@ -43,6 +43,7 @@ PASSAGES_KEY = "passages"
 LOOKUPS_KEY = "lookups"
 THREAD_KEY = "thread"
 STRUGGLES_KEY = "struggles"
+CLOCK_KEY = "clock"
 
 #: Stable ids, so appended chunks land on one artifact rather than becoming
 #: N single-part artifacts. TaskUpdater mints a fresh uuid when not told one.
@@ -153,6 +154,18 @@ def _thread_from(context: RequestContext) -> list[str]:
     return [str(item) for item in raw if str(item).strip()]
 
 
+def _clock_from(context: RequestContext) -> str:
+    message = getattr(context, "message", None)
+    metadata = getattr(message, "metadata", None)
+    if metadata is None:
+        return ""
+    try:
+        raw = json_format.MessageToDict(metadata).get(CLOCK_KEY, "")
+    except Exception:
+        return ""
+    return str(raw).strip() if raw else ""
+
+
 def _struggles_from(context: RequestContext) -> list[Struggle]:
     """Struggle model from metadata. Empty until they reasked or missed."""
     message = getattr(context, "message", None)
@@ -225,6 +238,7 @@ class OrchestratorExecutor(AgentExecutor):
             lookups=_lookups_from(context),
             recent_thread=_thread_from(context),
             struggles=_struggles_from(context),
+            clock=_clock_from(context),
         )
 
         trace: list[str] = []
@@ -265,6 +279,13 @@ class OrchestratorExecutor(AgentExecutor):
                                         # on the wire while the gate, reading the
                                         # graph directly, still fired.
                                         "action": event.step.action,
+                                        # Yes replays connector/tool/arguments.
+                                        # Leaving them off meant the overlay form
+                                        # had nothing to prefill and the stored
+                                        # plan had nothing to run.
+                                        "connector": event.step.connector,
+                                        "tool": event.step.tool,
+                                        "arguments": dict(event.step.arguments),
                                     }
                                 }
                             )

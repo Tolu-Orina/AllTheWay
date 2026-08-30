@@ -144,6 +144,18 @@
     "insteadPlaceholder": "Kí ni kí ó jẹ́?",
     "rememberThis": "Rántí èyí"
   },
+  "compose": {
+    "to": "Sí",
+    "subject": "Àkọlé",
+    "body": "Ìsọ",
+    "title": "Àkọlé",
+    "starts": "Ìbẹ̀rẹ̀",
+    "timeZone": "Àgbègbè àkókò",
+    "attendees": "Àwọn alábàápẹ̀",
+    "attendeesHint": "Àwọn ímeèlì tí a pín pẹ̀lú ààmì ìpínyà",
+    "saveDraft": "Fi àkọsílẹ̀ pamọ́",
+    "putOnCalendar": "Fi sórí kàlẹ́ńdà"
+  },
   "account": {
     "signOut": "Jáde"
   },

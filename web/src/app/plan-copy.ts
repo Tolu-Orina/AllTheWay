@@ -46,8 +46,14 @@ export function describeCall(step: PlanStep): string | null {
 
   const key = `${step.connector}.${step.tool}`;
   switch (key) {
-    case "google_calendar.create_event":
-      return title ? `This will put “${title}” on your calendar` : "This will put something on your calendar";
+    case "google_calendar.create_event": {
+      const when = arg(step, "starts_at");
+      const who = arg(step, "attendees");
+      const titleBit = title ? `“${title}”` : "something";
+      const whenBit = when ? ` at ${when}` : "";
+      const whoBit = who ? ` and invite ${who}` : "";
+      return `This will put ${titleBit} on your calendar${whenBit}${whoBit}`;
+    }
     case "google_calendar.list_events":
       return "This will look at your calendar";
     case "google_calendar.delete_event":

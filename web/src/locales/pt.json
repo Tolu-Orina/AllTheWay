@@ -150,6 +150,18 @@
     "insteadPlaceholder": "O que deveria ter sido?",
     "rememberThis": "Lembrar disto"
   },
+  "compose": {
+    "to": "Para",
+    "subject": "Assunto",
+    "body": "Mensagem",
+    "title": "Título",
+    "starts": "Começa",
+    "timeZone": "Fuso horário",
+    "attendees": "Convidados",
+    "attendeesHint": "E-mails separados por vírgulas",
+    "saveDraft": "Guardar rascunho",
+    "putOnCalendar": "Colocar no calendário"
+  },
   "account": {
     "signOut": "Sair"
   },

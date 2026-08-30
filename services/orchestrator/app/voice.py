@@ -109,7 +109,11 @@ def _as_action(raw: str) -> Action | None:
         return None
 
 
-def _verb(action: Action) -> str:
+def _verb(action: Action, tool: str = "") -> str:
+    if tool == "create_draft":
+        return "save a Gmail draft"
+    if tool == "create_event":
+        return "put something on your calendar"
     return {
         Action.SEND_EXTERNAL: "send something out of your account",
         Action.MAKE_PAYMENT: "move money",
@@ -128,7 +132,7 @@ def _summarise(actions: list[ProposedAction], readback: str | None) -> str:
         parts.append(f'I heard: "{readback}".')
 
     if len(actions) == 1:
-        parts.append(f"This will {_verb(actions[0].action)} — {actions[0].label}.")
+        parts.append(f"This will {_verb(actions[0].action, actions[0].tool)} — {actions[0].label}.")
     else:
         listed = "; ".join(a.label for a in actions)
         parts.append(f"{len(actions)} of these steps change things: {listed}.")
@@ -139,6 +143,29 @@ def _summarise(actions: list[ProposedAction], readback: str | None) -> str:
 
 def needs_readback(confidence: float) -> bool:
     return transcript_verdict(confidence) == "readback"
+
+
+def _is_compose_review(step: PlanStep) -> bool:
+    """Gmail compose and calendar create always stop so the form can appear.
+
+    Other DRAFT steps (a watcher, 'draft the proposal' with no Gmail call) stay
+    auto-note. This is a product review, not a weakening of the send floor.
+    """
+    connector = step.connector or ""
+    if step.tool == "create_draft" and connector in ("google_gmail", "gmail", ""):
+        return True
+    if step.tool == "create_event" and connector in ("google_calendar", "calendar", ""):
+        return True
+    return False
+
+
+def _options(actions: list[ProposedAction]) -> list[str]:
+    tools = {a.tool for a in actions}
+    if tools == {"create_draft"}:
+        return ["Save draft", "No, stop"]
+    if tools == {"create_event"}:
+        return ["Put on calendar", "No, stop"]
+    return ["Yes, go ahead", "No, stop"]
 
 
 def confirmation_for(
@@ -159,6 +186,22 @@ def confirmation_for(
     needs: list[ProposedAction] = []
 
     for step in steps:
+        if _is_compose_review(step):
+            named = _as_action(step.action)
+            if named is None:
+                named = Action.DRAFT if step.tool == "create_draft" else Action.CREATE_TASK
+            needs.append(
+                ProposedAction(
+                    label=step.label,
+                    action=named,
+                    reason="Review the details before this is saved.",
+                    connector=step.connector,
+                    tool=step.tool,
+                    arguments=dict(step.arguments),
+                )
+            )
+            continue
+
         if not step.action:
             continue  # a step that changes nothing needs no permission
 
@@ -212,4 +255,8 @@ def confirmation_for(
         return None
 
     readback = transcript.strip() if needs_readback(confidence) and transcript.strip() else None
-    return Confirmation(summary=_summarise(needs, readback), actions=needs)
+    return Confirmation(
+        summary=_summarise(needs, readback),
+        actions=needs,
+        options=_options(needs),
+    )

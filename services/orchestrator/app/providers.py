@@ -364,10 +364,14 @@ def _call_for(action: str, user: str) -> dict:
             "arguments": {"title": title, "starts_at": ""},
         }
     if action == "send_external":
-        tool = "send_email" if "send" in user.lower() else "create_draft"
+        lowered = user.lower()
+        send_existing = any(
+            phrase in lowered
+            for phrase in ("send this draft", "send that draft", "send the draft")
+        )
         return {
             "connector": "google_gmail",
-            "tool": tool,
+            "tool": "send_email" if send_existing else "create_draft",
             "arguments": {"to": "", "subject": title, "body": ""},
         }
     return {}

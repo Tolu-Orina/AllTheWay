@@ -32,6 +32,7 @@ export function assembleTurnContext(args: {
     lookups: args.lookups,
     thread: conversationContext(args.thread),
     struggles: args.struggles ?? [],
+    clock: new Date().toISOString(),
   };
 }
 

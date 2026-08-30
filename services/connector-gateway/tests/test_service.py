@@ -36,7 +36,22 @@ async def call(tool, arguments=None, grant=READ_ONLY, **kw):
 # --------------------------------------------------------------- it works
 
 
-async def test_a_read_within_scope_returns_real_data():
+async def test_create_event_keeps_the_people_to_invite():
+    outcome = await call(
+        "create_event",
+        {
+            "title": "QA",
+            "starts_at": "2026-08-31T10:00:00+01:00",
+            "attendees": "ana@example.com, bo@example.com",
+        },
+        grant=FULL,
+        confirmed=True,
+    )
+    assert outcome.ok is True
+    created = outcome.data.get("created") or outcome.data
+    assert created.get("title") == "QA"
+    assert "ana@example.com" in created.get("attendees", [])
+
     outcome = await call("list_events", {"limit": 2})
     assert outcome.ok is True
     assert outcome.data["events"], outcome.data

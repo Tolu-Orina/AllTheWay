@@ -95,6 +95,8 @@ export type TurnInput = {
     reasked: number;
     confidence: number;
   }[];
+  /** Instant this turn is planned, so relative times are not guessed. */
+  clock?: string;
 };
 
 /** Parts are a tagged union; pull out the structured `data` payloads. */
@@ -170,6 +172,7 @@ export function buildMessage(input: TurnInput): Message {
       lookups: input.lookups ?? [],
       thread: input.thread ?? [],
       struggles: input.struggles ?? [],
+      clock: input.clock ?? "",
     },
     extensions: [],
     referenceTaskIds: [],

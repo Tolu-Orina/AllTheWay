@@ -150,6 +150,18 @@
     "insteadPlaceholder": "Qu'est-ce que ça aurait dû être ?",
     "rememberThis": "S'en souvenir"
   },
+  "compose": {
+    "to": "À",
+    "subject": "Objet",
+    "body": "Message",
+    "title": "Titre",
+    "starts": "Début",
+    "timeZone": "Fuseau horaire",
+    "attendees": "Participants",
+    "attendeesHint": "Adresses séparées par des virgules",
+    "saveDraft": "Enregistrer le brouillon",
+    "putOnCalendar": "Mettre au calendrier"
+  },
   "account": {
     "signOut": "Se déconnecter"
   },

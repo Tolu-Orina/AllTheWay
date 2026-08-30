@@ -159,6 +159,18 @@
     "insteadPlaceholder": "Beth ddylai fod wedi bod?",
     "rememberThis": "Cofiwch hyn"
   },
+  "compose": {
+    "to": "At",
+    "subject": "Pwnc",
+    "body": "Neges",
+    "title": "Teitl",
+    "starts": "Yn dechrau",
+    "timeZone": "Cylchfa amser",
+    "attendees": "Gwahoddedigion",
+    "attendeesHint": "Cyfeiriadau e-bost wedi'u gwahanu gan goma",
+    "saveDraft": "Cadw drafft",
+    "putOnCalendar": "Rhoi ar y calendr"
+  },
   "account": {
     "signOut": "Allgofnodi"
   },

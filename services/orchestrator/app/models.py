@@ -81,6 +81,10 @@ class TurnRequest(BaseModel):
     #: Concepts the person has asked to hear again or missed a check on.
     struggles: list["Struggle"] = Field(default_factory=list)
 
+    #: Instant this turn was planned, UTC. Relative dates ("tomorrow 10am UK")
+    #: are resolved from this, not from the model's training cutoff.
+    clock: str = ""
+
 
 class Passage(BaseModel):
     """One retrieved chunk. `chunk_id` is what a citation points at."""

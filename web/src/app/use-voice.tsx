@@ -24,7 +24,14 @@ export type VoiceTurn = {
   note?: string;
   options?: string[];
   plan?: PlanStep[];
-  actions?: { label: string; action: string; reason: string }[];
+  actions?: {
+    label: string;
+    action: string;
+    reason: string;
+    connector?: string;
+    tool?: string;
+    arguments?: Record<string, unknown>;
+  }[];
 };
 
 type VoiceState = {
@@ -232,7 +239,14 @@ export function VoiceProvider({ children }: { children: ReactNode }) {
                 | {
                     summary?: string;
                     options?: string[];
-                    actions?: { label: string; action: string; reason: string }[];
+                    actions?: {
+                      label: string;
+                      action: string;
+                      reason: string;
+                      connector?: string;
+                      tool?: string;
+                      arguments?: Record<string, unknown>;
+                    }[];
                   }
                 | undefined;
               const clarify = rec.clarify as { question?: string; options?: string[] } | undefined;

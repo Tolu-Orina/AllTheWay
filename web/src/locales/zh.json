@@ -144,6 +144,18 @@
     "insteadPlaceholder": "本来应该是什么？",
     "rememberThis": "记住这个"
   },
+  "compose": {
+    "to": "收件人",
+    "subject": "主题",
+    "body": "正文",
+    "title": "标题",
+    "starts": "开始时间",
+    "timeZone": "时区",
+    "attendees": "参与者",
+    "attendeesHint": "用逗号分隔的邮箱",
+    "saveDraft": "保存草稿",
+    "putOnCalendar": "加入日历"
+  },
   "account": {
     "signOut": "退出登录"
   },

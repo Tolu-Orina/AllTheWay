@@ -12,6 +12,9 @@ import {
 } from "../google-scopes.js";
 import { END_THIS_CONVERSATION } from "./hangup.js";
 
+export const THEY_SAID_YES = "they_said_yes";
+export const THEY_SAID_NO = "they_said_no";
+
 /**
  * What a voice session may look up for itself.
  *
@@ -157,6 +160,24 @@ export const READ_TOOL_NAMES: ReadonlySet<string> = new Set(READ_TOOLS.map((t) =
  * into a lookup the model might call while still talking.
  */
 export const SESSION_TOOLS = [
+  {
+    name: THEY_SAID_YES,
+    description:
+      "Carry out the plan you already proposed, because they just said yes. " +
+      "Call this when they confirm — yes, yeah, go ahead, yes please, do it — after " +
+      "plan_turn returned a confirm. Do not call plan_turn again for that yes. " +
+      "Do not call this unless they clearly confirmed. Do not claim the work is done " +
+      "until this returns.",
+    parameters: { type: "OBJECT", properties: {} },
+  },
+  {
+    name: THEY_SAID_NO,
+    description:
+      "Stop the plan you already proposed, because they said no. Nothing is sent, " +
+      "created, or deleted. Call this when they decline — no, stop, cancel, don't. " +
+      "Leaving the conversation is end_this_conversation, not this.",
+    parameters: { type: "OBJECT", properties: {} },
+  },
   {
     name: END_THIS_CONVERSATION,
     description:

@@ -83,6 +83,17 @@ export function scopesToRequest(connectorId: string, drafts: boolean): string[] 
 }
 
 /**
+ * Why a Gmail draft must not run, when send is connected but compose is not.
+ *
+ * Missing compose must not fall back to send_email. The text stays on the
+ * confirm form; they turn drafts on in Profile.
+ */
+export function createDraftSkipReason(granted: string[]): string | null {
+  if (granted.includes(GMAIL_DRAFTS_SCOPE)) return null;
+  return "Saving drafts is off. Turn on drafts in Profile. The email is still on screen — nothing was sent.";
+}
+
+/**
  * The grant object the connector gateway's enforcement layer expects.
  *
  * Firestore stores the OAuth refresh token under `{uid}::google`. That is

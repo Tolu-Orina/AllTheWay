@@ -68,6 +68,47 @@ def test_an_email_step_names_a_gmail_draft():
     assert step.tool == "create_draft"
 
 
+def test_saying_send_an_email_is_still_a_draft():
+    r = turn("Send an email to Ana about the Northwind proposal today")
+    step = next(s for s in r.plan if s.connector == "google_gmail")
+    assert step.tool == "create_draft"
+    assert r.decision == "confirm"
+
+
+def test_a_model_send_email_is_rewritten_on_the_plan_yes_will_replay():
+    class SendPlanner:
+        def structured(self, system, user, schema_hint):
+            return {
+                "decision": "plan",
+                "needsResearch": False,
+                "steps": [
+                    {
+                        "label": "Email Ana the proposal",
+                        "action": "send_external",
+                        "connector": "google_gmail",
+                        "tool": "send_email",
+                        "arguments": {"to": "ana@example.com", "subject": "Proposal", "body": "See attached."},
+                    }
+                ],
+            }
+
+    r = run_turn(
+        TurnRequest(session_id="s1", user_id="u1", message="Send an email to Ana about the proposal today"),
+        SendPlanner(),
+    )
+    step = next(s for s in r.plan if s.connector == "google_gmail")
+    assert step.tool == "create_draft"
+    assert r.decision == "confirm"
+    assert r.confirm["actions"][0]["tool"] == "create_draft"
+
+
+def test_send_this_draft_keeps_send_email():
+    r = turn("Send this draft to Ana today please")
+    step = next(s for s in r.plan if s.connector == "google_gmail")
+    assert step.tool == "send_email"
+    assert r.decision == "confirm"
+
+
 def test_a_document_turn_returns_citations_with_the_retrieved_passage():
     # FR-D2: the citation is the passage that was in the prompt, not a later
     # fetch, and it does not carry a uid.
@@ -207,7 +248,51 @@ def test_recent_thread_is_in_the_system_context_not_the_user_message():
     assert "RECENT CONVERSATION" in spy.system
     assert "I want to generate an image." in spy.system
     assert "I want to generate an image." not in spy.user
-    assert spy.user == "Anime character illustration"
+
+
+def test_the_clock_is_in_the_system_context_not_the_user_message():
+    class Spy:
+        def __init__(self):
+            self.system = ""
+            self.user = ""
+
+        def structured(self, system, user, schema_hint):
+            self.system = system
+            self.user = user
+            return {
+                "decision": "plan",
+                "needsResearch": False,
+                "steps": [
+                    {
+                        "label": "Put QA on the calendar",
+                        "action": "create_task",
+                        "connector": "google_calendar",
+                        "tool": "create_event",
+                        "arguments": {
+                            "title": "QA",
+                            "starts_at": "2026-08-31T10:00:00",
+                            "time_zone": "Europe/London",
+                        },
+                    }
+                ],
+            }
+
+    spy = Spy()
+    run_turn(
+        TurnRequest(
+            session_id="s1",
+            user_id="u1",
+            message="QA tomorrow 10am UK",
+            clock="2026-08-30T22:00:00.000Z",
+        ),
+        spy,
+    )
+    assert "CLOCK:" in spy.system
+    assert "2026-08-30T22:00:00.000Z" in spy.system
+    assert "2026-08-30T22:00:00.000Z" not in spy.user
+    assert "create_event(title, starts_at, attendees, time_zone)" in spy.system
+    assert "Never plan send_email on that first turn" in spy.system
+    assert spy.user == "QA tomorrow 10am UK"
 
 
 def test_struggles_are_in_the_system_context_not_the_user_message():

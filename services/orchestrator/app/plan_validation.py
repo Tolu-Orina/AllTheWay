@@ -227,3 +227,192 @@ def attach_work_files(steps: list[PlanStep], user: str) -> tuple[list[PlanStep],
         notes.append(f"Named work_files.{tool} on {step.label!r} so Yes can save the file.")
         filled = True
     return out, notes
+
+
+_PLACEHOLDER_EVENT_IDS = frozenset(
+    {
+        "",
+        "new",
+        "pending",
+        "none",
+        "null",
+        "event_id",
+        "the new event",
+    }
+)
+
+
+def _attendee_emails(arguments: dict) -> list[str]:
+    raw = arguments.get("attendees")
+    if isinstance(raw, list):
+        parts = [str(item).strip() for item in raw]
+    elif isinstance(raw, str) and raw.strip():
+        parts = [p.strip() for p in raw.replace(";", ",").split(",")]
+    else:
+        parts = []
+    out: list[str] = []
+    seen: set[str] = set()
+    for email in parts:
+        if not email or "@" not in email:
+            continue
+        key = email.lower()
+        if key in seen:
+            continue
+        seen.add(key)
+        out.append(email)
+    return out
+
+
+def fold_new_event_invites(steps: list[PlanStep]) -> tuple[list[PlanStep], list[str]]:
+    """Invites for a meeting that does not exist yet belong on create_event.
+
+    send_invite needs an event_id. A plan that creates then invites with
+    event_id="" cannot replay after Yes — the id only exists once create ran.
+    Fold those invites onto create_event.attendees so one confirmed call both
+    puts it on the calendar and emails the people they named.
+    """
+    create_idx: int | None = None
+    extras: list[str] = []
+    drop: set[int] = set()
+    for i, step in enumerate(steps):
+        connector = step.connector or ""
+        if step.tool == "create_event" and connector in ("google_calendar", "calendar", ""):
+            if create_idx is None:
+                create_idx = i
+            continue
+        if step.tool != "send_invite" or create_idx is None:
+            continue
+        eid = str(step.arguments.get("event_id") or "").strip().lower()
+        if eid in _PLACEHOLDER_EVENT_IDS or eid.startswith("<") or "{{" in eid:
+            email = str(step.arguments.get("email") or "").strip()
+            if email:
+                extras.append(email)
+                drop.add(i)
+
+    if create_idx is None:
+        return steps, []
+
+    create = steps[create_idx]
+    merged = _attendee_emails(create.arguments)
+    for email in extras:
+        if email.lower() not in {e.lower() for e in merged}:
+            merged.append(email)
+
+    if not merged and not drop:
+        return steps, []
+
+    notes: list[str] = []
+    args = dict(create.arguments)
+    if merged:
+        args["attendees"] = ",".join(merged)
+        notes.append(
+            "Put invites on create_event so Yes does not need an event id that does not exist yet."
+        )
+    updated = create.model_copy(
+        update={
+            "arguments": args,
+            "action": str(Action.SEND_EXTERNAL) if merged else create.action,
+        }
+    )
+    out = [updated if i == create_idx else step for i, step in enumerate(steps) if i not in drop]
+    return out, notes
+
+
+#: A later turn that clearly refers to a draft that already exists.
+_SEND_THIS_DRAFT = re.compile(
+    r"\b(?:send (?:this|that|the) draft)\b",
+    re.I,
+)
+
+_GMAIL = frozenset({"google_gmail", "gmail", ""})
+
+
+def prefer_gmail_draft(steps: list[PlanStep], user: str) -> tuple[list[PlanStep], list[str]]:
+    """First email turn is always a draft. Sending is a later, explicit turn.
+
+    The live model hears "send an email to Blessing" and names send_email.
+    Yes then looks like a send, the compose form never appears, and a missing
+    body becomes a ledger row with nothing in Gmail. Rewriting the tool (not
+    the person's words) is what makes the first Yes save a draft.
+    """
+    if _SEND_THIS_DRAFT.search(user):
+        return steps, []
+
+    notes: list[str] = []
+    out: list[PlanStep] = []
+    for step in steps:
+        connector = step.connector or ""
+        if step.tool == "send_email" and connector in _GMAIL:
+            out.append(
+                step.model_copy(
+                    update={
+                        "tool": "create_draft",
+                        "action": str(Action.DRAFT),
+                        "connector": step.connector or "google_gmail",
+                    }
+                )
+            )
+            notes.append(
+                "First email turn is a draft. Sending waits until they have seen it."
+            )
+        else:
+            out.append(step)
+    return out, notes
+
+
+def _same_write(step: PlanStep, action: dict) -> bool:
+    connector = step.connector or ""
+    other = str(action.get("connector") or "")
+    tool = str(action.get("tool") or "")
+    if step.tool == tool and (not connector or not other or connector == other):
+        return True
+    if (
+        step.tool == "send_email"
+        and tool == "create_draft"
+        and connector in _GMAIL
+        and other in _GMAIL
+    ):
+        return True
+    if step.label == action.get("label") and step.tool and tool:
+        return True
+    return False
+
+
+def align_plan_to_confirmation(plan: list[PlanStep], actions: list[dict]) -> list[PlanStep]:
+    """Replay the calls the confirm gate showed, not the pre-rewrite stream.
+
+    Steps are yielded as the model produces them. `_finish` then rewrites
+    send_email to create_draft. Yes used to replay the streamed step, so the
+    first email still sent.
+    """
+    writes = [a for a in actions if a.get("connector") and a.get("tool")]
+    if not writes:
+        return plan
+    taken: set[int] = set()
+    out: list[PlanStep] = []
+    for step in plan:
+        idx = next(
+            (i for i, action in enumerate(writes) if i not in taken and _same_write(step, action)),
+            None,
+        )
+        if idx is None:
+            out.append(step)
+            continue
+        taken.add(idx)
+        action = writes[idx]
+        args = dict(step.arguments)
+        extra = action.get("arguments")
+        if isinstance(extra, dict):
+            args.update(extra)
+        out.append(
+            step.model_copy(
+                update={
+                    "connector": str(action.get("connector") or step.connector),
+                    "tool": str(action.get("tool") or step.tool),
+                    "action": str(action.get("action") or step.action),
+                    "arguments": args,
+                }
+            )
+        )
+    return out
+

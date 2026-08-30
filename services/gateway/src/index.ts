@@ -21,7 +21,7 @@ import { meetingRoutes } from "./routes/meetings.js";
 import { shareRoutes } from "./routes/shares.js";
 import { studioRoutes } from "./routes/studio.js";
 import { lifeRoutes } from "./routes/life.js";
-import { actOnConfirmed, storedSteps } from "./act.js";
+import { carryOutConfirmedPlan, declinePendingPlan } from "./confirm-act.js";
 import {
   ensureSession,
   getSession,
@@ -30,6 +30,8 @@ import {
   appendThread,
   setCorrection,
   correctionFields,
+  patchPlanArguments,
+  overlayConfirmOnPlan,
 } from "./repos/sessions.js";
 import { listPreferences, revertPreference, acceptPreference } from "./repos/preferences.js";
 import { listVisualPreferences, revertVisualPreference } from "./repos/visual.js";
@@ -299,6 +301,47 @@ api.get(
   }),
 );
 
+/**
+ * Field edits on a pending compose. Arguments only; connector and tool must
+ * already match the stored step so the browser cannot turn a draft into a send.
+ */
+api.patch(
+  "/sessions/:id/plan-args",
+  handle(async (req, res) => {
+    const body = z
+      .object({
+        patches: z
+          .array(
+            z.object({
+              connector: z.string().min(1).max(80),
+              tool: z.string().min(1).max(80),
+              arguments: z.record(z.string(), z.unknown()),
+            }),
+          )
+          .min(1)
+          .max(8),
+      })
+      .safeParse(req.body);
+    if (!body.success) {
+      res.status(400).json({ code: "invalid_request", message: "Expected plan argument edits." });
+      return;
+    }
+    const result = await patchPlanArguments(req.uid!, param(req, "id"), body.data.patches);
+    if (result === "missing") {
+      res.status(404).json({ code: "not_found", message: "That session is not here." });
+      return;
+    }
+    if (result === "mismatch") {
+      res.status(409).json({
+        code: "plan_mismatch",
+        message: "Those fields do not match the stored plan.",
+      });
+      return;
+    }
+    res.json({ ok: true });
+  }),
+);
+
 api.get(
   "/watchers",
   handle(async (req, res) => {
@@ -348,9 +391,9 @@ api.post(
 /**
  * What the user confirmed, declined, or corrected (FR-V5).
  *
- * The client posts the decision it acted on rather than the gateway inferring
- * it: the browser is the only place that knows whether the person actually
- * pressed yes, and a ledger of what we assumed is worth nothing.
+ * Effects replay the stored plan, never the request body. Voice can also
+ * confirm through they_said_yes; claiming the plan first is what stops two
+ * yeses from creating the same meeting twice.
  */
 api.post(
   "/sessions/:id/decision",
@@ -410,28 +453,35 @@ api.post(
       return;
     }
 
+    if (body.data.kind === "confirmed") {
+      // From the stored plan, never the request body: the browser must not
+      // be able to name an action nobody was shown. Voice may also confirm
+      // the same plan via they_said_yes; claiming first prevents two meetings.
+      const result = await carryOutConfirmedPlan({
+        uid: req.uid!,
+        sessionId,
+        summary: body.data.summary,
+        modality: body.data.modality,
+        actions: body.data.actions,
+      });
+      res.status(201).json({ id: result.id, did: result.did });
+      return;
+    }
+
+    if (body.data.kind === "declined") {
+      const result = await declinePendingPlan({
+        uid: req.uid!,
+        sessionId,
+        summary: body.data.summary,
+        modality: body.data.modality,
+        actions: body.data.actions,
+      });
+      res.status(201).json({ id: result.id, did: result.did });
+      return;
+    }
+
     const id = await record(req.uid!, { sessionId, ...body.data });
-
-    // Recorded first, then acted on.
-    //
-    // The ledger is the record of what the person agreed to, and it has to
-    // survive a connector being slow or refusing. Acting first and recording
-    // after would let a timeout send an email nothing remembers approving.
-    //
-    // Only a confirmation acts. Declining and correcting are decisions too,
-    // and neither is permission to do anything.
-    const did =
-      body.data.kind === "confirmed"
-        ? await actOnConfirmed({
-            uid: req.uid!,
-            sessionId,
-            // From the stored plan, never the request body: the browser must
-            // not be able to name an action nobody was shown.
-            steps: await storedSteps(req.uid!, sessionId),
-          })
-        : [];
-
-    res.status(201).json({ id, did });
+    res.status(201).json({ id, did: [] });
   }),
 );
 
@@ -513,9 +563,10 @@ api.get(
       // An aborted stream is a reader that left. Persisting its partial plan
       // would overwrite the retry that actually finished.
       if (!stream.closed()) {
+        const stored = overlayConfirmOnPlan(steps, actions ?? []);
         await rememberWork(req.uid!, sessionId, {
           utterance: message,
-          plan: steps.length > 0 ? steps : undefined,
+          plan: stored.length > 0 ? stored : undefined,
           companionNote: note || undefined,
         });
         if (note) {
@@ -528,7 +579,7 @@ api.get(
               options,
               actions,
               citations,
-              steps: steps.length ? steps : undefined,
+              steps: stored.length ? stored : undefined,
             },
           ]);
         }
@@ -564,9 +615,10 @@ api.post(
 
     const companionNote =
       result.note || result.confirm?.summary || result.clarify?.question || undefined;
+    const stored = overlayConfirmOnPlan(result.plan, result.confirm?.actions ?? []);
     await rememberWork(req.uid!, sessionId, {
       utterance: body.data.message,
-      plan: result.plan.length > 0 ? result.plan : undefined,
+      plan: stored.length > 0 ? stored : undefined,
       companionNote,
     });
     if (companionNote) {
@@ -585,7 +637,7 @@ api.post(
           options: result.clarify?.options ?? result.confirm?.options,
           actions: result.confirm?.actions,
           citations: result.citations,
-          steps: result.plan.length ? result.plan : undefined,
+          steps: stored.length ? stored : undefined,
         },
       ]);
     }

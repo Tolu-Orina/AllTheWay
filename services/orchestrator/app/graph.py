@@ -40,7 +40,13 @@ from .jsonstream import parse_partial
 from .models import ClarifyQuestion, PlanStep, TurnEvent, TurnRequest, TurnResponse
 from .grounding import check as check_grounding
 from .models import Citation
-from .plan_validation import attach_work_files, validate
+from .plan_validation import (
+    align_plan_to_confirmation,
+    attach_work_files,
+    fold_new_event_invites,
+    prefer_gmail_draft,
+    validate,
+)
 from .providers import ModelProvider, iter_text
 from .research_client import research
 from .voice import UNCLEAR, confirmation_for, transcript_verdict
@@ -64,7 +70,7 @@ SYSTEM = (
     # autonomy floor on its own side whatever this plan claims.
     "When a step would do something outside the conversation, name the call by "
     "setting connector, tool and arguments. Use only these. "
-    "google_calendar: list_events(limit), create_event(title, starts_at), "
+    "google_calendar: list_events(limit), create_event(title, starts_at, attendees, time_zone), "
     "delete_event(event_id), send_invite(event_id, email). "
     "google_gmail: create_draft(to, subject, body), send_email(to, subject, body). "
     "google_drive: list_files(limit), create_file(name, content, mime_type), "
@@ -77,8 +83,19 @@ SYSTEM = (
     "create_markdown(title, body). "
     "media: generate_image(prompt, style), draft_video(prompt, seconds), "
     "render_video(prompt, seconds). "
-    "starts_at is RFC 3339. Prefer create_draft over send_email unless the user "
-    "clearly asked to send. "
+    "starts_at is RFC 3339 with a numeric offset (or Z). Resolve today/tomorrow from "
+    "the CLOCK in this prompt, not from training. UK/London/Britain is Europe/London: "
+    "put that in time_zone and use the local wall time in starts_at, e.g. "
+    "2026-08-31T10:00:00 with time_zone Europe/London for 10:00 UK. "
+    "attendees is a comma-separated list of email addresses they named. Put invites on "
+    "create_event. send_invite is only for an existing event_id they already have — "
+    "never with a blank or placeholder id. "
+    "The first time they ask to email someone, always plan google_gmail.create_draft "
+    "with to, subject, and body filled from what they said — including a body they "
+    "actually spoke. Empty body is allowed; they can write it on the confirm form. "
+    "Never plan send_email on that first turn, even if they said 'send'. "
+    "send_email is only for a later turn that clearly refers to a draft that already "
+    "exists and asks to send it ('send this draft', 'send that draft'). "
     # Downloadable Office files. These are session artifacts, not Microsoft 365
     # and not Google Docs. Put the full content in the arguments so Yes can write
     # a real .docx / .xlsx / .pptx. google_docs.create_document is a Google Doc
@@ -265,12 +282,28 @@ def _struggles_block(request: TurnRequest) -> str:
     return chr(10).join(lines)
 
 
+def _clock_block(request: TurnRequest) -> str:
+    """The instant this turn was planned, so 'tomorrow 10am UK' is not guessed."""
+    clock = (request.clock or "").strip()
+    if not clock:
+        return ""
+    return (
+        "CLOCK: the current instant is "
+        + clock
+        + " (UTC). Resolve relative dates from this, not from training data. "
+        "A time the user named in UK/London/Britain is Europe/London."
+    )
+
+
 def _system_for(request: TurnRequest) -> tuple[str, bool]:
     prefs = "; ".join(request.known_preferences)
     passages = _passages_block(request)
     lookups = _lookups_block(request)
 
     system = SYSTEM
+    clock = _clock_block(request)
+    if clock:
+        system += "\n\n" + clock
     if passages:
         system += "\n\n" + passages
     if lookups:
@@ -480,9 +513,11 @@ def _finish(
 
     planned, corrections = validate(planned)
     planned, office_notes = attach_work_files(planned, request.message)
+    planned, invite_notes = fold_new_event_invites(planned)
+    planned, draft_notes = prefer_gmail_draft(planned, request.message)
     planned = _without_fetched_reads(planned)
     emitted = len(planned)
-    for correction in corrections + office_notes:
+    for correction in corrections + office_notes + invite_notes + draft_notes:
         yield TurnEvent(kind="trace", text=correction)
 
     confirmation = confirmation_for(
@@ -722,8 +757,14 @@ def run_turn(request: TurnRequest, provider: ModelProvider) -> TurnResponse:
     if confirm is not None:
         # The plan travels with it: a user cannot agree to something they were
         # not shown. What they cannot do is have it run without agreeing.
+        # Align to the confirm artifact so Yes replays the draft rewrite,
+        # not the send_email the model streamed before _finish.
         return TurnResponse(
-            decision="confirm", confirm=confirm, plan=plan, trace=trace, citations=citations
+            decision="confirm",
+            confirm=confirm,
+            plan=align_plan_to_confirmation(plan, confirm.get("actions") or []),
+            trace=trace,
+            citations=citations,
         )
 
     if clarify is not None:

@@ -7,6 +7,7 @@ import { cn } from "@/lib/utils";
 import { ConfirmGate } from "@/app/ConfirmGate";
 import { PlanStack } from "@/app/PlanStack";
 import { useDecision } from "@/app/use-decision";
+import { isSpokenNo, isSpokenYes } from "@/lib/spoken-confirm";
 
 /**
  * Talk to the companion. The socket goes to our gateway; the model credential
@@ -133,10 +134,35 @@ export function VoiceCaptions({
   const listening =
     voice.status === "live" && shown.length === 0 && !voice.turn && !voice.error;
   const hasBody = shown.length > 0 || !!voice.turn || listening || connecting;
+  const actedSpoken = useRef<number | null>(null);
 
   useEffect(() => {
     logRef.current?.scrollTo({ top: logRef.current.scrollHeight, behavior: "smooth" });
   }, [voice.lines, voice.turn]);
+
+  useEffect(() => {
+    if (!confirming || decisionStatus) return;
+    const last = [...voice.lines].reverse().find((l) => l.side === "user" && l.finished);
+    const spoken = last?.text.trim();
+    if (!last || !spoken || actedSpoken.current === last.id) return;
+    if (isSpokenYes(spoken)) {
+      actedSpoken.current = last.id;
+      void decide("confirmed", {
+        summary: voice.turn?.summary ?? "Should I go ahead?",
+        actions: voice.turn?.actions ?? [],
+        modality: "voice",
+      });
+      return;
+    }
+    if (isSpokenNo(spoken)) {
+      actedSpoken.current = last.id;
+      void decide("declined", {
+        summary: voice.turn?.summary ?? "Should I go ahead?",
+        actions: voice.turn?.actions ?? [],
+        modality: "voice",
+      });
+    }
+  }, [voice.lines, confirming, decisionStatus, decide, voice.turn?.summary, voice.turn?.actions]);
 
   if (variant !== "session" && (voice.status === "connecting" || voice.status === "live")) {
     return null;
@@ -184,6 +210,7 @@ export function VoiceCaptions({
         {voice.turn?.summary && !confirming ? (
           <p className="mt-1.5 font-medium">{voice.turn.summary}</p>
         ) : null}
+        {voice.turn?.note && !confirming ? <p className="mt-1.5">{voice.turn.note}</p> : null}
         {voice.turn?.question ? <p className="mt-1.5">{voice.turn.question}</p> : null}
         {voice.turn?.plan?.length ? (
           <div className="mt-2">
@@ -198,6 +225,8 @@ export function VoiceCaptions({
               confirmLabel={voice.turn?.options?.[0] ?? "Yes, go ahead"}
               declineLabel={voice.turn?.options?.[1] ?? "No, stop"}
               status={decisionStatus}
+              sessionId={voice.sessionId}
+              steps={voice.turn?.plan}
               onConfirm={() =>
                 void decide("confirmed", {
                   summary: voice.turn?.summary ?? "Should I go ahead?",

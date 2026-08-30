@@ -246,6 +246,8 @@ export default function SessionDetailScreen() {
                     confirmLabel={turn.options[0] ?? "Yes, go ahead"}
                     declineLabel={turn.options[1] ?? "No, stop"}
                     status={decisionStatus}
+                    sessionId={id}
+                    steps={turn.steps}
                     onConfirm={() => {
                       hadTurn.current = true;
                       void decide("confirmed", {

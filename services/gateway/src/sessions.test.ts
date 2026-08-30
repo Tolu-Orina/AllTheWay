@@ -13,6 +13,8 @@ import {
   appendThread,
   conversationContext,
   setCorrection,
+  mergePlanArguments,
+  overlayConfirmOnPlan,
   VOICE_TITLE,
 } from "./repos/sessions.js";
 
@@ -70,6 +72,67 @@ test("conversationContext keeps role, text, and options for the planner", () => 
   assert.equal(lines[0], "user: I want to generate an image.");
   assert.equal(lines[1], "agent: What kind of image?");
   assert.equal(lines[2], "options: Anime character illustration | A landscape");
+});
+
+test("compose edits merge onto matching arguments and cannot rename the tool", () => {
+  const plan = [
+    {
+      label: "Draft to Ana",
+      done: false,
+      action: "draft",
+      connector: "google_gmail",
+      tool: "create_draft",
+      arguments: { to: "ana@x.com", subject: "Hi", body: "" },
+    },
+  ];
+  const ok = mergePlanArguments(plan, [
+    {
+      connector: "google_gmail",
+      tool: "create_draft",
+      arguments: { body: "See you at ten.", subject: "Work" },
+    },
+  ]);
+  assert.equal(ok.ok, true);
+  if (!ok.ok) return;
+  const step = ok.plan[0];
+  assert.ok(step);
+  assert.equal(step.tool, "create_draft");
+  assert.equal(step.arguments?.body, "See you at ten.");
+  assert.equal(step.arguments?.subject, "Work");
+  assert.equal(step.arguments?.to, "ana@x.com");
+
+  const renamed = mergePlanArguments(plan, [
+    {
+      connector: "google_gmail",
+      tool: "send_email",
+      arguments: { body: "nope" },
+    },
+  ]);
+  assert.equal(renamed.ok, false);
+});
+
+test("a streamed send_email is overlaid with the draft the gate showed", () => {
+  const steps = [
+    {
+      label: "Email Ana",
+      done: false,
+      action: "send_external",
+      connector: "google_gmail",
+      tool: "send_email",
+      arguments: { to: "ana@x.com", subject: "Hi", body: "" },
+    },
+  ];
+  const overlaid = overlayConfirmOnPlan(steps, [
+    {
+      label: "Email Ana",
+      action: "draft",
+      connector: "google_gmail",
+      tool: "create_draft",
+      arguments: { body: "See you at ten." },
+    },
+  ]);
+  assert.equal(overlaid[0]?.tool, "create_draft");
+  assert.equal(overlaid[0]?.arguments?.body, "See you at ten.");
 });
 
 test("companion chats do not appear in the work list", emulated, async () => {

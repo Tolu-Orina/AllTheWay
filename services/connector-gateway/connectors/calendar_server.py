@@ -37,6 +37,8 @@ from datetime import datetime, timedelta, timezone
 
 from mcp.server.fastmcp import FastMCP
 
+from _calendar_event import emails_from
+
 mcp = FastMCP("alltheway-calendar")
 
 def _seed() -> list[dict]:
@@ -72,16 +74,18 @@ def list_events(limit: int = 10, time_min: str = "") -> str:
 
 
 @mcp.tool()
-def create_event(title: str, starts_at: str) -> str:
-    """Create an event on the user's calendar. Reversible."""
+def create_event(title: str, starts_at: str, attendees: str = "", time_zone: str = "") -> str:
+    """Create an event on the user's calendar. Reversible unless attendees are invited."""
+    del time_zone
+    invited = emails_from(attendees)
     event = {
         "id": f"evt-{len(_EVENTS) + 1}",
         "title": title,
         "startsAt": starts_at,
-        "attendees": [],
+        "attendees": invited,
     }
     _EVENTS.append(event)
-    return json.dumps({"created": event})
+    return json.dumps({"created": event, "id": event["id"], "title": title, "attendees": invited})
 
 
 @mcp.tool()

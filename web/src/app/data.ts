@@ -31,7 +31,7 @@ import {
 } from "@alltheway/contracts";
 import { z } from "zod";
 
-import { apiBlob, apiDelete, apiGet, apiPost, apiText } from "@/lib/api";
+import { apiBlob, apiDelete, apiGet, apiPatch, apiPost, apiText } from "@/lib/api";
 
 /**
  * Data access for the product app.
@@ -247,6 +247,20 @@ export const api = {
       now?: string;
     },
   ) => apiPost(`/sessions/${encodeURIComponent(sessionId)}/decision`, body, DecisionResultSchema),
+
+  /**
+   * Field edits on a pending compose. Arguments only — the stored connector
+   * and tool do not change, so Yes cannot become a send from the browser.
+   */
+  patchPlanArgs: (
+    sessionId: string,
+    patches: { connector: string; tool: string; arguments: Record<string, unknown> }[],
+  ) =>
+    apiPatch(
+      `/sessions/${encodeURIComponent(sessionId)}/plan-args`,
+      { patches },
+      z.object({ ok: z.literal(true) }),
+    ),
 
   /**
    * Connected accounts.

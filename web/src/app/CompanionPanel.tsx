@@ -104,6 +104,8 @@ export function CompanionConversation({ autoFocus = false }: { autoFocus?: boole
                     declineLabel={m.options?.[1] ?? "No, stop"}
                     busy={working || Boolean(decisionStatus)}
                     status={decisionStatus}
+                    sessionId={sessionId}
+                    steps={m.steps}
                     onConfirm={() =>
                       void decide("confirmed", {
                         summary: m.text,

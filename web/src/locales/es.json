@@ -150,6 +150,18 @@
     "insteadPlaceholder": "¿Qué tendría que haber sido?",
     "rememberThis": "Recordar esto"
   },
+  "compose": {
+    "to": "Para",
+    "subject": "Asunto",
+    "body": "Mensaje",
+    "title": "Título",
+    "starts": "Empieza",
+    "timeZone": "Zona horaria",
+    "attendees": "Invitados",
+    "attendeesHint": "Correos separados por comas",
+    "saveDraft": "Guardar borrador",
+    "putOnCalendar": "Poner en el calendario"
+  },
   "account": {
     "signOut": "Cerrar sesión"
   },

@@ -1,4 +1,6 @@
-import { db } from "./firestore.js";
+import { FieldValue } from "firebase-admin/firestore";
+
+import { db, sessions } from "./firestore.js";
 import { env } from "./env.js";
 import { connectorClient, connectorInvokeMessage } from "./a2a.js";
 import { getSession } from "./repos/sessions.js";
@@ -7,6 +9,7 @@ import { actWorkFiles, isWorkFilesStep } from "./office-persist.js";
 import { createStudioJob } from "./repos/studio-jobs.js";
 import {
   connectorIsConnected,
+  createDraftSkipReason,
   enforcementGrant,
   googleGrantId,
   isGoogleConnector,
@@ -33,8 +36,10 @@ import {
  *
  * ## Confirmed once
  *
- * The ledger row is written first and its id is passed down, so a second Yes
- * for the same decision finds the work already done rather than sending twice.
+ * The ledger row is written first. A second Yes for the same stored plan
+ * finds it already claimed (`claimStoredPlan`) rather than creating twice —
+ * voice can confirm from the overlay *and* from `they_said_yes` on the same
+ * utterance.
  */
 
 /** One replayed step, and what became of it. */
@@ -58,6 +63,141 @@ export type ActableStep = {
   arguments?: Record<string, unknown>;
 };
 
+export type ClaimedPlan =
+  | { kind: "run"; steps: ActableStep[] }
+  | { kind: "replay"; did: ActOutcome[] }
+  | { kind: "empty" };
+
+const PLACEHOLDER_EVENT_IDS = new Set([
+  "",
+  "new",
+  "pending",
+  "none",
+  "null",
+  "event_id",
+  "the new event",
+]);
+
+export function isPlaceholderEventId(id: string): boolean {
+  const t = id.trim().toLowerCase();
+  return PLACEHOLDER_EVENT_IDS.has(t) || t.startsWith("<") || t.includes("{{");
+}
+
+/** Flatten attendees so MCP tools that take a string still get the list. */
+export function prepareCallArgs(
+  step: ActableStep,
+  createdEventId: string,
+): Record<string, unknown> {
+  const args = { ...(step.arguments ?? {}) };
+  if (Array.isArray(args.attendees)) {
+    args.attendees = args.attendees
+      .map((item) => String(item).trim())
+      .filter(Boolean)
+      .join(",");
+  }
+  if (step.tool === "send_invite") {
+    return bindInviteEventId(args, createdEventId);
+  }
+  return args;
+}
+
+export function bindInviteEventId(
+  args: Record<string, unknown>,
+  createdEventId: string,
+): Record<string, unknown> {
+  const eid = typeof args.event_id === "string" ? args.event_id : "";
+  if (createdEventId && isPlaceholderEventId(eid)) {
+    return { ...args, event_id: createdEventId };
+  }
+  return args;
+}
+
+/**
+ * The id Google (or the in-memory calendar) assigned, so the next step can
+ * invite people to the event that was just created rather than to "".
+ */
+export function eventIdFromConnectorTask(task: unknown): string {
+  let found = "";
+  const walk = (node: unknown, depth: number): void => {
+    if (!node || typeof node !== "object" || depth > 12 || found) return;
+    const rec = node as Record<string, unknown>;
+    const created = rec.created;
+    if (created && typeof created === "object") {
+      const id = (created as { id?: unknown }).id;
+      if (typeof id === "string" && id) {
+        found = id;
+        return;
+      }
+    }
+    const titled = typeof rec.title === "string" || typeof rec.summary === "string";
+    if (typeof rec.id === "string" && rec.id && titled) {
+      found = rec.id;
+      return;
+    }
+    if (typeof rec.eventId === "string" && rec.eventId) {
+      found = rec.eventId;
+      return;
+    }
+    for (const value of Object.values(rec)) {
+      if (Array.isArray(value)) value.forEach((item) => walk(item, depth + 1));
+      else if (value && typeof value === "object") walk(value, depth + 1);
+    }
+  };
+  walk(task, 0);
+  return found;
+}
+
+function stepsFromSnap(snap: { exists: boolean; get: (field: string) => unknown }): ActableStep[] {
+  const plan = snap.get("plan");
+  if (Array.isArray(plan)) {
+    const fromPlan = plan.filter(
+      (s): s is ActableStep =>
+        !!s && typeof s === "object" && !!(s as ActableStep).connector && !!(s as ActableStep).tool,
+    );
+    if (fromPlan.length) return fromPlan;
+  }
+  const thread = snap.get("thread");
+  if (!Array.isArray(thread)) return [];
+  for (let i = thread.length - 1; i >= 0; i--) {
+    const actions = (thread[i] as { actions?: ActableStep[] } | undefined)?.actions ?? [];
+    const calls = actions.filter((a) => a.connector && a.tool);
+    if (calls.length) return calls;
+  }
+  return [];
+}
+
+/**
+ * Take the stored plan once. A second Yes in the same moment (spoken tool +
+ * overlay button) must not create a second meeting.
+ */
+export async function claimStoredPlan(uid: string, sessionId: string): Promise<ClaimedPlan> {
+  const ref = sessions(uid).doc(sessionId);
+  return db.runTransaction(async (tx) => {
+    const snap = await tx.get(ref);
+    if (!snap.exists) return { kind: "empty" as const };
+    const last = snap.get("lastActOutcomes");
+    const replayed = Array.isArray(last) ? (last as ActOutcome[]) : [];
+    const steps = stepsFromSnap(snap);
+    if (!steps.length) {
+      return replayed.length ? { kind: "replay" as const, did: replayed } : { kind: "empty" as const };
+    }
+    tx.set(ref, { plan: [], lastActClaimedAt: FieldValue.serverTimestamp() }, { merge: true });
+    return { kind: "run" as const, steps };
+  });
+}
+
+export async function rememberActOutcomes(
+  uid: string,
+  sessionId: string,
+  did: ActOutcome[],
+): Promise<void> {
+  await sessions(uid).doc(sessionId).set({ lastActOutcomes: did }, { merge: true });
+}
+
+export async function clearStoredPlan(uid: string, sessionId: string): Promise<void> {
+  await sessions(uid).doc(sessionId).set({ plan: [] }, { merge: true });
+}
+
 /**
  * Run the steps of a confirmed plan that name a call.
  *
@@ -74,6 +214,7 @@ export async function actOnConfirmed(opts: {
   if (actionable.length === 0) return [];
 
   const outcomes: ActOutcome[] = [];
+  let createdEventId = "";
 
   // Serially, not in parallel. These are irreversible-adjacent, and a failure
   // half way through a parallel fan-out leaves nobody able to say what ran.
@@ -108,20 +249,31 @@ export async function actOnConfirmed(opts: {
         });
         continue;
       }
+      if (connector === "google_gmail" && tool === "create_draft") {
+        const blocked = createDraftSkipReason(scopes);
+        if (blocked) {
+          outcomes.push({ ...base, did: "skipped", detail: blocked });
+          continue;
+        }
+      }
     }
 
     try {
       const timeoutMs =
         tool === "generate_image" || tool === "draft_video" ? IMAGE_TIMEOUT_MS : ACT_TIMEOUT_MS;
+      const arguments_ = prepareCallArgs(step, createdEventId);
       const task = await runConnectorTool({
         uid: opts.uid,
         sessionId: opts.sessionId,
         connector,
         tool,
-        arguments: step.arguments ?? {},
+        arguments: arguments_,
         confirmed: true,
         timeoutMs,
       });
+      if (tool === "create_event" && !isRefusal(task)) {
+        createdEventId = eventIdFromConnectorTask(task) || createdEventId;
+      }
 
       const refused = isRefusal(task);
       let detail = readableDetail(task);

@@ -149,6 +149,18 @@
     "insteadPlaceholder": "What should it have been?",
     "rememberThis": "Remember this"
   },
+  "compose": {
+    "to": "To",
+    "subject": "Subject",
+    "body": "Body",
+    "title": "Title",
+    "starts": "Starts",
+    "timeZone": "Time zone",
+    "attendees": "Attendees",
+    "attendeesHint": "Comma-separated emails",
+    "saveDraft": "Save draft",
+    "putOnCalendar": "Put on calendar"
+  },
   "account": {
     "signOut": "Sign out"
   },

@@ -141,3 +141,13 @@ export async function apiPost<S extends z.ZodTypeAny>(
   if (!schema) return undefined as never;
   return schema.parse(await res.json());
 }
+
+export async function apiPatch<S extends z.ZodTypeAny>(
+  path: string,
+  body: unknown,
+  schema?: S,
+): Promise<S extends z.ZodTypeAny ? z.infer<S> : void> {
+  const res = await request(path, { method: "PATCH", body: JSON.stringify(body ?? {}) });
+  if (!schema) return undefined as never;
+  return schema.parse(await res.json());
+}

@@ -6,7 +6,7 @@ import { env } from "../env.js";
 import { routeUpgrade } from "../ws-router.js";
 import { runTurn } from "../orchestrator.js";
 import { loadTurnContext } from "../turn-context.js";
-import { READ_TOOL_NAMES, runReadTool } from "./tools.js";
+import { READ_TOOL_NAMES, runReadTool, THEY_SAID_NO, THEY_SAID_YES } from "./tools.js";
 import {
   END_THIS_CONVERSATION,
   HANGUP_TOOL_RESULT,
@@ -15,7 +15,7 @@ import {
 } from "./hangup.js";
 import { readUsage, recordUsage } from "../repos/usage.js";
 import { recordLine } from "../repos/transcripts.js";
-import { ensureSession, touchSession, VOICE_TITLE } from "../repos/sessions.js";
+import { appendThread, ensureSession, getSession, overlayConfirmOnPlan, touchSession, VOICE_TITLE } from "../repos/sessions.js";
 import { createLiveOpener, type LiveOpener } from "./backend.js";
 import {
   AUTH_TIMEOUT_MS,
@@ -27,6 +27,8 @@ import {
   isPcmMessage,
   type RelayMessage,
 } from "./protocol.js";
+import { isSpokenNo, isSpokenYes } from "./confirm.js";
+import { carryOutConfirmedPlan, declinePendingPlan, speakActOutcomes } from "../confirm-act.js";
 
 function originAllowed(origin: string | undefined): boolean {
   // Empty WEB_ORIGINS is development: Vite proxies and the request is
@@ -267,6 +269,20 @@ async function handleConnection(ws: WebSocket, opener: LiveOpener): Promise<void
             return;
           }
 
+          if (call.name === THEY_SAID_YES || call.name === THEY_SAID_NO) {
+            const live = slot.live;
+            void runSpokenDecision({
+              ws,
+              live,
+              uid,
+              sessionId,
+              call,
+              cancelled,
+              kind: call.name === THEY_SAID_YES ? "confirmed" : "declined",
+            });
+            return;
+          }
+
           // A read answers from here and never reaches the planner: one hop
           // instead of two, and it cannot change anything -- which is why it
           // needs no confirmation and none is asked for.
@@ -355,6 +371,69 @@ async function handleConnection(ws: WebSocket, opener: LiveOpener): Promise<void
   });
 }
 
+async function pendingSummary(uid: string, sessionId: string): Promise<string> {
+  const session = await getSession(uid, sessionId);
+  return session?.companionNote?.trim() || "Should I go ahead?";
+}
+
+async function runSpokenDecision(opts: {
+  ws: WebSocket;
+  live: { sendToolResult: (id: string, name: string, payload: unknown) => void };
+  uid: string;
+  sessionId: string;
+  call: { id: string; name: string; args: Record<string, unknown> };
+  cancelled: Set<string>;
+  kind: "confirmed" | "declined";
+}): Promise<void> {
+  const { ws, live, uid, sessionId, call, cancelled, kind } = opts;
+  try {
+    const summary = await pendingSummary(uid, sessionId);
+    if (kind === "declined") {
+      const result = await declinePendingPlan({
+        uid,
+        sessionId,
+        summary,
+        modality: "voice",
+      });
+      if (cancelled.has(call.id)) return;
+      send(ws, { turn: { decision: "done", note: "Stopped. Nothing was changed." } });
+      live.sendToolResult(call.id, call.name, {
+        carried_out: false,
+        stopped: true,
+        speak: "Tell them you stopped. Nothing was created, sent, or deleted.",
+        did: result.did,
+      });
+      return;
+    }
+
+    const result = await carryOutConfirmedPlan({
+      uid,
+      sessionId,
+      summary,
+      modality: "voice",
+    });
+    if (cancelled.has(call.id)) return;
+    const note = result.already
+      ? "That plan was already carried out."
+      : speakActOutcomes(result.did);
+    send(ws, { turn: { decision: "done", note, did: result.did } });
+    live.sendToolResult(call.id, call.name, {
+      carried_out: result.did.length > 0 || result.already,
+      already: result.already,
+      did: result.did,
+      speak:
+        "Tell them what happened, in their language. If a step failed, say so. " +
+        "Do not claim success this result does not show. Do not ask them to confirm again.",
+      note,
+    });
+  } catch (err) {
+    if (cancelled.has(call.id)) return;
+    const message = "That could not be carried out just now.";
+    send(ws, { error: { code: "internal", message } });
+    live.sendToolResult(call.id, call.name, { error: (err as Error).message, cannot: message });
+  }
+}
+
 async function runPlanTurn(opts: {
   ws: WebSocket;
   live: { sendToolResult: (id: string, name: string, payload: unknown) => void };
@@ -375,19 +454,100 @@ async function runPlanTurn(opts: {
     return;
   }
 
+  // A spoken yes used to be planned as a new request. The planner had no
+  // thread (voice did not persist one) and asked what they meant — which is
+  // how "Yes, please" became "How would you like me to help with your calendar?"
+  if (isSpokenYes(request)) {
+    const result = await carryOutConfirmedPlan({
+      uid,
+      sessionId,
+      summary: await pendingSummary(uid, sessionId),
+      modality: "voice",
+    });
+    if (result.did.length > 0 || result.already) {
+      if (cancelled.has(call.id)) return;
+      const note = result.already
+        ? "That plan was already carried out."
+        : speakActOutcomes(result.did);
+      send(ws, { turn: { decision: "done", note, did: result.did } });
+      live.sendToolResult(call.id, call.name, {
+        decision: "done",
+        did: result.did,
+        already: result.already,
+        note,
+        speak:
+          "The plan they confirmed has been carried out. Tell them what happened. " +
+          "Do not ask them to confirm again.",
+      });
+      return;
+    }
+  }
+
+  if (isSpokenNo(request)) {
+    await declinePendingPlan({
+      uid,
+      sessionId,
+      summary: await pendingSummary(uid, sessionId),
+      modality: "voice",
+    });
+    if (cancelled.has(call.id)) return;
+    send(ws, { turn: { decision: "done", note: "Stopped. Nothing was changed." } });
+    live.sendToolResult(call.id, call.name, {
+      decision: "done",
+      stopped: true,
+      speak: "Tell them you stopped. Nothing was created, sent, or deleted.",
+    });
+    return;
+  }
+
   try {
     const context = await loadTurnContext(uid, sessionId, request);
     const result = await runTurn(context);
     if (cancelled.has(call.id)) return;
+    const stored = overlayConfirmOnPlan(result.plan, result.confirm?.actions ?? []);
+    const aligned = { ...result, plan: stored };
     const companionNote =
-      result.note || result.confirm?.summary || result.clarify?.question || undefined;
-    void touchSession(uid, sessionId, {
-      utterance: request,
-      plan: result.plan.length > 0 ? result.plan : undefined,
-      companionNote,
-    }).catch((err) => console.error("[voice] persist turn", sessionId, err));
-    send(ws, { turn: result });
-    live.sendToolResult(call.id, call.name, result);
+      aligned.note || result.confirm?.summary || result.clarify?.question || undefined;
+    try {
+      await touchSession(uid, sessionId, {
+        utterance: request,
+        plan: stored.length > 0 ? stored : undefined,
+        companionNote,
+      });
+    } catch (err) {
+      console.error("[voice] persist turn", sessionId, err);
+    }
+    // Same thread typed chat already keeps, so a follow-up is not planned as
+    // if the meeting details had never been said. Awaited so a spoken yes
+    // that follows immediately still finds the plan.
+    try {
+      await appendThread(uid, sessionId, [
+        { role: "user", text: request, at: new Date().toISOString() },
+        ...(companionNote
+          ? [
+              {
+                role: "agent" as const,
+                text: companionNote,
+                at: new Date().toISOString(),
+                phase:
+                  result.decision === "confirm"
+                    ? ("confirm" as const)
+                    : result.decision === "clarify"
+                      ? ("clarify" as const)
+                      : ("done" as const),
+                options: result.confirm?.options ?? result.clarify?.options,
+                actions: result.confirm?.actions,
+                steps: stored.length > 0 ? stored : undefined,
+              },
+            ]
+          : []),
+      ]);
+    } catch (err) {
+      console.error("[voice] persist thread", sessionId, err);
+    }
+    if (cancelled.has(call.id)) return;
+    send(ws, { turn: aligned });
+    live.sendToolResult(call.id, call.name, aligned);
   } catch (err) {
     if (cancelled.has(call.id)) return;
     const message = "The planner could not finish this turn.";

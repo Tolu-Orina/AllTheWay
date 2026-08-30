@@ -2,6 +2,7 @@ import { useCallback, useState } from "react";
 import type { ActOutcome } from "@alltheway/contracts";
 
 import { api } from "@/app/data";
+import { flushCompose } from "@/app/compose-flush";
 import { decisionCopy } from "@/app/plan-copy";
 import type { ProposedAction } from "@/app/use-turn";
 
@@ -37,6 +38,7 @@ export function useDecision(sessionId: string) {
       setRecorded("pending");
       setDid([]);
       try {
+        if (kind === "confirmed") await flushCompose(sessionId);
         const result = await api.recordDecision(sessionId, {
           kind,
           summary: body.summary,
