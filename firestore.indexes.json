@@ -68,15 +68,14 @@
     },
     {
       "//": [
-        "Document Q&A: find_nearest on documentChunks.embedding, filtered by",
-        "ownerUid. Writes do not need this; nearest-neighbour reads do. queryScope",
-        "is COLLECTION because retrieval is always path-scoped to one user —",
-        "never a collection-group query across users."
+        "Slide design catalog: find_nearest on slideDesigns.embedding.",
+        "Product data, not user documents — queryScope is COLLECTION on the",
+        "root catalog, never a collection group. gemini-embedding-2 at 1536",
+        "(MRL truncate from 3072) matches documentChunks."
       ],
-      "collectionGroup": "documentChunks",
+      "collectionGroup": "slideDesigns",
       "queryScope": "COLLECTION",
       "fields": [
-        { "fieldPath": "ownerUid", "order": "ASCENDING" },
         { "fieldPath": "__name__", "order": "ASCENDING" },
         {
           "fieldPath": "embedding",

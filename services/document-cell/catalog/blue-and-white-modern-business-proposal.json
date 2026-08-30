@@ -1,0 +1,2510 @@
+{
+  "id": "blue-and-white-modern-business-proposal",
+  "title": "blue and white modern business proposal",
+  "source": "Blue and White Modern Business Proposal Presentation.pptx",
+  "width": 20,
+  "height": 11.25,
+  "overall_deck_description": "Designed in a widescreen 20×11.25-inch format, this modern business proposal deck uses a crisp, cool corporate palette anchored by deep navy blue, soft steel-blue accents, and an off-white background with subtle paper texture and a soft right-side cyan-blue gradient wash. Typography relies on a bold, high-contrast sans-serif pairing heavy all-caps display headings with clean, structured body text. The deck follows a symmetrical bookend structure: Slide 0 (cover) and Slide 10 (closing) share an identical visual frame featuring top-left logo branding, oversized two-tone hero typography, and a bottom-left URL footer against the gradient wash. Slides 1 through 9 form the body, shifting to clean content layouts with strong left-aligned headers and modular rounded-corner card containers in varying shades of blue to organize data, metrics, and multi-column proposals.",
+  "slides": {
+    "slide-01": {
+      "index": 0,
+      "prev": null,
+      "next": "slide-02",
+      "image": "blue-and-white-modern-business-proposal/slide-01.png",
+      "coordinates": [
+        {
+          "x": 0,
+          "y": 0,
+          "w": 20,
+          "h": 11.25,
+          "kind": "shape",
+          "bold": false,
+          "name": "Freeform 2"
+        },
+        {
+          "x": 1.125,
+          "y": 3.492,
+          "w": 11.106,
+          "h": 2.15,
+          "kind": "text",
+          "text": "BUSINESS",
+          "fontSize": 140,
+          "color": "185079",
+          "bold": false,
+          "name": "TextBox 3"
+        },
+        {
+          "x": 6.133,
+          "y": -4.721,
+          "w": 24.266,
+          "h": 20.692,
+          "kind": "shape",
+          "bold": false,
+          "name": "Freeform 4"
+        },
+        {
+          "x": 1.125,
+          "y": 5.47,
+          "w": 14.891,
+          "h": 2.465,
+          "kind": "text",
+          "text": "PROPOSAL",
+          "fontSize": 159.99,
+          "color": "185079",
+          "bold": false,
+          "name": "TextBox 5"
+        },
+        {
+          "x": 1.125,
+          "y": 9.612,
+          "w": 11.106,
+          "h": 0.513,
+          "kind": "text",
+          "text": "WWW.REALLYGREATSITE.COM",
+          "fontSize": 33,
+          "color": "185079",
+          "bold": false,
+          "name": "TextBox 6"
+        },
+        {
+          "x": 2.648,
+          "y": 1.233,
+          "w": 2.995,
+          "h": 0.513,
+          "kind": "text",
+          "text": "COMPANY",
+          "fontSize": 33,
+          "color": "185079",
+          "bold": false,
+          "name": "TextBox 7"
+        },
+        {
+          "x": 1.125,
+          "y": 1.125,
+          "w": 1.033,
+          "h": 0.621,
+          "kind": "shape",
+          "bold": false,
+          "name": "Freeform 8"
+        }
+      ],
+      "description": {
+        "looksLike": "Modern corporate title slide with large bold navy typography on a textured off-white background featuring a soft cyan-blue gradient aura on the right side, accompanied by a company logo at the top left and a website URL at the bottom left.",
+        "title": "BUSINESS PROPOSAL",
+        "layout": "title-slide",
+        "background": {
+          "scope": "slide",
+          "kind": "solid"
+        },
+        "contentPlacement": "Logo and company name anchored at the top-left, massive two-line presentation title centered-left in the middle third, footer website link at the bottom-left, and a soft blue gradient graphic accent dominating the right half.",
+        "images": [],
+        "boxes": [
+          {
+            "role": "body",
+            "text": "",
+            "x": 0,
+            "y": 0,
+            "w": 20,
+            "h": 11.25
+          },
+          {
+            "role": "body",
+            "text": "BUSINESS",
+            "x": 1.125,
+            "y": 3.492,
+            "w": 11.106,
+            "h": 2.15,
+            "fontSize": 140
+          },
+          {
+            "role": "body",
+            "text": "",
+            "x": 6.133,
+            "y": -4.721,
+            "w": 24.266,
+            "h": 20.692
+          },
+          {
+            "role": "body",
+            "text": "PROPOSAL",
+            "x": 1.125,
+            "y": 5.47,
+            "w": 14.891,
+            "h": 2.465,
+            "fontSize": 159.99
+          },
+          {
+            "role": "body",
+            "text": "WWW.REALLYGREATSITE.COM",
+            "x": 1.125,
+            "y": 9.612,
+            "w": 11.106,
+            "h": 0.513,
+            "fontSize": 33
+          },
+          {
+            "role": "body",
+            "text": "COMPANY",
+            "x": 2.648,
+            "y": 1.233,
+            "w": 2.995,
+            "h": 0.513,
+            "fontSize": 33
+          },
+          {
+            "role": "body",
+            "text": "",
+            "x": 1.125,
+            "y": 1.125,
+            "w": 1.033,
+            "h": 0.621
+          }
+        ]
+      },
+      "gcsUri": "gs://alltheway-rinegan-slide-designs-prod/catalog/blue-and-white-modern-business-proposal/slide-01.png"
+    },
+    "slide-02": {
+      "index": 1,
+      "prev": "slide-01",
+      "next": "slide-03",
+      "image": "blue-and-white-modern-business-proposal/slide-02.png",
+      "coordinates": [
+        {
+          "x": 0,
+          "y": 0,
+          "w": 20,
+          "h": 11.25,
+          "kind": "shape",
+          "bold": false,
+          "name": "Freeform 2"
+        },
+        {
+          "x": -8.917,
+          "y": 5.399,
+          "w": 17.41,
+          "h": 14.846,
+          "kind": "shape",
+          "bold": false,
+          "name": "Freeform 3"
+        },
+        {
+          "x": 12.331,
+          "y": -8.45,
+          "w": 17.41,
+          "h": 14.846,
+          "kind": "shape",
+          "bold": false,
+          "name": "Freeform 4"
+        },
+        {
+          "x": 0,
+          "y": 0,
+          "w": 0.889,
+          "h": 1.169,
+          "kind": "shape",
+          "bold": false,
+          "name": "Freeform 6"
+        },
+        {
+          "x": 1.542,
+          "y": 2.309,
+          "w": 7.369,
+          "h": 2.399,
+          "kind": "text",
+          "text": "MA\nR\nKET OP\nPO\nRTUNITY",
+          "fontSize": 79.17,
+          "color": "185079",
+          "bold": false,
+          "name": "TextBox 7"
+        },
+        {
+          "x": 1.542,
+          "y": 5.492,
+          "w": 1.703,
+          "h": 0.923,
+          "kind": "text",
+          "text": "01",
+          "fontSize": 60,
+          "color": "185079",
+          "bold": false,
+          "name": "TextBox 8"
+        },
+        {
+          "x": 1.542,
+          "y": 7.786,
+          "w": 1.703,
+          "h": 0.923,
+          "kind": "text",
+          "text": "02",
+          "fontSize": 60,
+          "color": "185079",
+          "bold": false,
+          "name": "TextBox 9"
+        },
+        {
+          "x": 3.572,
+          "y": 5.166,
+          "w": 6.313,
+          "h": 1.71,
+          "kind": "text",
+          "text": "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.",
+          "fontSize": 18,
+          "color": "185079",
+          "bold": false,
+          "name": "TextBox 10"
+        },
+        {
+          "x": 3.572,
+          "y": 7.335,
+          "w": 6.313,
+          "h": 1.71,
+          "kind": "text",
+          "text": "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.",
+          "fontSize": 18,
+          "color": "185079",
+          "bold": false,
+          "name": "TextBox 11"
+        }
+      ],
+      "description": {
+        "looksLike": "A modern split slide featuring a bold dark blue title and two numbered callout items on the left paired with a tall vertical cityscape photograph on the right.",
+        "title": "MARKET OPPORTUNITY",
+        "layout": "big-number",
+        "background": {
+          "scope": "deck",
+          "kind": "solid"
+        },
+        "contentPlacement": "The left side holds a large uppercase title above two numbered points (01 and 02) with accompanying paragraph text, while the right side displays a tall vertical city image.",
+        "images": [],
+        "boxes": [
+          {
+            "role": "body",
+            "text": "",
+            "x": 0,
+            "y": 0,
+            "w": 20,
+            "h": 11.25
+          },
+          {
+            "role": "body",
+            "text": "",
+            "x": -8.917,
+            "y": 5.399,
+            "w": 17.41,
+            "h": 14.846
+          },
+          {
+            "role": "body",
+            "text": "",
+            "x": 12.331,
+            "y": -8.45,
+            "w": 17.41,
+            "h": 14.846
+          },
+          {
+            "role": "body",
+            "text": "",
+            "x": 0,
+            "y": 0,
+            "w": 0.889,
+            "h": 1.169
+          },
+          {
+            "role": "body",
+            "text": "MA\nR\nKET OP\nPO\nRTUNITY",
+            "x": 1.542,
+            "y": 2.309,
+            "w": 7.369,
+            "h": 2.399,
+            "fontSize": 79.17
+          },
+          {
+            "role": "body",
+            "text": "01",
+            "x": 1.542,
+            "y": 5.492,
+            "w": 1.703,
+            "h": 0.923,
+            "fontSize": 60
+          },
+          {
+            "role": "body",
+            "text": "02",
+            "x": 1.542,
+            "y": 7.786,
+            "w": 1.703,
+            "h": 0.923,
+            "fontSize": 60
+          },
+          {
+            "role": "body",
+            "text": "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.",
+            "x": 3.572,
+            "y": 5.166,
+            "w": 6.313,
+            "h": 1.71,
+            "fontSize": 18
+          },
+          {
+            "role": "body",
+            "text": "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.",
+            "x": 3.572,
+            "y": 7.335,
+            "w": 6.313,
+            "h": 1.71,
+            "fontSize": 18
+          }
+        ]
+      },
+      "gcsUri": "gs://alltheway-rinegan-slide-designs-prod/catalog/blue-and-white-modern-business-proposal/slide-02.png"
+    },
+    "slide-03": {
+      "index": 2,
+      "prev": "slide-02",
+      "next": "slide-04",
+      "image": "blue-and-white-modern-business-proposal/slide-03.png",
+      "coordinates": [
+        {
+          "x": 0,
+          "y": 0,
+          "w": 20,
+          "h": 11.25,
+          "kind": "shape",
+          "bold": false,
+          "name": "Freeform 2"
+        },
+        {
+          "x": 1.542,
+          "y": 2.981,
+          "w": 7.369,
+          "h": 2.399,
+          "kind": "text",
+          "text": "P\nROBLE\nM\nSTA\nT\nEME\nNT",
+          "fontSize": 79.17,
+          "color": "185079",
+          "bold": false,
+          "name": "TextBox 3"
+        },
+        {
+          "x": 1.542,
+          "y": 5.632,
+          "w": 7.729,
+          "h": 2.742,
+          "kind": "text",
+          "text": "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.\nDuis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.",
+          "fontSize": 18,
+          "color": "185079",
+          "bold": false,
+          "name": "TextBox 4"
+        },
+        {
+          "x": 0,
+          "y": 0,
+          "w": 0.889,
+          "h": 0.889,
+          "kind": "shape",
+          "color": "95BFD1",
+          "bold": false,
+          "name": "Freeform 6"
+        },
+        {
+          "x": 0.083,
+          "y": 0.083,
+          "w": 0.722,
+          "h": 0.722,
+          "kind": "shape",
+          "bold": false,
+          "name": "TextBox 7"
+        },
+        {
+          "x": 0,
+          "y": 0,
+          "w": 1.972,
+          "h": 0.839,
+          "kind": "shape",
+          "color": "95BFD1",
+          "bold": false,
+          "name": "Freeform 9"
+        },
+        {
+          "x": 0,
+          "y": 0,
+          "w": 1.972,
+          "h": 0.839,
+          "kind": "shape",
+          "bold": false,
+          "name": "TextBox 10"
+        },
+        {
+          "x": 13.265,
+          "y": 2.198,
+          "w": 4.764,
+          "h": 1.43,
+          "kind": "text",
+          "text": "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam.",
+          "fontSize": 15.51,
+          "color": "FBF6F1",
+          "bold": false,
+          "name": "TextBox 11"
+        },
+        {
+          "x": 11.049,
+          "y": 2.513,
+          "w": 1.43,
+          "h": 0.97,
+          "kind": "text",
+          "text": "01",
+          "fontSize": 58.17,
+          "color": "FBF6F1",
+          "bold": false,
+          "name": "TextBox 12"
+        },
+        {
+          "x": 0,
+          "y": 0,
+          "w": 0.889,
+          "h": 0.889,
+          "kind": "shape",
+          "color": "4E97BB",
+          "bold": false,
+          "name": "Freeform 14"
+        },
+        {
+          "x": 0.083,
+          "y": 0.083,
+          "w": 0.722,
+          "h": 0.722,
+          "kind": "shape",
+          "bold": false,
+          "name": "TextBox 15"
+        },
+        {
+          "x": 0,
+          "y": 0,
+          "w": 1.972,
+          "h": 0.839,
+          "kind": "shape",
+          "color": "4E97BB",
+          "bold": false,
+          "name": "Freeform 17"
+        },
+        {
+          "x": 0,
+          "y": 0,
+          "w": 1.972,
+          "h": 0.839,
+          "kind": "shape",
+          "bold": false,
+          "name": "TextBox 18"
+        },
+        {
+          "x": 13.265,
+          "y": 4.868,
+          "w": 4.764,
+          "h": 1.43,
+          "kind": "text",
+          "text": "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam.",
+          "fontSize": 15.51,
+          "color": "FBF6F1",
+          "bold": false,
+          "name": "TextBox 19"
+        },
+        {
+          "x": 11.027,
+          "y": 5.14,
+          "w": 1.43,
+          "h": 0.97,
+          "kind": "text",
+          "text": "02",
+          "fontSize": 58.17,
+          "color": "FBF6F1",
+          "bold": false,
+          "name": "TextBox 20"
+        },
+        {
+          "x": 0,
+          "y": 0,
+          "w": 0.889,
+          "h": 0.889,
+          "kind": "shape",
+          "color": "3885AB",
+          "bold": false,
+          "name": "Freeform 22"
+        },
+        {
+          "x": 0.083,
+          "y": 0.083,
+          "w": 0.722,
+          "h": 0.722,
+          "kind": "shape",
+          "bold": false,
+          "name": "TextBox 23"
+        },
+        {
+          "x": 0,
+          "y": 0,
+          "w": 1.972,
+          "h": 0.839,
+          "kind": "shape",
+          "color": "3885AB",
+          "bold": false,
+          "name": "Freeform 25"
+        },
+        {
+          "x": 0,
+          "y": 0,
+          "w": 1.972,
+          "h": 0.839,
+          "kind": "shape",
+          "bold": false,
+          "name": "TextBox 26"
+        },
+        {
+          "x": 13.265,
+          "y": 7.506,
+          "w": 4.764,
+          "h": 1.43,
+          "kind": "text",
+          "text": "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam.",
+          "fontSize": 15.51,
+          "color": "FBF6F1",
+          "bold": false,
+          "name": "TextBox 27"
+        },
+        {
+          "x": 11.049,
+          "y": 7.788,
+          "w": 1.43,
+          "h": 0.97,
+          "kind": "text",
+          "text": "03",
+          "fontSize": 58.17,
+          "color": "FBF6F1",
+          "bold": false,
+          "name": "TextBox 28"
+        }
+      ],
+      "description": {
+        "looksLike": "A split-layout slide featuring a bold dark blue header and paragraph on the left, paired with three sequentially shaded blue numbered cards on the right.",
+        "title": "PROBLEM STATEMENT",
+        "layout": "title-and-two-columns",
+        "background": {
+          "scope": "deck",
+          "kind": "photograph"
+        },
+        "contentPlacement": "Left side holds the large section heading and explanatory body text, while the right side displays three vertically stacked numbered cards with circular badge counters.",
+        "images": [],
+        "boxes": [
+          {
+            "role": "body",
+            "text": "",
+            "x": 0,
+            "y": 0,
+            "w": 20,
+            "h": 11.25
+          },
+          {
+            "role": "body",
+            "text": "PROBLEM STATEMENT",
+            "x": 1.542,
+            "y": 2.981,
+            "w": 7.369,
+            "h": 2.399,
+            "fontSize": 79.17
+          },
+          {
+            "role": "body",
+            "text": "",
+            "x": 1.542,
+            "y": 5.632,
+            "w": 7.729,
+            "h": 2.742,
+            "fontSize": 18
+          },
+          {
+            "role": "body",
+            "text": "",
+            "x": 0,
+            "y": 0,
+            "w": 0.889,
+            "h": 0.889
+          },
+          {
+            "role": "body",
+            "text": "",
+            "x": 0.083,
+            "y": 0.083,
+            "w": 0.722,
+            "h": 0.722
+          },
+          {
+            "role": "body",
+            "text": "",
+            "x": 0,
+            "y": 0,
+            "w": 1.972,
+            "h": 0.839
+          },
+          {
+            "role": "body",
+            "text": "",
+            "x": 0,
+            "y": 0,
+            "w": 1.972,
+            "h": 0.839
+          },
+          {
+            "role": "body",
+            "text": "",
+            "x": 13.265,
+            "y": 2.198,
+            "w": 4.764,
+            "h": 1.43,
+            "fontSize": 15.51
+          },
+          {
+            "role": "body",
+            "text": "01",
+            "x": 11.049,
+            "y": 2.513,
+            "w": 1.43,
+            "h": 0.97,
+            "fontSize": 58.17
+          },
+          {
+            "role": "body",
+            "text": "",
+            "x": 0,
+            "y": 0,
+            "w": 0.889,
+            "h": 0.889
+          },
+          {
+            "role": "body",
+            "text": "",
+            "x": 0.083,
+            "y": 0.083,
+            "w": 0.722,
+            "h": 0.722
+          },
+          {
+            "role": "body",
+            "text": "",
+            "x": 0,
+            "y": 0,
+            "w": 1.972,
+            "h": 0.839
+          },
+          {
+            "role": "body",
+            "text": "",
+            "x": 0,
+            "y": 0,
+            "w": 1.972,
+            "h": 0.839
+          },
+          {
+            "role": "body",
+            "text": "",
+            "x": 13.265,
+            "y": 4.868,
+            "w": 4.764,
+            "h": 1.43,
+            "fontSize": 15.51
+          },
+          {
+            "role": "body",
+            "text": "02",
+            "x": 11.027,
+            "y": 5.14,
+            "w": 1.43,
+            "h": 0.97,
+            "fontSize": 58.17
+          },
+          {
+            "role": "body",
+            "text": "",
+            "x": 0,
+            "y": 0,
+            "w": 0.889,
+            "h": 0.889
+          },
+          {
+            "role": "body",
+            "text": "",
+            "x": 0.083,
+            "y": 0.083,
+            "w": 0.722,
+            "h": 0.722
+          },
+          {
+            "role": "body",
+            "text": "",
+            "x": 0,
+            "y": 0,
+            "w": 1.972,
+            "h": 0.839
+          },
+          {
+            "role": "body",
+            "text": "",
+            "x": 0,
+            "y": 0,
+            "w": 1.972,
+            "h": 0.839
+          },
+          {
+            "role": "body",
+            "text": "",
+            "x": 13.265,
+            "y": 7.506,
+            "w": 4.764,
+            "h": 1.43,
+            "fontSize": 15.51
+          },
+          {
+            "role": "body",
+            "text": "03",
+            "x": 11.049,
+            "y": 7.788,
+            "w": 1.43,
+            "h": 0.97,
+            "fontSize": 58.17
+          }
+        ]
+      },
+      "gcsUri": "gs://alltheway-rinegan-slide-designs-prod/catalog/blue-and-white-modern-business-proposal/slide-03.png"
+    },
+    "slide-04": {
+      "index": 3,
+      "prev": "slide-03",
+      "next": "slide-05",
+      "image": "blue-and-white-modern-business-proposal/slide-04.png",
+      "coordinates": [
+        {
+          "x": 0,
+          "y": 0,
+          "w": 20,
+          "h": 11.25,
+          "kind": "shape",
+          "bold": false,
+          "name": "Freeform 2"
+        },
+        {
+          "x": 0,
+          "y": 0,
+          "w": 4.821,
+          "h": 2.526,
+          "kind": "shape",
+          "color": "BBD6E1",
+          "bold": false,
+          "name": "Freeform 4"
+        },
+        {
+          "x": 0,
+          "y": -0.042,
+          "w": 4.821,
+          "h": 2.568,
+          "kind": "shape",
+          "bold": false,
+          "name": "TextBox 5"
+        },
+        {
+          "x": 0,
+          "y": 0,
+          "w": 0.889,
+          "h": 0.889,
+          "kind": "shape",
+          "color": "185079",
+          "bold": false,
+          "name": "Freeform 8"
+        },
+        {
+          "x": 0.083,
+          "y": 0.052,
+          "w": 0.722,
+          "h": 0.753,
+          "kind": "shape",
+          "bold": false,
+          "name": "TextBox 9"
+        },
+        {
+          "x": 12.577,
+          "y": 1.877,
+          "w": 5.187,
+          "h": 0.788,
+          "kind": "text",
+          "text": "01",
+          "fontSize": 48.46,
+          "color": "185079",
+          "bold": false,
+          "name": "TextBox 10"
+        },
+        {
+          "x": 12.577,
+          "y": 2.744,
+          "w": 5.52,
+          "h": 1.287,
+          "kind": "text",
+          "text": "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam.",
+          "fontSize": 16.83,
+          "color": "185079",
+          "bold": false,
+          "name": "TextBox 11"
+        },
+        {
+          "x": 12.577,
+          "y": 4.559,
+          "w": 5.187,
+          "h": 0.788,
+          "kind": "text",
+          "text": "02",
+          "fontSize": 48.46,
+          "color": "185079",
+          "bold": false,
+          "name": "TextBox 12"
+        },
+        {
+          "x": 12.577,
+          "y": 5.427,
+          "w": 5.52,
+          "h": 1.287,
+          "kind": "text",
+          "text": "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam.",
+          "fontSize": 16.83,
+          "color": "185079",
+          "bold": false,
+          "name": "TextBox 13"
+        },
+        {
+          "x": 12.577,
+          "y": 7.246,
+          "w": 5.187,
+          "h": 0.788,
+          "kind": "text",
+          "text": "03",
+          "fontSize": 48.46,
+          "color": "185079",
+          "bold": false,
+          "name": "TextBox 14"
+        },
+        {
+          "x": 12.577,
+          "y": 8.114,
+          "w": 5.52,
+          "h": 1.287,
+          "kind": "text",
+          "text": "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam.",
+          "fontSize": 16.83,
+          "color": "185079",
+          "bold": false,
+          "name": "TextBox 15"
+        },
+        {
+          "x": 0,
+          "y": 0,
+          "w": 0.889,
+          "h": 0.889,
+          "kind": "shape",
+          "color": "185079",
+          "bold": false,
+          "name": "Freeform 17"
+        },
+        {
+          "x": 0.083,
+          "y": 0.052,
+          "w": 0.722,
+          "h": 0.753,
+          "kind": "shape",
+          "bold": false,
+          "name": "TextBox 18"
+        },
+        {
+          "x": 0,
+          "y": 0,
+          "w": 0.889,
+          "h": 0.889,
+          "kind": "shape",
+          "color": "185079",
+          "bold": false,
+          "name": "Freeform 20"
+        },
+        {
+          "x": 0.083,
+          "y": 0.052,
+          "w": 0.722,
+          "h": 0.753,
+          "kind": "shape",
+          "bold": false,
+          "name": "TextBox 21"
+        },
+        {
+          "x": 2.271,
+          "y": 2.981,
+          "w": 7.369,
+          "h": 2.399,
+          "kind": "text",
+          "text": "OU\nR SOLUT\nIO\nN",
+          "fontSize": 79.17,
+          "color": "185079",
+          "bold": false,
+          "name": "TextBox 22"
+        },
+        {
+          "x": 2.271,
+          "y": 5.632,
+          "w": 7.729,
+          "h": 2.742,
+          "kind": "text",
+          "text": "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.\nDuis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.",
+          "fontSize": 18,
+          "color": "185079",
+          "bold": false,
+          "name": "TextBox 23"
+        }
+      ],
+      "description": {
+        "looksLike": "A clean modern two-column layout on a light blue card backdrop, featuring a bold section headline and overview paragraph on the left beside a three-part numbered vertical list on the right.",
+        "title": "OUR SOLUTION",
+        "layout": "title-and-two-columns",
+        "background": {
+          "scope": "deck",
+          "kind": "solid"
+        },
+        "contentPlacement": "The left column contains the prominent two-line heading and introductory body copy, while the right column displays three numbered vertical items (01, 02, 03) with descriptive text beside a timeline divider line.",
+        "images": [],
+        "boxes": [
+          {
+            "role": "body",
+            "text": "OUR SOLUTION",
+            "x": 2.271,
+            "y": 2.981,
+            "w": 7.369,
+            "h": 2.399,
+            "fontSize": 79.2
+          },
+          {
+            "role": "body",
+            "text": "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.\nDuis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.",
+            "x": 2.271,
+            "y": 5.632,
+            "w": 7.729,
+            "h": 2.742,
+            "fontSize": 18
+          },
+          {
+            "role": "body",
+            "text": "01",
+            "x": 12.577,
+            "y": 1.877,
+            "w": 5.187,
+            "h": 0.788,
+            "fontSize": 48.5
+          },
+          {
+            "role": "body",
+            "text": "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam.",
+            "x": 12.577,
+            "y": 2.744,
+            "w": 5.52,
+            "h": 1.287,
+            "fontSize": 16.8
+          },
+          {
+            "role": "body",
+            "text": "02",
+            "x": 12.577,
+            "y": 4.559,
+            "w": 5.187,
+            "h": 0.788,
+            "fontSize": 48.5
+          },
+          {
+            "role": "body",
+            "text": "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam.",
+            "x": 12.577,
+            "y": 5.427,
+            "w": 5.52,
+            "h": 1.287,
+            "fontSize": 16.8
+          },
+          {
+            "role": "body",
+            "text": "03",
+            "x": 12.577,
+            "y": 7.246,
+            "w": 5.187,
+            "h": 0.788,
+            "fontSize": 48.5
+          },
+          {
+            "role": "body",
+            "text": "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam.",
+            "x": 12.577,
+            "y": 8.114,
+            "w": 5.52,
+            "h": 1.287,
+            "fontSize": 16.8
+          }
+        ]
+      },
+      "gcsUri": "gs://alltheway-rinegan-slide-designs-prod/catalog/blue-and-white-modern-business-proposal/slide-04.png"
+    },
+    "slide-05": {
+      "index": 4,
+      "prev": "slide-04",
+      "next": "slide-06",
+      "image": "blue-and-white-modern-business-proposal/slide-05.png",
+      "coordinates": [
+        {
+          "x": 0,
+          "y": 0,
+          "w": 20,
+          "h": 11.25,
+          "kind": "shape",
+          "bold": false,
+          "name": "Freeform 2"
+        },
+        {
+          "x": 0,
+          "y": 0,
+          "w": 0.889,
+          "h": 0.889,
+          "kind": "shape",
+          "color": "185079",
+          "bold": false,
+          "name": "Freeform 5"
+        },
+        {
+          "x": 0.139,
+          "y": 0.191,
+          "w": 0.611,
+          "h": 0.559,
+          "kind": "shape",
+          "bold": false,
+          "name": "TextBox 6"
+        },
+        {
+          "x": 2.189,
+          "y": 5.394,
+          "w": 2.403,
+          "h": 0.743,
+          "kind": "text",
+          "text": "01.",
+          "fontSize": 50,
+          "color": "185079",
+          "bold": false,
+          "name": "TextBox 7"
+        },
+        {
+          "x": 6.363,
+          "y": 5.394,
+          "w": 2.403,
+          "h": 0.743,
+          "kind": "text",
+          "text": "02.",
+          "fontSize": 50,
+          "color": "185079",
+          "bold": false,
+          "name": "TextBox 8"
+        },
+        {
+          "x": 10.532,
+          "y": 5.394,
+          "w": 2.403,
+          "h": 0.743,
+          "kind": "text",
+          "text": "03.",
+          "fontSize": 50,
+          "color": "185079",
+          "bold": false,
+          "name": "TextBox 9"
+        },
+        {
+          "x": 14.665,
+          "y": 5.394,
+          "w": 2.403,
+          "h": 0.743,
+          "kind": "text",
+          "text": "04.",
+          "fontSize": 50,
+          "color": "185079",
+          "bold": false,
+          "name": "TextBox 10"
+        },
+        {
+          "x": 6.343,
+          "y": 6.314,
+          "w": 3.364,
+          "h": 2.532,
+          "kind": "text",
+          "text": "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam.",
+          "fontSize": 17.99,
+          "color": "185079",
+          "bold": false,
+          "name": "TextBox 11"
+        },
+        {
+          "x": 10.492,
+          "y": 6.314,
+          "w": 3.364,
+          "h": 2.532,
+          "kind": "text",
+          "text": "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam.",
+          "fontSize": 17.99,
+          "color": "185079",
+          "bold": false,
+          "name": "TextBox 12"
+        },
+        {
+          "x": 14.665,
+          "y": 6.314,
+          "w": 3.364,
+          "h": 2.532,
+          "kind": "text",
+          "text": "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam.",
+          "fontSize": 17.99,
+          "color": "185079",
+          "bold": false,
+          "name": "TextBox 13"
+        },
+        {
+          "x": 2.189,
+          "y": 6.314,
+          "w": 3.364,
+          "h": 2.532,
+          "kind": "text",
+          "text": "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam.",
+          "fontSize": 17.99,
+          "color": "185079",
+          "bold": false,
+          "name": "TextBox 14"
+        },
+        {
+          "x": 0,
+          "y": 0,
+          "w": 0.889,
+          "h": 0.889,
+          "kind": "shape",
+          "color": "185079",
+          "bold": false,
+          "name": "Freeform 16"
+        },
+        {
+          "x": 0.139,
+          "y": 0.191,
+          "w": 0.611,
+          "h": 0.559,
+          "kind": "shape",
+          "bold": false,
+          "name": "TextBox 17"
+        },
+        {
+          "x": 0,
+          "y": 0,
+          "w": 0.889,
+          "h": 0.889,
+          "kind": "shape",
+          "color": "185079",
+          "bold": false,
+          "name": "Freeform 19"
+        },
+        {
+          "x": 0.139,
+          "y": 0.191,
+          "w": 0.611,
+          "h": 0.559,
+          "kind": "shape",
+          "bold": false,
+          "name": "TextBox 20"
+        },
+        {
+          "x": 0,
+          "y": 0,
+          "w": 0.889,
+          "h": 0.889,
+          "kind": "shape",
+          "color": "185079",
+          "bold": false,
+          "name": "Freeform 22"
+        },
+        {
+          "x": 0.139,
+          "y": 0.191,
+          "w": 0.611,
+          "h": 0.559,
+          "kind": "shape",
+          "bold": false,
+          "name": "TextBox 23"
+        },
+        {
+          "x": 3.803,
+          "y": 2.509,
+          "w": 12.394,
+          "h": 1.215,
+          "kind": "text",
+          "text": "VALUE P\nROPOSITION",
+          "fontSize": 79.17,
+          "color": "185079",
+          "bold": false,
+          "name": "TextBox 24"
+        },
+        {
+          "x": -8.917,
+          "y": 5.399,
+          "w": 17.41,
+          "h": 14.846,
+          "kind": "shape",
+          "bold": false,
+          "name": "Freeform 25"
+        },
+        {
+          "x": 12.331,
+          "y": -8.45,
+          "w": 17.41,
+          "h": 14.846,
+          "kind": "shape",
+          "bold": false,
+          "name": "Freeform 26"
+        }
+      ],
+      "description": {
+        "looksLike": "A clean four-item process or value proposition layout featuring a prominent centered blue headline over four numbered text columns aligned along a horizontal line.",
+        "title": "VALUE PROPOSITION",
+        "layout": "title-and-two-columns",
+        "background": {
+          "scope": "deck",
+          "kind": "photograph"
+        },
+        "contentPlacement": "Large centered title in the upper third, followed by a horizontal axis with four numbered content blocks (01 to 04) evenly spaced across the lower half.",
+        "images": [],
+        "boxes": [
+          {
+            "role": "body",
+            "text": "",
+            "x": 0,
+            "y": 0,
+            "w": 20,
+            "h": 11.25
+          },
+          {
+            "role": "body",
+            "text": "",
+            "x": 0,
+            "y": 0,
+            "w": 0.889,
+            "h": 0.889
+          },
+          {
+            "role": "body",
+            "text": "",
+            "x": 0.139,
+            "y": 0.191,
+            "w": 0.611,
+            "h": 0.559
+          },
+          {
+            "role": "body",
+            "text": "01.",
+            "x": 2.189,
+            "y": 5.394,
+            "w": 2.403,
+            "h": 0.743,
+            "fontSize": 50
+          },
+          {
+            "role": "body",
+            "text": "02.",
+            "x": 6.363,
+            "y": 5.394,
+            "w": 2.403,
+            "h": 0.743,
+            "fontSize": 50
+          },
+          {
+            "role": "body",
+            "text": "03.",
+            "x": 10.532,
+            "y": 5.394,
+            "w": 2.403,
+            "h": 0.743,
+            "fontSize": 50
+          },
+          {
+            "role": "body",
+            "text": "04.",
+            "x": 14.665,
+            "y": 5.394,
+            "w": 2.403,
+            "h": 0.743,
+            "fontSize": 50
+          },
+          {
+            "role": "body",
+            "text": "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam.",
+            "x": 6.343,
+            "y": 6.314,
+            "w": 3.364,
+            "h": 2.532,
+            "fontSize": 17.99
+          },
+          {
+            "role": "body",
+            "text": "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam.",
+            "x": 10.492,
+            "y": 6.314,
+            "w": 3.364,
+            "h": 2.532,
+            "fontSize": 17.99
+          },
+          {
+            "role": "body",
+            "text": "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam.",
+            "x": 14.665,
+            "y": 6.314,
+            "w": 3.364,
+            "h": 2.532,
+            "fontSize": 17.99
+          },
+          {
+            "role": "body",
+            "text": "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam.",
+            "x": 2.189,
+            "y": 6.314,
+            "w": 3.364,
+            "h": 2.532,
+            "fontSize": 17.99
+          },
+          {
+            "role": "body",
+            "text": "",
+            "x": 0,
+            "y": 0,
+            "w": 0.889,
+            "h": 0.889
+          },
+          {
+            "role": "body",
+            "text": "",
+            "x": 0.139,
+            "y": 0.191,
+            "w": 0.611,
+            "h": 0.559
+          },
+          {
+            "role": "body",
+            "text": "",
+            "x": 0,
+            "y": 0,
+            "w": 0.889,
+            "h": 0.889
+          },
+          {
+            "role": "body",
+            "text": "",
+            "x": 0.139,
+            "y": 0.191,
+            "w": 0.611,
+            "h": 0.559
+          },
+          {
+            "role": "body",
+            "text": "",
+            "x": 0,
+            "y": 0,
+            "w": 0.889,
+            "h": 0.889
+          },
+          {
+            "role": "body",
+            "text": "",
+            "x": 0.139,
+            "y": 0.191,
+            "w": 0.611,
+            "h": 0.559
+          },
+          {
+            "role": "body",
+            "text": "VALUE P\nROPOSITION",
+            "x": 3.803,
+            "y": 2.509,
+            "w": 12.394,
+            "h": 1.215,
+            "fontSize": 79.17
+          },
+          {
+            "role": "body",
+            "text": "",
+            "x": -8.917,
+            "y": 5.399,
+            "w": 17.41,
+            "h": 14.846
+          },
+          {
+            "role": "body",
+            "text": "",
+            "x": 12.331,
+            "y": -8.45,
+            "w": 17.41,
+            "h": 14.846
+          }
+        ]
+      },
+      "gcsUri": "gs://alltheway-rinegan-slide-designs-prod/catalog/blue-and-white-modern-business-proposal/slide-05.png"
+    },
+    "slide-06": {
+      "index": 5,
+      "prev": "slide-05",
+      "next": "slide-07",
+      "image": "blue-and-white-modern-business-proposal/slide-06.png",
+      "coordinates": [
+        {
+          "x": 0,
+          "y": 0,
+          "w": 20,
+          "h": 11.25,
+          "kind": "shape",
+          "bold": false,
+          "name": "Freeform 2"
+        },
+        {
+          "x": 1.739,
+          "y": 2.981,
+          "w": 7.369,
+          "h": 2.399,
+          "kind": "text",
+          "text": "TA\nRGET AUDI\nE\nNCE",
+          "fontSize": 79.17,
+          "color": "185079",
+          "bold": false,
+          "name": "TextBox 3"
+        },
+        {
+          "x": 1.739,
+          "y": 5.632,
+          "w": 6.834,
+          "h": 3.085,
+          "kind": "text",
+          "text": "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.\nDuis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.",
+          "fontSize": 18,
+          "color": "185079",
+          "bold": false,
+          "name": "TextBox 4"
+        },
+        {
+          "x": 0,
+          "y": 0,
+          "w": 1.023,
+          "h": 0.875,
+          "kind": "shape",
+          "color": "BBD6E1",
+          "bold": false,
+          "name": "Freeform 6"
+        },
+        {
+          "x": 0,
+          "y": 0,
+          "w": 1.023,
+          "h": 0.875,
+          "kind": "shape",
+          "bold": false,
+          "name": "TextBox 7"
+        },
+        {
+          "x": 0,
+          "y": 0,
+          "w": 1.023,
+          "h": 0.875,
+          "kind": "shape",
+          "color": "95BFD1",
+          "bold": false,
+          "name": "Freeform 9"
+        },
+        {
+          "x": 0,
+          "y": 0,
+          "w": 1.023,
+          "h": 0.875,
+          "kind": "shape",
+          "bold": false,
+          "name": "TextBox 10"
+        },
+        {
+          "x": 0,
+          "y": 0,
+          "w": 1.023,
+          "h": 0.875,
+          "kind": "shape",
+          "color": "6BA1BC",
+          "bold": false,
+          "name": "Freeform 12"
+        },
+        {
+          "x": 0,
+          "y": 0,
+          "w": 1.023,
+          "h": 0.875,
+          "kind": "shape",
+          "bold": false,
+          "name": "TextBox 13"
+        },
+        {
+          "x": 0,
+          "y": 0,
+          "w": 1.023,
+          "h": 0.875,
+          "kind": "shape",
+          "color": "3885AB",
+          "bold": false,
+          "name": "Freeform 15"
+        },
+        {
+          "x": 0,
+          "y": 0,
+          "w": 1.023,
+          "h": 0.875,
+          "kind": "shape",
+          "bold": false,
+          "name": "TextBox 16"
+        },
+        {
+          "x": 10.363,
+          "y": 3.142,
+          "w": 3.135,
+          "h": 1.739,
+          "kind": "text",
+          "text": "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam.",
+          "fontSize": 15.37,
+          "color": "185079",
+          "bold": false,
+          "name": "TextBox 17"
+        },
+        {
+          "x": 10.133,
+          "y": 2.252,
+          "w": 3.595,
+          "h": 0.743,
+          "kind": "text",
+          "text": "01",
+          "fontSize": 39.99,
+          "color": "185079",
+          "bold": false,
+          "name": "TextBox 18"
+        },
+        {
+          "x": 14.96,
+          "y": 3.142,
+          "w": 3.135,
+          "h": 1.739,
+          "kind": "text",
+          "text": "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam.",
+          "fontSize": 15.37,
+          "color": "185079",
+          "bold": false,
+          "name": "TextBox 19"
+        },
+        {
+          "x": 14.73,
+          "y": 2.252,
+          "w": 3.595,
+          "h": 0.743,
+          "kind": "text",
+          "text": "02",
+          "fontSize": 39.99,
+          "color": "185079",
+          "bold": false,
+          "name": "TextBox 20"
+        },
+        {
+          "x": 10.363,
+          "y": 7.08,
+          "w": 3.135,
+          "h": 1.739,
+          "kind": "text",
+          "text": "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam.",
+          "fontSize": 15.37,
+          "color": "FBF6F1",
+          "bold": false,
+          "name": "TextBox 21"
+        },
+        {
+          "x": 10.133,
+          "y": 6.191,
+          "w": 3.595,
+          "h": 0.743,
+          "kind": "text",
+          "text": "03",
+          "fontSize": 39.99,
+          "color": "FBF6F1",
+          "bold": false,
+          "name": "TextBox 22"
+        },
+        {
+          "x": 14.96,
+          "y": 7.08,
+          "w": 3.135,
+          "h": 1.739,
+          "kind": "text",
+          "text": "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam.",
+          "fontSize": 15.37,
+          "color": "FBF6F1",
+          "bold": false,
+          "name": "TextBox 23"
+        },
+        {
+          "x": 14.73,
+          "y": 6.191,
+          "w": 3.595,
+          "h": 0.743,
+          "kind": "text",
+          "text": "04",
+          "fontSize": 39.99,
+          "color": "FBF6F1",
+          "bold": false,
+          "name": "TextBox 24"
+        }
+      ],
+      "description": {
+        "looksLike": "A split-layout slide featuring a bold target audience title and description on the left, paired with a 2x2 grid of four numbered blue highlight cards on the right against a subtle textured background.",
+        "title": "TARGET AUDIENCE",
+        "layout": "title-and-two-columns",
+        "background": {
+          "scope": "slide",
+          "kind": "solid"
+        },
+        "contentPlacement": "Large title and overview paragraph anchored on the left half; four numbered modular cards in a two-by-two grid filling the right half.",
+        "images": [],
+        "boxes": [
+          {
+            "role": "body",
+            "text": "",
+            "x": 0,
+            "y": 0,
+            "w": 20,
+            "h": 11.25
+          },
+          {
+            "role": "body",
+            "text": "TA\nRGET AUDI\nE\nNCE",
+            "x": 1.739,
+            "y": 2.981,
+            "w": 7.369,
+            "h": 2.399,
+            "fontSize": 79.17
+          },
+          {
+            "role": "body",
+            "text": "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.\nDuis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.",
+            "x": 1.739,
+            "y": 5.632,
+            "w": 6.834,
+            "h": 3.085,
+            "fontSize": 18
+          },
+          {
+            "role": "body",
+            "text": "",
+            "x": 0,
+            "y": 0,
+            "w": 1.023,
+            "h": 0.875
+          },
+          {
+            "role": "body",
+            "text": "",
+            "x": 0,
+            "y": 0,
+            "w": 1.023,
+            "h": 0.875
+          },
+          {
+            "role": "body",
+            "text": "",
+            "x": 0,
+            "y": 0,
+            "w": 1.023,
+            "h": 0.875
+          },
+          {
+            "role": "body",
+            "text": "",
+            "x": 0,
+            "y": 0,
+            "w": 1.023,
+            "h": 0.875
+          },
+          {
+            "role": "body",
+            "text": "",
+            "x": 0,
+            "y": 0,
+            "w": 1.023,
+            "h": 0.875
+          },
+          {
+            "role": "body",
+            "text": "",
+            "x": 0,
+            "y": 0,
+            "w": 1.023,
+            "h": 0.875
+          },
+          {
+            "role": "body",
+            "text": "",
+            "x": 0,
+            "y": 0,
+            "w": 1.023,
+            "h": 0.875
+          },
+          {
+            "role": "body",
+            "text": "",
+            "x": 0,
+            "y": 0,
+            "w": 1.023,
+            "h": 0.875
+          },
+          {
+            "role": "body",
+            "text": "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam.",
+            "x": 10.363,
+            "y": 3.142,
+            "w": 3.135,
+            "h": 1.739,
+            "fontSize": 15.37
+          },
+          {
+            "role": "body",
+            "text": "01",
+            "x": 10.133,
+            "y": 2.252,
+            "w": 3.595,
+            "h": 0.743,
+            "fontSize": 39.99
+          },
+          {
+            "role": "body",
+            "text": "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam.",
+            "x": 14.96,
+            "y": 3.142,
+            "w": 3.135,
+            "h": 1.739,
+            "fontSize": 15.37
+          },
+          {
+            "role": "body",
+            "text": "02",
+            "x": 14.73,
+            "y": 2.252,
+            "w": 3.595,
+            "h": 0.743,
+            "fontSize": 39.99
+          },
+          {
+            "role": "body",
+            "text": "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam.",
+            "x": 10.363,
+            "y": 7.08,
+            "w": 3.135,
+            "h": 1.739,
+            "fontSize": 15.37
+          },
+          {
+            "role": "body",
+            "text": "03",
+            "x": 10.133,
+            "y": 6.191,
+            "w": 3.595,
+            "h": 0.743,
+            "fontSize": 39.99
+          },
+          {
+            "role": "body",
+            "text": "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam.",
+            "x": 14.96,
+            "y": 7.08,
+            "w": 3.135,
+            "h": 1.739,
+            "fontSize": 15.37
+          },
+          {
+            "role": "body",
+            "text": "04",
+            "x": 14.73,
+            "y": 6.191,
+            "w": 3.595,
+            "h": 0.743,
+            "fontSize": 39.99
+          }
+        ]
+      },
+      "gcsUri": "gs://alltheway-rinegan-slide-designs-prod/catalog/blue-and-white-modern-business-proposal/slide-06.png"
+    },
+    "slide-07": {
+      "index": 6,
+      "prev": "slide-06",
+      "next": "slide-08",
+      "image": "blue-and-white-modern-business-proposal/slide-07.png",
+      "coordinates": [
+        {
+          "x": 0,
+          "y": 0,
+          "w": 20,
+          "h": 11.25,
+          "kind": "shape",
+          "bold": false,
+          "name": "Freeform 2"
+        },
+        {
+          "x": 11.506,
+          "y": 2.809,
+          "w": 7.369,
+          "h": 2.399,
+          "kind": "text",
+          "text": "COMP\nETITIVE ANALYSIS",
+          "fontSize": 79.17,
+          "color": "185079",
+          "bold": false,
+          "name": "TextBox 3"
+        },
+        {
+          "x": 11.506,
+          "y": 5.46,
+          "w": 6.834,
+          "h": 3.085,
+          "kind": "text",
+          "text": "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.\nDuis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.",
+          "fontSize": 18,
+          "color": "185079",
+          "bold": false,
+          "name": "TextBox 4"
+        },
+        {
+          "x": -8.917,
+          "y": 5.399,
+          "w": 17.41,
+          "h": 14.846,
+          "kind": "shape",
+          "bold": false,
+          "name": "Freeform 6"
+        },
+        {
+          "x": 12.331,
+          "y": -8.45,
+          "w": 17.41,
+          "h": 14.846,
+          "kind": "shape",
+          "bold": false,
+          "name": "Freeform 7"
+        },
+        {
+          "x": 1.058,
+          "y": 1.459,
+          "w": 9.754,
+          "h": 8.332,
+          "kind": "picture",
+          "bold": false,
+          "name": "Picture 5"
+        }
+      ],
+      "description": {
+        "looksLike": "A split-screen slide displaying a large rising bar chart graphic on the left with a prominent navy headline and descriptive body paragraph on the right.",
+        "title": "COMPETITIVE ANALYSIS",
+        "layout": "title-and-body",
+        "background": {
+          "scope": "deck",
+          "kind": "photograph"
+        },
+        "contentPlacement": "A four-column stacked bar chart graphic occupies the left half, while the right half features a two-line bold title stacked directly above a body text block.",
+        "images": [
+          {
+            "kind": "picture",
+            "what": "photograph",
+            "x": 1.058,
+            "y": 1.459,
+            "w": 9.754,
+            "h": 8.332
+          }
+        ],
+        "boxes": [
+          {
+            "role": "body",
+            "text": "COMP\nETITIVE ANALYSIS",
+            "x": 11.506,
+            "y": 2.809,
+            "w": 7.369,
+            "h": 2.399
+          },
+          {
+            "role": "body",
+            "text": "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.\nDuis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.",
+            "x": 11.506,
+            "y": 5.46,
+            "w": 6.834,
+            "h": 3.085
+          }
+        ]
+      },
+      "gcsUri": "gs://alltheway-rinegan-slide-designs-prod/catalog/blue-and-white-modern-business-proposal/slide-07.png"
+    },
+    "slide-08": {
+      "index": 7,
+      "prev": "slide-07",
+      "next": "slide-09",
+      "image": "blue-and-white-modern-business-proposal/slide-08.png",
+      "coordinates": [
+        {
+          "x": 0,
+          "y": 0,
+          "w": 20,
+          "h": 11.25,
+          "kind": "shape",
+          "bold": false,
+          "name": "Freeform 2"
+        },
+        {
+          "x": 1.739,
+          "y": 2.981,
+          "w": 9.535,
+          "h": 2.399,
+          "kind": "text",
+          "text": "MA\nRKETING & SALE\nS STRAT\nEGY",
+          "fontSize": 79.17,
+          "color": "185079",
+          "bold": false,
+          "name": "TextBox 3"
+        },
+        {
+          "x": 1.739,
+          "y": 5.632,
+          "w": 7.802,
+          "h": 2.742,
+          "kind": "text",
+          "text": "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.\nDuis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.",
+          "fontSize": 18,
+          "color": "185079",
+          "bold": false,
+          "name": "TextBox 4"
+        },
+        {
+          "x": -8.917,
+          "y": 5.399,
+          "w": 17.41,
+          "h": 14.846,
+          "kind": "shape",
+          "bold": false,
+          "name": "Freeform 5"
+        },
+        {
+          "x": 12.331,
+          "y": -8.45,
+          "w": 17.41,
+          "h": 14.846,
+          "kind": "shape",
+          "bold": false,
+          "name": "Freeform 6"
+        },
+        {
+          "x": 0,
+          "y": 0,
+          "w": 0.889,
+          "h": 1.169,
+          "kind": "shape",
+          "bold": false,
+          "name": "Freeform 8"
+        }
+      ],
+      "description": {
+        "looksLike": "A split-view content slide featuring bold dark blue uppercase headline text and a descriptive paragraph on the left, alongside a vertical photograph of a professional analyzing data charts next to a laptop on the right, set over a textured light background with subtle blue corner gradients.",
+        "title": "MARKETING & SALES STRATEGY",
+        "layout": "title-and-body",
+        "background": {
+          "scope": "deck",
+          "kind": "solid"
+        },
+        "contentPlacement": "Large stacked section title and descriptive body paragraph occupy the left side of the slide, while a vertical rectangular photograph sits on the right half.",
+        "images": [],
+        "boxes": [
+          {
+            "role": "body",
+            "text": "",
+            "x": 0,
+            "y": 0,
+            "w": 20,
+            "h": 11.25
+          },
+          {
+            "role": "body",
+            "text": "MA\nRKETING & SALE\nS STRAT\nEGY",
+            "x": 1.739,
+            "y": 2.981,
+            "w": 9.535,
+            "h": 2.399,
+            "fontSize": 79.17
+          },
+          {
+            "role": "body",
+            "text": "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.\nDuis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.",
+            "x": 1.739,
+            "y": 5.632,
+            "w": 7.802,
+            "h": 2.742,
+            "fontSize": 18
+          },
+          {
+            "role": "body",
+            "text": "",
+            "x": -8.917,
+            "y": 5.399,
+            "w": 17.41,
+            "h": 14.846
+          },
+          {
+            "role": "body",
+            "text": "",
+            "x": 12.331,
+            "y": -8.45,
+            "w": 17.41,
+            "h": 14.846
+          },
+          {
+            "role": "body",
+            "text": "",
+            "x": 0,
+            "y": 0,
+            "w": 0.889,
+            "h": 1.169
+          }
+        ]
+      },
+      "gcsUri": "gs://alltheway-rinegan-slide-designs-prod/catalog/blue-and-white-modern-business-proposal/slide-08.png"
+    },
+    "slide-09": {
+      "index": 8,
+      "prev": "slide-08",
+      "next": "slide-10",
+      "image": "blue-and-white-modern-business-proposal/slide-09.png",
+      "coordinates": [
+        {
+          "x": 0,
+          "y": 0,
+          "w": 20,
+          "h": 11.25,
+          "kind": "shape",
+          "bold": false,
+          "name": "Freeform 2"
+        },
+        {
+          "x": 3.649,
+          "y": 1.646,
+          "w": 12.701,
+          "h": 1.215,
+          "kind": "text",
+          "text": "IMPL\nEMENTATION PLA\nN",
+          "fontSize": 79.17,
+          "color": "185079",
+          "bold": false,
+          "name": "TextBox 3"
+        },
+        {
+          "x": 4.037,
+          "y": 3.073,
+          "w": 11.927,
+          "h": 2.054,
+          "kind": "text",
+          "text": "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.\nDuis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.",
+          "fontSize": 18,
+          "color": "185079",
+          "bold": false,
+          "name": "TextBox 4"
+        },
+        {
+          "x": -8.917,
+          "y": -8.85,
+          "w": 17.41,
+          "h": 14.846,
+          "kind": "shape",
+          "bold": false,
+          "name": "Freeform 5"
+        },
+        {
+          "x": 12.331,
+          "y": 5.128,
+          "w": 17.41,
+          "h": 14.846,
+          "kind": "shape",
+          "bold": false,
+          "name": "Freeform 6"
+        },
+        {
+          "x": 0,
+          "y": 0,
+          "w": 2.257,
+          "h": 0.484,
+          "kind": "shape",
+          "bold": false,
+          "name": "Freeform 8"
+        }
+      ],
+      "description": {
+        "looksLike": "A clean, modern slide layout with a bold centered title, introductory paragraph, and a wide architectural photo banner across the bottom.",
+        "title": "IMPLEMENTATION PLAN",
+        "layout": "title-and-body",
+        "background": {
+          "scope": "slide",
+          "kind": "solid"
+        },
+        "contentPlacement": "Centered dark blue title and paragraph text in the top half, with a wide horizontal photo banner spanning the lower portion across a soft gradient background.",
+        "images": [],
+        "boxes": [
+          {
+            "role": "body",
+            "text": "",
+            "x": 0,
+            "y": 0,
+            "w": 20,
+            "h": 11.25
+          },
+          {
+            "role": "body",
+            "text": "IMPL\nEMENTATION PLA\nN",
+            "x": 3.649,
+            "y": 1.646,
+            "w": 12.701,
+            "h": 1.215,
+            "fontSize": 79.17
+          },
+          {
+            "role": "body",
+            "text": "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.\nDuis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.",
+            "x": 4.037,
+            "y": 3.073,
+            "w": 11.927,
+            "h": 2.054,
+            "fontSize": 18
+          },
+          {
+            "role": "body",
+            "text": "",
+            "x": -8.917,
+            "y": -8.85,
+            "w": 17.41,
+            "h": 14.846
+          },
+          {
+            "role": "body",
+            "text": "",
+            "x": 12.331,
+            "y": 5.128,
+            "w": 17.41,
+            "h": 14.846
+          },
+          {
+            "role": "body",
+            "text": "",
+            "x": 0,
+            "y": 0,
+            "w": 2.257,
+            "h": 0.484
+          }
+        ]
+      },
+      "gcsUri": "gs://alltheway-rinegan-slide-designs-prod/catalog/blue-and-white-modern-business-proposal/slide-09.png"
+    },
+    "slide-10": {
+      "index": 9,
+      "prev": "slide-09",
+      "next": "slide-11",
+      "image": "blue-and-white-modern-business-proposal/slide-10.png",
+      "coordinates": [
+        {
+          "x": 0,
+          "y": 0,
+          "w": 20,
+          "h": 11.25,
+          "kind": "shape",
+          "bold": false,
+          "name": "Freeform 2"
+        },
+        {
+          "x": 0,
+          "y": 0,
+          "w": 4.821,
+          "h": 2.526,
+          "kind": "shape",
+          "color": "BBD6E1",
+          "bold": false,
+          "name": "Freeform 4"
+        },
+        {
+          "x": 0,
+          "y": -0.042,
+          "w": 4.821,
+          "h": 2.568,
+          "kind": "shape",
+          "bold": false,
+          "name": "TextBox 5"
+        },
+        {
+          "x": 5.149,
+          "y": 2.604,
+          "w": 9.702,
+          "h": 2.403,
+          "kind": "text",
+          "text": "C\nONCLUSION & NEXT STEPS",
+          "fontSize": 79.17,
+          "color": "185079",
+          "bold": false,
+          "name": "TextBox 6"
+        },
+        {
+          "x": 4.094,
+          "y": 5.212,
+          "w": 11.812,
+          "h": 1.599,
+          "kind": "text",
+          "text": "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.",
+          "fontSize": 17,
+          "color": "185079",
+          "bold": false,
+          "name": "TextBox 7"
+        },
+        {
+          "x": 4.094,
+          "y": 7.152,
+          "w": 11.812,
+          "h": 1.599,
+          "kind": "text",
+          "text": "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.",
+          "fontSize": 17,
+          "color": "185079",
+          "bold": false,
+          "name": "TextBox 8"
+        }
+      ],
+      "description": {
+        "looksLike": "A clean concluding slide featuring a prominent centered title and two centered body paragraphs nested within a large light blue rectangle over a subtle textured border.",
+        "title": "CONCLUSION & NEXT STEPS",
+        "layout": "title-and-body",
+        "background": {
+          "scope": "slide",
+          "kind": "solid"
+        },
+        "contentPlacement": "The slide content is vertically and horizontally centered, featuring a bold two-line blue title above two centered text paragraphs.",
+        "images": [],
+        "boxes": [
+          {
+            "role": "body",
+            "text": "",
+            "x": 0,
+            "y": 0,
+            "w": 20,
+            "h": 11.25
+          },
+          {
+            "role": "body",
+            "text": "",
+            "x": 0,
+            "y": 0,
+            "w": 4.821,
+            "h": 2.526
+          },
+          {
+            "role": "body",
+            "text": "",
+            "x": 0,
+            "y": -0.042,
+            "w": 4.821,
+            "h": 2.568
+          },
+          {
+            "role": "body",
+            "text": "CONCLUSION & NEXT STEPS",
+            "x": 5.149,
+            "y": 2.604,
+            "w": 9.702,
+            "h": 2.403,
+            "fontSize": 79.2
+          },
+          {
+            "role": "body",
+            "text": "",
+            "x": 4.094,
+            "y": 5.212,
+            "w": 11.812,
+            "h": 1.599,
+            "fontSize": 17
+          },
+          {
+            "role": "body",
+            "text": "",
+            "x": 4.094,
+            "y": 7.152,
+            "w": 11.812,
+            "h": 1.599,
+            "fontSize": 17
+          }
+        ]
+      },
+      "gcsUri": "gs://alltheway-rinegan-slide-designs-prod/catalog/blue-and-white-modern-business-proposal/slide-10.png"
+    },
+    "slide-11": {
+      "index": 10,
+      "prev": "slide-10",
+      "next": null,
+      "image": "blue-and-white-modern-business-proposal/slide-11.png",
+      "coordinates": [
+        {
+          "x": 0,
+          "y": 0,
+          "w": 20,
+          "h": 11.25,
+          "kind": "shape",
+          "bold": false,
+          "name": "Freeform 2"
+        },
+        {
+          "x": 1.125,
+          "y": 3.492,
+          "w": 11.106,
+          "h": 2.15,
+          "kind": "text",
+          "text": "THANK YOU",
+          "fontSize": 140,
+          "color": "185079",
+          "bold": false,
+          "name": "TextBox 3"
+        },
+        {
+          "x": 6.133,
+          "y": -4.721,
+          "w": 24.266,
+          "h": 20.692,
+          "kind": "shape",
+          "bold": false,
+          "name": "Freeform 4"
+        },
+        {
+          "x": 1.125,
+          "y": 5.47,
+          "w": 14.891,
+          "h": 2.465,
+          "kind": "text",
+          "text": "VERY MUCH",
+          "fontSize": 159.99,
+          "color": "185079",
+          "bold": false,
+          "name": "TextBox 5"
+        },
+        {
+          "x": 1.125,
+          "y": 9.612,
+          "w": 11.106,
+          "h": 0.513,
+          "kind": "text",
+          "text": "WWW.REALLYGREATSITE.COM",
+          "fontSize": 33,
+          "color": "185079",
+          "bold": false,
+          "name": "TextBox 6"
+        },
+        {
+          "x": 1.125,
+          "y": 1.125,
+          "w": 1.033,
+          "h": 0.621,
+          "kind": "shape",
+          "bold": false,
+          "name": "Freeform 7"
+        },
+        {
+          "x": 2.648,
+          "y": 1.233,
+          "w": 2.995,
+          "h": 0.513,
+          "kind": "text",
+          "text": "COMPANY",
+          "fontSize": 33,
+          "color": "185079",
+          "bold": false,
+          "name": "TextBox 8"
+        }
+      ],
+      "description": {
+        "looksLike": "A modern closing slide featuring bold stacked navy blue typography reading 'THANK YOU VERY MUCH' on the left side with a soft blue gradient blur on the right.",
+        "title": "THANK YOU VERY MUCH",
+        "layout": "main-point",
+        "background": {
+          "scope": "slide",
+          "kind": "solid"
+        },
+        "contentPlacement": "Company logo lockup sits at the top left, large two-line thank-you text dominates the middle left, and the website URL is placed in the bottom left corner.",
+        "images": [],
+        "boxes": [
+          {
+            "role": "body",
+            "text": "",
+            "x": 0,
+            "y": 0,
+            "w": 20,
+            "h": 11.25
+          },
+          {
+            "role": "body",
+            "text": "",
+            "x": 1.125,
+            "y": 1.125,
+            "w": 1.033,
+            "h": 0.621
+          },
+          {
+            "role": "body",
+            "text": "COMPANY",
+            "x": 2.648,
+            "y": 1.233,
+            "w": 2.995,
+            "h": 0.513,
+            "fontSize": 33
+          },
+          {
+            "role": "body",
+            "text": "THANK YOU",
+            "x": 1.125,
+            "y": 3.492,
+            "w": 11.106,
+            "h": 2.15,
+            "fontSize": 140
+          },
+          {
+            "role": "body",
+            "text": "",
+            "x": 6.133,
+            "y": -4.721,
+            "w": 24.266,
+            "h": 20.692
+          },
+          {
+            "role": "body",
+            "text": "VERY MUCH",
+            "x": 1.125,
+            "y": 5.47,
+            "w": 14.891,
+            "h": 2.465,
+            "fontSize": 159.99
+          },
+          {
+            "role": "body",
+            "text": "WWW.REALLYGREATSITE.COM",
+            "x": 1.125,
+            "y": 9.612,
+            "w": 11.106,
+            "h": 0.513,
+            "fontSize": 33
+          }
+        ]
+      },
+      "gcsUri": "gs://alltheway-rinegan-slide-designs-prod/catalog/blue-and-white-modern-business-proposal/slide-11.png"
+    }
+  }
+}

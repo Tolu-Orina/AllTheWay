@@ -1,0 +1,636 @@
+{
+  "id": "recipe-book",
+  "title": "recipe book",
+  "source": "Recipe book.pptx",
+  "width": 10,
+  "height": 5.625,
+  "overall_deck_description": "Designed as a modern culinary recipe deck, the presentation pairs a vibrant coral-red accent with crisp white backgrounds and rich, natural ingredient photography (fresh produce, rustic cutting boards, and vibrant greens). Typography relies on a heavy, rounded sans-serif for high-impact headlines and a clean, understated sans-serif in slate grey for recipe details. The sequence opens with a minimalist framed coral badge cover (Slide 0), transitions through photo-driven and multi-column recipe body layouts incorporating dynamic image collages and section headers, and concludes with an asymmetric split-screen contact slide (Slide 7) balancing left-aligned coral text with a full-bleed produce photograph.",
+  "slides": {
+    "slide-01": {
+      "index": 0,
+      "prev": null,
+      "next": "slide-02",
+      "image": "recipe-book/slide-01.png",
+      "coordinates": [
+        {
+          "x": 3.386,
+          "y": 1.78,
+          "w": 3.228,
+          "h": 1.733,
+          "kind": "text",
+          "text": "Simple Snacks",
+          "bold": false,
+          "placeholder": "ctrTitle",
+          "name": "Google Shape;59;p13"
+        },
+        {
+          "x": 3.386,
+          "y": 3.573,
+          "w": 3.228,
+          "h": 0.767,
+          "kind": "text",
+          "text": "By Your Name",
+          "bold": false,
+          "placeholder": "subTitle",
+          "name": "Google Shape;60;p13"
+        }
+      ],
+      "description": {
+        "looksLike": "A recipe book cover slide featuring a bold coral-red square card with an inner white border framing centered white title and author text on a plain white background.",
+        "title": "Simple Snacks",
+        "layout": "title-slide",
+        "background": {
+          "scope": "deck",
+          "kind": "solid"
+        },
+        "contentPlacement": "Centered title and subtitle stacked vertically inside a centered square accent box.",
+        "images": [],
+        "boxes": [
+          {
+            "role": "body",
+            "text": "",
+            "x": 3.386,
+            "y": 1.78,
+            "w": 3.228,
+            "h": 1.733
+          },
+          {
+            "role": "body",
+            "text": "",
+            "x": 3.386,
+            "y": 3.573,
+            "w": 3.228,
+            "h": 0.767
+          }
+        ]
+      },
+      "gcsUri": "gs://alltheway-rinegan-slide-designs-prod/catalog/recipe-book/slide-01.png"
+    },
+    "slide-02": {
+      "index": 1,
+      "prev": "slide-01",
+      "next": "slide-03",
+      "image": "recipe-book/slide-02.png",
+      "coordinates": [
+        {
+          "x": 0.341,
+          "y": 0.428,
+          "w": 9.318,
+          "h": 0.685,
+          "kind": "text",
+          "text": "About the chef",
+          "bold": false,
+          "placeholder": "title",
+          "name": "Google Shape;65;p14"
+        },
+        {
+          "x": 0.341,
+          "y": 1.26,
+          "w": 9.318,
+          "h": 3.736,
+          "kind": "text",
+          "text": "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.\nUt enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur.\nExcepteur sint occaecat cupidatat non proident!",
+          "bold": false,
+          "placeholder": "body",
+          "name": "Google Shape;66;p14"
+        }
+      ],
+      "description": {
+        "looksLike": "A simple text-focused slide featuring a bold coral title and wide multi-paragraph body text on a clean white background with a bottom accent bar.",
+        "title": "About the chef",
+        "layout": "title-and-body",
+        "background": {
+          "scope": "deck",
+          "kind": "solid"
+        },
+        "contentPlacement": "Prominent left-aligned headline at the top with a wide narrative text block directly below.",
+        "images": [],
+        "boxes": [
+          {
+            "role": "body",
+            "text": "About the chef",
+            "x": 0.341,
+            "y": 0.428,
+            "w": 9.318,
+            "h": 0.685
+          },
+          {
+            "role": "body",
+            "text": "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.\nUt enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur.\nExcepteur sint occaecat cupidatat non proident!",
+            "x": 0.341,
+            "y": 1.26,
+            "w": 9.318,
+            "h": 3.736
+          }
+        ]
+      },
+      "gcsUri": "gs://alltheway-rinegan-slide-designs-prod/catalog/recipe-book/slide-02.png"
+    },
+    "slide-03": {
+      "index": 2,
+      "prev": "slide-02",
+      "next": "slide-04",
+      "image": "recipe-book/slide-03.png",
+      "coordinates": [
+        {
+          "x": 0.557,
+          "y": 1.557,
+          "w": 8.885,
+          "h": 1.967,
+          "kind": "text",
+          "text": "Recipes",
+          "bold": false,
+          "placeholder": "title",
+          "name": "Google Shape;71;p15"
+        }
+      ],
+      "description": {
+        "looksLike": "A minimalist coral-pink section transition slide featuring a single white title centered on the screen.",
+        "title": "Recipes",
+        "layout": "main-point",
+        "background": {
+          "scope": "slide",
+          "kind": "solid"
+        },
+        "contentPlacement": "Centered title text across the middle of a solid coral-red slide.",
+        "images": [],
+        "boxes": [
+          {
+            "role": "body",
+            "text": "Recipes",
+            "x": 0.557,
+            "y": 1.557,
+            "w": 8.885,
+            "h": 1.967
+          }
+        ]
+      },
+      "gcsUri": "gs://alltheway-rinegan-slide-designs-prod/catalog/recipe-book/slide-03.png"
+    },
+    "slide-04": {
+      "index": 3,
+      "prev": "slide-03",
+      "next": "slide-05",
+      "image": "recipe-book/slide-04.png",
+      "coordinates": [
+        {
+          "x": 0.29,
+          "y": 1.212,
+          "w": 4.424,
+          "h": 1.841,
+          "kind": "text",
+          "text": "Recipe name",
+          "bold": false,
+          "placeholder": "title",
+          "name": "Google Shape;76;p16"
+        },
+        {
+          "x": 0.29,
+          "y": 3.112,
+          "w": 4.424,
+          "h": 1.471,
+          "kind": "text",
+          "text": "30 minutes • Serves 4-6",
+          "bold": false,
+          "placeholder": "subTitle",
+          "name": "Google Shape;77;p16"
+        },
+        {
+          "x": 5.402,
+          "y": 0.792,
+          "w": 4.196,
+          "h": 4.041,
+          "kind": "text",
+          "text": "Ingredients\nItem 1\nItem 2\nItem 3\nPreparation\nLorem ipsum dolor sit amet, consectetur adipiscing elit\nSed do eiusmod tempor incididunt ut labore et\nDolore magna aliqua",
+          "fontSize": 15,
+          "bold": true,
+          "placeholder": "body",
+          "name": "Google Shape;78;p16"
+        }
+      ],
+      "description": {
+        "looksLike": "A split-screen recipe card layout with the recipe title and time/serving details on the left white half, and ingredients with preparation steps on the coral-red right half.",
+        "title": "Recipe name",
+        "layout": "section-title-and-description",
+        "background": {
+          "scope": "slide",
+          "kind": "solid"
+        },
+        "contentPlacement": "The recipe title and preparation metadata are placed on the left side over a white background, while ingredient lists and preparation instructions are stacked on the right side over a solid coral panel.",
+        "images": [],
+        "boxes": [
+          {
+            "role": "body",
+            "text": "",
+            "x": 0.29,
+            "y": 1.212,
+            "w": 4.424,
+            "h": 1.841
+          },
+          {
+            "role": "body",
+            "text": "",
+            "x": 0.29,
+            "y": 3.112,
+            "w": 4.424,
+            "h": 1.471
+          },
+          {
+            "role": "body",
+            "text": "",
+            "x": 5.402,
+            "y": 0.792,
+            "w": 4.196,
+            "h": 4.041
+          }
+        ]
+      },
+      "gcsUri": "gs://alltheway-rinegan-slide-designs-prod/catalog/recipe-book/slide-04.png"
+    },
+    "slide-05": {
+      "index": 4,
+      "prev": "slide-04",
+      "next": "slide-06",
+      "image": "recipe-book/slide-05.png",
+      "coordinates": [
+        {
+          "x": 0.474,
+          "y": 0.393,
+          "w": 4.15,
+          "h": 1.528,
+          "kind": "picture",
+          "bold": false,
+          "name": "Google Shape;83;p17"
+        },
+        {
+          "x": 0.474,
+          "y": 2.063,
+          "w": 4.15,
+          "h": 3.127,
+          "kind": "picture",
+          "bold": false,
+          "name": "Google Shape;84;p17"
+        },
+        {
+          "x": 4.764,
+          "y": 0.393,
+          "w": 2.347,
+          "h": 4.806,
+          "kind": "picture",
+          "bold": false,
+          "name": "Google Shape;85;p17"
+        },
+        {
+          "x": 7.25,
+          "y": 0.393,
+          "w": 2.347,
+          "h": 4.814,
+          "kind": "picture",
+          "bold": false,
+          "name": "Google Shape;86;p17"
+        }
+      ],
+      "description": {
+        "looksLike": "A visual mood board collage featuring four food and cooking photographs arranged side by side across the slide.",
+        "title": "Slide",
+        "layout": "blank",
+        "background": {
+          "scope": "slide",
+          "kind": "solid"
+        },
+        "contentPlacement": "Full-slide photo collage of culinary imagery arranged in three vertical sections without any text overlays.",
+        "images": [
+          {
+            "kind": "picture",
+            "what": "photograph",
+            "x": 0.474,
+            "y": 0.393,
+            "w": 4.15,
+            "h": 1.528
+          },
+          {
+            "kind": "picture",
+            "what": "photograph",
+            "x": 0.474,
+            "y": 2.063,
+            "w": 4.15,
+            "h": 3.127
+          },
+          {
+            "kind": "picture",
+            "what": "photograph",
+            "x": 4.764,
+            "y": 0.393,
+            "w": 2.347,
+            "h": 4.806
+          },
+          {
+            "kind": "picture",
+            "what": "photograph",
+            "x": 7.25,
+            "y": 0.393,
+            "w": 2.347,
+            "h": 4.814
+          }
+        ],
+        "boxes": []
+      },
+      "gcsUri": "gs://alltheway-rinegan-slide-designs-prod/catalog/recipe-book/slide-05.png"
+    },
+    "slide-06": {
+      "index": 5,
+      "prev": "slide-05",
+      "next": "slide-07",
+      "image": "recipe-book/slide-06.png",
+      "coordinates": [
+        {
+          "x": 5.402,
+          "y": 0.792,
+          "w": 4.196,
+          "h": 4.041,
+          "kind": "text",
+          "text": "RECIPE NAME\n30 minutes • Serves 4-6\nLorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.",
+          "fontSize": 36,
+          "bold": false,
+          "placeholder": "body",
+          "name": "Google Shape;91;p18"
+        },
+        {
+          "x": 0,
+          "y": 0,
+          "w": 5,
+          "h": 5.625,
+          "kind": "picture",
+          "bold": false,
+          "name": "Google Shape;92;p18"
+        }
+      ],
+      "description": {
+        "looksLike": "Split-layout recipe slide featuring a full-height food photograph on the left side and recipe details, duration, and description on the right.",
+        "title": "RECIPE NAME",
+        "layout": "section-title-and-description",
+        "background": {
+          "scope": "slide",
+          "kind": "solid"
+        },
+        "contentPlacement": "A full-height image spans the left half of the slide, while recipe title, prep time metadata, and description text occupy the right half.",
+        "images": [
+          {
+            "kind": "picture",
+            "what": "photograph",
+            "x": 0,
+            "y": 0,
+            "w": 5,
+            "h": 5.625
+          }
+        ],
+        "boxes": [
+          {
+            "role": "body",
+            "text": "RECIPE NAME\n30 minutes • Serves 4-6\nLorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.",
+            "x": 5.402,
+            "y": 0.792,
+            "w": 4.196,
+            "h": 4.041,
+            "fontSize": 36
+          },
+          {
+            "role": "body",
+            "text": "",
+            "x": 0,
+            "y": 0,
+            "w": 5,
+            "h": 5.625
+          }
+        ]
+      },
+      "gcsUri": "gs://alltheway-rinegan-slide-designs-prod/catalog/recipe-book/slide-06.png"
+    },
+    "slide-07": {
+      "index": 6,
+      "prev": "slide-06",
+      "next": "slide-08",
+      "image": "recipe-book/slide-07.png",
+      "coordinates": [
+        {
+          "x": 0.341,
+          "y": 0.428,
+          "w": 9.318,
+          "h": 0.685,
+          "kind": "text",
+          "text": "Recipe name",
+          "bold": false,
+          "placeholder": "title",
+          "name": "Google Shape;97;p19"
+        },
+        {
+          "x": 0.341,
+          "y": 1.26,
+          "w": 2.634,
+          "h": 0.645,
+          "kind": "text",
+          "text": "Ingredients",
+          "fontSize": 21,
+          "bold": true,
+          "placeholder": "body",
+          "name": "Google Shape;98;p19"
+        },
+        {
+          "x": 0.341,
+          "y": 1.935,
+          "w": 2.634,
+          "h": 3.306,
+          "kind": "text",
+          "text": "Item 1\nItem 2\nItem 3\nItem 4\nItem 5",
+          "fontSize": 14,
+          "bold": false,
+          "placeholder": "body",
+          "name": "Google Shape;99;p19"
+        },
+        {
+          "x": 3.09,
+          "y": 1.26,
+          "w": 6.57,
+          "h": 0.645,
+          "kind": "text",
+          "text": "Preparation",
+          "fontSize": 21,
+          "bold": true,
+          "placeholder": "body",
+          "name": "Google Shape;100;p19"
+        },
+        {
+          "x": 3.09,
+          "y": 1.935,
+          "w": 3.236,
+          "h": 3.306,
+          "kind": "text",
+          "text": "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.\nUt enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.",
+          "fontSize": 14,
+          "bold": false,
+          "placeholder": "body",
+          "name": "Google Shape;101;p19"
+        },
+        {
+          "x": 6.424,
+          "y": 1.935,
+          "w": 3.236,
+          "h": 3.306,
+          "kind": "text",
+          "text": "Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur.\nExcepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.",
+          "fontSize": 14,
+          "bold": false,
+          "placeholder": "body",
+          "name": "Google Shape;102;p19"
+        }
+      ],
+      "description": {
+        "looksLike": "A clean, minimalist recipe slide layout with an ingredient list column on the left and a two-column preparation text section on the right against a white background.",
+        "title": "Recipe name",
+        "layout": "title-and-two-columns",
+        "background": {
+          "scope": "deck",
+          "kind": "solid"
+        },
+        "contentPlacement": "Slide title sits near the top-left; a narrower left column lists ingredients under a bold heading, while a wider right area holds multi-column preparation instructions under a bold section title.",
+        "images": [],
+        "boxes": [
+          {
+            "role": "body",
+            "text": "Recipe name",
+            "x": 0.341,
+            "y": 0.428,
+            "w": 9.318,
+            "h": 0.685
+          },
+          {
+            "role": "body",
+            "text": "Ingredients",
+            "x": 0.341,
+            "y": 1.26,
+            "w": 2.634,
+            "h": 0.645,
+            "fontSize": 21
+          },
+          {
+            "role": "body",
+            "text": "Item 1\nItem 2\nItem 3\nItem 4\nItem 5",
+            "x": 0.341,
+            "y": 1.935,
+            "w": 2.634,
+            "h": 3.306,
+            "fontSize": 14
+          },
+          {
+            "role": "body",
+            "text": "Preparation",
+            "x": 3.09,
+            "y": 1.26,
+            "w": 6.57,
+            "h": 0.645,
+            "fontSize": 21
+          },
+          {
+            "role": "body",
+            "text": "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.\nUt enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.",
+            "x": 3.09,
+            "y": 1.935,
+            "w": 3.236,
+            "h": 3.306,
+            "fontSize": 14
+          },
+          {
+            "role": "body",
+            "text": "Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur.\nExcepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.",
+            "x": 6.424,
+            "y": 1.935,
+            "w": 3.236,
+            "h": 3.306,
+            "fontSize": 14
+          }
+        ]
+      },
+      "gcsUri": "gs://alltheway-rinegan-slide-designs-prod/catalog/recipe-book/slide-07.png"
+    },
+    "slide-08": {
+      "index": 7,
+      "prev": "slide-07",
+      "next": null,
+      "image": "recipe-book/slide-08.png",
+      "coordinates": [
+        {
+          "x": 0.341,
+          "y": 0.608,
+          "w": 3.071,
+          "h": 0.826,
+          "kind": "text",
+          "text": "Contact",
+          "fontSize": 30,
+          "bold": false,
+          "placeholder": "title",
+          "name": "Google Shape;107;p20"
+        },
+        {
+          "x": 0.341,
+          "y": 1.522,
+          "w": 3.071,
+          "h": 3.477,
+          "kind": "text",
+          "text": "Your Name\nno_reply@example.com\nComplete set available at\nwww.example.com",
+          "fontSize": 14,
+          "bold": true,
+          "placeholder": "body",
+          "name": "Google Shape;108;p20"
+        },
+        {
+          "x": 3.579,
+          "y": 0,
+          "w": 6.422,
+          "h": 5.625,
+          "kind": "picture",
+          "bold": false,
+          "name": "Google Shape;109;p20"
+        }
+      ],
+      "description": {
+        "looksLike": "A contact slide featuring a slim text column on the left and a full-height photograph of fresh green beans on the right.",
+        "title": "Contact",
+        "layout": "section-title-and-description",
+        "background": {
+          "scope": "slide",
+          "kind": "solid"
+        },
+        "contentPlacement": "Title and contact information stacked on the left third; full-height food photo covering the right two-thirds.",
+        "images": [
+          {
+            "kind": "picture",
+            "what": "photograph",
+            "x": 3.579,
+            "y": 0,
+            "w": 6.422,
+            "h": 5.625
+          }
+        ],
+        "boxes": [
+          {
+            "role": "body",
+            "text": "",
+            "x": 0.341,
+            "y": 0.608,
+            "w": 3.071,
+            "h": 0.826
+          },
+          {
+            "role": "body",
+            "text": "",
+            "x": 0.341,
+            "y": 1.522,
+            "w": 3.071,
+            "h": 3.477
+          }
+        ]
+      },
+      "gcsUri": "gs://alltheway-rinegan-slide-designs-prod/catalog/recipe-book/slide-08.png"
+    }
+  }
+}

@@ -1,0 +1,1519 @@
+{
+  "id": "wedding",
+  "title": "wedding",
+  "source": "Wedding.pptx",
+  "width": 10,
+  "height": 5.625,
+  "overall_deck_description": "Designed with a modern, elegant wedding aesthetic, this 10×5.625 deck pairs a minimalist white foundation with warm tan and caramel accent blocks. The visual identity relies on clean sans-serif typography, centered alignments, thin geometric corner brackets, and subtle horizontal divider lines. The sequence opens with a crisp, bracket-framed title slide, flows through multi-column body layouts and photo grids with horizontal two-tone color blocking, uses periodic interstitial title slides to pace content sections, and concludes with centered callouts above a photo collage on the final slides.",
+  "slides": {
+    "slide-01": {
+      "index": 0,
+      "prev": null,
+      "next": "slide-02",
+      "image": "wedding/slide-01.png",
+      "coordinates": [
+        {
+          "x": 3.33,
+          "y": 1.579,
+          "w": 3.341,
+          "h": 1.681,
+          "kind": "text",
+          "text": "Wendy & Berry\nget married",
+          "bold": false,
+          "placeholder": "ctrTitle",
+          "name": "Google Shape;62;p13"
+        },
+        {
+          "x": 3.33,
+          "y": 3.408,
+          "w": 3.341,
+          "h": 0.767,
+          "kind": "text",
+          "text": "September 4, 20XX",
+          "bold": false,
+          "placeholder": "subTitle",
+          "name": "Google Shape;63;p13"
+        }
+      ],
+      "description": {
+        "looksLike": "A minimalist title slide featuring centered wedding text and date framed by delicate tan corner accent lines on a clean white background.",
+        "title": "Wendy & Berry get married",
+        "layout": "title-slide",
+        "background": {
+          "scope": "deck",
+          "kind": "solid"
+        },
+        "contentPlacement": "Centered title and subtitle framed within minimalist corner bracket graphics in the middle of the slide.",
+        "images": [],
+        "boxes": [
+          {
+            "role": "body",
+            "text": "",
+            "x": 3.33,
+            "y": 1.579,
+            "w": 3.341,
+            "h": 1.681
+          },
+          {
+            "role": "body",
+            "text": "",
+            "x": 3.33,
+            "y": 3.408,
+            "w": 3.341,
+            "h": 0.767
+          }
+        ]
+      },
+      "gcsUri": "gs://alltheway-rinegan-slide-designs-prod/catalog/wedding/slide-01.png"
+    },
+    "slide-02": {
+      "index": 1,
+      "prev": "slide-01",
+      "next": "slide-03",
+      "image": "wedding/slide-02.png",
+      "coordinates": [
+        {
+          "x": 0.341,
+          "y": 0.345,
+          "w": 9.318,
+          "h": 0.909,
+          "kind": "text",
+          "text": "Our story",
+          "bold": false,
+          "placeholder": "title",
+          "name": "Google Shape;69;p14"
+        },
+        {
+          "x": 0.404,
+          "y": 3.133,
+          "w": 0.141,
+          "h": 0.141,
+          "kind": "shape",
+          "bold": false,
+          "name": "Google Shape;71;p14"
+        },
+        {
+          "x": 0.508,
+          "y": 3.541,
+          "w": 2.378,
+          "h": 1.324,
+          "kind": "text",
+          "text": "02.22.XX\nLorem ipsum dolor sit amet, consectetur adipiscing elit",
+          "fontSize": 11,
+          "bold": true,
+          "placeholder": "body",
+          "name": "Google Shape;73;p14"
+        },
+        {
+          "x": 1.698,
+          "y": 3.131,
+          "w": 0.141,
+          "h": 0.141,
+          "kind": "shape",
+          "bold": false,
+          "name": "Google Shape;75;p14"
+        },
+        {
+          "x": 1.782,
+          "y": 1.632,
+          "w": 2.378,
+          "h": 1.197,
+          "kind": "text",
+          "text": "05.19.XX\nLorem ipsum dolor sit amet, consectetur adipiscing elit",
+          "fontSize": 11,
+          "bold": true,
+          "placeholder": "body",
+          "name": "Google Shape;77;p14"
+        },
+        {
+          "x": 3.811,
+          "y": 3.131,
+          "w": 0.141,
+          "h": 0.141,
+          "kind": "shape",
+          "bold": false,
+          "name": "Google Shape;79;p14"
+        },
+        {
+          "x": 3.894,
+          "y": 3.541,
+          "w": 2.378,
+          "h": 1.324,
+          "kind": "text",
+          "text": "07.05.XX\nLorem ipsum dolor sit amet, consectetur adipiscing elit",
+          "fontSize": 11,
+          "bold": true,
+          "placeholder": "body",
+          "name": "Google Shape;81;p14"
+        },
+        {
+          "x": 5.626,
+          "y": 3.133,
+          "w": 0.141,
+          "h": 0.141,
+          "kind": "shape",
+          "bold": false,
+          "name": "Google Shape;83;p14"
+        },
+        {
+          "x": 5.709,
+          "y": 1.632,
+          "w": 2.378,
+          "h": 1.202,
+          "kind": "text",
+          "text": "12.15.XX\nLorem ipsum dolor sit amet, consectetur adipiscing elit",
+          "fontSize": 11,
+          "bold": true,
+          "placeholder": "body",
+          "name": "Google Shape;85;p14"
+        },
+        {
+          "x": 7.281,
+          "y": 3.133,
+          "w": 0.141,
+          "h": 0.141,
+          "kind": "shape",
+          "bold": false,
+          "name": "Google Shape;87;p14"
+        },
+        {
+          "x": 7.365,
+          "y": 3.541,
+          "w": 2.378,
+          "h": 1.324,
+          "kind": "text",
+          "text": "03.09.XX\nLorem ipsum dolor sit amet, consectetur adipiscing elit",
+          "fontSize": 11,
+          "bold": true,
+          "placeholder": "body",
+          "name": "Google Shape;89;p14"
+        }
+      ],
+      "description": {
+        "looksLike": "A clean, horizontal dotted timeline slide with milestone dates and descriptions alternating above and below the central line.",
+        "title": "[object Object]",
+        "layout": "title-only",
+        "background": {
+          "scope": "slide",
+          "kind": "solid"
+        },
+        "contentPlacement": "Large left-aligned title at the top with a five-point horizontal chronological timeline stretching across the center and lower half of the slide.",
+        "images": [],
+        "boxes": [
+          {
+            "role": "body",
+            "text": "Our story",
+            "x": 0.341,
+            "y": 0.345,
+            "w": 9.318,
+            "h": 0.909
+          },
+          {
+            "role": "body",
+            "text": "",
+            "x": 0.404,
+            "y": 3.133,
+            "w": 0.141,
+            "h": 0.141
+          },
+          {
+            "role": "body",
+            "text": "02.22.XX\nLorem ipsum dolor sit amet, consectetur adipiscing elit",
+            "x": 0.508,
+            "y": 3.541,
+            "w": 2.378,
+            "h": 1.324,
+            "fontSize": 11
+          },
+          {
+            "role": "body",
+            "text": "",
+            "x": 1.698,
+            "y": 3.131,
+            "w": 0.141,
+            "h": 0.141
+          },
+          {
+            "role": "body",
+            "text": "05.19.XX\nLorem ipsum dolor sit amet, consectetur adipiscing elit",
+            "x": 1.782,
+            "y": 1.632,
+            "w": 2.378,
+            "h": 1.197,
+            "fontSize": 11
+          },
+          {
+            "role": "body",
+            "text": "",
+            "x": 3.811,
+            "y": 3.131,
+            "w": 0.141,
+            "h": 0.141
+          },
+          {
+            "role": "body",
+            "text": "07.05.XX\nLorem ipsum dolor sit amet, consectetur adipiscing elit",
+            "x": 3.894,
+            "y": 3.541,
+            "w": 2.378,
+            "h": 1.324,
+            "fontSize": 11
+          },
+          {
+            "role": "body",
+            "text": "",
+            "x": 5.626,
+            "y": 3.133,
+            "w": 0.141,
+            "h": 0.141
+          },
+          {
+            "role": "body",
+            "text": "12.15.XX\nLorem ipsum dolor sit amet, consectetur adipiscing elit",
+            "x": 5.709,
+            "y": 1.632,
+            "w": 2.378,
+            "h": 1.202,
+            "fontSize": 11
+          },
+          {
+            "role": "body",
+            "text": "",
+            "x": 7.281,
+            "y": 3.133,
+            "w": 0.141,
+            "h": 0.141
+          },
+          {
+            "role": "body",
+            "text": "03.09.XX\nLorem ipsum dolor sit amet, consectetur adipiscing elit",
+            "x": 7.365,
+            "y": 3.541,
+            "w": 2.378,
+            "h": 1.324,
+            "fontSize": 11
+          }
+        ]
+      },
+      "gcsUri": "gs://alltheway-rinegan-slide-designs-prod/catalog/wedding/slide-02.png"
+    },
+    "slide-03": {
+      "index": 2,
+      "prev": "slide-02",
+      "next": "slide-04",
+      "image": "wedding/slide-03.png",
+      "coordinates": [
+        {
+          "x": 0.453,
+          "y": 0.385,
+          "w": 4.15,
+          "h": 1.528,
+          "kind": "picture",
+          "bold": false,
+          "name": "Google Shape;94;p15"
+        },
+        {
+          "x": 0.453,
+          "y": 2.057,
+          "w": 4.15,
+          "h": 3.143,
+          "kind": "picture",
+          "bold": false,
+          "name": "Google Shape;95;p15"
+        },
+        {
+          "x": 4.753,
+          "y": 0.385,
+          "w": 2.347,
+          "h": 4.806,
+          "kind": "picture",
+          "bold": false,
+          "name": "Google Shape;96;p15"
+        },
+        {
+          "x": 7.229,
+          "y": 0.393,
+          "w": 2.347,
+          "h": 4.806,
+          "kind": "picture",
+          "bold": false,
+          "name": "Google Shape;97;p15"
+        }
+      ],
+      "description": {
+        "looksLike": "A photo collage layout featuring four travel and lifestyle images arranged in an asymmetrical grid across a white slide.",
+        "title": "Slide",
+        "layout": "blank",
+        "background": {
+          "scope": "deck",
+          "kind": "solid"
+        },
+        "contentPlacement": "Four image frames arranged in a grid across the slide without any text elements.",
+        "images": [
+          {
+            "kind": "picture",
+            "what": "photograph",
+            "x": 0.453,
+            "y": 0.385,
+            "w": 4.15,
+            "h": 1.528
+          },
+          {
+            "kind": "picture",
+            "what": "photograph",
+            "x": 0.453,
+            "y": 2.057,
+            "w": 4.15,
+            "h": 3.143
+          },
+          {
+            "kind": "picture",
+            "what": "photograph",
+            "x": 4.753,
+            "y": 0.385,
+            "w": 2.347,
+            "h": 4.806
+          },
+          {
+            "kind": "picture",
+            "what": "photograph",
+            "x": 7.229,
+            "y": 0.393,
+            "w": 2.347,
+            "h": 4.806
+          }
+        ],
+        "boxes": []
+      },
+      "gcsUri": "gs://alltheway-rinegan-slide-designs-prod/catalog/wedding/slide-03.png"
+    },
+    "slide-04": {
+      "index": 3,
+      "prev": "slide-03",
+      "next": "slide-05",
+      "image": "wedding/slide-04.png",
+      "coordinates": [
+        {
+          "x": 0.29,
+          "y": 1.016,
+          "w": 4.424,
+          "h": 1.953,
+          "kind": "text",
+          "text": "The Main Event",
+          "bold": false,
+          "placeholder": "title",
+          "name": "Google Shape;102;p16"
+        },
+        {
+          "x": 0.29,
+          "y": 3.028,
+          "w": 4.424,
+          "h": 1.721,
+          "kind": "text",
+          "text": "Saturday, September 4, 20XX at 3pm",
+          "bold": false,
+          "placeholder": "subTitle",
+          "name": "Google Shape;103;p16"
+        },
+        {
+          "x": 5.402,
+          "y": 0.792,
+          "w": 4.196,
+          "h": 4.041,
+          "kind": "text",
+          "text": "The Hotel Name\n123 Address St\nAnytown, ST 12345\nReception immediately following the ceremony",
+          "fontSize": 24,
+          "bold": true,
+          "placeholder": "body",
+          "name": "Google Shape;104;p16"
+        }
+      ],
+      "description": {
+        "looksLike": "A split-screen event details slide with title and date on the white left half and venue information on the tan right half.",
+        "title": "The Main Event",
+        "layout": "section-title-and-description",
+        "background": {
+          "scope": "slide",
+          "kind": "solid"
+        },
+        "contentPlacement": "Event title and date occupy the left half of the slide, while venue and reception details are placed on a solid tan block on the right half.",
+        "images": [],
+        "boxes": [
+          {
+            "role": "body",
+            "text": "The Main Event",
+            "x": 0.29,
+            "y": 1.016,
+            "w": 4.424,
+            "h": 1.953
+          },
+          {
+            "role": "body",
+            "text": "Saturday, September 4, 20XX at 3pm",
+            "x": 0.29,
+            "y": 3.028,
+            "w": 4.424,
+            "h": 1.721
+          },
+          {
+            "role": "body",
+            "text": "The Hotel Name\n123 Address St\nAnytown, ST 12345\nReception immediately following the ceremony",
+            "x": 5.402,
+            "y": 0.792,
+            "w": 4.196,
+            "h": 4.041
+          }
+        ]
+      },
+      "gcsUri": "gs://alltheway-rinegan-slide-designs-prod/catalog/wedding/slide-04.png"
+    },
+    "slide-05": {
+      "index": 4,
+      "prev": "slide-04",
+      "next": "slide-06",
+      "image": "wedding/slide-05.png",
+      "coordinates": [
+        {
+          "x": 0.341,
+          "y": 0.345,
+          "w": 9.318,
+          "h": 0.909,
+          "kind": "text",
+          "text": "Join us for a full weekend of activities!",
+          "bold": false,
+          "placeholder": "title",
+          "name": "Google Shape;109;p17"
+        },
+        {
+          "x": 0.481,
+          "y": 1.715,
+          "w": 2.934,
+          "h": 3.376,
+          "kind": "shape",
+          "bold": false,
+          "placeholder": "none",
+          "name": "Google Shape;112;p17"
+        },
+        {
+          "x": 0.479,
+          "y": 1.715,
+          "w": 2.934,
+          "h": 0.45,
+          "kind": "shape",
+          "bold": false,
+          "name": "Google Shape;113;p17"
+        },
+        {
+          "x": 0.565,
+          "y": 1.709,
+          "w": 2.717,
+          "h": 0.45,
+          "kind": "text",
+          "text": "Thursday",
+          "bold": false,
+          "placeholder": "body",
+          "name": "Google Shape;114;p17"
+        },
+        {
+          "x": 0.566,
+          "y": 2.287,
+          "w": 2.728,
+          "h": 2.804,
+          "kind": "text",
+          "text": "Spa at 3pm\nLorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.",
+          "fontSize": 14,
+          "bold": true,
+          "placeholder": "body",
+          "name": "Google Shape;115;p17"
+        },
+        {
+          "x": 3.533,
+          "y": 1.715,
+          "w": 2.934,
+          "h": 3.376,
+          "kind": "shape",
+          "bold": false,
+          "placeholder": "none",
+          "name": "Google Shape;117;p17"
+        },
+        {
+          "x": 3.533,
+          "y": 1.715,
+          "w": 2.934,
+          "h": 0.45,
+          "kind": "shape",
+          "bold": false,
+          "name": "Google Shape;118;p17"
+        },
+        {
+          "x": 3.627,
+          "y": 1.709,
+          "w": 2.717,
+          "h": 0.45,
+          "kind": "text",
+          "text": "Friday",
+          "bold": false,
+          "placeholder": "body",
+          "name": "Google Shape;119;p17"
+        },
+        {
+          "x": 3.627,
+          "y": 2.287,
+          "w": 2.717,
+          "h": 2.804,
+          "kind": "text",
+          "text": "Golf at 7am\nUt enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.",
+          "fontSize": 14,
+          "bold": true,
+          "placeholder": "body",
+          "name": "Google Shape;120;p17"
+        },
+        {
+          "x": 6.587,
+          "y": 1.715,
+          "w": 2.934,
+          "h": 3.376,
+          "kind": "shape",
+          "bold": false,
+          "placeholder": "none",
+          "name": "Google Shape;122;p17"
+        },
+        {
+          "x": 6.589,
+          "y": 1.715,
+          "w": 2.934,
+          "h": 0.45,
+          "kind": "shape",
+          "bold": false,
+          "name": "Google Shape;123;p17"
+        },
+        {
+          "x": 6.679,
+          "y": 1.709,
+          "w": 2.717,
+          "h": 0.45,
+          "kind": "text",
+          "text": "Sunday",
+          "bold": false,
+          "placeholder": "body",
+          "name": "Google Shape;124;p17"
+        },
+        {
+          "x": 6.677,
+          "y": 2.287,
+          "w": 2.728,
+          "h": 2.804,
+          "kind": "text",
+          "text": "Brunch at Noon\nLorem ipsum dolor sit amet, consectetur adipiscing elit",
+          "fontSize": 14,
+          "bold": true,
+          "placeholder": "body",
+          "name": "Google Shape;125;p17"
+        }
+      ],
+      "description": {
+        "looksLike": "A clean wedding itinerary slide with a centered top title and three bordered column cards for Thursday, Friday, and Sunday schedule details.",
+        "title": "Join us for a full weekend of activities!",
+        "layout": "title-and-two-columns",
+        "background": {
+          "scope": "deck",
+          "kind": "solid"
+        },
+        "contentPlacement": "Centered title along the top with an accent underline, followed by three side-by-side bordered activity cards featuring tan header strips and schedule details below.",
+        "images": [],
+        "boxes": [
+          {
+            "role": "body",
+            "text": "Join us for a full weekend of activities!",
+            "x": 0.341,
+            "y": 0.345,
+            "w": 9.318,
+            "h": 0.909
+          },
+          {
+            "role": "body",
+            "text": "",
+            "x": 0.481,
+            "y": 1.715,
+            "w": 2.934,
+            "h": 3.376
+          },
+          {
+            "role": "body",
+            "text": "",
+            "x": 0.479,
+            "y": 1.715,
+            "w": 2.934,
+            "h": 0.45
+          },
+          {
+            "role": "body",
+            "text": "Thursday",
+            "x": 0.565,
+            "y": 1.709,
+            "w": 2.717,
+            "h": 0.45
+          },
+          {
+            "role": "body",
+            "text": "Spa at 3pm\nLorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.",
+            "x": 0.566,
+            "y": 2.287,
+            "w": 2.728,
+            "h": 2.804,
+            "fontSize": 14
+          },
+          {
+            "role": "body",
+            "text": "",
+            "x": 3.533,
+            "y": 1.715,
+            "w": 2.934,
+            "h": 3.376
+          },
+          {
+            "role": "body",
+            "text": "",
+            "x": 3.533,
+            "y": 1.715,
+            "w": 2.934,
+            "h": 0.45
+          },
+          {
+            "role": "body",
+            "text": "Friday",
+            "x": 3.627,
+            "y": 1.709,
+            "w": 2.717,
+            "h": 0.45
+          },
+          {
+            "role": "body",
+            "text": "Golf at 7am\nUt enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.",
+            "x": 3.627,
+            "y": 2.287,
+            "w": 2.717,
+            "h": 2.804,
+            "fontSize": 14
+          },
+          {
+            "role": "body",
+            "text": "",
+            "x": 6.587,
+            "y": 1.715,
+            "w": 2.934,
+            "h": 3.376
+          },
+          {
+            "role": "body",
+            "text": "",
+            "x": 6.589,
+            "y": 1.715,
+            "w": 2.934,
+            "h": 0.45
+          },
+          {
+            "role": "body",
+            "text": "Sunday",
+            "x": 6.679,
+            "y": 1.709,
+            "w": 2.717,
+            "h": 0.45
+          },
+          {
+            "role": "body",
+            "text": "Brunch at Noon\nLorem ipsum dolor sit amet, consectetur adipiscing elit",
+            "x": 6.677,
+            "y": 2.287,
+            "w": 2.728,
+            "h": 2.804,
+            "fontSize": 14
+          }
+        ]
+      },
+      "gcsUri": "gs://alltheway-rinegan-slide-designs-prod/catalog/wedding/slide-05.png"
+    },
+    "slide-06": {
+      "index": 5,
+      "prev": "slide-05",
+      "next": "slide-07",
+      "image": "wedding/slide-06.png",
+      "coordinates": [
+        {
+          "x": 5.013,
+          "y": 3.983,
+          "w": 2.381,
+          "h": 1.262,
+          "kind": "text",
+          "text": "Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur",
+          "fontSize": 12,
+          "bold": false,
+          "placeholder": "body",
+          "name": "Google Shape;130;p18"
+        },
+        {
+          "x": 0,
+          "y": 0,
+          "w": 10.019,
+          "h": 2.717,
+          "kind": "shape",
+          "bold": false,
+          "name": "Google Shape;131;p18"
+        },
+        {
+          "x": 0.341,
+          "y": 0.407,
+          "w": 9.318,
+          "h": 0.802,
+          "kind": "text",
+          "text": "The wedding party",
+          "bold": false,
+          "placeholder": "title",
+          "name": "Google Shape;132;p18"
+        },
+        {
+          "x": 0.18,
+          "y": 3.4,
+          "w": 2.381,
+          "h": 0.477,
+          "kind": "text",
+          "text": "Wendy Writer",
+          "bold": false,
+          "placeholder": "body",
+          "name": "Google Shape;134;p18"
+        },
+        {
+          "x": 0.18,
+          "y": 3.983,
+          "w": 2.381,
+          "h": 1.262,
+          "kind": "text",
+          "text": "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor",
+          "fontSize": 12,
+          "bold": false,
+          "placeholder": "body",
+          "name": "Google Shape;136;p18"
+        },
+        {
+          "x": 2.597,
+          "y": 3.4,
+          "w": 2.381,
+          "h": 0.477,
+          "kind": "text",
+          "text": "Ronny Reader",
+          "bold": false,
+          "placeholder": "body",
+          "name": "Google Shape;138;p18"
+        },
+        {
+          "x": 2.597,
+          "y": 3.983,
+          "w": 2.381,
+          "h": 1.262,
+          "kind": "text",
+          "text": "Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat",
+          "fontSize": 12,
+          "bold": false,
+          "placeholder": "body",
+          "name": "Google Shape;140;p18"
+        },
+        {
+          "x": 5.013,
+          "y": 3.4,
+          "w": 2.381,
+          "h": 0.477,
+          "kind": "text",
+          "text": "Abby Author",
+          "bold": false,
+          "placeholder": "body",
+          "name": "Google Shape;142;p18"
+        },
+        {
+          "x": 7.43,
+          "y": 3.4,
+          "w": 2.381,
+          "h": 0.477,
+          "kind": "text",
+          "text": "Berry Books",
+          "bold": false,
+          "placeholder": "body",
+          "name": "Google Shape;145;p18"
+        },
+        {
+          "x": 7.43,
+          "y": 3.983,
+          "w": 2.381,
+          "h": 1.262,
+          "kind": "text",
+          "text": "Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum",
+          "fontSize": 12,
+          "bold": false,
+          "placeholder": "body",
+          "name": "Google Shape;147;p18"
+        },
+        {
+          "x": 0.472,
+          "y": 1.478,
+          "w": 1.798,
+          "h": 1.798,
+          "kind": "picture",
+          "bold": false,
+          "name": "Google Shape;133;p18"
+        },
+        {
+          "x": 2.897,
+          "y": 1.478,
+          "w": 1.798,
+          "h": 1.798,
+          "kind": "picture",
+          "bold": false,
+          "name": "Google Shape;137;p18"
+        },
+        {
+          "x": 5.323,
+          "y": 1.478,
+          "w": 1.798,
+          "h": 1.798,
+          "kind": "picture",
+          "bold": false,
+          "name": "Google Shape;141;p18"
+        },
+        {
+          "x": 7.749,
+          "y": 1.478,
+          "w": 1.798,
+          "h": 1.798,
+          "kind": "picture",
+          "bold": false,
+          "name": "Google Shape;144;p18"
+        }
+      ],
+      "description": {
+        "looksLike": "Four-column profile slide with a warm tan top banner, centered white title, and four square portrait photos overlapping the banner split above names and biographical descriptions.",
+        "title": "The wedding party",
+        "layout": "title-and-two-columns",
+        "background": {
+          "scope": "slide",
+          "kind": "solid"
+        },
+        "contentPlacement": "Centered title in the tan top banner, four square portrait photos bridging the color division across the middle, and name plus bio text columns positioned below each photo on the white lower section.",
+        "images": [
+          {
+            "kind": "picture",
+            "what": "photograph",
+            "x": 0.472,
+            "y": 1.478,
+            "w": 1.798,
+            "h": 1.798
+          },
+          {
+            "kind": "picture",
+            "what": "photograph",
+            "x": 2.897,
+            "y": 1.478,
+            "w": 1.798,
+            "h": 1.798
+          },
+          {
+            "kind": "picture",
+            "what": "photograph",
+            "x": 5.323,
+            "y": 1.478,
+            "w": 1.798,
+            "h": 1.798
+          },
+          {
+            "kind": "picture",
+            "what": "photograph",
+            "x": 7.749,
+            "y": 1.478,
+            "w": 1.798,
+            "h": 1.798
+          }
+        ],
+        "boxes": [
+          {
+            "role": "body",
+            "text": "",
+            "x": 0,
+            "y": 0,
+            "w": 10.019,
+            "h": 2.717
+          },
+          {
+            "role": "body",
+            "text": "",
+            "x": 0.341,
+            "y": 0.407,
+            "w": 9.318,
+            "h": 0.802
+          },
+          {
+            "role": "body",
+            "text": "",
+            "x": 0.18,
+            "y": 3.4,
+            "w": 2.381,
+            "h": 0.477
+          },
+          {
+            "role": "body",
+            "text": "",
+            "x": 0.18,
+            "y": 3.983,
+            "w": 2.381,
+            "h": 1.262
+          },
+          {
+            "role": "body",
+            "text": "",
+            "x": 2.597,
+            "y": 3.4,
+            "w": 2.381,
+            "h": 0.477
+          },
+          {
+            "role": "body",
+            "text": "",
+            "x": 2.597,
+            "y": 3.983,
+            "w": 2.381,
+            "h": 1.262
+          },
+          {
+            "role": "body",
+            "text": "",
+            "x": 5.013,
+            "y": 3.4,
+            "w": 2.381,
+            "h": 0.477
+          },
+          {
+            "role": "body",
+            "text": "",
+            "x": 5.013,
+            "y": 3.983,
+            "w": 2.381,
+            "h": 1.262
+          },
+          {
+            "role": "body",
+            "text": "",
+            "x": 7.43,
+            "y": 3.4,
+            "w": 2.381,
+            "h": 0.477
+          },
+          {
+            "role": "body",
+            "text": "",
+            "x": 7.43,
+            "y": 3.983,
+            "w": 2.381,
+            "h": 1.262
+          }
+        ]
+      },
+      "gcsUri": "gs://alltheway-rinegan-slide-designs-prod/catalog/wedding/slide-06.png"
+    },
+    "slide-07": {
+      "index": 6,
+      "prev": "slide-06",
+      "next": "slide-08",
+      "image": "wedding/slide-07.png",
+      "coordinates": [
+        {
+          "x": 0.29,
+          "y": 1.016,
+          "w": 4.424,
+          "h": 1.953,
+          "kind": "text",
+          "text": "Getting there",
+          "bold": false,
+          "placeholder": "title",
+          "name": "Google Shape;152;p19"
+        },
+        {
+          "x": 0.29,
+          "y": 3.028,
+          "w": 4.424,
+          "h": 1.721,
+          "kind": "text",
+          "text": "The train ride is very scenic!",
+          "bold": false,
+          "placeholder": "subTitle",
+          "name": "Google Shape;153;p19"
+        },
+        {
+          "x": 5.402,
+          "y": 0.792,
+          "w": 4.196,
+          "h": 4.041,
+          "kind": "text",
+          "text": "By rail\n123 Address St\nAnytown, ST 12345\nBy air\n123 Address St\nAnytown, ST 12345",
+          "fontSize": 21,
+          "bold": true,
+          "placeholder": "body",
+          "name": "Google Shape;154;p19"
+        }
+      ],
+      "description": {
+        "looksLike": "A split layout with a white left half holding the title and subtitle, and a warm tan right half displaying travel directions and address details.",
+        "title": "Getting there",
+        "layout": "section-title-and-description",
+        "background": {
+          "scope": "slide",
+          "kind": "solid"
+        },
+        "contentPlacement": "The slide title and subtitle are stacked on the left white side, while detailed directions are listed vertically on the right colored half.",
+        "images": [],
+        "boxes": [
+          {
+            "role": "body",
+            "text": "",
+            "x": 0.29,
+            "y": 1.016,
+            "w": 4.424,
+            "h": 1.953
+          },
+          {
+            "role": "body",
+            "text": "",
+            "x": 0.29,
+            "y": 3.028,
+            "w": 4.424,
+            "h": 1.721
+          },
+          {
+            "role": "body",
+            "text": "",
+            "x": 5.402,
+            "y": 0.792,
+            "w": 4.196,
+            "h": 4.041
+          }
+        ]
+      },
+      "gcsUri": "gs://alltheway-rinegan-slide-designs-prod/catalog/wedding/slide-07.png"
+    },
+    "slide-08": {
+      "index": 7,
+      "prev": "slide-07",
+      "next": "slide-09",
+      "image": "wedding/slide-08.png",
+      "coordinates": [
+        {
+          "x": 0.349,
+          "y": 4.125,
+          "w": 4.374,
+          "h": 0.58,
+          "kind": "text",
+          "text": "Hotel Name",
+          "fontSize": 21,
+          "bold": true,
+          "placeholder": "body",
+          "name": "Google Shape;164;p20"
+        },
+        {
+          "x": 0.349,
+          "y": 4.624,
+          "w": 4.374,
+          "h": 0.699,
+          "kind": "text",
+          "text": "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt",
+          "fontSize": 12,
+          "bold": false,
+          "placeholder": "body",
+          "name": "Google Shape;165;p20"
+        },
+        {
+          "x": 5.277,
+          "y": 4.125,
+          "w": 4.374,
+          "h": 0.58,
+          "kind": "text",
+          "text": "Hotel Name",
+          "fontSize": 21,
+          "bold": true,
+          "placeholder": "body",
+          "name": "Google Shape;167;p20"
+        },
+        {
+          "x": 5.277,
+          "y": 4.624,
+          "w": 4.374,
+          "h": 0.699,
+          "kind": "text",
+          "text": "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt",
+          "fontSize": 12,
+          "bold": false,
+          "placeholder": "body",
+          "name": "Google Shape;168;p20"
+        },
+        {
+          "x": 0.465,
+          "y": 0.432,
+          "w": 4.255,
+          "h": 2.186,
+          "kind": "picture",
+          "bold": false,
+          "name": "Google Shape;161;p20"
+        },
+        {
+          "x": 0.465,
+          "y": 2.734,
+          "w": 2.116,
+          "h": 1.033,
+          "kind": "picture",
+          "bold": false,
+          "name": "Google Shape;162;p20"
+        },
+        {
+          "x": 2.695,
+          "y": 2.734,
+          "w": 2.025,
+          "h": 1.033,
+          "kind": "picture",
+          "bold": false,
+          "name": "Google Shape;163;p20"
+        },
+        {
+          "x": 5.404,
+          "y": 0.435,
+          "w": 4.255,
+          "h": 3.332,
+          "kind": "picture",
+          "bold": false,
+          "name": "Google Shape;166;p20"
+        }
+      ],
+      "description": {
+        "looksLike": "A two-column accommodations slide featuring photo cards on top with hotel titles and descriptions below.",
+        "title": "Hotel Name",
+        "layout": "title-and-two-columns",
+        "background": {
+          "scope": "slide",
+          "kind": "solid"
+        },
+        "contentPlacement": "The top half displays imagery across two columns (a three-image collage on the left and a single portrait image on the right), while the bottom half contains two side-by-side text columns with hotel names and descriptions.",
+        "images": [
+          {
+            "kind": "picture",
+            "what": "photograph",
+            "x": 0.465,
+            "y": 0.432,
+            "w": 4.255,
+            "h": 2.186
+          },
+          {
+            "kind": "picture",
+            "what": "photograph",
+            "x": 0.465,
+            "y": 2.734,
+            "w": 2.116,
+            "h": 1.033
+          },
+          {
+            "kind": "picture",
+            "what": "photograph",
+            "x": 2.695,
+            "y": 2.734,
+            "w": 2.025,
+            "h": 1.033
+          },
+          {
+            "kind": "picture",
+            "what": "photograph",
+            "x": 5.404,
+            "y": 0.435,
+            "w": 4.255,
+            "h": 3.332
+          }
+        ],
+        "boxes": [
+          {
+            "role": "body",
+            "text": "",
+            "x": 0.349,
+            "y": 4.125,
+            "w": 4.374,
+            "h": 0.58
+          },
+          {
+            "role": "body",
+            "text": "",
+            "x": 0.349,
+            "y": 4.624,
+            "w": 4.374,
+            "h": 0.699
+          },
+          {
+            "role": "body",
+            "text": "",
+            "x": 5.277,
+            "y": 4.125,
+            "w": 4.374,
+            "h": 0.58
+          },
+          {
+            "role": "body",
+            "text": "",
+            "x": 5.277,
+            "y": 4.624,
+            "w": 4.374,
+            "h": 0.699
+          }
+        ]
+      },
+      "gcsUri": "gs://alltheway-rinegan-slide-designs-prod/catalog/wedding/slide-08.png"
+    },
+    "slide-09": {
+      "index": 8,
+      "prev": "slide-08",
+      "next": "slide-10",
+      "image": "wedding/slide-09.png",
+      "coordinates": [
+        {
+          "x": 0.341,
+          "y": 0.608,
+          "w": 3.071,
+          "h": 0.826,
+          "kind": "text",
+          "text": "Things to do",
+          "bold": false,
+          "placeholder": "title",
+          "name": "Google Shape;173;p21"
+        },
+        {
+          "x": 0.341,
+          "y": 1.53,
+          "w": 3.071,
+          "h": 3.046,
+          "kind": "text",
+          "text": "These are some of our favorite activities in and around Church Stoke, PA:\nVisit the lake\nLorem ipsum dolor sit amet, consectetur adipiscing elit\nGo for a hike\nSed do eiusmod tempor incididunt\nCheck out our skate park\nDuis aute irure dolor!",
+          "bold": true,
+          "placeholder": "body",
+          "name": "Google Shape;174;p21"
+        },
+        {
+          "x": 5.146,
+          "y": 0.375,
+          "w": 2.226,
+          "h": 2.138,
+          "kind": "picture",
+          "bold": false,
+          "name": "Google Shape;175;p21"
+        },
+        {
+          "x": 7.424,
+          "y": 0.375,
+          "w": 2.226,
+          "h": 2.138,
+          "kind": "picture",
+          "bold": false,
+          "name": "Google Shape;176;p21"
+        },
+        {
+          "x": 5.146,
+          "y": 2.548,
+          "w": 4.513,
+          "h": 2.647,
+          "kind": "picture",
+          "bold": false,
+          "name": "Google Shape;177;p21"
+        }
+      ],
+      "description": {
+        "looksLike": "A split layout slide featuring a list of recommendations and activities on the left side, complemented by a collage of three photos arranged in a grid on the right side.",
+        "title": "Things to do",
+        "layout": "section-title-and-description",
+        "background": {
+          "scope": "deck",
+          "kind": "solid"
+        },
+        "contentPlacement": "Header and descriptive bulleted content placed in a narrow left column, paired with a three-image gallery filling the right half of the slide.",
+        "images": [
+          {
+            "kind": "picture",
+            "what": "photograph",
+            "x": 5.146,
+            "y": 0.375,
+            "w": 2.226,
+            "h": 2.138
+          },
+          {
+            "kind": "picture",
+            "what": "photograph",
+            "x": 7.424,
+            "y": 0.375,
+            "w": 2.226,
+            "h": 2.138
+          },
+          {
+            "kind": "picture",
+            "what": "photograph",
+            "x": 5.146,
+            "y": 2.548,
+            "w": 4.513,
+            "h": 2.647
+          }
+        ],
+        "boxes": [
+          {
+            "role": "body",
+            "text": "",
+            "x": 0.341,
+            "y": 0.608,
+            "w": 3.071,
+            "h": 0.826
+          },
+          {
+            "role": "body",
+            "text": "",
+            "x": 0.341,
+            "y": 1.53,
+            "w": 3.071,
+            "h": 3.046
+          },
+          {
+            "role": "body",
+            "text": "",
+            "x": 5.146,
+            "y": 0.375,
+            "w": 2.226,
+            "h": 2.138
+          },
+          {
+            "role": "body",
+            "text": "",
+            "x": 7.424,
+            "y": 0.375,
+            "w": 2.226,
+            "h": 2.138
+          },
+          {
+            "role": "body",
+            "text": "",
+            "x": 5.146,
+            "y": 2.548,
+            "w": 4.513,
+            "h": 2.647
+          }
+        ]
+      },
+      "gcsUri": "gs://alltheway-rinegan-slide-designs-prod/catalog/wedding/slide-09.png"
+    },
+    "slide-10": {
+      "index": 9,
+      "prev": "slide-09",
+      "next": null,
+      "image": "wedding/slide-10.png",
+      "coordinates": [
+        {
+          "x": 0.341,
+          "y": 0.597,
+          "w": 9.318,
+          "h": 1.18,
+          "kind": "text",
+          "text": "We’re registered at www.example.com",
+          "bold": false,
+          "placeholder": "title",
+          "name": "Google Shape;182;p22"
+        },
+        {
+          "x": 0.341,
+          "y": 1.903,
+          "w": 9.318,
+          "h": 0.594,
+          "kind": "text",
+          "text": "… and we’re so excited to celebrate with you!",
+          "bold": false,
+          "placeholder": "body",
+          "name": "Google Shape;183;p22"
+        },
+        {
+          "x": 0.081,
+          "y": 3.258,
+          "w": 4.209,
+          "h": 2.284,
+          "kind": "picture",
+          "bold": false,
+          "name": "Google Shape;184;p22"
+        },
+        {
+          "x": 4.311,
+          "y": 3.258,
+          "w": 3.035,
+          "h": 2.284,
+          "kind": "picture",
+          "bold": false,
+          "name": "Google Shape;185;p22"
+        },
+        {
+          "x": 7.371,
+          "y": 3.258,
+          "w": 2.538,
+          "h": 2.284,
+          "kind": "picture",
+          "bold": false,
+          "name": "Google Shape;186;p22"
+        }
+      ],
+      "description": {
+        "looksLike": "A clean wedding registry announcement slide featuring centered header text above a three-photo triptych along the bottom edge.",
+        "title": "We’re registered at www.example.com",
+        "layout": "section-title-and-description",
+        "background": {
+          "scope": "deck",
+          "kind": "solid"
+        },
+        "contentPlacement": "Centered title and descriptive subtitle in the upper half, anchored by three horizontal images side-by-side filling the bottom section.",
+        "images": [
+          {
+            "kind": "picture",
+            "what": "photograph",
+            "x": 0.081,
+            "y": 3.258,
+            "w": 4.209,
+            "h": 2.284
+          },
+          {
+            "kind": "picture",
+            "what": "photograph",
+            "x": 4.311,
+            "y": 3.258,
+            "w": 3.035,
+            "h": 2.284
+          },
+          {
+            "kind": "picture",
+            "what": "photograph",
+            "x": 7.371,
+            "y": 3.258,
+            "w": 2.538,
+            "h": 2.284
+          }
+        ],
+        "boxes": [
+          {
+            "role": "title",
+            "text": "",
+            "x": 0.341,
+            "y": 0.597,
+            "w": 9.318,
+            "h": 1.18
+          },
+          {
+            "role": "body",
+            "text": "",
+            "x": 0.341,
+            "y": 1.903,
+            "w": 9.318,
+            "h": 0.594
+          }
+        ]
+      },
+      "gcsUri": "gs://alltheway-rinegan-slide-designs-prod/catalog/wedding/slide-10.png"
+    }
+  }
+}

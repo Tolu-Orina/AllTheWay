@@ -1,0 +1,1334 @@
+{
+  "id": "science-fair",
+  "title": "science fair",
+  "source": "Science fair.pptx",
+  "width": 10,
+  "height": 5.625,
+  "overall_deck_description": "Designed with a clean, academic yet modern editorial aesthetic, this 16:9 science presentation deck relies on a high-contrast palette of crisp white, deep charcoal/black, soft grey supporting text, and subtle sage/mint green accent underlines. Clean, geometric sans-serif typography is consistently left-aligned with clear weight hierarchy between large headers and muted subtitles. The sequence opens on a dramatic, full-bleed dark photographic cover (index 0), moves through structured body slides featuring asymmetrical vertical split layouts—pairing white informational panels with dark charcoal blocks or full-bleed vertical imagery—and utilizes high-impact single-statement slides and large bulleted lists before concluding.",
+  "slides": {
+    "slide-01": {
+      "index": 0,
+      "prev": null,
+      "next": "slide-02",
+      "image": "science-fair/slide-01.png",
+      "coordinates": [
+        {
+          "x": 0.558,
+          "y": 1.375,
+          "w": 8.884,
+          "h": 1.737,
+          "kind": "text",
+          "text": "Science Fair Project",
+          "fontSize": 60,
+          "bold": false,
+          "placeholder": "ctrTitle",
+          "name": "Google Shape;105;p25"
+        },
+        {
+          "x": 0.558,
+          "y": 3.48,
+          "w": 8.884,
+          "h": 0.689,
+          "kind": "text",
+          "text": "B\ny\nYour Name",
+          "fontSize": 24,
+          "bold": false,
+          "placeholder": "subTitle",
+          "name": "Google Shape;106;p25"
+        },
+        {
+          "x": 0.558,
+          "y": 4.78,
+          "w": 8.884,
+          "h": 0.55,
+          "kind": "text",
+          "text": "no_reply@example.com",
+          "fontSize": 18,
+          "bold": false,
+          "placeholder": "subTitle",
+          "name": "Google Shape;107;p25"
+        },
+        {
+          "x": 0,
+          "y": 0,
+          "w": 10,
+          "h": 5.625,
+          "kind": "picture",
+          "bold": false,
+          "name": "Google Shape;104;p25"
+        }
+      ],
+      "description": {
+        "looksLike": "Dark starry sky title slide with clean white typography for the project title, author, and email.",
+        "title": "Science Fair Project",
+        "layout": "title-slide",
+        "background": {
+          "scope": "slide",
+          "kind": "photograph"
+        },
+        "contentPlacement": "Full-bleed background image with left-aligned title, subtitle, and email stacked vertically on the left.",
+        "images": [
+          {
+            "kind": "picture",
+            "what": "photograph",
+            "x": 0,
+            "y": 0,
+            "w": 10,
+            "h": 5.625
+          }
+        ],
+        "boxes": [
+          {
+            "role": "body",
+            "text": "",
+            "x": 0.558,
+            "y": 1.375,
+            "w": 8.884,
+            "h": 1.737
+          },
+          {
+            "role": "body",
+            "text": "",
+            "x": 0.558,
+            "y": 3.48,
+            "w": 8.884,
+            "h": 0.689
+          },
+          {
+            "role": "body",
+            "text": "",
+            "x": 0.558,
+            "y": 4.78,
+            "w": 8.884,
+            "h": 0.55
+          }
+        ]
+      },
+      "gcsUri": "gs://alltheway-rinegan-slide-designs-prod/catalog/science-fair/slide-01.png"
+    },
+    "slide-02": {
+      "index": 1,
+      "prev": "slide-01",
+      "next": "slide-03",
+      "image": "science-fair/slide-02.png",
+      "coordinates": [
+        {
+          "x": 0.341,
+          "y": 0.487,
+          "w": 9.318,
+          "h": 0.626,
+          "kind": "text",
+          "text": "Why I chose this area of science",
+          "fontSize": 36,
+          "bold": false,
+          "placeholder": "title",
+          "name": "Google Shape;113;p26"
+        },
+        {
+          "x": 0.341,
+          "y": 1.527,
+          "w": 9.318,
+          "h": 3.469,
+          "kind": "text",
+          "text": "Please explain why you chose to investigate this particular aspect of\nscience, computing, or engineering\n.",
+          "fontSize": 24,
+          "bold": true,
+          "placeholder": "body",
+          "name": "Google Shape;114;p26"
+        }
+      ],
+      "description": {
+        "looksLike": "Minimal title and body slide with a clean white background, left-aligned dark heading, and prompt body text.",
+        "title": "Why I chose this area of science",
+        "layout": "title-and-body",
+        "background": {
+          "scope": "deck",
+          "kind": "solid"
+        },
+        "contentPlacement": "Top-left aligned title with a large body text block directly underneath occupying the main frame.",
+        "images": [],
+        "boxes": [
+          {
+            "role": "body",
+            "text": "Why I chose this area of science",
+            "x": 0.341,
+            "y": 0.487,
+            "w": 9.318,
+            "h": 0.626,
+            "fontSize": 36
+          },
+          {
+            "role": "body",
+            "text": "Please explain why you chose to investigate this particular aspect of\nscience, computing, or engineering\n.",
+            "x": 0.341,
+            "y": 1.527,
+            "w": 9.318,
+            "h": 3.469,
+            "fontSize": 24
+          }
+        ]
+      },
+      "gcsUri": "gs://alltheway-rinegan-slide-designs-prod/catalog/science-fair/slide-02.png"
+    },
+    "slide-03": {
+      "index": 2,
+      "prev": "slide-02",
+      "next": "slide-04",
+      "image": "science-fair/slide-03.png",
+      "coordinates": [
+        {
+          "x": 0.29,
+          "y": 1.987,
+          "w": 4.424,
+          "h": 1.651,
+          "kind": "text",
+          "text": "The problem or challenge",
+          "bold": false,
+          "placeholder": "title",
+          "name": "Google Shape;119;p27"
+        },
+        {
+          "x": 5.402,
+          "y": 0.792,
+          "w": 4.196,
+          "h": 4.041,
+          "kind": "text",
+          "text": "Please explain the question or problem that you investigated",
+          "fontSize": 24,
+          "bold": false,
+          "placeholder": "body",
+          "name": "Google Shape;120;p27"
+        }
+      ],
+      "description": {
+        "looksLike": "A split-screen slide with a white left half displaying a large section title and a dark charcoal right half displaying descriptive prompt text.",
+        "title": "The problem or challenge",
+        "layout": "section-title-and-description",
+        "background": {
+          "scope": "slide",
+          "kind": "solid"
+        },
+        "contentPlacement": "The slide title is vertically centered on the white left half, while the body explanation sits on the dark charcoal right half with an accent underline below.",
+        "images": [],
+        "boxes": [
+          {
+            "role": "body",
+            "text": "",
+            "x": 0.29,
+            "y": 1.987,
+            "w": 4.424,
+            "h": 1.651
+          },
+          {
+            "role": "body",
+            "text": "",
+            "x": 5.402,
+            "y": 0.792,
+            "w": 4.196,
+            "h": 4.041
+          }
+        ]
+      },
+      "gcsUri": "gs://alltheway-rinegan-slide-designs-prod/catalog/science-fair/slide-03.png"
+    },
+    "slide-04": {
+      "index": 3,
+      "prev": "slide-03",
+      "next": "slide-05",
+      "image": "science-fair/slide-04.png",
+      "coordinates": [
+        {
+          "x": 0.536,
+          "y": 0.576,
+          "w": 6.34,
+          "h": 4.474,
+          "kind": "text",
+          "text": "The hypothesis\n(or prediction)\nWhat do you think will happen?",
+          "fontSize": 44,
+          "bold": true,
+          "placeholder": "title",
+          "name": "Google Shape;125;p28"
+        }
+      ],
+      "description": {
+        "looksLike": "A clean, minimalist mint-green slide with large left-aligned bold typography presenting a prompt question.",
+        "title": "The hypothesis",
+        "layout": "main-point",
+        "background": {
+          "scope": "slide",
+          "kind": "solid"
+        },
+        "contentPlacement": "Large left-aligned title and prompt text occupying the left half of the frame against an unadorned solid background.",
+        "images": [],
+        "boxes": [
+          {
+            "role": "body",
+            "text": "The hypothesis\n(or prediction)\nWhat do you think will happen?",
+            "x": 0.536,
+            "y": 0.576,
+            "w": 6.34,
+            "h": 4.474,
+            "fontSize": 44
+          }
+        ]
+      },
+      "gcsUri": "gs://alltheway-rinegan-slide-designs-prod/catalog/science-fair/slide-04.png"
+    },
+    "slide-05": {
+      "index": 4,
+      "prev": "slide-04",
+      "next": "slide-06",
+      "image": "science-fair/slide-05.png",
+      "coordinates": [
+        {
+          "x": 0.341,
+          "y": 0.487,
+          "w": 9.318,
+          "h": 0.626,
+          "kind": "text",
+          "text": "Research",
+          "fontSize": 36,
+          "bold": false,
+          "placeholder": "title",
+          "name": "Google Shape;130;p29"
+        },
+        {
+          "x": 0.341,
+          "y": 1.527,
+          "w": 9.318,
+          "h": 3.469,
+          "kind": "text",
+          "text": "Explain all of the research you’ve done about this issue/challenge.\nWhat was the goal of your research? Be sure to explain how you found it and anyone who might have helped you!",
+          "fontSize": 24,
+          "bold": false,
+          "placeholder": "body",
+          "name": "Google Shape;131;p29"
+        }
+      ],
+      "description": {
+        "looksLike": "Minimalist text slide with a top header and prominent body text area on a white background.",
+        "title": "Research",
+        "layout": "title-and-body",
+        "background": {
+          "scope": "deck",
+          "kind": "solid"
+        },
+        "contentPlacement": "Left-aligned title at the top with a large body text block below.",
+        "images": [],
+        "boxes": [
+          {
+            "role": "body",
+            "text": "Research",
+            "x": 0.341,
+            "y": 0.487,
+            "w": 9.318,
+            "h": 0.626,
+            "fontSize": 36
+          },
+          {
+            "role": "body",
+            "text": "Explain all of the research you’ve done about this issue/challenge.\nWhat was the goal of your research? Be sure to explain how you found it and anyone who might have helped you!",
+            "x": 0.341,
+            "y": 1.527,
+            "w": 9.318,
+            "h": 3.469,
+            "fontSize": 24
+          }
+        ]
+      },
+      "gcsUri": "gs://alltheway-rinegan-slide-designs-prod/catalog/science-fair/slide-05.png"
+    },
+    "slide-06": {
+      "index": 5,
+      "prev": "slide-05",
+      "next": "slide-07",
+      "image": "science-fair/slide-06.png",
+      "coordinates": [
+        {
+          "x": 0.29,
+          "y": 1.319,
+          "w": 4.424,
+          "h": 1.651,
+          "kind": "text",
+          "text": "My testing method",
+          "bold": false,
+          "placeholder": "title",
+          "name": "Google Shape;136;p30"
+        },
+        {
+          "x": 0.29,
+          "y": 3.028,
+          "w": 4.424,
+          "h": 1.471,
+          "kind": "text",
+          "text": "Each scientist uses different methods of experimentation",
+          "bold": false,
+          "placeholder": "subTitle",
+          "name": "Google Shape;137;p30"
+        },
+        {
+          "x": 5.402,
+          "y": 0.792,
+          "w": 4.196,
+          "h": 4.041,
+          "kind": "text",
+          "text": "What methods did you use in your experiment?\nLorem ipsum dolor sit amet, consectetur adipiscing elit\nIncididunt ut labore et dolore\nConsectetur adipiscing elit, sed do eiusmod tempor incididunt",
+          "bold": false,
+          "placeholder": "body",
+          "name": "Google Shape;138;p30"
+        }
+      ],
+      "description": {
+        "looksLike": "A split-screen slide with title and subtitle on the white left half and a bulleted list on the dark charcoal right half.",
+        "title": "My testing method",
+        "layout": "section-title-and-description",
+        "background": {
+          "scope": "slide",
+          "kind": "solid"
+        },
+        "contentPlacement": "Title and subtitle stacked on the left; bulleted list questions and details occupying the right half.",
+        "images": [],
+        "boxes": [
+          {
+            "role": "body",
+            "text": "My testing method",
+            "x": 0.29,
+            "y": 1.319,
+            "w": 4.424,
+            "h": 1.651
+          },
+          {
+            "role": "body",
+            "text": "Each scientist uses different methods of experimentation",
+            "x": 0.29,
+            "y": 3.028,
+            "w": 4.424,
+            "h": 1.471
+          },
+          {
+            "role": "body",
+            "text": "What methods did you use in your experiment?\nLorem ipsum dolor sit amet, consectetur adipiscing elit\nIncididunt ut labore et dolore\nConsectetur adipiscing elit, sed do eiusmod tempor incididunt",
+            "x": 5.402,
+            "y": 0.792,
+            "w": 4.196,
+            "h": 4.041
+          }
+        ]
+      },
+      "gcsUri": "gs://alltheway-rinegan-slide-designs-prod/catalog/science-fair/slide-06.png"
+    },
+    "slide-07": {
+      "index": 6,
+      "prev": "slide-06",
+      "next": "slide-08",
+      "image": "science-fair/slide-07.png",
+      "coordinates": [
+        {
+          "x": 0.29,
+          "y": 1.319,
+          "w": 4.424,
+          "h": 1.651,
+          "kind": "text",
+          "text": "Experiment\ndata",
+          "bold": false,
+          "placeholder": "title",
+          "name": "Google Shape;143;p31"
+        },
+        {
+          "x": 0.29,
+          "y": 3.028,
+          "w": 4.424,
+          "h": 1.471,
+          "kind": "text",
+          "text": "Record the information you get from your experiment",
+          "bold": false,
+          "placeholder": "subTitle",
+          "name": "Google Shape;144;p31"
+        },
+        {
+          "x": 0.29,
+          "y": 4.916,
+          "w": 4.424,
+          "h": 0.493,
+          "kind": "text",
+          "text": "Include a table or graph to display what you see",
+          "bold": false,
+          "name": "Google Shape;145;p31"
+        },
+        {
+          "x": 5.776,
+          "y": 4.4,
+          "w": 0.754,
+          "h": 0.344,
+          "kind": "text",
+          "text": "10min",
+          "fontSize": 13,
+          "bold": true,
+          "placeholder": "body",
+          "name": "Google Shape;146;p31"
+        },
+        {
+          "x": 5.777,
+          "y": 2.433,
+          "w": 0.754,
+          "h": 0.344,
+          "kind": "text",
+          "text": "20",
+          "fontSize": 14,
+          "bold": true,
+          "placeholder": "body",
+          "name": "Google Shape;147;p31"
+        },
+        {
+          "x": 5.776,
+          "y": 2.777,
+          "w": 0.754,
+          "h": 0.406,
+          "kind": "shape",
+          "bold": false,
+          "name": "Google Shape;148;p31"
+        },
+        {
+          "x": 5.777,
+          "y": 2.802,
+          "w": 0.754,
+          "h": 0.344,
+          "kind": "text",
+          "text": "5",
+          "fontSize": 14,
+          "bold": true,
+          "placeholder": "body",
+          "name": "Google Shape;149;p31"
+        },
+        {
+          "x": 5.776,
+          "y": 3.183,
+          "w": 0.754,
+          "h": 1.217,
+          "kind": "shape",
+          "bold": false,
+          "name": "Google Shape;150;p31"
+        },
+        {
+          "x": 5.777,
+          "y": 3.601,
+          "w": 0.754,
+          "h": 0.344,
+          "kind": "text",
+          "text": "15",
+          "fontSize": 14,
+          "bold": true,
+          "placeholder": "body",
+          "name": "Google Shape;151;p31"
+        },
+        {
+          "x": 6.702,
+          "y": 4.4,
+          "w": 0.754,
+          "h": 0.344,
+          "kind": "text",
+          "text": "20min",
+          "fontSize": 13,
+          "bold": true,
+          "placeholder": "body",
+          "name": "Google Shape;152;p31"
+        },
+        {
+          "x": 6.702,
+          "y": 1.693,
+          "w": 0.754,
+          "h": 0.344,
+          "kind": "text",
+          "text": "29",
+          "fontSize": 14,
+          "bold": true,
+          "placeholder": "body",
+          "name": "Google Shape;153;p31"
+        },
+        {
+          "x": 6.702,
+          "y": 2.037,
+          "w": 0.754,
+          "h": 0.335,
+          "kind": "shape",
+          "bold": false,
+          "name": "Google Shape;154;p31"
+        },
+        {
+          "x": 6.702,
+          "y": 2.033,
+          "w": 0.754,
+          "h": 0.344,
+          "kind": "text",
+          "text": "4",
+          "fontSize": 14,
+          "bold": true,
+          "placeholder": "body",
+          "name": "Google Shape;155;p31"
+        },
+        {
+          "x": 6.702,
+          "y": 2.372,
+          "w": 0.754,
+          "h": 2.03,
+          "kind": "shape",
+          "bold": false,
+          "name": "Google Shape;156;p31"
+        },
+        {
+          "x": 6.702,
+          "y": 3.13,
+          "w": 0.754,
+          "h": 0.344,
+          "kind": "text",
+          "text": "25",
+          "fontSize": 14,
+          "bold": true,
+          "placeholder": "body",
+          "name": "Google Shape;157;p31"
+        },
+        {
+          "x": 7.627,
+          "y": 4.4,
+          "w": 0.754,
+          "h": 0.344,
+          "kind": "text",
+          "text": "30min",
+          "fontSize": 13,
+          "bold": true,
+          "placeholder": "body",
+          "name": "Google Shape;158;p31"
+        },
+        {
+          "x": 7.627,
+          "y": 0.881,
+          "w": 0.754,
+          "h": 0.344,
+          "kind": "text",
+          "text": "39",
+          "fontSize": 14,
+          "bold": true,
+          "placeholder": "body",
+          "name": "Google Shape;159;p31"
+        },
+        {
+          "x": 7.627,
+          "y": 1.225,
+          "w": 0.754,
+          "h": 0.335,
+          "kind": "shape",
+          "bold": false,
+          "name": "Google Shape;160;p31"
+        },
+        {
+          "x": 7.62,
+          "y": 1.225,
+          "w": 0.754,
+          "h": 0.344,
+          "kind": "text",
+          "text": "4",
+          "fontSize": 14,
+          "bold": true,
+          "placeholder": "body",
+          "name": "Google Shape;161;p31"
+        },
+        {
+          "x": 7.627,
+          "y": 1.56,
+          "w": 0.754,
+          "h": 2.841,
+          "kind": "shape",
+          "bold": false,
+          "name": "Google Shape;162;p31"
+        },
+        {
+          "x": 7.62,
+          "y": 2.641,
+          "w": 0.754,
+          "h": 0.344,
+          "kind": "text",
+          "text": "35",
+          "fontSize": 14,
+          "bold": true,
+          "placeholder": "body",
+          "name": "Google Shape;163;p31"
+        },
+        {
+          "x": 8.552,
+          "y": 4.4,
+          "w": 0.754,
+          "h": 0.344,
+          "kind": "text",
+          "text": "40min",
+          "fontSize": 13,
+          "bold": true,
+          "placeholder": "body",
+          "name": "Google Shape;164;p31"
+        },
+        {
+          "x": 8.539,
+          "y": 1.859,
+          "w": 0.754,
+          "h": 0.344,
+          "kind": "text",
+          "text": "27",
+          "fontSize": 14,
+          "bold": true,
+          "placeholder": "body",
+          "name": "Google Shape;165;p31"
+        },
+        {
+          "x": 8.539,
+          "y": 2.203,
+          "w": 0.754,
+          "h": 0.406,
+          "kind": "shape",
+          "bold": false,
+          "name": "Google Shape;166;p31"
+        },
+        {
+          "x": 8.552,
+          "y": 2.234,
+          "w": 0.754,
+          "h": 0.344,
+          "kind": "text",
+          "text": "5",
+          "fontSize": 14,
+          "bold": true,
+          "placeholder": "body",
+          "name": "Google Shape;167;p31"
+        },
+        {
+          "x": 8.539,
+          "y": 2.609,
+          "w": 0.754,
+          "h": 1.792,
+          "kind": "shape",
+          "bold": false,
+          "name": "Google Shape;168;p31"
+        },
+        {
+          "x": 8.552,
+          "y": 3.13,
+          "w": 0.754,
+          "h": 0.344,
+          "kind": "text",
+          "text": "22",
+          "fontSize": 14,
+          "bold": true,
+          "placeholder": "body",
+          "name": "Google Shape;169;p31"
+        },
+        {
+          "x": 8.67,
+          "y": 0.278,
+          "w": 0.829,
+          "h": 0.24,
+          "kind": "text",
+          "text": "Item 1",
+          "fontSize": 14,
+          "bold": true,
+          "placeholder": "body",
+          "name": "Google Shape;170;p31"
+        },
+        {
+          "x": 9.499,
+          "y": 0.278,
+          "w": 0.24,
+          "h": 0.24,
+          "kind": "shape",
+          "bold": false,
+          "name": "Google Shape;171;p31"
+        },
+        {
+          "x": 8.67,
+          "y": 0.658,
+          "w": 0.829,
+          "h": 0.24,
+          "kind": "text",
+          "text": "Item 2",
+          "fontSize": 14,
+          "bold": true,
+          "placeholder": "body",
+          "name": "Google Shape;172;p31"
+        },
+        {
+          "x": 9.499,
+          "y": 0.659,
+          "w": 0.24,
+          "h": 0.24,
+          "kind": "shape",
+          "bold": false,
+          "name": "Google Shape;173;p31"
+        }
+      ],
+      "description": {
+        "looksLike": "Split-screen slide featuring large left-aligned title and instructions on a white background, paired with a custom stacked bar chart visualization on a dark right panel.",
+        "title": "Experiment data",
+        "layout": "title-and-two-columns",
+        "background": {
+          "scope": "slide",
+          "kind": "solid"
+        },
+        "contentPlacement": "Left half contains the centered/left-aligned section title, subtitle, and footer note; right half holds a stacked column chart with four time intervals and a top-right legend.",
+        "images": [],
+        "boxes": [
+          {
+            "role": "body",
+            "text": "",
+            "x": 0.29,
+            "y": 1.319,
+            "w": 4.424,
+            "h": 1.651
+          },
+          {
+            "role": "body",
+            "text": "",
+            "x": 0.29,
+            "y": 3.028,
+            "w": 4.424,
+            "h": 1.471
+          },
+          {
+            "role": "body",
+            "text": "",
+            "x": 0.29,
+            "y": 4.916,
+            "w": 4.424,
+            "h": 0.493
+          },
+          {
+            "role": "body",
+            "text": "",
+            "x": 5.776,
+            "y": 4.4,
+            "w": 0.754,
+            "h": 0.344
+          },
+          {
+            "role": "body",
+            "text": "",
+            "x": 5.777,
+            "y": 2.433,
+            "w": 0.754,
+            "h": 0.344
+          },
+          {
+            "role": "body",
+            "text": "",
+            "x": 5.776,
+            "y": 2.777,
+            "w": 0.754,
+            "h": 0.406
+          },
+          {
+            "role": "body",
+            "text": "",
+            "x": 5.777,
+            "y": 2.802,
+            "w": 0.754,
+            "h": 0.344
+          },
+          {
+            "role": "body",
+            "text": "",
+            "x": 5.776,
+            "y": 3.183,
+            "w": 0.754,
+            "h": 1.217
+          },
+          {
+            "role": "body",
+            "text": "",
+            "x": 5.777,
+            "y": 3.601,
+            "w": 0.754,
+            "h": 0.344
+          },
+          {
+            "role": "body",
+            "text": "",
+            "x": 6.702,
+            "y": 4.4,
+            "w": 0.754,
+            "h": 0.344
+          },
+          {
+            "role": "body",
+            "text": "",
+            "x": 6.702,
+            "y": 1.693,
+            "w": 0.754,
+            "h": 0.344
+          },
+          {
+            "role": "body",
+            "text": "",
+            "x": 6.702,
+            "y": 2.037,
+            "w": 0.754,
+            "h": 0.335
+          },
+          {
+            "role": "body",
+            "text": "",
+            "x": 6.702,
+            "y": 2.033,
+            "w": 0.754,
+            "h": 0.344
+          },
+          {
+            "role": "body",
+            "text": "",
+            "x": 6.702,
+            "y": 2.372,
+            "w": 0.754,
+            "h": 2.03
+          },
+          {
+            "role": "body",
+            "text": "",
+            "x": 6.702,
+            "y": 3.13,
+            "w": 0.754,
+            "h": 0.344
+          },
+          {
+            "role": "body",
+            "text": "",
+            "x": 7.627,
+            "y": 4.4,
+            "w": 0.754,
+            "h": 0.344
+          },
+          {
+            "role": "body",
+            "text": "",
+            "x": 7.627,
+            "y": 0.881,
+            "w": 0.754,
+            "h": 0.344
+          },
+          {
+            "role": "body",
+            "text": "",
+            "x": 7.627,
+            "y": 1.225,
+            "w": 0.754,
+            "h": 0.335
+          },
+          {
+            "role": "body",
+            "text": "",
+            "x": 7.62,
+            "y": 1.225,
+            "w": 0.754,
+            "h": 0.344
+          },
+          {
+            "role": "body",
+            "text": "",
+            "x": 7.627,
+            "y": 1.56,
+            "w": 0.754,
+            "h": 2.841
+          },
+          {
+            "role": "body",
+            "text": "",
+            "x": 7.62,
+            "y": 2.641,
+            "w": 0.754,
+            "h": 0.344
+          },
+          {
+            "role": "body",
+            "text": "",
+            "x": 8.552,
+            "y": 4.4,
+            "w": 0.754,
+            "h": 0.344
+          },
+          {
+            "role": "body",
+            "text": "",
+            "x": 8.539,
+            "y": 1.859,
+            "w": 0.754,
+            "h": 0.344
+          },
+          {
+            "role": "body",
+            "text": "",
+            "x": 8.539,
+            "y": 2.203,
+            "w": 0.754,
+            "h": 0.406
+          },
+          {
+            "role": "body",
+            "text": "",
+            "x": 8.552,
+            "y": 2.234,
+            "w": 0.754,
+            "h": 0.344
+          },
+          {
+            "role": "body",
+            "text": "",
+            "x": 8.539,
+            "y": 2.609,
+            "w": 0.754,
+            "h": 1.792
+          },
+          {
+            "role": "body",
+            "text": "",
+            "x": 8.552,
+            "y": 3.13,
+            "w": 0.754,
+            "h": 0.344
+          },
+          {
+            "role": "body",
+            "text": "",
+            "x": 8.67,
+            "y": 0.278,
+            "w": 0.829,
+            "h": 0.24
+          },
+          {
+            "role": "body",
+            "text": "",
+            "x": 9.499,
+            "y": 0.278,
+            "w": 0.24,
+            "h": 0.24
+          },
+          {
+            "role": "body",
+            "text": "",
+            "x": 8.67,
+            "y": 0.658,
+            "w": 0.829,
+            "h": 0.24
+          },
+          {
+            "role": "body",
+            "text": "",
+            "x": 9.499,
+            "y": 0.659,
+            "w": 0.24,
+            "h": 0.24
+          }
+        ]
+      },
+      "gcsUri": "gs://alltheway-rinegan-slide-designs-prod/catalog/science-fair/slide-07.png"
+    },
+    "slide-08": {
+      "index": 7,
+      "prev": "slide-07",
+      "next": "slide-09",
+      "image": "science-fair/slide-08.png",
+      "coordinates": [
+        {
+          "x": 0.341,
+          "y": 0.487,
+          "w": 4.467,
+          "h": 1.099,
+          "kind": "text",
+          "text": "Aha!\nMy discoveries",
+          "fontSize": 18,
+          "bold": false,
+          "placeholder": "title",
+          "name": "Google Shape;178;p32"
+        },
+        {
+          "x": 0.341,
+          "y": 1.783,
+          "w": 4.467,
+          "h": 3.452,
+          "kind": "text",
+          "text": "What did you learn after testing?\nLorem ipsum dolor sit amet, consectetur adipiscing elit\nIncididunt ut labore et dolore\nConsectetur adipiscing elit, sed do eiusmod tempor incididunt",
+          "bold": false,
+          "placeholder": "body",
+          "name": "Google Shape;179;p32"
+        },
+        {
+          "x": 5.146,
+          "y": 0.396,
+          "w": 2.226,
+          "h": 2.138,
+          "kind": "picture",
+          "bold": false,
+          "name": "Google Shape;180;p32"
+        },
+        {
+          "x": 7.433,
+          "y": 0.396,
+          "w": 2.226,
+          "h": 2.138,
+          "kind": "picture",
+          "bold": false,
+          "name": "Google Shape;181;p32"
+        },
+        {
+          "x": 5.146,
+          "y": 2.588,
+          "w": 4.513,
+          "h": 2.647,
+          "kind": "picture",
+          "bold": false,
+          "name": "Google Shape;182;p32"
+        }
+      ],
+      "description": {
+        "looksLike": "A discoveries slide with a header and numbered list on the left paired with a three-photo collage on the right showing hands-on project work.",
+        "title": "Aha!\nMy discoveries",
+        "layout": "section-title-and-description",
+        "background": {
+          "scope": "slide",
+          "kind": "solid"
+        },
+        "contentPlacement": "The left side hosts the title and a numbered list of findings, while the right side holds three photos arranged in a two-over-one grid collage.",
+        "images": [
+          {
+            "kind": "picture",
+            "what": "photograph",
+            "x": 5.146,
+            "y": 0.396,
+            "w": 2.226,
+            "h": 2.138
+          },
+          {
+            "kind": "picture",
+            "what": "photograph",
+            "x": 7.433,
+            "y": 0.396,
+            "w": 2.226,
+            "h": 2.138
+          },
+          {
+            "kind": "picture",
+            "what": "photograph",
+            "x": 5.146,
+            "y": 2.588,
+            "w": 4.513,
+            "h": 2.647
+          }
+        ],
+        "boxes": [
+          {
+            "role": "body",
+            "text": "Aha!\nMy discoveries",
+            "x": 0.341,
+            "y": 0.487,
+            "w": 4.467,
+            "h": 1.099,
+            "fontSize": 18
+          },
+          {
+            "role": "body",
+            "text": "What did you learn after testing?\nLorem ipsum dolor sit amet, consectetur adipiscing elit\nIncididunt ut labore et dolore\nConsectetur adipiscing elit, sed do eiusmod tempor incididunt",
+            "x": 0.341,
+            "y": 1.783,
+            "w": 4.467,
+            "h": 3.452
+          },
+          {
+            "role": "body",
+            "text": "",
+            "x": 5.146,
+            "y": 0.396,
+            "w": 2.226,
+            "h": 2.138
+          },
+          {
+            "role": "body",
+            "text": "",
+            "x": 7.433,
+            "y": 0.396,
+            "w": 2.226,
+            "h": 2.138
+          },
+          {
+            "role": "body",
+            "text": "",
+            "x": 5.146,
+            "y": 2.588,
+            "w": 4.513,
+            "h": 2.647
+          }
+        ]
+      },
+      "gcsUri": "gs://alltheway-rinegan-slide-designs-prod/catalog/science-fair/slide-08.png"
+    },
+    "slide-09": {
+      "index": 8,
+      "prev": "slide-08",
+      "next": "slide-10",
+      "image": "science-fair/slide-09.png",
+      "coordinates": [
+        {
+          "x": 0.536,
+          "y": 0.576,
+          "w": 6.34,
+          "h": 4.474,
+          "kind": "text",
+          "text": "This is the most important takeaway that everyone has to remember.",
+          "fontSize": 48,
+          "bold": false,
+          "placeholder": "title",
+          "name": "Google Shape;187;p33"
+        }
+      ],
+      "description": {
+        "looksLike": "A bold takeaway slide with large, left-aligned dark text set against a solid mint-green background.",
+        "title": "This is the most important takeaway that everyone has to remember.",
+        "layout": "main-point",
+        "background": {
+          "scope": "slide",
+          "kind": "solid"
+        },
+        "contentPlacement": "Large headline text occupies the left half of the slide against a full solid green background.",
+        "images": [],
+        "boxes": [
+          {
+            "role": "body",
+            "text": "This is the most important takeaway that everyone has to remember.",
+            "x": 0.536,
+            "y": 0.576,
+            "w": 6.34,
+            "h": 4.474,
+            "fontSize": 48
+          }
+        ]
+      },
+      "gcsUri": "gs://alltheway-rinegan-slide-designs-prod/catalog/science-fair/slide-09.png"
+    },
+    "slide-10": {
+      "index": 9,
+      "prev": "slide-09",
+      "next": "slide-11",
+      "image": "science-fair/slide-10.png",
+      "coordinates": [
+        {
+          "x": 0.341,
+          "y": 0.487,
+          "w": 9.318,
+          "h": 0.626,
+          "kind": "text",
+          "text": "Conclusion",
+          "fontSize": 36,
+          "bold": false,
+          "placeholder": "title",
+          "name": "Google Shape;192;p34"
+        },
+        {
+          "x": 0.341,
+          "y": 1.527,
+          "w": 9.318,
+          "h": 3.469,
+          "kind": "text",
+          "text": "What is the conclusion of your experiment? Did the results support your hypothesis or predicted outcome? How will your findings help the area of science you’ve researched?",
+          "fontSize": 24,
+          "bold": false,
+          "placeholder": "body",
+          "name": "Google Shape;193;p34"
+        }
+      ],
+      "description": {
+        "looksLike": "Minimalist white text slide with a left-aligned title and a clean paragraph of prompt text below it.",
+        "title": "Conclusion",
+        "layout": "title-and-body",
+        "background": {
+          "scope": "deck",
+          "kind": "solid"
+        },
+        "contentPlacement": "Left-aligned title at the top left with wide paragraph text positioned directly underneath across the slide.",
+        "images": [],
+        "boxes": [
+          {
+            "role": "body",
+            "text": "Conclusion",
+            "x": 0.341,
+            "y": 0.487,
+            "w": 9.318,
+            "h": 0.626,
+            "fontSize": 36
+          },
+          {
+            "role": "body",
+            "text": "What is the conclusion of your experiment? Did the results support your hypothesis or predicted outcome? How will your findings help the area of science you’ve researched?",
+            "x": 0.341,
+            "y": 1.527,
+            "w": 9.318,
+            "h": 3.469,
+            "fontSize": 24
+          }
+        ]
+      },
+      "gcsUri": "gs://alltheway-rinegan-slide-designs-prod/catalog/science-fair/slide-10.png"
+    },
+    "slide-11": {
+      "index": 10,
+      "prev": "slide-10",
+      "next": null,
+      "image": "science-fair/slide-11.png",
+      "coordinates": [
+        {
+          "x": 0.341,
+          "y": 0.775,
+          "w": 4.254,
+          "h": 4.074,
+          "kind": "text",
+          "text": "What will I do next?\nWhat will you do with your findings next? How will you further your research/findings?",
+          "fontSize": 32,
+          "bold": false,
+          "placeholder": "title",
+          "name": "Google Shape;198;p35"
+        },
+        {
+          "x": 4.974,
+          "y": 0,
+          "w": 5.026,
+          "h": 5.625,
+          "kind": "picture",
+          "bold": false,
+          "name": "Google Shape;199;p35"
+        }
+      ],
+      "description": {
+        "looksLike": "A split-layout slide featuring a bold heading with supporting description on the left and a full-bleed photograph of a wooden bookshelf on the right.",
+        "title": "What will I do next?",
+        "layout": "section-title-and-description",
+        "background": {
+          "scope": "slide",
+          "kind": "solid"
+        },
+        "contentPlacement": "Header and explanatory text stacked on the left half; full-height photo occupying the entire right half.",
+        "images": [
+          {
+            "kind": "picture",
+            "what": "photograph",
+            "x": 4.974,
+            "y": 0,
+            "w": 5.026,
+            "h": 5.625
+          }
+        ],
+        "boxes": [
+          {
+            "role": "body",
+            "text": "",
+            "x": 0.341,
+            "y": 0.775,
+            "w": 4.254,
+            "h": 4.074
+          }
+        ]
+      },
+      "gcsUri": "gs://alltheway-rinegan-slide-designs-prod/catalog/science-fair/slide-11.png"
+    }
+  }
+}

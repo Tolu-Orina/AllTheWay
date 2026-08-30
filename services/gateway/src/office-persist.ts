@@ -7,6 +7,7 @@ import { compileWorkFile } from "./document-quality.js";
 import { documentCellUrl, invokeDocumentCell } from "./document-client.js";
 import { generateStill } from "./document-images.js";
 import { critiqueDeck, vertexVision } from "./document-critic.js";
+import { vertexPlanner } from "./document-planner.js";
 import {
   WORK_FILES_CONNECTOR,
   isWorkFilesTool,
@@ -70,6 +71,7 @@ export async function actWorkFiles(opts: {
     args,
     imagesRemaining,
     generateImage: generateStill,
+    planner: vertexPlanner,
     critic: async (deck, pages) => critiqueDeck(deck, pages, vertexVision),
     callCell: cellUrl
       ? async () => {

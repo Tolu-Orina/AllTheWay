@@ -1,0 +1,5737 @@
+{
+  "id": "corporate-agile-project-workflow-infographic",
+  "title": "corporate agile project workflow infographic",
+  "source": "Corporate Agile Project Workflow Infographic Presentation.pptx",
+  "width": 20,
+  "height": 11.25,
+  "overall_deck_description": "Designed as an agile corporate process and workflow presentation, the 10-slide deck utilizes a high-contrast modern infographic style set against a clean, light cool-gray background (#F0F4F9). The sequential color system uses a consistent 4- to 5-step gradient palette running from vivid lime green and emerald teal through deep ocean blue to midnight navy, establishing clear chronological order across every slide. Typography pairs extra-bold sans-serif titles and oversized step numerals (01–05) with legible, neutral sans-serif body copy and subtitles. Key repeating design motifs include white outlined iconography, rounded white content cards with directional ribbon tabs, multi-segment chevron flows, circular loop diagrams, and bent pointer callouts. The deck structure maintains centered top headers with descriptive subheadings on body slides, systematically translating agile phases, sprint cycles, and project benefits into modular visual diagrams.",
+  "slides": {
+    "slide-01": {
+      "index": 0,
+      "prev": null,
+      "next": "slide-02",
+      "image": "corporate-agile-project-workflow-infographic/slide-01.png",
+      "coordinates": [
+        {
+          "x": 1.042,
+          "y": 0.863,
+          "w": 9.333,
+          "h": 9.524,
+          "kind": "shape",
+          "bold": false,
+          "name": "Freeform 2"
+        },
+        {
+          "x": 0,
+          "y": 0,
+          "w": 0.937,
+          "h": 0.774,
+          "kind": "shape",
+          "color": "FFFFFF",
+          "bold": false,
+          "name": "Freeform 4"
+        },
+        {
+          "x": 0,
+          "y": -0.021,
+          "w": 0.937,
+          "h": 0.795,
+          "kind": "shape",
+          "bold": false,
+          "name": "TextBox 5"
+        },
+        {
+          "x": 0,
+          "y": 0,
+          "w": 0.937,
+          "h": 0.774,
+          "kind": "shape",
+          "color": "FFFFFF",
+          "bold": false,
+          "name": "Freeform 7"
+        },
+        {
+          "x": 0,
+          "y": -0.021,
+          "w": 0.937,
+          "h": 0.795,
+          "kind": "shape",
+          "bold": false,
+          "name": "TextBox 8"
+        },
+        {
+          "x": 10.779,
+          "y": 1.072,
+          "w": 2.627,
+          "h": 1.013,
+          "kind": "shape",
+          "bold": false,
+          "name": "Freeform 9"
+        },
+        {
+          "x": 10.779,
+          "y": 4.304,
+          "w": 2.627,
+          "h": 1.013,
+          "kind": "shape",
+          "bold": false,
+          "name": "Freeform 10"
+        },
+        {
+          "x": 0,
+          "y": 0,
+          "w": 0.937,
+          "h": 0.774,
+          "kind": "shape",
+          "color": "FFFFFF",
+          "bold": false,
+          "name": "Freeform 12"
+        },
+        {
+          "x": 0,
+          "y": -0.021,
+          "w": 0.937,
+          "h": 0.795,
+          "kind": "shape",
+          "bold": false,
+          "name": "TextBox 13"
+        },
+        {
+          "x": 10.779,
+          "y": 7.535,
+          "w": 2.627,
+          "h": 1.013,
+          "kind": "shape",
+          "bold": false,
+          "name": "Freeform 14"
+        },
+        {
+          "x": 0,
+          "y": 0,
+          "w": 0.937,
+          "h": 0.774,
+          "kind": "shape",
+          "color": "FFFFFF",
+          "bold": false,
+          "name": "Freeform 16"
+        },
+        {
+          "x": 0,
+          "y": -0.021,
+          "w": 0.937,
+          "h": 0.795,
+          "kind": "shape",
+          "bold": false,
+          "name": "TextBox 17"
+        },
+        {
+          "x": 14.88,
+          "y": 2.688,
+          "w": 2.627,
+          "h": 1.013,
+          "kind": "shape",
+          "bold": false,
+          "name": "Freeform 18"
+        },
+        {
+          "x": 0,
+          "y": 0,
+          "w": 0.937,
+          "h": 0.774,
+          "kind": "shape",
+          "color": "FFFFFF",
+          "bold": false,
+          "name": "Freeform 20"
+        },
+        {
+          "x": 0,
+          "y": -0.021,
+          "w": 0.937,
+          "h": 0.795,
+          "kind": "shape",
+          "bold": false,
+          "name": "TextBox 21"
+        },
+        {
+          "x": 14.88,
+          "y": 5.92,
+          "w": 2.627,
+          "h": 1.013,
+          "kind": "shape",
+          "bold": false,
+          "name": "Freeform 22"
+        },
+        {
+          "x": 8.475,
+          "y": 6.959,
+          "w": 0.668,
+          "h": 0.668,
+          "kind": "shape",
+          "bold": false,
+          "name": "Freeform 23"
+        },
+        {
+          "x": 1.926,
+          "y": 6.181,
+          "w": 0.495,
+          "h": 0.778,
+          "kind": "shape",
+          "bold": false,
+          "name": "Freeform 24"
+        },
+        {
+          "x": 4.952,
+          "y": 8.83,
+          "w": 0.468,
+          "h": 0.468,
+          "kind": "shape",
+          "bold": false,
+          "name": "Freeform 25"
+        },
+        {
+          "x": 3.127,
+          "y": 2.349,
+          "w": 0.774,
+          "h": 0.745,
+          "kind": "shape",
+          "bold": false,
+          "name": "Freeform 26"
+        },
+        {
+          "x": 8.155,
+          "y": 2.987,
+          "w": 0.653,
+          "h": 0.747,
+          "kind": "shape",
+          "bold": false,
+          "name": "Freeform 27"
+        },
+        {
+          "x": 3.768,
+          "y": 4.823,
+          "w": 3.88,
+          "h": 1.665,
+          "kind": "text",
+          "text": "Workflow Process\nStages",
+          "fontSize": 36,
+          "color": "000000",
+          "bold": false,
+          "name": "TextBox 28"
+        },
+        {
+          "x": 11.379,
+          "y": 2.456,
+          "w": 2.698,
+          "h": 0.883,
+          "kind": "text",
+          "text": "Teams outline\nshort-term goals and deliverables for the sprint duration",
+          "fontSize": 16,
+          "color": "000000",
+          "bold": false,
+          "name": "TextBox 29"
+        },
+        {
+          "x": 11.379,
+          "y": 5.688,
+          "w": 2.698,
+          "h": 0.883,
+          "kind": "text",
+          "text": "Clear\nassignments and priorities are created for team members",
+          "fontSize": 16,
+          "color": "000000",
+          "bold": false,
+          "name": "TextBox 30"
+        },
+        {
+          "x": 11.103,
+          "y": 1.413,
+          "w": 2.303,
+          "h": 0.279,
+          "kind": "text",
+          "text": "Plan\nSprint",
+          "fontSize": 16,
+          "color": "FFFFFF",
+          "bold": false,
+          "name": "TextBox 31"
+        },
+        {
+          "x": 11.103,
+          "y": 4.644,
+          "w": 2.303,
+          "h": 0.279,
+          "kind": "text",
+          "text": "D\nesign Tasks",
+          "fontSize": 16,
+          "color": "FFFFFF",
+          "bold": false,
+          "name": "TextBox 32"
+        },
+        {
+          "x": 13.531,
+          "y": 1.331,
+          "w": 0.546,
+          "h": 0.444,
+          "kind": "text",
+          "text": "01",
+          "fontSize": 23.99,
+          "color": "000000",
+          "bold": false,
+          "name": "TextBox 33"
+        },
+        {
+          "x": 13.531,
+          "y": 4.562,
+          "w": 0.546,
+          "h": 0.444,
+          "kind": "text",
+          "text": "02",
+          "fontSize": 23.99,
+          "color": "000000",
+          "bold": false,
+          "name": "TextBox 34"
+        },
+        {
+          "x": 11.379,
+          "y": 8.919,
+          "w": 2.698,
+          "h": 0.883,
+          "kind": "text",
+          "text": "The team develop\ns product features and project deliverables collaboratively",
+          "fontSize": 16,
+          "color": "000000",
+          "bold": false,
+          "name": "TextBox 35"
+        },
+        {
+          "x": 11.103,
+          "y": 7.876,
+          "w": 2.303,
+          "h": 0.279,
+          "kind": "text",
+          "text": "Build W\nork",
+          "fontSize": 16,
+          "color": "FFFFFF",
+          "bold": false,
+          "name": "TextBox 36"
+        },
+        {
+          "x": 13.531,
+          "y": 7.794,
+          "w": 0.546,
+          "h": 0.444,
+          "kind": "text",
+          "text": "03",
+          "fontSize": 23.99,
+          "color": "000000",
+          "bold": false,
+          "name": "TextBox 37"
+        },
+        {
+          "x": 15.48,
+          "y": 4.072,
+          "w": 2.698,
+          "h": 0.883,
+          "kind": "text",
+          "text": "Work is rev\niewed and tested to ensure expected standards are met",
+          "fontSize": 16,
+          "color": "000000",
+          "bold": false,
+          "name": "TextBox 38"
+        },
+        {
+          "x": 15.204,
+          "y": 3.029,
+          "w": 2.303,
+          "h": 0.279,
+          "kind": "text",
+          "text": "T\nest Quality",
+          "fontSize": 16,
+          "color": "FFFFFF",
+          "bold": false,
+          "name": "TextBox 39"
+        },
+        {
+          "x": 17.631,
+          "y": 2.946,
+          "w": 0.546,
+          "h": 0.444,
+          "kind": "text",
+          "text": "04",
+          "fontSize": 23.99,
+          "color": "000000",
+          "bold": false,
+          "name": "TextBox 40"
+        },
+        {
+          "x": 15.48,
+          "y": 7.303,
+          "w": 2.698,
+          "h": 0.883,
+          "kind": "text",
+          "text": "Final\noutput is released to stakeholders for immediate feedback and use",
+          "fontSize": 16,
+          "color": "000000",
+          "bold": false,
+          "name": "TextBox 41"
+        },
+        {
+          "x": 15.204,
+          "y": 6.26,
+          "w": 2.303,
+          "h": 0.279,
+          "kind": "text",
+          "text": "D\neliver Value",
+          "fontSize": 16,
+          "color": "FFFFFF",
+          "bold": false,
+          "name": "TextBox 42"
+        },
+        {
+          "x": 17.631,
+          "y": 6.178,
+          "w": 0.546,
+          "h": 0.444,
+          "kind": "text",
+          "text": "05",
+          "fontSize": 23.99,
+          "color": "000000",
+          "bold": false,
+          "name": "TextBox 43"
+        }
+      ],
+      "description": {
+        "looksLike": "A modern agile workflow infographic featuring a large 5-stage circular arrow diagram on the left with central text, paired with five numbered card steps staggered across two columns on the right.",
+        "title": "Workflow Process Stages",
+        "layout": "title-and-two-columns",
+        "background": {
+          "scope": "slide",
+          "kind": "solid"
+        },
+        "contentPlacement": "The main topic title sits at the center of a circular 5-stage arrow wheel on the left half, while the five detailed stage cards are stacked and staggered in two columns on the right half.",
+        "images": [],
+        "boxes": [
+          {
+            "role": "body",
+            "text": "",
+            "x": 1.042,
+            "y": 0.863,
+            "w": 9.333,
+            "h": 9.524
+          },
+          {
+            "role": "body",
+            "text": "",
+            "x": 3.768,
+            "y": 4.823,
+            "w": 3.88,
+            "h": 1.665
+          },
+          {
+            "role": "body",
+            "text": "",
+            "x": 10.779,
+            "y": 1.072,
+            "w": 2.627,
+            "h": 1.013
+          },
+          {
+            "role": "body",
+            "text": "",
+            "x": 11.103,
+            "y": 1.413,
+            "w": 2.303,
+            "h": 0.279
+          },
+          {
+            "role": "body",
+            "text": "",
+            "x": 13.531,
+            "y": 1.331,
+            "w": 0.546,
+            "h": 0.444
+          },
+          {
+            "role": "body",
+            "text": "",
+            "x": 11.379,
+            "y": 2.456,
+            "w": 2.698,
+            "h": 0.883
+          },
+          {
+            "role": "body",
+            "text": "",
+            "x": 10.779,
+            "y": 4.304,
+            "w": 2.627,
+            "h": 1.013
+          },
+          {
+            "role": "body",
+            "text": "",
+            "x": 11.103,
+            "y": 4.644,
+            "w": 2.303,
+            "h": 0.279
+          },
+          {
+            "role": "body",
+            "text": "",
+            "x": 13.531,
+            "y": 4.562,
+            "w": 0.546,
+            "h": 0.444
+          },
+          {
+            "role": "body",
+            "text": "",
+            "x": 11.379,
+            "y": 5.688,
+            "w": 2.698,
+            "h": 0.883
+          },
+          {
+            "role": "body",
+            "text": "",
+            "x": 10.779,
+            "y": 7.535,
+            "w": 2.627,
+            "h": 1.013
+          },
+          {
+            "role": "body",
+            "text": "",
+            "x": 11.103,
+            "y": 7.876,
+            "w": 2.303,
+            "h": 0.279
+          },
+          {
+            "role": "body",
+            "text": "",
+            "x": 13.531,
+            "y": 7.794,
+            "w": 0.546,
+            "h": 0.444
+          },
+          {
+            "role": "body",
+            "text": "",
+            "x": 11.379,
+            "y": 8.919,
+            "w": 2.698,
+            "h": 0.883
+          },
+          {
+            "role": "body",
+            "text": "",
+            "x": 14.88,
+            "y": 2.688,
+            "w": 2.627,
+            "h": 1.013
+          },
+          {
+            "role": "body",
+            "text": "",
+            "x": 15.204,
+            "y": 3.029,
+            "w": 2.303,
+            "h": 0.279
+          },
+          {
+            "role": "body",
+            "text": "",
+            "x": 17.631,
+            "y": 2.946,
+            "w": 0.546,
+            "h": 0.444
+          },
+          {
+            "role": "body",
+            "text": "",
+            "x": 15.48,
+            "y": 4.072,
+            "w": 2.698,
+            "h": 0.883
+          },
+          {
+            "role": "body",
+            "text": "",
+            "x": 14.88,
+            "y": 5.92,
+            "w": 2.627,
+            "h": 1.013
+          },
+          {
+            "role": "body",
+            "text": "",
+            "x": 15.204,
+            "y": 6.26,
+            "w": 2.303,
+            "h": 0.279
+          },
+          {
+            "role": "body",
+            "text": "",
+            "x": 17.631,
+            "y": 6.178,
+            "w": 0.546,
+            "h": 0.444
+          },
+          {
+            "role": "body",
+            "text": "",
+            "x": 15.48,
+            "y": 7.303,
+            "w": 2.698,
+            "h": 0.883
+          }
+        ]
+      },
+      "gcsUri": "gs://alltheway-rinegan-slide-designs-prod/catalog/corporate-agile-project-workflow-infographic/slide-01.png"
+    },
+    "slide-02": {
+      "index": 1,
+      "prev": "slide-01",
+      "next": "slide-03",
+      "image": "corporate-agile-project-workflow-infographic/slide-02.png",
+      "coordinates": [
+        {
+          "x": 0,
+          "y": 0,
+          "w": 1.274,
+          "h": 0.749,
+          "kind": "shape",
+          "color": "FFFFFF",
+          "bold": false,
+          "name": "Freeform 3"
+        },
+        {
+          "x": 0,
+          "y": -0.021,
+          "w": 1.274,
+          "h": 0.77,
+          "kind": "shape",
+          "bold": false,
+          "name": "TextBox 4"
+        },
+        {
+          "x": 0,
+          "y": 0,
+          "w": 1.274,
+          "h": 0.749,
+          "kind": "shape",
+          "color": "FFFFFF",
+          "bold": false,
+          "name": "Freeform 6"
+        },
+        {
+          "x": 0,
+          "y": -0.021,
+          "w": 1.274,
+          "h": 0.77,
+          "kind": "shape",
+          "bold": false,
+          "name": "TextBox 7"
+        },
+        {
+          "x": 3.355,
+          "y": 1.042,
+          "w": 10.331,
+          "h": 9.167,
+          "kind": "shape",
+          "bold": false,
+          "name": "Freeform 8"
+        },
+        {
+          "x": 14.041,
+          "y": 2.131,
+          "w": 1.147,
+          "h": 1.434,
+          "kind": "shape",
+          "bold": false,
+          "name": "Freeform 9"
+        },
+        {
+          "x": 14.041,
+          "y": 7.616,
+          "w": 1.147,
+          "h": 1.434,
+          "kind": "shape",
+          "bold": false,
+          "name": "Freeform 10"
+        },
+        {
+          "x": 0,
+          "y": 0,
+          "w": 1.274,
+          "h": 0.749,
+          "kind": "shape",
+          "color": "FFFFFF",
+          "bold": false,
+          "name": "Freeform 12"
+        },
+        {
+          "x": 0,
+          "y": -0.021,
+          "w": 1.274,
+          "h": 0.77,
+          "kind": "shape",
+          "bold": false,
+          "name": "TextBox 13"
+        },
+        {
+          "x": 1.525,
+          "y": 2.131,
+          "w": 1.147,
+          "h": 1.434,
+          "kind": "shape",
+          "bold": false,
+          "name": "Freeform 14"
+        },
+        {
+          "x": 5,
+          "y": 6.607,
+          "w": 1.457,
+          "h": 1.293,
+          "kind": "shape",
+          "bold": false,
+          "name": "Freeform 15"
+        },
+        {
+          "x": 9.815,
+          "y": 2.157,
+          "w": 1.016,
+          "h": 0.98,
+          "kind": "shape",
+          "bold": false,
+          "name": "Freeform 16"
+        },
+        {
+          "x": 12.02,
+          "y": 6.85,
+          "w": 0.832,
+          "h": 0.676,
+          "kind": "shape",
+          "bold": false,
+          "name": "Freeform 17"
+        },
+        {
+          "x": 8.214,
+          "y": 5.538,
+          "w": 2.938,
+          "h": 1.129,
+          "kind": "text",
+          "text": "Core Focus Areas",
+          "fontSize": 36,
+          "color": "000000",
+          "bold": false,
+          "name": "TextBox 18"
+        },
+        {
+          "x": 3.026,
+          "y": 2.471,
+          "w": 3.193,
+          "h": 1.185,
+          "kind": "text",
+          "text": "Team member\ns share responsibility and communicate ongoing project progress effectively across the team",
+          "fontSize": 16,
+          "color": "000000",
+          "bold": false,
+          "name": "TextBox 19"
+        },
+        {
+          "x": 3.026,
+          "y": 1.989,
+          "w": 3.077,
+          "h": 0.346,
+          "kind": "text",
+          "text": "Collaboration",
+          "fontSize": 18,
+          "color": "000000",
+          "bold": false,
+          "name": "TextBox 20"
+        },
+        {
+          "x": 15.563,
+          "y": 2.471,
+          "w": 3.077,
+          "h": 1.185,
+          "kind": "text",
+          "text": "Proces\nses stay flexible to adjust quickly to new needs and evolving project requirements effectively",
+          "fontSize": 16,
+          "color": "000000",
+          "bold": false,
+          "name": "TextBox 21"
+        },
+        {
+          "x": 15.563,
+          "y": 1.989,
+          "w": 3.077,
+          "h": 0.346,
+          "kind": "text",
+          "text": "Adaptability",
+          "fontSize": 18,
+          "color": "000000",
+          "bold": false,
+          "name": "TextBox 22"
+        },
+        {
+          "x": 15.563,
+          "y": 7.956,
+          "w": 3.077,
+          "h": 1.185,
+          "kind": "text",
+          "text": "Work remains visible to all\nstakeholders for trust, clarity, better decision-making, and shared accountability",
+          "fontSize": 16,
+          "color": "000000",
+          "bold": false,
+          "name": "TextBox 23"
+        },
+        {
+          "x": 15.563,
+          "y": 7.474,
+          "w": 3.077,
+          "h": 0.346,
+          "kind": "text",
+          "text": "Transparency",
+          "fontSize": 18,
+          "color": "000000",
+          "bold": false,
+          "name": "TextBox 24"
+        },
+        {
+          "x": 1.543,
+          "y": 2.434,
+          "w": 0.925,
+          "h": 0.498,
+          "kind": "text",
+          "text": "01",
+          "fontSize": 26.99,
+          "color": "FFFFFF",
+          "bold": false,
+          "name": "TextBox 25"
+        },
+        {
+          "x": 14.058,
+          "y": 2.434,
+          "w": 0.925,
+          "h": 0.498,
+          "kind": "text",
+          "text": "02",
+          "fontSize": 26.99,
+          "color": "FFFFFF",
+          "bold": false,
+          "name": "TextBox 26"
+        },
+        {
+          "x": 14.058,
+          "y": 7.919,
+          "w": 0.925,
+          "h": 0.498,
+          "kind": "text",
+          "text": "03",
+          "fontSize": 26.99,
+          "color": "FFFFFF",
+          "bold": false,
+          "name": "TextBox 27"
+        }
+      ],
+      "description": {
+        "looksLike": "A modern 3-part circular pinwheel infographic centered on a light gray background, connecting central focus areas to three numbered callout cards on the left and right.",
+        "title": "Core Focus Areas",
+        "layout": "blank",
+        "background": {
+          "scope": "slide",
+          "kind": "solid"
+        },
+        "contentPlacement": "The slide title sits inside a central white circle surrounded by three colored pinwheel sectors with icons, which link to three numbered text cards positioned on the left and right sides.",
+        "images": [],
+        "boxes": [
+          {
+            "role": "body",
+            "text": "",
+            "x": 0,
+            "y": 0,
+            "w": 1.274,
+            "h": 0.749
+          },
+          {
+            "role": "body",
+            "text": "",
+            "x": 0,
+            "y": -0.021,
+            "w": 1.274,
+            "h": 0.77
+          },
+          {
+            "role": "body",
+            "text": "",
+            "x": 0,
+            "y": 0,
+            "w": 1.274,
+            "h": 0.749
+          },
+          {
+            "role": "body",
+            "text": "",
+            "x": 0,
+            "y": -0.021,
+            "w": 1.274,
+            "h": 0.77
+          },
+          {
+            "role": "body",
+            "text": "",
+            "x": 3.355,
+            "y": 1.042,
+            "w": 10.331,
+            "h": 9.167
+          },
+          {
+            "role": "body",
+            "text": "",
+            "x": 14.041,
+            "y": 2.131,
+            "w": 1.147,
+            "h": 1.434
+          },
+          {
+            "role": "body",
+            "text": "",
+            "x": 14.041,
+            "y": 7.616,
+            "w": 1.147,
+            "h": 1.434
+          },
+          {
+            "role": "body",
+            "text": "",
+            "x": 0,
+            "y": 0,
+            "w": 1.274,
+            "h": 0.749
+          },
+          {
+            "role": "body",
+            "text": "",
+            "x": 0,
+            "y": -0.021,
+            "w": 1.274,
+            "h": 0.77
+          },
+          {
+            "role": "body",
+            "text": "",
+            "x": 1.525,
+            "y": 2.131,
+            "w": 1.147,
+            "h": 1.434
+          },
+          {
+            "role": "body",
+            "text": "",
+            "x": 5,
+            "y": 6.607,
+            "w": 1.457,
+            "h": 1.293
+          },
+          {
+            "role": "body",
+            "text": "",
+            "x": 9.815,
+            "y": 2.157,
+            "w": 1.016,
+            "h": 0.98
+          },
+          {
+            "role": "body",
+            "text": "",
+            "x": 12.02,
+            "y": 6.85,
+            "w": 0.832,
+            "h": 0.676
+          },
+          {
+            "role": "body",
+            "text": "",
+            "x": 8.214,
+            "y": 5.538,
+            "w": 2.938,
+            "h": 1.129
+          },
+          {
+            "role": "body",
+            "text": "",
+            "x": 3.026,
+            "y": 2.471,
+            "w": 3.193,
+            "h": 1.185
+          },
+          {
+            "role": "body",
+            "text": "",
+            "x": 3.026,
+            "y": 1.989,
+            "w": 3.077,
+            "h": 0.346
+          },
+          {
+            "role": "body",
+            "text": "",
+            "x": 15.563,
+            "y": 2.471,
+            "w": 3.077,
+            "h": 1.185
+          },
+          {
+            "role": "body",
+            "text": "",
+            "x": 15.563,
+            "y": 1.989,
+            "w": 3.077,
+            "h": 0.346
+          },
+          {
+            "role": "body",
+            "text": "",
+            "x": 15.563,
+            "y": 7.956,
+            "w": 3.077,
+            "h": 1.185
+          },
+          {
+            "role": "body",
+            "text": "",
+            "x": 15.563,
+            "y": 7.474,
+            "w": 3.077,
+            "h": 0.346
+          },
+          {
+            "role": "body",
+            "text": "",
+            "x": 1.543,
+            "y": 2.434,
+            "w": 0.925,
+            "h": 0.498
+          },
+          {
+            "role": "body",
+            "text": "",
+            "x": 14.058,
+            "y": 2.434,
+            "w": 0.925,
+            "h": 0.498
+          },
+          {
+            "role": "body",
+            "text": "",
+            "x": 14.058,
+            "y": 7.919,
+            "w": 0.925,
+            "h": 0.498
+          }
+        ]
+      },
+      "gcsUri": "gs://alltheway-rinegan-slide-designs-prod/catalog/corporate-agile-project-workflow-infographic/slide-02.png"
+    },
+    "slide-03": {
+      "index": 2,
+      "prev": "slide-02",
+      "next": "slide-04",
+      "image": "corporate-agile-project-workflow-infographic/slide-03.png",
+      "coordinates": [
+        {
+          "x": 1.883,
+          "y": 3.604,
+          "w": 2.702,
+          "h": 1.188,
+          "kind": "shape",
+          "bold": false,
+          "name": "Freeform 2"
+        },
+        {
+          "x": 5.196,
+          "y": 3.604,
+          "w": 2.702,
+          "h": 1.188,
+          "kind": "shape",
+          "bold": false,
+          "name": "Freeform 3"
+        },
+        {
+          "x": 8.51,
+          "y": 3.604,
+          "w": 2.702,
+          "h": 1.188,
+          "kind": "shape",
+          "bold": false,
+          "name": "Freeform 4"
+        },
+        {
+          "x": 11.824,
+          "y": 3.604,
+          "w": 2.702,
+          "h": 1.188,
+          "kind": "shape",
+          "bold": false,
+          "name": "Freeform 5"
+        },
+        {
+          "x": 15.137,
+          "y": 3.604,
+          "w": 2.702,
+          "h": 1.188,
+          "kind": "shape",
+          "bold": false,
+          "name": "Freeform 6"
+        },
+        {
+          "x": 0,
+          "y": 0,
+          "w": 0.712,
+          "h": 1.014,
+          "kind": "shape",
+          "color": "FFFFFF",
+          "bold": false,
+          "name": "Freeform 8"
+        },
+        {
+          "x": 0,
+          "y": -0.021,
+          "w": 0.712,
+          "h": 1.035,
+          "kind": "shape",
+          "bold": false,
+          "name": "TextBox 9"
+        },
+        {
+          "x": 0,
+          "y": 0,
+          "w": 0.712,
+          "h": 1.014,
+          "kind": "shape",
+          "color": "FFFFFF",
+          "bold": false,
+          "name": "Freeform 11"
+        },
+        {
+          "x": 0,
+          "y": -0.021,
+          "w": 0.712,
+          "h": 1.035,
+          "kind": "shape",
+          "bold": false,
+          "name": "TextBox 12"
+        },
+        {
+          "x": 0,
+          "y": 0,
+          "w": 0.712,
+          "h": 1.014,
+          "kind": "shape",
+          "color": "FFFFFF",
+          "bold": false,
+          "name": "Freeform 14"
+        },
+        {
+          "x": 0,
+          "y": -0.021,
+          "w": 0.712,
+          "h": 1.035,
+          "kind": "shape",
+          "bold": false,
+          "name": "TextBox 15"
+        },
+        {
+          "x": 0,
+          "y": 0,
+          "w": 0.712,
+          "h": 1.014,
+          "kind": "shape",
+          "color": "FFFFFF",
+          "bold": false,
+          "name": "Freeform 17"
+        },
+        {
+          "x": 0,
+          "y": -0.021,
+          "w": 0.712,
+          "h": 1.035,
+          "kind": "shape",
+          "bold": false,
+          "name": "TextBox 18"
+        },
+        {
+          "x": 0,
+          "y": 0,
+          "w": 0.712,
+          "h": 1.014,
+          "kind": "shape",
+          "color": "FFFFFF",
+          "bold": false,
+          "name": "Freeform 20"
+        },
+        {
+          "x": 0,
+          "y": -0.021,
+          "w": 0.712,
+          "h": 1.035,
+          "kind": "shape",
+          "bold": false,
+          "name": "TextBox 21"
+        },
+        {
+          "x": 0,
+          "y": 0,
+          "w": 0.65,
+          "h": 0.045,
+          "kind": "shape",
+          "color": "56E11B",
+          "bold": false,
+          "name": "Freeform 23"
+        },
+        {
+          "x": 0,
+          "y": -0.042,
+          "w": 0.65,
+          "h": 0.087,
+          "kind": "shape",
+          "bold": false,
+          "name": "TextBox 24"
+        },
+        {
+          "x": 0,
+          "y": 0,
+          "w": 0.65,
+          "h": 0.045,
+          "kind": "shape",
+          "color": "00C267",
+          "bold": false,
+          "name": "Freeform 26"
+        },
+        {
+          "x": 0,
+          "y": -0.042,
+          "w": 0.65,
+          "h": 0.087,
+          "kind": "shape",
+          "bold": false,
+          "name": "TextBox 27"
+        },
+        {
+          "x": 0,
+          "y": 0,
+          "w": 0.65,
+          "h": 0.045,
+          "kind": "shape",
+          "color": "007B80",
+          "bold": false,
+          "name": "Freeform 29"
+        },
+        {
+          "x": 0,
+          "y": -0.042,
+          "w": 0.65,
+          "h": 0.087,
+          "kind": "shape",
+          "bold": false,
+          "name": "TextBox 30"
+        },
+        {
+          "x": 0,
+          "y": 0,
+          "w": 0.65,
+          "h": 0.045,
+          "kind": "shape",
+          "color": "004259",
+          "bold": false,
+          "name": "Freeform 32"
+        },
+        {
+          "x": 0,
+          "y": -0.042,
+          "w": 0.65,
+          "h": 0.087,
+          "kind": "shape",
+          "bold": false,
+          "name": "TextBox 33"
+        },
+        {
+          "x": 0,
+          "y": 0,
+          "w": 0.65,
+          "h": 0.045,
+          "kind": "shape",
+          "color": "000038",
+          "bold": false,
+          "name": "Freeform 35"
+        },
+        {
+          "x": 0,
+          "y": -0.042,
+          "w": 0.65,
+          "h": 0.087,
+          "kind": "shape",
+          "bold": false,
+          "name": "TextBox 36"
+        },
+        {
+          "x": 2.898,
+          "y": 5.389,
+          "w": 0.671,
+          "h": 0.645,
+          "kind": "shape",
+          "bold": false,
+          "name": "Freeform 37"
+        },
+        {
+          "x": 6.319,
+          "y": 5.389,
+          "w": 0.561,
+          "h": 0.645,
+          "kind": "shape",
+          "bold": false,
+          "name": "Freeform 38"
+        },
+        {
+          "x": 9.605,
+          "y": 5.389,
+          "w": 0.72,
+          "h": 0.645,
+          "kind": "shape",
+          "bold": false,
+          "name": "Freeform 39"
+        },
+        {
+          "x": 13.037,
+          "y": 5.419,
+          "w": 0.587,
+          "h": 0.587,
+          "kind": "shape",
+          "bold": false,
+          "name": "Freeform 40"
+        },
+        {
+          "x": 3.636,
+          "y": 0.969,
+          "w": 12.729,
+          "h": 0.671,
+          "kind": "text",
+          "text": "Workflow Steps Guide",
+          "fontSize": 36,
+          "color": "000000",
+          "bold": false,
+          "name": "TextBox 41"
+        },
+        {
+          "x": 3.636,
+          "y": 1.866,
+          "w": 12.729,
+          "h": 0.353,
+          "kind": "text",
+          "text": "Five steps ensure structured yet flexible project flow",
+          "fontSize": 19,
+          "color": "000000",
+          "bold": false,
+          "name": "TextBox 42"
+        },
+        {
+          "x": 2.088,
+          "y": 6.417,
+          "w": 2.291,
+          "h": 1.185,
+          "kind": "text",
+          "text": "Clarify the project's overall purpose and establish specific, measurable targets.",
+          "fontSize": 16,
+          "color": "000000",
+          "bold": false,
+          "name": "TextBox 43"
+        },
+        {
+          "x": 5.454,
+          "y": 6.417,
+          "w": 2.291,
+          "h": 1.185,
+          "kind": "text",
+          "text": "Organize short phases with clearly defined, achievable, and realistic objectives.",
+          "fontSize": 16,
+          "color": "000000",
+          "bold": false,
+          "name": "TextBox 44"
+        },
+        {
+          "x": 1.883,
+          "y": 4.048,
+          "w": 2.304,
+          "h": 0.279,
+          "kind": "text",
+          "text": "Set Goals",
+          "fontSize": 16,
+          "color": "000000",
+          "bold": false,
+          "name": "TextBox 45"
+        },
+        {
+          "x": 5.219,
+          "y": 4.048,
+          "w": 2.304,
+          "h": 0.279,
+          "kind": "text",
+          "text": "Plan Iteration",
+          "fontSize": 16,
+          "color": "000000",
+          "bold": false,
+          "name": "TextBox 46"
+        },
+        {
+          "x": 8.556,
+          "y": 4.048,
+          "w": 2.304,
+          "h": 0.279,
+          "kind": "text",
+          "text": "Assign Tasks",
+          "fontSize": 16,
+          "color": "000000",
+          "bold": false,
+          "name": "TextBox 47"
+        },
+        {
+          "x": 11.892,
+          "y": 4.048,
+          "w": 2.304,
+          "h": 0.279,
+          "kind": "text",
+          "text": "Track Progress",
+          "fontSize": 16,
+          "color": "000000",
+          "bold": false,
+          "name": "TextBox 48"
+        },
+        {
+          "x": 15.229,
+          "y": 4.048,
+          "w": 2.304,
+          "h": 0.279,
+          "kind": "text",
+          "text": "Evaluate Results",
+          "fontSize": 16,
+          "color": "000000",
+          "bold": false,
+          "name": "TextBox 49"
+        },
+        {
+          "x": 8.818,
+          "y": 6.417,
+          "w": 2.291,
+          "h": 1.185,
+          "kind": "text",
+          "text": "Dist\nribute responsibilities based on individual expertise and specific roles.",
+          "fontSize": 16,
+          "color": "000000",
+          "bold": false,
+          "name": "TextBox 50"
+        },
+        {
+          "x": 12.183,
+          "y": 6.417,
+          "w": 2.291,
+          "h": 1.185,
+          "kind": "text",
+          "text": "Mon\nitor ongoing activities and swiftly resolve any emerging blockers.",
+          "fontSize": 16,
+          "color": "000000",
+          "bold": false,
+          "name": "TextBox 51"
+        },
+        {
+          "x": 15.548,
+          "y": 6.417,
+          "w": 2.291,
+          "h": 1.185,
+          "kind": "text",
+          "text": "Rev\niew the outcomes regularly to accurately measure progress and ensure alignment.",
+          "fontSize": 16,
+          "color": "000000",
+          "bold": false,
+          "name": "TextBox 52"
+        },
+        {
+          "x": 2.613,
+          "y": 7.839,
+          "w": 1.241,
+          "h": 0.567,
+          "kind": "text",
+          "text": "01",
+          "fontSize": 30.45,
+          "color": "56E11B",
+          "bold": false,
+          "name": "TextBox 53"
+        },
+        {
+          "x": 5.979,
+          "y": 7.839,
+          "w": 1.241,
+          "h": 0.567,
+          "kind": "text",
+          "text": "02",
+          "fontSize": 30.45,
+          "color": "3BA80D",
+          "bold": false,
+          "name": "TextBox 54"
+        },
+        {
+          "x": 12.71,
+          "y": 7.839,
+          "w": 1.241,
+          "h": 0.567,
+          "kind": "text",
+          "text": "04",
+          "fontSize": 30.45,
+          "color": "354465",
+          "bold": false,
+          "name": "TextBox 55"
+        },
+        {
+          "x": 9.344,
+          "y": 7.839,
+          "w": 1.241,
+          "h": 0.567,
+          "kind": "text",
+          "text": "03",
+          "fontSize": 30.45,
+          "color": "007B80",
+          "bold": false,
+          "name": "TextBox 56"
+        },
+        {
+          "x": 16.075,
+          "y": 7.839,
+          "w": 1.241,
+          "h": 0.567,
+          "kind": "text",
+          "text": "05",
+          "fontSize": 30.45,
+          "color": "000038",
+          "bold": false,
+          "name": "TextBox 57"
+        },
+        {
+          "x": 16.402,
+          "y": 5.389,
+          "w": 0.588,
+          "h": 0.645,
+          "kind": "shape",
+          "bold": false,
+          "name": "Freeform 58"
+        }
+      ],
+      "description": {
+        "looksLike": "A five-step horizontal agile workflow infographic on a light background, featuring five rounded process cards with chevron headers, linear icons, descriptive text, and color-coded step numbers.",
+        "title": "Workflow Steps Guide",
+        "layout": "title-and-two-columns",
+        "background": {
+          "scope": "deck",
+          "kind": "solid"
+        },
+        "contentPlacement": "Centered title and subtitle at the top with a five-column horizontal sequence of icon-and-text cards spanning the lower two-thirds of the slide.",
+        "images": [],
+        "boxes": [
+          {
+            "role": "body",
+            "text": "",
+            "x": 3.636,
+            "y": 0.969,
+            "w": 12.729,
+            "h": 0.671
+          },
+          {
+            "role": "body",
+            "text": "",
+            "x": 3.636,
+            "y": 1.866,
+            "w": 12.729,
+            "h": 0.353
+          },
+          {
+            "role": "body",
+            "text": "",
+            "x": 1.883,
+            "y": 3.604,
+            "w": 2.702,
+            "h": 1.188
+          },
+          {
+            "role": "body",
+            "text": "",
+            "x": 5.196,
+            "y": 3.604,
+            "w": 2.702,
+            "h": 1.188
+          },
+          {
+            "role": "body",
+            "text": "",
+            "x": 8.51,
+            "y": 3.604,
+            "w": 2.702,
+            "h": 1.188
+          },
+          {
+            "role": "body",
+            "text": "",
+            "x": 11.824,
+            "y": 3.604,
+            "w": 2.702,
+            "h": 1.188
+          },
+          {
+            "role": "body",
+            "text": "",
+            "x": 15.137,
+            "y": 3.604,
+            "w": 2.702,
+            "h": 1.188
+          },
+          {
+            "role": "body",
+            "text": "",
+            "x": 1.883,
+            "y": 4.048,
+            "w": 2.304,
+            "h": 0.279
+          },
+          {
+            "role": "body",
+            "text": "",
+            "x": 5.219,
+            "y": 4.048,
+            "w": 2.304,
+            "h": 0.279
+          },
+          {
+            "role": "body",
+            "text": "",
+            "x": 8.556,
+            "y": 4.048,
+            "w": 2.304,
+            "h": 0.279
+          },
+          {
+            "role": "body",
+            "text": "",
+            "x": 11.892,
+            "y": 4.048,
+            "w": 2.304,
+            "h": 0.279
+          },
+          {
+            "role": "body",
+            "text": "",
+            "x": 15.229,
+            "y": 4.048,
+            "w": 2.304,
+            "h": 0.279
+          },
+          {
+            "role": "body",
+            "text": "",
+            "x": 2.898,
+            "y": 5.389,
+            "w": 0.671,
+            "h": 0.645
+          },
+          {
+            "role": "body",
+            "text": "",
+            "x": 6.319,
+            "y": 5.389,
+            "w": 0.561,
+            "h": 0.645
+          },
+          {
+            "role": "body",
+            "text": "",
+            "x": 9.605,
+            "y": 5.389,
+            "w": 0.72,
+            "h": 0.645
+          },
+          {
+            "role": "body",
+            "text": "",
+            "x": 13.037,
+            "y": 5.419,
+            "w": 0.587,
+            "h": 0.587
+          },
+          {
+            "role": "body",
+            "text": "",
+            "x": 16.402,
+            "y": 5.389,
+            "w": 0.588,
+            "h": 0.645
+          },
+          {
+            "role": "body",
+            "text": "",
+            "x": 2.088,
+            "y": 6.417,
+            "w": 2.291,
+            "h": 1.185
+          },
+          {
+            "role": "body",
+            "text": "",
+            "x": 5.454,
+            "y": 6.417,
+            "w": 2.291,
+            "h": 1.185
+          },
+          {
+            "role": "body",
+            "text": "",
+            "x": 8.818,
+            "y": 6.417,
+            "w": 2.291,
+            "h": 1.185
+          },
+          {
+            "role": "body",
+            "text": "",
+            "x": 12.183,
+            "y": 6.417,
+            "w": 2.291,
+            "h": 1.185
+          },
+          {
+            "role": "body",
+            "text": "",
+            "x": 15.548,
+            "y": 6.417,
+            "w": 2.291,
+            "h": 1.185
+          },
+          {
+            "role": "body",
+            "text": "",
+            "x": 2.613,
+            "y": 7.839,
+            "w": 1.241,
+            "h": 0.567
+          },
+          {
+            "role": "body",
+            "text": "",
+            "x": 5.979,
+            "y": 7.839,
+            "w": 1.241,
+            "h": 0.567
+          },
+          {
+            "role": "body",
+            "text": "",
+            "x": 9.344,
+            "y": 7.839,
+            "w": 1.241,
+            "h": 0.567
+          },
+          {
+            "role": "body",
+            "text": "",
+            "x": 12.71,
+            "y": 7.839,
+            "w": 1.241,
+            "h": 0.567
+          },
+          {
+            "role": "body",
+            "text": "",
+            "x": 16.075,
+            "y": 7.839,
+            "w": 1.241,
+            "h": 0.567
+          }
+        ]
+      },
+      "gcsUri": "gs://alltheway-rinegan-slide-designs-prod/catalog/corporate-agile-project-workflow-infographic/slide-03.png"
+    },
+    "slide-04": {
+      "index": 3,
+      "prev": "slide-03",
+      "next": "slide-05",
+      "image": "corporate-agile-project-workflow-infographic/slide-04.png",
+      "coordinates": [
+        {
+          "x": 5.244,
+          "y": 0.781,
+          "w": 9.511,
+          "h": 9.687,
+          "kind": "shape",
+          "bold": false,
+          "name": "Freeform 2"
+        },
+        {
+          "x": 0,
+          "y": 0,
+          "w": 0.121,
+          "h": 0.121,
+          "kind": "shape",
+          "color": "000038",
+          "bold": false,
+          "name": "Freeform 4"
+        },
+        {
+          "x": 0,
+          "y": -0.021,
+          "w": 0.121,
+          "h": 0.142,
+          "kind": "text",
+          "text": "5",
+          "fontSize": 16,
+          "color": "FFFFFF",
+          "bold": false,
+          "name": "TextBox 5"
+        },
+        {
+          "x": 0,
+          "y": 0,
+          "w": 0.121,
+          "h": 0.121,
+          "kind": "shape",
+          "color": "004259",
+          "bold": false,
+          "name": "Freeform 7"
+        },
+        {
+          "x": 0,
+          "y": -0.021,
+          "w": 0.121,
+          "h": 0.142,
+          "kind": "text",
+          "text": "4",
+          "fontSize": 16,
+          "color": "FFFFFF",
+          "bold": false,
+          "name": "TextBox 8"
+        },
+        {
+          "x": 0,
+          "y": 0,
+          "w": 0.121,
+          "h": 0.121,
+          "kind": "shape",
+          "color": "56E11B",
+          "bold": false,
+          "name": "Freeform 10"
+        },
+        {
+          "x": 0,
+          "y": -0.021,
+          "w": 0.121,
+          "h": 0.142,
+          "kind": "text",
+          "text": "1",
+          "fontSize": 16,
+          "color": "FFFFFF",
+          "bold": false,
+          "name": "TextBox 11"
+        },
+        {
+          "x": 0,
+          "y": 0,
+          "w": 0.121,
+          "h": 0.121,
+          "kind": "shape",
+          "color": "00C268",
+          "bold": false,
+          "name": "Freeform 13"
+        },
+        {
+          "x": 0,
+          "y": -0.021,
+          "w": 0.121,
+          "h": 0.142,
+          "kind": "text",
+          "text": "2",
+          "fontSize": 16,
+          "color": "FFFFFF",
+          "bold": false,
+          "name": "TextBox 14"
+        },
+        {
+          "x": 0,
+          "y": 0,
+          "w": 0.121,
+          "h": 0.121,
+          "kind": "shape",
+          "color": "007B80",
+          "bold": false,
+          "name": "Freeform 16"
+        },
+        {
+          "x": 0,
+          "y": -0.021,
+          "w": 0.121,
+          "h": 0.142,
+          "kind": "text",
+          "text": "3",
+          "fontSize": 16,
+          "color": "FFFFFF",
+          "bold": false,
+          "name": "TextBox 17"
+        },
+        {
+          "x": 6.875,
+          "y": 4.707,
+          "w": 0.796,
+          "h": 0.918,
+          "kind": "shape",
+          "bold": false,
+          "name": "Freeform 18"
+        },
+        {
+          "x": 12.375,
+          "y": 4.647,
+          "w": 0.75,
+          "h": 0.978,
+          "kind": "shape",
+          "bold": false,
+          "name": "Freeform 19"
+        },
+        {
+          "x": 7.895,
+          "y": 8.013,
+          "w": 0.912,
+          "h": 0.912,
+          "kind": "shape",
+          "bold": false,
+          "name": "Freeform 20"
+        },
+        {
+          "x": 11.273,
+          "y": 7.902,
+          "w": 0.998,
+          "h": 0.998,
+          "kind": "shape",
+          "bold": false,
+          "name": "Freeform 21"
+        },
+        {
+          "x": 9.504,
+          "y": 2.318,
+          "w": 0.847,
+          "h": 0.725,
+          "kind": "shape",
+          "bold": false,
+          "name": "Freeform 22"
+        },
+        {
+          "x": 1.125,
+          "y": 0.969,
+          "w": 6.469,
+          "h": 0.671,
+          "kind": "text",
+          "text": "Iterative Cycle Flow",
+          "fontSize": 36,
+          "color": "000000",
+          "bold": false,
+          "name": "TextBox 23"
+        },
+        {
+          "x": 1.125,
+          "y": 1.866,
+          "w": 4.878,
+          "h": 0.718,
+          "kind": "text",
+          "text": "Five repeating steps drive ongoing development success",
+          "fontSize": 19,
+          "color": "000000",
+          "bold": false,
+          "name": "TextBox 24"
+        },
+        {
+          "x": 13.411,
+          "y": 1.598,
+          "w": 3.077,
+          "h": 0.883,
+          "kind": "text",
+          "text": "Improvements are ident\nified, discussed, and applied for the next sprint",
+          "fontSize": 16,
+          "color": "000000",
+          "bold": false,
+          "name": "TextBox 25"
+        },
+        {
+          "x": 13.411,
+          "y": 1.106,
+          "w": 3.077,
+          "h": 0.346,
+          "kind": "text",
+          "text": "Retrospective Action",
+          "fontSize": 18,
+          "color": "000000",
+          "bold": false,
+          "name": "TextBox 26"
+        },
+        {
+          "x": 15.798,
+          "y": 4.935,
+          "w": 3.077,
+          "h": 0.883,
+          "kind": "text",
+          "text": "Completed\nwork is examined with stakeholders to gather feedback and insights",
+          "fontSize": 16,
+          "color": "000000",
+          "bold": false,
+          "name": "TextBox 27"
+        },
+        {
+          "x": 1.826,
+          "y": 4.935,
+          "w": 3.077,
+          "h": 0.883,
+          "kind": "text",
+          "text": "Tasks are\nprioritized and aligned carefully with current project goals",
+          "fontSize": 16,
+          "color": "000000",
+          "bold": false,
+          "name": "TextBox 28"
+        },
+        {
+          "x": 15.798,
+          "y": 4.443,
+          "w": 3.077,
+          "h": 0.346,
+          "kind": "text",
+          "text": "Review Output",
+          "fontSize": 18,
+          "color": "000000",
+          "bold": false,
+          "name": "TextBox 29"
+        },
+        {
+          "x": 1.826,
+          "y": 4.443,
+          "w": 3.077,
+          "h": 0.346,
+          "kind": "text",
+          "text": "Backlog Review",
+          "fontSize": 18,
+          "color": "000000",
+          "bold": false,
+          "name": "TextBox 30"
+        },
+        {
+          "x": 1.826,
+          "y": 8.84,
+          "w": 3.077,
+          "h": 0.883,
+          "kind": "text",
+          "text": "Short timelines\nare scheduled with clear, measurable outcomes and objectives",
+          "fontSize": 16,
+          "color": "000000",
+          "bold": false,
+          "name": "TextBox 31"
+        },
+        {
+          "x": 1.826,
+          "y": 8.348,
+          "w": 3.077,
+          "h": 0.346,
+          "kind": "text",
+          "text": "Sprint Planning",
+          "fontSize": 18,
+          "color": "000000",
+          "bold": false,
+          "name": "TextBox 32"
+        },
+        {
+          "x": 15.119,
+          "y": 8.84,
+          "w": 3.077,
+          "h": 0.883,
+          "kind": "text",
+          "text": "Teams co\nmplete assigned tasks and develop features during the sprint",
+          "fontSize": 16,
+          "color": "000000",
+          "bold": false,
+          "name": "TextBox 33"
+        },
+        {
+          "x": 15.119,
+          "y": 8.348,
+          "w": 3.077,
+          "h": 0.346,
+          "kind": "text",
+          "text": "Execution Work",
+          "fontSize": 18,
+          "color": "000000",
+          "bold": false,
+          "name": "TextBox 34"
+        }
+      ],
+      "description": {
+        "looksLike": "A five-step circular process infographic featuring organic petal-like shapes arranged in a ring, flanked by numbered step descriptions on both sides.",
+        "title": "Iterative Cycle Flow",
+        "layout": "blank",
+        "background": {
+          "scope": "slide",
+          "kind": "solid"
+        },
+        "contentPlacement": "Slide title and subtitle anchor the upper left, while a 5-step circular petal diagram dominates the center, surrounded by five numbered text callouts on the left and right margins.",
+        "images": [],
+        "boxes": [
+          {
+            "role": "body",
+            "text": "",
+            "x": 5.244,
+            "y": 0.781,
+            "w": 9.511,
+            "h": 9.687
+          },
+          {
+            "role": "body",
+            "text": "",
+            "x": 6.875,
+            "y": 4.707,
+            "w": 0.796,
+            "h": 0.918
+          },
+          {
+            "role": "body",
+            "text": "",
+            "x": 12.375,
+            "y": 4.647,
+            "w": 0.75,
+            "h": 0.978
+          },
+          {
+            "role": "body",
+            "text": "",
+            "x": 7.895,
+            "y": 8.013,
+            "w": 0.912,
+            "h": 0.912
+          },
+          {
+            "role": "body",
+            "text": "",
+            "x": 11.273,
+            "y": 7.902,
+            "w": 0.998,
+            "h": 0.998
+          },
+          {
+            "role": "body",
+            "text": "",
+            "x": 9.504,
+            "y": 2.318,
+            "w": 0.847,
+            "h": 0.725
+          },
+          {
+            "role": "body",
+            "text": "Iterative Cycle Flow",
+            "x": 1.125,
+            "y": 0.969,
+            "w": 6.469,
+            "h": 0.671,
+            "fontSize": 36
+          },
+          {
+            "role": "body",
+            "text": "Five repeating steps drive ongoing development success",
+            "x": 1.125,
+            "y": 1.866,
+            "w": 4.878,
+            "h": 0.718,
+            "fontSize": 19
+          },
+          {
+            "role": "body",
+            "text": "Retrospective Action",
+            "x": 13.411,
+            "y": 1.106,
+            "w": 3.077,
+            "h": 0.346,
+            "fontSize": 18
+          },
+          {
+            "role": "body",
+            "text": "Improvements are identified, discussed, and applied for the next sprint",
+            "x": 13.411,
+            "y": 1.598,
+            "w": 3.077,
+            "h": 0.883,
+            "fontSize": 16
+          },
+          {
+            "role": "body",
+            "text": "Backlog Review",
+            "x": 1.826,
+            "y": 4.443,
+            "w": 3.077,
+            "h": 0.346,
+            "fontSize": 18
+          },
+          {
+            "role": "body",
+            "text": "Tasks are prioritized and aligned carefully with current project goals",
+            "x": 1.826,
+            "y": 4.935,
+            "w": 3.077,
+            "h": 0.883,
+            "fontSize": 16
+          },
+          {
+            "role": "body",
+            "text": "Review Output",
+            "x": 15.798,
+            "y": 4.443,
+            "w": 3.077,
+            "h": 0.346,
+            "fontSize": 18
+          },
+          {
+            "role": "body",
+            "text": "Completed work is examined with stakeholders to gather feedback and insights",
+            "x": 15.798,
+            "y": 4.935,
+            "w": 3.077,
+            "h": 0.883,
+            "fontSize": 16
+          },
+          {
+            "role": "body",
+            "text": "Sprint Planning",
+            "x": 1.826,
+            "y": 8.348,
+            "w": 3.077,
+            "h": 0.346,
+            "fontSize": 18
+          },
+          {
+            "role": "body",
+            "text": "Short timelines are scheduled with clear, measurable outcomes and objectives",
+            "x": 1.826,
+            "y": 8.84,
+            "w": 3.077,
+            "h": 0.883,
+            "fontSize": 16
+          },
+          {
+            "role": "body",
+            "text": "Execution Work",
+            "x": 15.119,
+            "y": 8.348,
+            "w": 3.077,
+            "h": 0.346,
+            "fontSize": 18
+          },
+          {
+            "role": "body",
+            "text": "Teams complete assigned tasks and develop features during the sprint",
+            "x": 15.119,
+            "y": 8.84,
+            "w": 3.077,
+            "h": 0.883,
+            "fontSize": 16
+          }
+        ]
+      },
+      "gcsUri": "gs://alltheway-rinegan-slide-designs-prod/catalog/corporate-agile-project-workflow-infographic/slide-04.png"
+    },
+    "slide-05": {
+      "index": 4,
+      "prev": "slide-04",
+      "next": "slide-06",
+      "image": "corporate-agile-project-workflow-infographic/slide-05.png",
+      "coordinates": [
+        {
+          "x": 1.494,
+          "y": 3.774,
+          "w": 13.656,
+          "h": 2.58,
+          "kind": "shape",
+          "bold": false,
+          "name": "Freeform 2"
+        },
+        {
+          "x": 15.358,
+          "y": 3.774,
+          "w": 3.357,
+          "h": 2.58,
+          "kind": "shape",
+          "bold": false,
+          "name": "Freeform 3"
+        },
+        {
+          "x": 0,
+          "y": 0,
+          "w": 0.889,
+          "h": 0.889,
+          "kind": "shape",
+          "color": "56E11B",
+          "bold": false,
+          "name": "Freeform 6"
+        },
+        {
+          "x": 0.083,
+          "y": 0.063,
+          "w": 0.722,
+          "h": 0.743,
+          "kind": "shape",
+          "bold": false,
+          "name": "TextBox 7"
+        },
+        {
+          "x": 0,
+          "y": 0,
+          "w": 0.889,
+          "h": 0.889,
+          "kind": "shape",
+          "color": "00C267",
+          "bold": false,
+          "name": "Freeform 9"
+        },
+        {
+          "x": 0.083,
+          "y": 0.063,
+          "w": 0.722,
+          "h": 0.743,
+          "kind": "shape",
+          "bold": false,
+          "name": "TextBox 10"
+        },
+        {
+          "x": 0,
+          "y": 0,
+          "w": 0.889,
+          "h": 0.889,
+          "kind": "shape",
+          "color": "007B80",
+          "bold": false,
+          "name": "Freeform 12"
+        },
+        {
+          "x": 0.083,
+          "y": 0.063,
+          "w": 0.722,
+          "h": 0.743,
+          "kind": "shape",
+          "bold": false,
+          "name": "TextBox 13"
+        },
+        {
+          "x": 0,
+          "y": 0,
+          "w": 0.889,
+          "h": 0.889,
+          "kind": "shape",
+          "color": "005D6F",
+          "bold": false,
+          "name": "Freeform 15"
+        },
+        {
+          "x": 0.083,
+          "y": 0.063,
+          "w": 0.722,
+          "h": 0.743,
+          "kind": "shape",
+          "bold": false,
+          "name": "TextBox 16"
+        },
+        {
+          "x": 0,
+          "y": 0,
+          "w": 0.889,
+          "h": 0.889,
+          "kind": "shape",
+          "color": "000038",
+          "bold": false,
+          "name": "Freeform 18"
+        },
+        {
+          "x": 0.083,
+          "y": 0.063,
+          "w": 0.722,
+          "h": 0.743,
+          "kind": "shape",
+          "bold": false,
+          "name": "TextBox 19"
+        },
+        {
+          "x": 2.403,
+          "y": 4.471,
+          "w": 0.774,
+          "h": 0.745,
+          "kind": "shape",
+          "bold": false,
+          "name": "Freeform 20"
+        },
+        {
+          "x": 5.933,
+          "y": 4.457,
+          "w": 0.593,
+          "h": 0.772,
+          "kind": "shape",
+          "bold": false,
+          "name": "Freeform 21"
+        },
+        {
+          "x": 9.258,
+          "y": 4.433,
+          "w": 0.82,
+          "h": 0.82,
+          "kind": "shape",
+          "bold": false,
+          "name": "Freeform 22"
+        },
+        {
+          "x": 12.769,
+          "y": 4.471,
+          "w": 0.678,
+          "h": 0.745,
+          "kind": "shape",
+          "bold": false,
+          "name": "Freeform 23"
+        },
+        {
+          "x": 3.636,
+          "y": 0.969,
+          "w": 12.729,
+          "h": 0.671,
+          "kind": "text",
+          "text": "Project Timeline Path",
+          "fontSize": 36,
+          "color": "000000",
+          "bold": false,
+          "name": "TextBox 24"
+        },
+        {
+          "x": 3.636,
+          "y": 1.866,
+          "w": 12.729,
+          "h": 0.353,
+          "kind": "text",
+          "text": "Five sequential phases mark project progress milestones",
+          "fontSize": 19,
+          "color": "000000",
+          "bold": false,
+          "name": "TextBox 25"
+        },
+        {
+          "x": 1.494,
+          "y": 7.481,
+          "w": 2.592,
+          "h": 0.372,
+          "kind": "text",
+          "text": "Define Vision",
+          "fontSize": 19.99,
+          "color": "000000",
+          "bold": false,
+          "name": "TextBox 26"
+        },
+        {
+          "x": 1.494,
+          "y": 5.659,
+          "w": 2.592,
+          "h": 0.279,
+          "kind": "text",
+          "text": "Phase 1",
+          "fontSize": 16,
+          "color": "FFFFFF",
+          "bold": false,
+          "name": "TextBox 27"
+        },
+        {
+          "x": 4.933,
+          "y": 7.481,
+          "w": 2.592,
+          "h": 0.372,
+          "kind": "text",
+          "text": "Outline Scope",
+          "fontSize": 19.99,
+          "color": "000000",
+          "bold": false,
+          "name": "TextBox 28"
+        },
+        {
+          "x": 4.933,
+          "y": 5.659,
+          "w": 2.592,
+          "h": 0.279,
+          "kind": "text",
+          "text": "Phase 2",
+          "fontSize": 16,
+          "color": "FFFFFF",
+          "bold": false,
+          "name": "TextBox 29"
+        },
+        {
+          "x": 8.373,
+          "y": 7.481,
+          "w": 2.592,
+          "h": 0.372,
+          "kind": "text",
+          "text": "Build Increment",
+          "fontSize": 19.99,
+          "color": "000000",
+          "bold": false,
+          "name": "TextBox 30"
+        },
+        {
+          "x": 8.373,
+          "y": 5.659,
+          "w": 2.592,
+          "h": 0.279,
+          "kind": "text",
+          "text": "Phase 3",
+          "fontSize": 16,
+          "color": "FFFFFF",
+          "bold": false,
+          "name": "TextBox 31"
+        },
+        {
+          "x": 11.812,
+          "y": 7.481,
+          "w": 2.592,
+          "h": 0.372,
+          "kind": "text",
+          "text": "Test Results",
+          "fontSize": 19.99,
+          "color": "000000",
+          "bold": false,
+          "name": "TextBox 32"
+        },
+        {
+          "x": 11.812,
+          "y": 5.659,
+          "w": 2.592,
+          "h": 0.279,
+          "kind": "text",
+          "text": "Phase 4",
+          "fontSize": 16,
+          "color": "FFFFFF",
+          "bold": false,
+          "name": "TextBox 33"
+        },
+        {
+          "x": 15.304,
+          "y": 7.481,
+          "w": 2.592,
+          "h": 0.372,
+          "kind": "text",
+          "text": "Release Product",
+          "fontSize": 19.99,
+          "color": "000000",
+          "bold": false,
+          "name": "TextBox 34"
+        },
+        {
+          "x": 15.304,
+          "y": 5.659,
+          "w": 2.592,
+          "h": 0.279,
+          "kind": "text",
+          "text": "Phase 5",
+          "fontSize": 16,
+          "color": "FFFFFF",
+          "bold": false,
+          "name": "TextBox 35"
+        },
+        {
+          "x": 1.494,
+          "y": 8.014,
+          "w": 2.592,
+          "h": 0.883,
+          "kind": "text",
+          "text": "Se\nt clear project objectives and long-term outcomes",
+          "fontSize": 16,
+          "color": "000000",
+          "bold": false,
+          "name": "TextBox 36"
+        },
+        {
+          "x": 4.933,
+          "y": 8.014,
+          "w": 2.592,
+          "h": 0.883,
+          "kind": "text",
+          "text": "D\netermine\ndeliverables, tasks, and resource allocation",
+          "fontSize": 16,
+          "color": "000000",
+          "bold": false,
+          "name": "TextBox 37"
+        },
+        {
+          "x": 8.373,
+          "y": 8.014,
+          "w": 2.592,
+          "h": 0.883,
+          "kind": "text",
+          "text": "Develop new features in small, manageable and efficient stages.",
+          "fontSize": 16,
+          "color": "000000",
+          "bold": false,
+          "name": "TextBox 38"
+        },
+        {
+          "x": 11.709,
+          "y": 8.014,
+          "w": 2.798,
+          "h": 0.883,
+          "kind": "text",
+          "text": "Val\nidate deliverables\nagainst quality benchmarks and requirements",
+          "fontSize": 16,
+          "color": "000000",
+          "bold": false,
+          "name": "TextBox 39"
+        },
+        {
+          "x": 15.15,
+          "y": 8.014,
+          "w": 2.9,
+          "h": 0.883,
+          "kind": "text",
+          "text": "Deliver the final version for immediate use or for valuable customer feedback.",
+          "fontSize": 16,
+          "color": "000000",
+          "bold": false,
+          "name": "TextBox 40"
+        },
+        {
+          "x": 16.352,
+          "y": 4.482,
+          "w": 0.495,
+          "h": 0.778,
+          "kind": "shape",
+          "bold": false,
+          "name": "Freeform 41"
+        }
+      ],
+      "description": {
+        "looksLike": "A five-step horizontal process timeline infographic featuring color-coded milestone cards with icons connected sequentially above five matching text columns.",
+        "title": "Project Timeline Path",
+        "layout": "title-only",
+        "background": {
+          "scope": "deck",
+          "kind": "solid"
+        },
+        "contentPlacement": "Centered header and subtitle at the top, a horizontal chain of five milestone icon blocks in the upper half, and five explanatory text columns along a milestone axis across the lower half.",
+        "images": [],
+        "boxes": [
+          {
+            "role": "body",
+            "text": "",
+            "x": 1.494,
+            "y": 3.774,
+            "w": 13.656,
+            "h": 2.58
+          },
+          {
+            "role": "body",
+            "text": "",
+            "x": 15.358,
+            "y": 3.774,
+            "w": 3.357,
+            "h": 2.58
+          },
+          {
+            "role": "body",
+            "text": "",
+            "x": 0,
+            "y": 0,
+            "w": 0.889,
+            "h": 0.889
+          },
+          {
+            "role": "body",
+            "text": "",
+            "x": 0.083,
+            "y": 0.063,
+            "w": 0.722,
+            "h": 0.743
+          },
+          {
+            "role": "body",
+            "text": "",
+            "x": 0,
+            "y": 0,
+            "w": 0.889,
+            "h": 0.889
+          },
+          {
+            "role": "body",
+            "text": "",
+            "x": 0.083,
+            "y": 0.063,
+            "w": 0.722,
+            "h": 0.743
+          },
+          {
+            "role": "body",
+            "text": "",
+            "x": 0,
+            "y": 0,
+            "w": 0.889,
+            "h": 0.889
+          },
+          {
+            "role": "body",
+            "text": "",
+            "x": 0.083,
+            "y": 0.063,
+            "w": 0.722,
+            "h": 0.743
+          },
+          {
+            "role": "body",
+            "text": "",
+            "x": 0,
+            "y": 0,
+            "w": 0.889,
+            "h": 0.889
+          },
+          {
+            "role": "body",
+            "text": "",
+            "x": 0.083,
+            "y": 0.063,
+            "w": 0.722,
+            "h": 0.743
+          },
+          {
+            "role": "body",
+            "text": "",
+            "x": 0,
+            "y": 0,
+            "w": 0.889,
+            "h": 0.889
+          },
+          {
+            "role": "body",
+            "text": "",
+            "x": 0.083,
+            "y": 0.063,
+            "w": 0.722,
+            "h": 0.743
+          },
+          {
+            "role": "body",
+            "text": "",
+            "x": 2.403,
+            "y": 4.471,
+            "w": 0.774,
+            "h": 0.745
+          },
+          {
+            "role": "body",
+            "text": "",
+            "x": 5.933,
+            "y": 4.457,
+            "w": 0.593,
+            "h": 0.772
+          },
+          {
+            "role": "body",
+            "text": "",
+            "x": 9.258,
+            "y": 4.433,
+            "w": 0.82,
+            "h": 0.82
+          },
+          {
+            "role": "body",
+            "text": "",
+            "x": 12.769,
+            "y": 4.471,
+            "w": 0.678,
+            "h": 0.745
+          },
+          {
+            "role": "body",
+            "text": "Project Timeline Path",
+            "x": 3.636,
+            "y": 0.969,
+            "w": 12.729,
+            "h": 0.671,
+            "fontSize": 36
+          },
+          {
+            "role": "body",
+            "text": "Five sequential phases mark project progress milestones",
+            "x": 3.636,
+            "y": 1.866,
+            "w": 12.729,
+            "h": 0.353,
+            "fontSize": 19
+          },
+          {
+            "role": "body",
+            "text": "Define Vision",
+            "x": 1.494,
+            "y": 7.481,
+            "w": 2.592,
+            "h": 0.372,
+            "fontSize": 19.99
+          },
+          {
+            "role": "body",
+            "text": "Phase 1",
+            "x": 1.494,
+            "y": 5.659,
+            "w": 2.592,
+            "h": 0.279,
+            "fontSize": 16
+          },
+          {
+            "role": "body",
+            "text": "Outline Scope",
+            "x": 4.933,
+            "y": 7.481,
+            "w": 2.592,
+            "h": 0.372,
+            "fontSize": 19.99
+          },
+          {
+            "role": "body",
+            "text": "Phase 2",
+            "x": 4.933,
+            "y": 5.659,
+            "w": 2.592,
+            "h": 0.279,
+            "fontSize": 16
+          },
+          {
+            "role": "body",
+            "text": "Build Increment",
+            "x": 8.373,
+            "y": 7.481,
+            "w": 2.592,
+            "h": 0.372,
+            "fontSize": 19.99
+          },
+          {
+            "role": "body",
+            "text": "Phase 3",
+            "x": 8.373,
+            "y": 5.659,
+            "w": 2.592,
+            "h": 0.279,
+            "fontSize": 16
+          },
+          {
+            "role": "body",
+            "text": "Test Results",
+            "x": 11.812,
+            "y": 7.481,
+            "w": 2.592,
+            "h": 0.372,
+            "fontSize": 19.99
+          },
+          {
+            "role": "body",
+            "text": "Phase 4",
+            "x": 11.812,
+            "y": 5.659,
+            "w": 2.592,
+            "h": 0.279,
+            "fontSize": 16
+          },
+          {
+            "role": "body",
+            "text": "Release Product",
+            "x": 15.304,
+            "y": 7.481,
+            "w": 2.592,
+            "h": 0.372,
+            "fontSize": 19.99
+          },
+          {
+            "role": "body",
+            "text": "Phase 5",
+            "x": 15.304,
+            "y": 5.659,
+            "w": 2.592,
+            "h": 0.279,
+            "fontSize": 16
+          },
+          {
+            "role": "body",
+            "text": "Se\nt clear project objectives and long-term outcomes",
+            "x": 1.494,
+            "y": 8.014,
+            "w": 2.592,
+            "h": 0.883,
+            "fontSize": 16
+          },
+          {
+            "role": "body",
+            "text": "D\netermine\ndeliverables, tasks, and resource allocation",
+            "x": 4.933,
+            "y": 8.014,
+            "w": 2.592,
+            "h": 0.883,
+            "fontSize": 16
+          },
+          {
+            "role": "body",
+            "text": "Develop new features in small, manageable and efficient stages.",
+            "x": 8.373,
+            "y": 8.014,
+            "w": 2.592,
+            "h": 0.883,
+            "fontSize": 16
+          },
+          {
+            "role": "body",
+            "text": "Val\nidate deliverables\nagainst quality benchmarks and requirements",
+            "x": 11.709,
+            "y": 8.014,
+            "w": 2.798,
+            "h": 0.883,
+            "fontSize": 16
+          },
+          {
+            "role": "body",
+            "text": "Deliver the final version for immediate use or for valuable customer feedback.",
+            "x": 15.15,
+            "y": 8.014,
+            "w": 2.9,
+            "h": 0.883,
+            "fontSize": 16
+          },
+          {
+            "role": "body",
+            "text": "",
+            "x": 16.352,
+            "y": 4.482,
+            "w": 0.495,
+            "h": 0.778
+          }
+        ]
+      },
+      "gcsUri": "gs://alltheway-rinegan-slide-designs-prod/catalog/corporate-agile-project-workflow-infographic/slide-05.png"
+    },
+    "slide-06": {
+      "index": 5,
+      "prev": "slide-05",
+      "next": "slide-07",
+      "image": "corporate-agile-project-workflow-infographic/slide-06.png",
+      "coordinates": [
+        {
+          "x": 5.699,
+          "y": 3.385,
+          "w": 8.601,
+          "h": 6.74,
+          "kind": "shape",
+          "bold": false,
+          "name": "Freeform 2"
+        },
+        {
+          "x": 9.215,
+          "y": 4.075,
+          "w": 0.569,
+          "h": 0.895,
+          "kind": "shape",
+          "bold": false,
+          "name": "Freeform 3"
+        },
+        {
+          "x": 10.253,
+          "y": 5.694,
+          "w": 0.714,
+          "h": 0.874,
+          "kind": "shape",
+          "bold": false,
+          "name": "Freeform 4"
+        },
+        {
+          "x": 3.636,
+          "y": 0.969,
+          "w": 12.729,
+          "h": 0.671,
+          "kind": "text",
+          "text": "Key Project Benefits",
+          "fontSize": 36,
+          "color": "000000",
+          "bold": false,
+          "name": "TextBox 5"
+        },
+        {
+          "x": 3.636,
+          "y": 1.866,
+          "w": 12.729,
+          "h": 0.353,
+          "kind": "text",
+          "text": "Four advantages highlight workflow impact on outcomes",
+          "fontSize": 19,
+          "color": "000000",
+          "bold": false,
+          "name": "TextBox 6"
+        },
+        {
+          "x": 2.019,
+          "y": 3.696,
+          "w": 3.233,
+          "h": 0.883,
+          "kind": "text",
+          "text": "Projects progress more\nquickly with smaller, frequent incremental releases.",
+          "fontSize": 16,
+          "color": "000000",
+          "bold": false,
+          "name": "TextBox 7"
+        },
+        {
+          "x": 2.019,
+          "y": 6.956,
+          "w": 3.233,
+          "h": 0.883,
+          "kind": "text",
+          "text": "Teams can adapt incredibly easily to new requirements or unexpected changes.",
+          "fontSize": 16,
+          "color": "000000",
+          "bold": false,
+          "name": "TextBox 8"
+        },
+        {
+          "x": 2.019,
+          "y": 3.11,
+          "w": 3.233,
+          "h": 0.346,
+          "kind": "text",
+          "text": "Faster Delivery",
+          "fontSize": 18,
+          "color": "000000",
+          "bold": false,
+          "name": "TextBox 9"
+        },
+        {
+          "x": 2.019,
+          "y": 6.37,
+          "w": 3.233,
+          "h": 0.346,
+          "kind": "text",
+          "text": "Higher Flexibility",
+          "fontSize": 18,
+          "color": "000000",
+          "bold": false,
+          "name": "TextBox 10"
+        },
+        {
+          "x": 14.748,
+          "y": 5.04,
+          "w": 3.233,
+          "h": 0.883,
+          "kind": "text",
+          "text": "Testing meticulously ensures higher product reliability and performance.",
+          "fontSize": 16,
+          "color": "000000",
+          "bold": false,
+          "name": "TextBox 11"
+        },
+        {
+          "x": 14.748,
+          "y": 8.269,
+          "w": 3.233,
+          "h": 0.883,
+          "kind": "text",
+          "text": "Frequent and effective collaboration builds better stakeholder involvement.",
+          "fontSize": 16,
+          "color": "000000",
+          "bold": false,
+          "name": "TextBox 12"
+        },
+        {
+          "x": 14.748,
+          "y": 4.454,
+          "w": 3.233,
+          "h": 0.346,
+          "kind": "text",
+          "text": "Better Quality",
+          "fontSize": 18,
+          "color": "000000",
+          "bold": false,
+          "name": "TextBox 13"
+        },
+        {
+          "x": 14.748,
+          "y": 7.683,
+          "w": 3.233,
+          "h": 0.346,
+          "kind": "text",
+          "text": "Stronger Engagement",
+          "fontSize": 18,
+          "color": "000000",
+          "bold": false,
+          "name": "TextBox 14"
+        },
+        {
+          "x": 11.308,
+          "y": 3.79,
+          "w": 1.817,
+          "h": 1.179,
+          "kind": "text",
+          "text": "01",
+          "fontSize": 63,
+          "color": "56E11B",
+          "bold": false,
+          "name": "TextBox 15"
+        },
+        {
+          "x": 6.875,
+          "y": 5.405,
+          "w": 1.817,
+          "h": 1.179,
+          "kind": "text",
+          "text": "02",
+          "fontSize": 63,
+          "color": "007B80",
+          "bold": false,
+          "name": "TextBox 16"
+        },
+        {
+          "x": 11.308,
+          "y": 7.019,
+          "w": 1.817,
+          "h": 1.179,
+          "kind": "text",
+          "text": "03",
+          "fontSize": 63,
+          "color": "004259",
+          "bold": false,
+          "name": "TextBox 17"
+        },
+        {
+          "x": 6.875,
+          "y": 8.634,
+          "w": 1.817,
+          "h": 1.179,
+          "kind": "text",
+          "text": "04",
+          "fontSize": 63,
+          "color": "000038",
+          "bold": false,
+          "name": "TextBox 18"
+        },
+        {
+          "x": 9.047,
+          "y": 7.26,
+          "w": 0.906,
+          "h": 0.874,
+          "kind": "shape",
+          "bold": false,
+          "name": "Freeform 19"
+        },
+        {
+          "x": 10.104,
+          "y": 8.944,
+          "w": 0.948,
+          "h": 0.841,
+          "kind": "shape",
+          "bold": false,
+          "name": "Freeform 20"
+        }
+      ],
+      "description": {
+        "looksLike": "A clean four-item alternating infographic slide with a central vertical stack of colored rectangular cards flanked by large numbers and connected callout text blocks on both sides.",
+        "title": "Key Project Benefits",
+        "layout": "title-and-two-columns",
+        "background": {
+          "scope": "slide",
+          "kind": "solid"
+        },
+        "contentPlacement": "Centered title and subtitle at top, a central stacked column of four icon cards with alternating large numbers (01-04) and connecting branch lines to two text callouts on the left and two on the right.",
+        "images": [],
+        "boxes": [
+          {
+            "role": "body",
+            "text": "",
+            "x": 5.699,
+            "y": 3.385,
+            "w": 8.601,
+            "h": 6.74
+          },
+          {
+            "role": "body",
+            "text": "",
+            "x": 9.215,
+            "y": 4.075,
+            "w": 0.569,
+            "h": 0.895
+          },
+          {
+            "role": "body",
+            "text": "",
+            "x": 10.253,
+            "y": 5.694,
+            "w": 0.714,
+            "h": 0.874
+          },
+          {
+            "role": "body",
+            "text": "Key Project Benefits",
+            "x": 3.636,
+            "y": 0.969,
+            "w": 12.729,
+            "h": 0.671,
+            "fontSize": 36
+          },
+          {
+            "role": "body",
+            "text": "Four advantages highlight workflow impact on outcomes",
+            "x": 3.636,
+            "y": 1.866,
+            "w": 12.729,
+            "h": 0.353,
+            "fontSize": 19
+          },
+          {
+            "role": "body",
+            "text": "Projects progress more\nquickly with smaller, frequent incremental releases.",
+            "x": 2.019,
+            "y": 3.696,
+            "w": 3.233,
+            "h": 0.883,
+            "fontSize": 16
+          },
+          {
+            "role": "body",
+            "text": "Teams can adapt incredibly easily to new requirements or unexpected changes.",
+            "x": 2.019,
+            "y": 6.956,
+            "w": 3.233,
+            "h": 0.883,
+            "fontSize": 16
+          },
+          {
+            "role": "body",
+            "text": "Faster Delivery",
+            "x": 2.019,
+            "y": 3.11,
+            "w": 3.233,
+            "h": 0.346,
+            "fontSize": 18
+          },
+          {
+            "role": "body",
+            "text": "Higher Flexibility",
+            "x": 2.019,
+            "y": 6.37,
+            "w": 3.233,
+            "h": 0.346,
+            "fontSize": 18
+          },
+          {
+            "role": "body",
+            "text": "Testing meticulously ensures higher product reliability and performance.",
+            "x": 14.748,
+            "y": 5.04,
+            "w": 3.233,
+            "h": 0.883,
+            "fontSize": 16
+          },
+          {
+            "role": "body",
+            "text": "Frequent and effective collaboration builds better stakeholder involvement.",
+            "x": 14.748,
+            "y": 8.269,
+            "w": 3.233,
+            "h": 0.883,
+            "fontSize": 16
+          },
+          {
+            "role": "body",
+            "text": "Better Quality",
+            "x": 14.748,
+            "y": 4.454,
+            "w": 3.233,
+            "h": 0.346,
+            "fontSize": 18
+          },
+          {
+            "role": "body",
+            "text": "Stronger Engagement",
+            "x": 14.748,
+            "y": 7.683,
+            "w": 3.233,
+            "h": 0.346,
+            "fontSize": 18
+          },
+          {
+            "role": "body",
+            "text": "01",
+            "x": 11.308,
+            "y": 3.79,
+            "w": 1.817,
+            "h": 1.179,
+            "fontSize": 63
+          },
+          {
+            "role": "body",
+            "text": "02",
+            "x": 6.875,
+            "y": 5.405,
+            "w": 1.817,
+            "h": 1.179,
+            "fontSize": 63
+          },
+          {
+            "role": "body",
+            "text": "03",
+            "x": 11.308,
+            "y": 7.019,
+            "w": 1.817,
+            "h": 1.179,
+            "fontSize": 63
+          },
+          {
+            "role": "body",
+            "text": "04",
+            "x": 6.875,
+            "y": 8.634,
+            "w": 1.817,
+            "h": 1.179,
+            "fontSize": 63
+          },
+          {
+            "role": "body",
+            "text": "",
+            "x": 9.047,
+            "y": 7.26,
+            "w": 0.906,
+            "h": 0.874
+          },
+          {
+            "role": "body",
+            "text": "",
+            "x": 10.104,
+            "y": 8.944,
+            "w": 0.948,
+            "h": 0.841
+          }
+        ]
+      },
+      "gcsUri": "gs://alltheway-rinegan-slide-designs-prod/catalog/corporate-agile-project-workflow-infographic/slide-06.png"
+    },
+    "slide-07": {
+      "index": 6,
+      "prev": "slide-06",
+      "next": "slide-08",
+      "image": "corporate-agile-project-workflow-infographic/slide-07.png",
+      "coordinates": [
+        {
+          "x": 0.174,
+          "y": 0.678,
+          "w": 17.792,
+          "h": 9.931,
+          "kind": "shape",
+          "bold": false,
+          "name": "Freeform 2"
+        },
+        {
+          "x": 3.71,
+          "y": 6.067,
+          "w": 2.497,
+          "h": 1.306,
+          "kind": "text",
+          "text": "01",
+          "fontSize": 69.99,
+          "color": "56E11B",
+          "bold": false,
+          "name": "TextBox 3"
+        },
+        {
+          "x": 7.181,
+          "y": 4.318,
+          "w": 2.497,
+          "h": 1.306,
+          "kind": "text",
+          "text": "02",
+          "fontSize": 69.99,
+          "color": "007B80",
+          "bold": false,
+          "name": "TextBox 4"
+        },
+        {
+          "x": 10.554,
+          "y": 2.741,
+          "w": 2.497,
+          "h": 1.306,
+          "kind": "text",
+          "text": "03",
+          "fontSize": 69.99,
+          "color": "004259",
+          "bold": false,
+          "name": "TextBox 5"
+        },
+        {
+          "x": 13.927,
+          "y": 1.104,
+          "w": 2.497,
+          "h": 1.306,
+          "kind": "text",
+          "text": "04",
+          "fontSize": 69.99,
+          "color": "002843",
+          "bold": false,
+          "name": "TextBox 6"
+        },
+        {
+          "x": 0,
+          "y": 0,
+          "w": 0.722,
+          "h": 0.889,
+          "kind": "shape",
+          "color": "FFFFFF",
+          "bold": false,
+          "name": "Freeform 8"
+        },
+        {
+          "x": 0,
+          "y": -0.042,
+          "w": 0.722,
+          "h": 0.931,
+          "kind": "shape",
+          "bold": false,
+          "name": "TextBox 9"
+        },
+        {
+          "x": 0,
+          "y": 0,
+          "w": 0.722,
+          "h": 0.889,
+          "kind": "shape",
+          "color": "FFFFFF",
+          "bold": false,
+          "name": "Freeform 11"
+        },
+        {
+          "x": 0,
+          "y": -0.042,
+          "w": 0.722,
+          "h": 0.931,
+          "kind": "shape",
+          "bold": false,
+          "name": "TextBox 12"
+        },
+        {
+          "x": 0,
+          "y": 0,
+          "w": 0.722,
+          "h": 0.889,
+          "kind": "shape",
+          "color": "FFFFFF",
+          "bold": false,
+          "name": "Freeform 14"
+        },
+        {
+          "x": 0,
+          "y": -0.042,
+          "w": 0.722,
+          "h": 0.931,
+          "kind": "shape",
+          "bold": false,
+          "name": "TextBox 15"
+        },
+        {
+          "x": 0,
+          "y": 0,
+          "w": 0.722,
+          "h": 0.889,
+          "kind": "shape",
+          "color": "FFFFFF",
+          "bold": false,
+          "name": "Freeform 17"
+        },
+        {
+          "x": 0,
+          "y": -0.042,
+          "w": 0.722,
+          "h": 0.931,
+          "kind": "shape",
+          "bold": false,
+          "name": "TextBox 18"
+        },
+        {
+          "x": 3.469,
+          "y": 6.768,
+          "w": 1.122,
+          "h": 1.12,
+          "kind": "shape",
+          "bold": false,
+          "name": "Freeform 19"
+        },
+        {
+          "x": 6.875,
+          "y": 5.133,
+          "w": 1.122,
+          "h": 1.12,
+          "kind": "shape",
+          "bold": false,
+          "name": "Freeform 20"
+        },
+        {
+          "x": 10.281,
+          "y": 3.497,
+          "w": 1.122,
+          "h": 1.12,
+          "kind": "shape",
+          "bold": false,
+          "name": "Freeform 21"
+        },
+        {
+          "x": 13.686,
+          "y": 1.861,
+          "w": 1.122,
+          "h": 1.12,
+          "kind": "shape",
+          "bold": false,
+          "name": "Freeform 22"
+        },
+        {
+          "x": 4.838,
+          "y": 7.66,
+          "w": 0.485,
+          "h": 0.602,
+          "kind": "shape",
+          "bold": false,
+          "name": "Freeform 23"
+        },
+        {
+          "x": 8.187,
+          "y": 5.914,
+          "w": 0.637,
+          "h": 0.637,
+          "kind": "shape",
+          "bold": false,
+          "name": "Freeform 24"
+        },
+        {
+          "x": 11.533,
+          "y": 4.265,
+          "w": 0.733,
+          "h": 0.673,
+          "kind": "shape",
+          "bold": false,
+          "name": "Freeform 25"
+        },
+        {
+          "x": 14.931,
+          "y": 2.513,
+          "w": 0.728,
+          "h": 0.728,
+          "kind": "shape",
+          "bold": false,
+          "name": "Freeform 26"
+        },
+        {
+          "x": 1.125,
+          "y": 0.969,
+          "w": 6.469,
+          "h": 0.671,
+          "kind": "text",
+          "text": "Defined Team Roles",
+          "fontSize": 36,
+          "color": "000000",
+          "bold": false,
+          "name": "TextBox 27"
+        },
+        {
+          "x": 1.125,
+          "y": 1.866,
+          "w": 4.878,
+          "h": 0.718,
+          "kind": "text",
+          "text": "Four distinct roles support effective collaboration",
+          "fontSize": 19,
+          "color": "000000",
+          "bold": false,
+          "name": "TextBox 28"
+        },
+        {
+          "x": 4.001,
+          "y": 9,
+          "w": 2.159,
+          "h": 0.883,
+          "kind": "text",
+          "text": "Manages prior\nities and defines project vision clearly",
+          "fontSize": 16,
+          "color": "000000",
+          "bold": false,
+          "name": "TextBox 29"
+        },
+        {
+          "x": 4.001,
+          "y": 8.554,
+          "w": 2.159,
+          "h": 0.346,
+          "kind": "text",
+          "text": "Product Owner",
+          "fontSize": 18,
+          "color": "000000",
+          "bold": false,
+          "name": "TextBox 30"
+        },
+        {
+          "x": 7.425,
+          "y": 7.372,
+          "w": 2.159,
+          "h": 0.883,
+          "kind": "text",
+          "text": "Guides proces\ns, removes blockers, and ensures focus",
+          "fontSize": 16,
+          "color": "000000",
+          "bold": false,
+          "name": "TextBox 31"
+        },
+        {
+          "x": 7.425,
+          "y": 6.926,
+          "w": 2.159,
+          "h": 0.346,
+          "kind": "text",
+          "text": "Scrum Master",
+          "fontSize": 18,
+          "color": "000000",
+          "bold": false,
+          "name": "TextBox 32"
+        },
+        {
+          "x": 10.85,
+          "y": 5.744,
+          "w": 2.159,
+          "h": 0.883,
+          "kind": "text",
+          "text": "Executes tasks and\nbuilds features collaboratively",
+          "fontSize": 16,
+          "color": "000000",
+          "bold": false,
+          "name": "TextBox 33"
+        },
+        {
+          "x": 10.735,
+          "y": 5.298,
+          "w": 2.39,
+          "h": 0.346,
+          "kind": "text",
+          "text": "Development Team",
+          "fontSize": 18,
+          "color": "000000",
+          "bold": false,
+          "name": "TextBox 34"
+        },
+        {
+          "x": 14.275,
+          "y": 4.116,
+          "w": 2.159,
+          "h": 0.883,
+          "kind": "text",
+          "text": "Provide\nrequirements, feedback, and final approvals",
+          "fontSize": 16,
+          "color": "000000",
+          "bold": false,
+          "name": "TextBox 35"
+        },
+        {
+          "x": 14.275,
+          "y": 3.67,
+          "w": 2.159,
+          "h": 0.346,
+          "kind": "text",
+          "text": "Stakeholders",
+          "fontSize": 18,
+          "color": "000000",
+          "bold": false,
+          "name": "TextBox 36"
+        }
+      ],
+      "description": {
+        "looksLike": "An upward-stepping staircase infographic featuring four distinct role cards arranged diagonally over a translucent angled banner with bold numbers and icons.",
+        "title": "Defined Team Roles",
+        "layout": "title-and-body",
+        "background": {
+          "scope": "slide",
+          "kind": "solid"
+        },
+        "contentPlacement": "Header block positioned at the top left, followed by four ascending white cards containing step numbers, icons, titles, and descriptions stepping from lower-left to upper-right.",
+        "images": [],
+        "boxes": [
+          {
+            "role": "body",
+            "text": "",
+            "x": 0.174,
+            "y": 0.678,
+            "w": 17.792,
+            "h": 9.931
+          },
+          {
+            "role": "body",
+            "text": "",
+            "x": 1.125,
+            "y": 0.969,
+            "w": 6.469,
+            "h": 0.671
+          },
+          {
+            "role": "body",
+            "text": "",
+            "x": 1.125,
+            "y": 1.866,
+            "w": 4.878,
+            "h": 0.718
+          },
+          {
+            "role": "body",
+            "text": "",
+            "x": 3.71,
+            "y": 6.067,
+            "w": 2.497,
+            "h": 1.306
+          },
+          {
+            "role": "body",
+            "text": "",
+            "x": 3.469,
+            "y": 6.768,
+            "w": 1.122,
+            "h": 1.12
+          },
+          {
+            "role": "body",
+            "text": "",
+            "x": 4.838,
+            "y": 7.66,
+            "w": 0.485,
+            "h": 0.602
+          },
+          {
+            "role": "body",
+            "text": "",
+            "x": 4.001,
+            "y": 8.554,
+            "w": 2.159,
+            "h": 0.346
+          },
+          {
+            "role": "body",
+            "text": "",
+            "x": 4.001,
+            "y": 9,
+            "w": 2.159,
+            "h": 0.883
+          },
+          {
+            "role": "body",
+            "text": "",
+            "x": 7.181,
+            "y": 4.318,
+            "w": 2.497,
+            "h": 1.306
+          },
+          {
+            "role": "body",
+            "text": "",
+            "x": 6.875,
+            "y": 5.133,
+            "w": 1.122,
+            "h": 1.12
+          },
+          {
+            "role": "body",
+            "text": "",
+            "x": 8.187,
+            "y": 5.914,
+            "w": 0.637,
+            "h": 0.637
+          },
+          {
+            "role": "body",
+            "text": "",
+            "x": 7.425,
+            "y": 6.926,
+            "w": 2.159,
+            "h": 0.346
+          },
+          {
+            "role": "body",
+            "text": "",
+            "x": 7.425,
+            "y": 7.372,
+            "w": 2.159,
+            "h": 0.883
+          },
+          {
+            "role": "body",
+            "text": "",
+            "x": 10.554,
+            "y": 2.741,
+            "w": 2.497,
+            "h": 1.306
+          },
+          {
+            "role": "body",
+            "text": "",
+            "x": 10.281,
+            "y": 3.497,
+            "w": 1.122,
+            "h": 1.12
+          },
+          {
+            "role": "body",
+            "text": "",
+            "x": 11.533,
+            "y": 4.265,
+            "w": 0.733,
+            "h": 0.673
+          },
+          {
+            "role": "body",
+            "text": "",
+            "x": 10.735,
+            "y": 5.298,
+            "w": 2.39,
+            "h": 0.346
+          },
+          {
+            "role": "body",
+            "text": "",
+            "x": 10.85,
+            "y": 5.744,
+            "w": 2.159,
+            "h": 0.883
+          },
+          {
+            "role": "body",
+            "text": "",
+            "x": 13.927,
+            "y": 1.104,
+            "w": 2.497,
+            "h": 1.306
+          },
+          {
+            "role": "body",
+            "text": "",
+            "x": 13.686,
+            "y": 1.861,
+            "w": 1.122,
+            "h": 1.12
+          },
+          {
+            "role": "body",
+            "text": "",
+            "x": 14.931,
+            "y": 2.513,
+            "w": 0.728,
+            "h": 0.728
+          },
+          {
+            "role": "body",
+            "text": "",
+            "x": 14.275,
+            "y": 3.67,
+            "w": 2.159,
+            "h": 0.346
+          },
+          {
+            "role": "body",
+            "text": "",
+            "x": 14.275,
+            "y": 4.116,
+            "w": 2.159,
+            "h": 0.883
+          }
+        ]
+      },
+      "gcsUri": "gs://alltheway-rinegan-slide-designs-prod/catalog/corporate-agile-project-workflow-infographic/slide-07.png"
+    },
+    "slide-08": {
+      "index": 7,
+      "prev": "slide-07",
+      "next": "slide-09",
+      "image": "corporate-agile-project-workflow-infographic/slide-08.png",
+      "coordinates": [
+        {
+          "x": 6.539,
+          "y": 1.355,
+          "w": 7.273,
+          "h": 6.387,
+          "kind": "shape",
+          "bold": false,
+          "name": "Freeform 2"
+        },
+        {
+          "x": 11.965,
+          "y": 0.537,
+          "w": 7.273,
+          "h": 6.387,
+          "kind": "shape",
+          "bold": false,
+          "name": "Freeform 3"
+        },
+        {
+          "x": 1.125,
+          "y": 0.969,
+          "w": 6.469,
+          "h": 0.671,
+          "kind": "text",
+          "text": "Workflow Gears Motion",
+          "fontSize": 36,
+          "color": "000000",
+          "bold": false,
+          "name": "TextBox 4"
+        },
+        {
+          "x": 1.125,
+          "y": 1.866,
+          "w": 4.878,
+          "h": 0.718,
+          "kind": "text",
+          "text": "Six gears represent connected activities in action",
+          "fontSize": 19,
+          "color": "000000",
+          "bold": false,
+          "name": "TextBox 5"
+        },
+        {
+          "x": 0,
+          "y": 0,
+          "w": 0.121,
+          "h": 0.121,
+          "kind": "shape",
+          "color": "56E11B",
+          "bold": false,
+          "name": "Freeform 7"
+        },
+        {
+          "x": 0,
+          "y": -0.021,
+          "w": 0.121,
+          "h": 0.142,
+          "kind": "text",
+          "text": "1",
+          "fontSize": 16,
+          "color": "FFFFFF",
+          "bold": false,
+          "name": "TextBox 8"
+        },
+        {
+          "x": 1.826,
+          "y": 4.394,
+          "w": 3.077,
+          "h": 0.883,
+          "kind": "text",
+          "text": "Prepare deliverables\nwith clear timelines, goals, and defined priorities",
+          "fontSize": 16,
+          "color": "000000",
+          "bold": false,
+          "name": "TextBox 9"
+        },
+        {
+          "x": 1.826,
+          "y": 3.903,
+          "w": 3.077,
+          "h": 0.346,
+          "kind": "text",
+          "text": "Plan Work",
+          "fontSize": 18,
+          "color": "000000",
+          "bold": false,
+          "name": "TextBox 10"
+        },
+        {
+          "x": 0,
+          "y": 0,
+          "w": 0.121,
+          "h": 0.121,
+          "kind": "shape",
+          "color": "00C267",
+          "bold": false,
+          "name": "Freeform 12"
+        },
+        {
+          "x": 0,
+          "y": -0.021,
+          "w": 0.121,
+          "h": 0.142,
+          "kind": "text",
+          "text": "2",
+          "fontSize": 16,
+          "color": "FFFFFF",
+          "bold": false,
+          "name": "TextBox 13"
+        },
+        {
+          "x": 1.826,
+          "y": 6.86,
+          "w": 3.077,
+          "h": 0.883,
+          "kind": "text",
+          "text": "Detail\ntask requirements and expected outcomes with greater precision",
+          "fontSize": 16,
+          "color": "000000",
+          "bold": false,
+          "name": "TextBox 14"
+        },
+        {
+          "x": 1.826,
+          "y": 6.368,
+          "w": 3.077,
+          "h": 0.346,
+          "kind": "text",
+          "text": "Design Features",
+          "fontSize": 18,
+          "color": "000000",
+          "bold": false,
+          "name": "TextBox 15"
+        },
+        {
+          "x": 0,
+          "y": 0,
+          "w": 0.121,
+          "h": 0.121,
+          "kind": "shape",
+          "color": "009D81",
+          "bold": false,
+          "name": "Freeform 17"
+        },
+        {
+          "x": 0,
+          "y": -0.021,
+          "w": 0.121,
+          "h": 0.142,
+          "kind": "text",
+          "text": "3",
+          "fontSize": 16,
+          "color": "FFFFFF",
+          "bold": false,
+          "name": "TextBox 18"
+        },
+        {
+          "x": 1.826,
+          "y": 9.326,
+          "w": 3.077,
+          "h": 0.883,
+          "kind": "text",
+          "text": "Imple\nment assigned activities to build and deliver core features",
+          "fontSize": 16,
+          "color": "000000",
+          "bold": false,
+          "name": "TextBox 19"
+        },
+        {
+          "x": 1.826,
+          "y": 8.834,
+          "w": 3.077,
+          "h": 0.346,
+          "kind": "text",
+          "text": "Develop Tasks",
+          "fontSize": 18,
+          "color": "000000",
+          "bold": false,
+          "name": "TextBox 20"
+        },
+        {
+          "x": 0,
+          "y": 0,
+          "w": 0.121,
+          "h": 0.121,
+          "kind": "shape",
+          "color": "007B80",
+          "bold": false,
+          "name": "Freeform 22"
+        },
+        {
+          "x": 0,
+          "y": -0.021,
+          "w": 0.121,
+          "h": 0.142,
+          "kind": "text",
+          "text": "4",
+          "fontSize": 16,
+          "color": "FFFFFF",
+          "bold": false,
+          "name": "TextBox 23"
+        },
+        {
+          "x": 6.604,
+          "y": 9.326,
+          "w": 3.077,
+          "h": 0.883,
+          "kind": "text",
+          "text": "Review product elements for\naccuracy, usability, and overall quality",
+          "fontSize": 16,
+          "color": "000000",
+          "bold": false,
+          "name": "TextBox 24"
+        },
+        {
+          "x": 6.604,
+          "y": 8.834,
+          "w": 3.077,
+          "h": 0.346,
+          "kind": "text",
+          "text": "Test Outputs",
+          "fontSize": 18,
+          "color": "000000",
+          "bold": false,
+          "name": "TextBox 25"
+        },
+        {
+          "x": 0,
+          "y": 0,
+          "w": 0.121,
+          "h": 0.121,
+          "kind": "shape",
+          "color": "004259",
+          "bold": false,
+          "name": "Freeform 27"
+        },
+        {
+          "x": 0,
+          "y": -0.021,
+          "w": 0.121,
+          "h": 0.142,
+          "kind": "text",
+          "text": "5",
+          "fontSize": 16,
+          "color": "FFFFFF",
+          "bold": false,
+          "name": "TextBox 28"
+        },
+        {
+          "x": 11.383,
+          "y": 9.326,
+          "w": 3.077,
+          "h": 0.883,
+          "kind": "text",
+          "text": "Engage users and\nstakeholders for insights, improvements, and validation",
+          "fontSize": 16,
+          "color": "000000",
+          "bold": false,
+          "name": "TextBox 29"
+        },
+        {
+          "x": 11.383,
+          "y": 8.834,
+          "w": 3.077,
+          "h": 0.346,
+          "kind": "text",
+          "text": "Gather Feedback",
+          "fontSize": 18,
+          "color": "000000",
+          "bold": false,
+          "name": "TextBox 30"
+        },
+        {
+          "x": 0,
+          "y": 0,
+          "w": 0.121,
+          "h": 0.121,
+          "kind": "shape",
+          "color": "000038",
+          "bold": false,
+          "name": "Freeform 32"
+        },
+        {
+          "x": 0,
+          "y": -0.021,
+          "w": 0.121,
+          "h": 0.142,
+          "kind": "text",
+          "text": "6",
+          "fontSize": 16,
+          "color": "FFFFFF",
+          "bold": false,
+          "name": "TextBox 33"
+        },
+        {
+          "x": 16.161,
+          "y": 9.326,
+          "w": 3.077,
+          "h": 0.883,
+          "kind": "text",
+          "text": "Upd\nate processes and product consistently for sustainable continuous growth",
+          "fontSize": 16,
+          "color": "000000",
+          "bold": false,
+          "name": "TextBox 34"
+        },
+        {
+          "x": 16.161,
+          "y": 8.834,
+          "w": 3.077,
+          "h": 0.346,
+          "kind": "text",
+          "text": "Refine Cycle",
+          "fontSize": 18,
+          "color": "000000",
+          "bold": false,
+          "name": "TextBox 35"
+        }
+      ],
+      "description": {
+        "looksLike": "An agile workflow diagram slide displaying six interconnected colored gear graphics accompanied by a 6-step numbered breakdown along the left and bottom on a clean light blue-gray background.",
+        "title": "[object Object]",
+        "layout": "title-only",
+        "background": {
+          "scope": "slide",
+          "kind": "solid"
+        },
+        "contentPlacement": "[object Object]",
+        "images": [],
+        "boxes": [
+          {
+            "role": "body",
+            "text": "",
+            "x": 6.539,
+            "y": 1.355,
+            "w": 7.273,
+            "h": 6.387
+          },
+          {
+            "role": "body",
+            "text": "",
+            "x": 11.965,
+            "y": 0.537,
+            "w": 7.273,
+            "h": 6.387
+          },
+          {
+            "role": "body",
+            "text": "",
+            "x": 1.125,
+            "y": 0.969,
+            "w": 6.469,
+            "h": 0.671
+          },
+          {
+            "role": "body",
+            "text": "",
+            "x": 1.125,
+            "y": 1.866,
+            "w": 4.878,
+            "h": 0.718
+          },
+          {
+            "role": "body",
+            "text": "",
+            "x": 0,
+            "y": 0,
+            "w": 0.121,
+            "h": 0.121
+          },
+          {
+            "role": "body",
+            "text": "",
+            "x": 0,
+            "y": -0.021,
+            "w": 0.121,
+            "h": 0.142
+          },
+          {
+            "role": "body",
+            "text": "",
+            "x": 1.826,
+            "y": 4.394,
+            "w": 3.077,
+            "h": 0.883
+          },
+          {
+            "role": "body",
+            "text": "",
+            "x": 1.826,
+            "y": 3.903,
+            "w": 3.077,
+            "h": 0.346
+          },
+          {
+            "role": "body",
+            "text": "",
+            "x": 0,
+            "y": 0,
+            "w": 0.121,
+            "h": 0.121
+          },
+          {
+            "role": "body",
+            "text": "",
+            "x": 0,
+            "y": -0.021,
+            "w": 0.121,
+            "h": 0.142
+          },
+          {
+            "role": "body",
+            "text": "",
+            "x": 1.826,
+            "y": 6.86,
+            "w": 3.077,
+            "h": 0.883
+          },
+          {
+            "role": "body",
+            "text": "",
+            "x": 1.826,
+            "y": 6.368,
+            "w": 3.077,
+            "h": 0.346
+          },
+          {
+            "role": "body",
+            "text": "",
+            "x": 0,
+            "y": 0,
+            "w": 0.121,
+            "h": 0.121
+          },
+          {
+            "role": "body",
+            "text": "",
+            "x": 0,
+            "y": -0.021,
+            "w": 0.121,
+            "h": 0.142
+          },
+          {
+            "role": "body",
+            "text": "",
+            "x": 1.826,
+            "y": 9.326,
+            "w": 3.077,
+            "h": 0.883
+          },
+          {
+            "role": "body",
+            "text": "",
+            "x": 1.826,
+            "y": 8.834,
+            "w": 3.077,
+            "h": 0.346
+          },
+          {
+            "role": "body",
+            "text": "",
+            "x": 0,
+            "y": 0,
+            "w": 0.121,
+            "h": 0.121
+          },
+          {
+            "role": "body",
+            "text": "",
+            "x": 0,
+            "y": -0.021,
+            "w": 0.121,
+            "h": 0.142
+          },
+          {
+            "role": "body",
+            "text": "",
+            "x": 6.604,
+            "y": 9.326,
+            "w": 3.077,
+            "h": 0.883
+          },
+          {
+            "role": "body",
+            "text": "",
+            "x": 6.604,
+            "y": 8.834,
+            "w": 3.077,
+            "h": 0.346
+          },
+          {
+            "role": "body",
+            "text": "",
+            "x": 0,
+            "y": 0,
+            "w": 0.121,
+            "h": 0.121
+          },
+          {
+            "role": "body",
+            "text": "",
+            "x": 0,
+            "y": -0.021,
+            "w": 0.121,
+            "h": 0.142
+          },
+          {
+            "role": "body",
+            "text": "",
+            "x": 11.383,
+            "y": 9.326,
+            "w": 3.077,
+            "h": 0.883
+          },
+          {
+            "role": "body",
+            "text": "",
+            "x": 11.383,
+            "y": 8.834,
+            "w": 3.077,
+            "h": 0.346
+          },
+          {
+            "role": "body",
+            "text": "",
+            "x": 0,
+            "y": 0,
+            "w": 0.121,
+            "h": 0.121
+          },
+          {
+            "role": "body",
+            "text": "",
+            "x": 0,
+            "y": -0.021,
+            "w": 0.121,
+            "h": 0.142
+          },
+          {
+            "role": "body",
+            "text": "",
+            "x": 16.161,
+            "y": 9.326,
+            "w": 3.077,
+            "h": 0.883
+          },
+          {
+            "role": "body",
+            "text": "",
+            "x": 16.161,
+            "y": 8.834,
+            "w": 3.077,
+            "h": 0.346
+          }
+        ]
+      },
+      "gcsUri": "gs://alltheway-rinegan-slide-designs-prod/catalog/corporate-agile-project-workflow-infographic/slide-08.png"
+    },
+    "slide-09": {
+      "index": 8,
+      "prev": "slide-08",
+      "next": "slide-10",
+      "image": "corporate-agile-project-workflow-infographic/slide-09.png",
+      "coordinates": [
+        {
+          "x": 4.688,
+          "y": 4.089,
+          "w": 24.599,
+          "h": 7.493,
+          "kind": "shape",
+          "bold": false,
+          "name": "Freeform 2"
+        },
+        {
+          "x": 0,
+          "y": 0,
+          "w": 1.962,
+          "h": 0.674,
+          "kind": "shape",
+          "color": "81FF4C",
+          "bold": false,
+          "name": "Freeform 4"
+        },
+        {
+          "x": 0.184,
+          "y": 0.011,
+          "w": 1.594,
+          "h": 0.6,
+          "kind": "shape",
+          "bold": false,
+          "name": "TextBox 5"
+        },
+        {
+          "x": 17.54,
+          "y": 1.969,
+          "w": 2.338,
+          "h": 1.902,
+          "kind": "shape",
+          "bold": false,
+          "name": "Freeform 6"
+        },
+        {
+          "x": 0,
+          "y": 0,
+          "w": 1.962,
+          "h": 0.674,
+          "kind": "shape",
+          "color": "15DC80",
+          "bold": false,
+          "name": "Freeform 8"
+        },
+        {
+          "x": 0.184,
+          "y": 0.011,
+          "w": 1.594,
+          "h": 0.6,
+          "kind": "shape",
+          "bold": false,
+          "name": "TextBox 9"
+        },
+        {
+          "x": 14.194,
+          "y": 2.52,
+          "w": 2.338,
+          "h": 1.902,
+          "kind": "shape",
+          "bold": false,
+          "name": "Freeform 10"
+        },
+        {
+          "x": 0,
+          "y": 0,
+          "w": 1.962,
+          "h": 0.674,
+          "kind": "shape",
+          "color": "189EA3",
+          "bold": false,
+          "name": "Freeform 12"
+        },
+        {
+          "x": 0.184,
+          "y": 0.011,
+          "w": 1.594,
+          "h": 0.6,
+          "kind": "shape",
+          "bold": false,
+          "name": "TextBox 13"
+        },
+        {
+          "x": 12.278,
+          "y": 4.992,
+          "w": 2.338,
+          "h": 1.902,
+          "kind": "shape",
+          "bold": false,
+          "name": "Freeform 14"
+        },
+        {
+          "x": 0,
+          "y": 0,
+          "w": 1.962,
+          "h": 0.674,
+          "kind": "shape",
+          "color": "0A7398",
+          "bold": false,
+          "name": "Freeform 16"
+        },
+        {
+          "x": 0.184,
+          "y": 0.011,
+          "w": 1.594,
+          "h": 0.6,
+          "kind": "shape",
+          "bold": false,
+          "name": "TextBox 17"
+        },
+        {
+          "x": 9.415,
+          "y": 6.203,
+          "w": 2.338,
+          "h": 1.902,
+          "kind": "shape",
+          "bold": false,
+          "name": "Freeform 18"
+        },
+        {
+          "x": 0,
+          "y": 0,
+          "w": 1.962,
+          "h": 0.674,
+          "kind": "shape",
+          "color": "3E3E95",
+          "bold": false,
+          "name": "Freeform 20"
+        },
+        {
+          "x": 0.184,
+          "y": 0.011,
+          "w": 1.594,
+          "h": 0.6,
+          "kind": "shape",
+          "bold": false,
+          "name": "TextBox 21"
+        },
+        {
+          "x": 13.941,
+          "y": 7.658,
+          "w": 2.338,
+          "h": 1.902,
+          "kind": "shape",
+          "bold": false,
+          "name": "Freeform 22"
+        },
+        {
+          "x": 0,
+          "y": 0,
+          "w": 0.889,
+          "h": 0.778,
+          "kind": "shape",
+          "color": "56E11B",
+          "bold": false,
+          "name": "Freeform 24"
+        },
+        {
+          "x": 0.139,
+          "y": 0.014,
+          "w": 0.611,
+          "h": 0.403,
+          "kind": "shape",
+          "bold": false,
+          "name": "TextBox 25"
+        },
+        {
+          "x": 0,
+          "y": 0,
+          "w": 0.889,
+          "h": 0.778,
+          "kind": "shape",
+          "color": "00C268",
+          "bold": false,
+          "name": "Freeform 27"
+        },
+        {
+          "x": 0.139,
+          "y": 0.014,
+          "w": 0.611,
+          "h": 0.403,
+          "kind": "shape",
+          "bold": false,
+          "name": "TextBox 28"
+        },
+        {
+          "x": 0,
+          "y": 0,
+          "w": 0.617,
+          "h": 0.124,
+          "kind": "shape",
+          "color": "56E11B",
+          "bold": false,
+          "name": "Freeform 30"
+        },
+        {
+          "x": 0,
+          "y": -0.021,
+          "w": 0.617,
+          "h": 0.145,
+          "kind": "text",
+          "text": "Sta\nrt Project",
+          "fontSize": 16,
+          "color": "FFFFFF",
+          "bold": false,
+          "name": "TextBox 31"
+        },
+        {
+          "x": 0,
+          "y": 0,
+          "w": 0.617,
+          "h": 0.124,
+          "kind": "shape",
+          "color": "00C268",
+          "bold": false,
+          "name": "Freeform 33"
+        },
+        {
+          "x": 0,
+          "y": -0.021,
+          "w": 0.617,
+          "h": 0.145,
+          "kind": "text",
+          "text": "Fi\nrst Sprint",
+          "fontSize": 16,
+          "color": "FFFFFF",
+          "bold": false,
+          "name": "TextBox 34"
+        },
+        {
+          "x": 1.125,
+          "y": 0.969,
+          "w": 8.128,
+          "h": 0.671,
+          "kind": "text",
+          "text": "Delivery Roadmap Plan",
+          "fontSize": 36,
+          "color": "000000",
+          "bold": false,
+          "name": "TextBox 35"
+        },
+        {
+          "x": 1.125,
+          "y": 1.866,
+          "w": 8.128,
+          "h": 0.353,
+          "kind": "text",
+          "text": "Five phases guide progress toward final release",
+          "fontSize": 19,
+          "color": "000000",
+          "bold": false,
+          "name": "TextBox 36"
+        },
+        {
+          "x": 18.223,
+          "y": 2.011,
+          "w": 0.972,
+          "h": 0.573,
+          "kind": "text",
+          "text": "01",
+          "fontSize": 30,
+          "color": "000000",
+          "bold": false,
+          "name": "TextBox 37"
+        },
+        {
+          "x": 14.877,
+          "y": 2.551,
+          "w": 0.972,
+          "h": 0.573,
+          "kind": "text",
+          "text": "02",
+          "fontSize": 30,
+          "color": "000000",
+          "bold": false,
+          "name": "TextBox 38"
+        },
+        {
+          "x": 12.961,
+          "y": 5.015,
+          "w": 0.972,
+          "h": 0.573,
+          "kind": "text",
+          "text": "03",
+          "fontSize": 30,
+          "color": "000000",
+          "bold": false,
+          "name": "TextBox 39"
+        },
+        {
+          "x": 10.098,
+          "y": 6.135,
+          "w": 0.972,
+          "h": 0.573,
+          "kind": "text",
+          "text": "04",
+          "fontSize": 30,
+          "color": "000000",
+          "bold": false,
+          "name": "TextBox 40"
+        },
+        {
+          "x": 14.624,
+          "y": 7.73,
+          "w": 0.972,
+          "h": 0.573,
+          "kind": "text",
+          "text": "05",
+          "fontSize": 30,
+          "color": "000000",
+          "bold": false,
+          "name": "TextBox 41"
+        },
+        {
+          "x": 4.063,
+          "y": 3.103,
+          "w": 3.137,
+          "h": 0.883,
+          "kind": "text",
+          "text": "Kick-off\nmeetings align all stakeholders, teams, and project objectives",
+          "fontSize": 16,
+          "color": "000000",
+          "bold": false,
+          "name": "TextBox 42"
+        },
+        {
+          "x": 4.063,
+          "y": 4.572,
+          "w": 3.137,
+          "h": 0.883,
+          "kind": "text",
+          "text": "Initial develop\nment cycle delivers early, usable, and testable results",
+          "fontSize": 16,
+          "color": "000000",
+          "bold": false,
+          "name": "TextBox 43"
+        },
+        {
+          "x": 0,
+          "y": 0,
+          "w": 0.889,
+          "h": 0.778,
+          "kind": "shape",
+          "color": "007B80",
+          "bold": false,
+          "name": "Freeform 45"
+        },
+        {
+          "x": 0.139,
+          "y": 0.014,
+          "w": 0.611,
+          "h": 0.403,
+          "kind": "shape",
+          "bold": false,
+          "name": "TextBox 46"
+        },
+        {
+          "x": 0,
+          "y": 0,
+          "w": 0.617,
+          "h": 0.124,
+          "kind": "shape",
+          "color": "007B80",
+          "bold": false,
+          "name": "Freeform 48"
+        },
+        {
+          "x": 0,
+          "y": -0.021,
+          "w": 0.617,
+          "h": 0.145,
+          "kind": "text",
+          "text": "Mid Revi\new",
+          "fontSize": 16,
+          "color": "FFFFFF",
+          "bold": false,
+          "name": "TextBox 49"
+        },
+        {
+          "x": 4.063,
+          "y": 6.04,
+          "w": 2.692,
+          "h": 0.883,
+          "kind": "text",
+          "text": "Evaluate progre\nss carefully and adjust project plans if required",
+          "fontSize": 16,
+          "color": "000000",
+          "bold": false,
+          "name": "TextBox 50"
+        },
+        {
+          "x": 0,
+          "y": 0,
+          "w": 0.889,
+          "h": 0.778,
+          "kind": "shape",
+          "color": "004259",
+          "bold": false,
+          "name": "Freeform 52"
+        },
+        {
+          "x": 0.139,
+          "y": 0.014,
+          "w": 0.611,
+          "h": 0.403,
+          "kind": "shape",
+          "bold": false,
+          "name": "TextBox 53"
+        },
+        {
+          "x": 0,
+          "y": 0,
+          "w": 0.617,
+          "h": 0.124,
+          "kind": "shape",
+          "color": "004259",
+          "bold": false,
+          "name": "Freeform 55"
+        },
+        {
+          "x": 0,
+          "y": -0.021,
+          "w": 0.617,
+          "h": 0.145,
+          "kind": "text",
+          "text": "Final\nSprint",
+          "fontSize": 16,
+          "color": "FFFFFF",
+          "bold": false,
+          "name": "TextBox 56"
+        },
+        {
+          "x": 4.063,
+          "y": 7.509,
+          "w": 2.813,
+          "h": 0.883,
+          "kind": "text",
+          "text": "Last\niteration ensures complete deliverables are successfully achieved",
+          "fontSize": 16,
+          "color": "000000",
+          "bold": false,
+          "name": "TextBox 57"
+        },
+        {
+          "x": 0,
+          "y": 0,
+          "w": 0.889,
+          "h": 0.778,
+          "kind": "shape",
+          "color": "000038",
+          "bold": false,
+          "name": "Freeform 59"
+        },
+        {
+          "x": 0.139,
+          "y": 0.014,
+          "w": 0.611,
+          "h": 0.403,
+          "kind": "shape",
+          "bold": false,
+          "name": "TextBox 60"
+        },
+        {
+          "x": 0,
+          "y": 0,
+          "w": 0.617,
+          "h": 0.124,
+          "kind": "shape",
+          "color": "000038",
+          "bold": false,
+          "name": "Freeform 62"
+        },
+        {
+          "x": 0,
+          "y": -0.021,
+          "w": 0.617,
+          "h": 0.145,
+          "kind": "text",
+          "text": "Launch Release",
+          "fontSize": 16,
+          "color": "FFFFFF",
+          "bold": false,
+          "name": "TextBox 63"
+        },
+        {
+          "x": 4.063,
+          "y": 8.978,
+          "w": 3.137,
+          "h": 0.883,
+          "kind": "text",
+          "text": "Final product ver\nsion is delivered to customers for immediate use",
+          "fontSize": 16,
+          "color": "000000",
+          "bold": false,
+          "name": "TextBox 64"
+        }
+      ],
+      "description": {
+        "looksLike": "A winding road infographic showing a five-phase delivery roadmap with color-coded milestone markers on the right and corresponding descriptions on the left.",
+        "title": "Delivery Roadmap Plan",
+        "layout": "title-and-two-columns",
+        "background": {
+          "scope": "slide",
+          "kind": "solid"
+        },
+        "contentPlacement": "Slide header on the top left; five vertical milestone stages with badges and descriptive text on the left half; a winding perspective highway with numbered waypoint flags on the right.",
+        "images": [],
+        "boxes": [
+          {
+            "role": "body",
+            "text": "",
+            "x": 4.688,
+            "y": 4.089,
+            "w": 24.599,
+            "h": 7.493
+          },
+          {
+            "role": "body",
+            "text": "",
+            "x": 1.125,
+            "y": 0.969,
+            "w": 8.128,
+            "h": 0.671
+          },
+          {
+            "role": "body",
+            "text": "",
+            "x": 1.125,
+            "y": 1.866,
+            "w": 8.128,
+            "h": 0.353
+          },
+          {
+            "role": "body",
+            "text": "",
+            "x": 17.54,
+            "y": 1.969,
+            "w": 2.338,
+            "h": 1.902
+          },
+          {
+            "role": "body",
+            "text": "",
+            "x": 18.223,
+            "y": 2.011,
+            "w": 0.972,
+            "h": 0.573
+          },
+          {
+            "role": "body",
+            "text": "",
+            "x": 14.194,
+            "y": 2.52,
+            "w": 2.338,
+            "h": 1.902
+          },
+          {
+            "role": "body",
+            "text": "",
+            "x": 14.877,
+            "y": 2.551,
+            "w": 0.972,
+            "h": 0.573
+          },
+          {
+            "role": "body",
+            "text": "",
+            "x": 4.063,
+            "y": 3.103,
+            "w": 3.137,
+            "h": 0.883
+          },
+          {
+            "role": "body",
+            "text": "",
+            "x": 4.063,
+            "y": 4.572,
+            "w": 3.137,
+            "h": 0.883
+          },
+          {
+            "role": "body",
+            "text": "",
+            "x": 12.278,
+            "y": 4.992,
+            "w": 2.338,
+            "h": 1.902
+          },
+          {
+            "role": "body",
+            "text": "",
+            "x": 12.961,
+            "y": 5.015,
+            "w": 0.972,
+            "h": 0.573
+          },
+          {
+            "role": "body",
+            "text": "",
+            "x": 4.063,
+            "y": 6.04,
+            "w": 2.692,
+            "h": 0.883
+          },
+          {
+            "role": "body",
+            "text": "",
+            "x": 9.415,
+            "y": 6.203,
+            "w": 2.338,
+            "h": 1.902
+          },
+          {
+            "role": "body",
+            "text": "",
+            "x": 10.098,
+            "y": 6.135,
+            "w": 0.972,
+            "h": 0.573
+          },
+          {
+            "role": "body",
+            "text": "",
+            "x": 4.063,
+            "y": 7.509,
+            "w": 2.813,
+            "h": 0.883
+          },
+          {
+            "role": "body",
+            "text": "",
+            "x": 13.941,
+            "y": 7.658,
+            "w": 2.338,
+            "h": 1.902
+          },
+          {
+            "role": "body",
+            "text": "",
+            "x": 14.624,
+            "y": 7.73,
+            "w": 0.972,
+            "h": 0.573
+          },
+          {
+            "role": "body",
+            "text": "",
+            "x": 4.063,
+            "y": 8.978,
+            "w": 3.137,
+            "h": 0.883
+          }
+        ]
+      },
+      "gcsUri": "gs://alltheway-rinegan-slide-designs-prod/catalog/corporate-agile-project-workflow-infographic/slide-09.png"
+    },
+    "slide-10": {
+      "index": 9,
+      "prev": "slide-09",
+      "next": null,
+      "image": "corporate-agile-project-workflow-infographic/slide-10.png",
+      "coordinates": [
+        {
+          "x": 1.412,
+          "y": 2.745,
+          "w": 17.367,
+          "h": 4.845,
+          "kind": "shape",
+          "bold": false,
+          "name": "Freeform 2"
+        },
+        {
+          "x": 2.074,
+          "y": 6.405,
+          "w": 1.053,
+          "h": 0.737,
+          "kind": "shape",
+          "bold": false,
+          "name": "Freeform 3"
+        },
+        {
+          "x": 5.351,
+          "y": 6.405,
+          "w": 0.956,
+          "h": 0.737,
+          "kind": "shape",
+          "bold": false,
+          "name": "Freeform 4"
+        },
+        {
+          "x": 3.636,
+          "y": 0.969,
+          "w": 12.729,
+          "h": 0.671,
+          "kind": "text",
+          "text": "Continuous Flow Steps",
+          "fontSize": 36,
+          "color": "000000",
+          "bold": false,
+          "name": "TextBox 5"
+        },
+        {
+          "x": 3.636,
+          "y": 1.866,
+          "w": 12.729,
+          "h": 0.353,
+          "kind": "text",
+          "text": "Five actions keep projects moving effectively",
+          "fontSize": 19,
+          "color": "000000",
+          "bold": false,
+          "name": "TextBox 6"
+        },
+        {
+          "x": 0,
+          "y": 0,
+          "w": 0.274,
+          "h": 0.045,
+          "kind": "shape",
+          "color": "56E11B",
+          "bold": false,
+          "name": "Freeform 8"
+        },
+        {
+          "x": 0,
+          "y": -0.042,
+          "w": 0.274,
+          "h": 0.087,
+          "kind": "shape",
+          "bold": false,
+          "name": "TextBox 9"
+        },
+        {
+          "x": 1.765,
+          "y": 8.432,
+          "w": 2.448,
+          "h": 1.185,
+          "kind": "text",
+          "text": "Gather detailed requirements and stakeholder expectations early on.",
+          "fontSize": 16,
+          "color": "000000",
+          "bold": false,
+          "name": "TextBox 10"
+        },
+        {
+          "x": 1.765,
+          "y": 7.94,
+          "w": 2.448,
+          "h": 0.346,
+          "kind": "text",
+          "text": "Collect Input",
+          "fontSize": 18,
+          "color": "000000",
+          "bold": false,
+          "name": "TextBox 11"
+        },
+        {
+          "x": 0,
+          "y": 0,
+          "w": 0.274,
+          "h": 0.045,
+          "kind": "shape",
+          "color": "00C267",
+          "bold": false,
+          "name": "Freeform 13"
+        },
+        {
+          "x": 0,
+          "y": -0.042,
+          "w": 0.274,
+          "h": 0.087,
+          "kind": "shape",
+          "bold": false,
+          "name": "TextBox 14"
+        },
+        {
+          "x": 4.92,
+          "y": 8.432,
+          "w": 2.448,
+          "h": 1.185,
+          "kind": "text",
+          "text": "Structure tasks clearly and efficiently within the organized project backlog.",
+          "fontSize": 16,
+          "color": "000000",
+          "bold": false,
+          "name": "TextBox 15"
+        },
+        {
+          "x": 4.92,
+          "y": 7.94,
+          "w": 2.448,
+          "h": 0.346,
+          "kind": "text",
+          "text": "Organize Work",
+          "fontSize": 18,
+          "color": "000000",
+          "bold": false,
+          "name": "TextBox 16"
+        },
+        {
+          "x": 0,
+          "y": 0,
+          "w": 0.274,
+          "h": 0.045,
+          "kind": "shape",
+          "color": "007B80",
+          "bold": false,
+          "name": "Freeform 18"
+        },
+        {
+          "x": 0,
+          "y": -0.042,
+          "w": 0.274,
+          "h": 0.087,
+          "kind": "shape",
+          "bold": false,
+          "name": "TextBox 19"
+        },
+        {
+          "x": 8.074,
+          "y": 8.432,
+          "w": 2.448,
+          "h": 1.185,
+          "kind": "text",
+          "text": "Carry out essential\ntasks during sprint cycles consistently and efficiently.",
+          "fontSize": 16,
+          "color": "000000",
+          "bold": false,
+          "name": "TextBox 20"
+        },
+        {
+          "x": 8.074,
+          "y": 7.94,
+          "w": 2.448,
+          "h": 0.346,
+          "kind": "text",
+          "text": "Execute Plan",
+          "fontSize": 18,
+          "color": "000000",
+          "bold": false,
+          "name": "TextBox 21"
+        },
+        {
+          "x": 0,
+          "y": 0,
+          "w": 0.274,
+          "h": 0.045,
+          "kind": "shape",
+          "color": "004259",
+          "bold": false,
+          "name": "Freeform 23"
+        },
+        {
+          "x": 0,
+          "y": -0.042,
+          "w": 0.274,
+          "h": 0.087,
+          "kind": "shape",
+          "bold": false,
+          "name": "TextBox 24"
+        },
+        {
+          "x": 11.228,
+          "y": 8.432,
+          "w": 2.448,
+          "h": 1.487,
+          "kind": "text",
+          "text": "Measure significant progress against clearly defined goals and established quality standards.",
+          "fontSize": 16,
+          "color": "000000",
+          "bold": false,
+          "name": "TextBox 25"
+        },
+        {
+          "x": 11.228,
+          "y": 7.94,
+          "w": 2.448,
+          "h": 0.346,
+          "kind": "text",
+          "text": "Check Results",
+          "fontSize": 18,
+          "color": "000000",
+          "bold": false,
+          "name": "TextBox 26"
+        },
+        {
+          "x": 0,
+          "y": 0,
+          "w": 0.274,
+          "h": 0.045,
+          "kind": "shape",
+          "color": "000038",
+          "bold": false,
+          "name": "Freeform 28"
+        },
+        {
+          "x": 0,
+          "y": -0.042,
+          "w": 0.274,
+          "h": 0.087,
+          "kind": "shape",
+          "bold": false,
+          "name": "TextBox 29"
+        },
+        {
+          "x": 14.383,
+          "y": 8.432,
+          "w": 2.448,
+          "h": 1.185,
+          "kind": "text",
+          "text": "Apply valuable learnings to significantly enhance team efficiency continuously.",
+          "fontSize": 16,
+          "color": "000000",
+          "bold": false,
+          "name": "TextBox 30"
+        },
+        {
+          "x": 14.383,
+          "y": 7.94,
+          "w": 2.448,
+          "h": 0.346,
+          "kind": "text",
+          "text": "Improve Process",
+          "fontSize": 18,
+          "color": "000000",
+          "bold": false,
+          "name": "TextBox 31"
+        },
+        {
+          "x": 1.765,
+          "y": 2.84,
+          "w": 1.361,
+          "h": 0.671,
+          "kind": "text",
+          "text": "01",
+          "fontSize": 36,
+          "color": "FFFFFF",
+          "bold": false,
+          "name": "TextBox 32"
+        },
+        {
+          "x": 4.671,
+          "y": 2.84,
+          "w": 1.361,
+          "h": 0.671,
+          "kind": "text",
+          "text": "02",
+          "fontSize": 36,
+          "color": "FFFFFF",
+          "bold": false,
+          "name": "TextBox 33"
+        },
+        {
+          "x": 8.068,
+          "y": 2.84,
+          "w": 1.361,
+          "h": 0.671,
+          "kind": "text",
+          "text": "03",
+          "fontSize": 36,
+          "color": "FFFFFF",
+          "bold": false,
+          "name": "TextBox 34"
+        },
+        {
+          "x": 11.409,
+          "y": 2.84,
+          "w": 1.361,
+          "h": 0.671,
+          "kind": "text",
+          "text": "04",
+          "fontSize": 36,
+          "color": "FFFFFF",
+          "bold": false,
+          "name": "TextBox 35"
+        },
+        {
+          "x": 14.926,
+          "y": 2.84,
+          "w": 1.361,
+          "h": 0.671,
+          "kind": "text",
+          "text": "05",
+          "fontSize": 36,
+          "color": "FFFFFF",
+          "bold": false,
+          "name": "TextBox 36"
+        },
+        {
+          "x": 8.828,
+          "y": 6.405,
+          "w": 0.737,
+          "h": 0.737,
+          "kind": "shape",
+          "bold": false,
+          "name": "Freeform 37"
+        },
+        {
+          "x": 12.339,
+          "y": 6.405,
+          "w": 0.671,
+          "h": 0.737,
+          "kind": "shape",
+          "bold": false,
+          "name": "Freeform 38"
+        },
+        {
+          "x": 15.954,
+          "y": 6.322,
+          "w": 0.82,
+          "h": 0.82,
+          "kind": "shape",
+          "bold": false,
+          "name": "Freeform 39"
+        }
+      ],
+      "description": {
+        "looksLike": "A five-step horizontal chevron workflow infographic transitioning from bright green to dark navy, featuring numbered segments with icons and descriptive text columns underneath.",
+        "title": "Continuous Flow Steps",
+        "layout": "title-and-body",
+        "background": {
+          "scope": "slide",
+          "kind": "solid"
+        },
+        "contentPlacement": "Centered title and subtitle at the top, a wide five-segment chevron process diagram across the center containing numbers and line icons, and five corresponding text blocks aligned across the bottom.",
+        "images": [],
+        "boxes": [
+          {
+            "role": "body",
+            "text": "",
+            "x": 1.412,
+            "y": 2.745,
+            "w": 17.367,
+            "h": 4.845
+          },
+          {
+            "role": "body",
+            "text": "",
+            "x": 2.074,
+            "y": 6.405,
+            "w": 1.053,
+            "h": 0.737
+          },
+          {
+            "role": "body",
+            "text": "",
+            "x": 5.351,
+            "y": 6.405,
+            "w": 0.956,
+            "h": 0.737
+          },
+          {
+            "role": "body",
+            "text": "Continuous Flow Steps",
+            "x": 3.636,
+            "y": 0.969,
+            "w": 12.729,
+            "h": 0.671,
+            "fontSize": 36
+          },
+          {
+            "role": "body",
+            "text": "Five actions keep projects moving effectively",
+            "x": 3.636,
+            "y": 1.866,
+            "w": 12.729,
+            "h": 0.353,
+            "fontSize": 19
+          },
+          {
+            "role": "body",
+            "text": "",
+            "x": 0,
+            "y": 0,
+            "w": 0.274,
+            "h": 0.045
+          },
+          {
+            "role": "body",
+            "text": "",
+            "x": 0,
+            "y": -0.042,
+            "w": 0.274,
+            "h": 0.087
+          },
+          {
+            "role": "body",
+            "text": "Gather detailed requirements and stakeholder expectations early on.",
+            "x": 1.765,
+            "y": 8.432,
+            "w": 2.448,
+            "h": 1.185,
+            "fontSize": 16
+          },
+          {
+            "role": "body",
+            "text": "Collect Input",
+            "x": 1.765,
+            "y": 7.94,
+            "w": 2.448,
+            "h": 0.346,
+            "fontSize": 18
+          },
+          {
+            "role": "body",
+            "text": "",
+            "x": 0,
+            "y": 0,
+            "w": 0.274,
+            "h": 0.045
+          },
+          {
+            "role": "body",
+            "text": "",
+            "x": 0,
+            "y": -0.042,
+            "w": 0.274,
+            "h": 0.087
+          },
+          {
+            "role": "body",
+            "text": "Structure tasks clearly and efficiently within the organized project backlog.",
+            "x": 4.92,
+            "y": 8.432,
+            "w": 2.448,
+            "h": 1.185,
+            "fontSize": 16
+          },
+          {
+            "role": "body",
+            "text": "Organize Work",
+            "x": 4.92,
+            "y": 7.94,
+            "w": 2.448,
+            "h": 0.346,
+            "fontSize": 18
+          },
+          {
+            "role": "body",
+            "text": "",
+            "x": 0,
+            "y": 0,
+            "w": 0.274,
+            "h": 0.045
+          },
+          {
+            "role": "body",
+            "text": "",
+            "x": 0,
+            "y": -0.042,
+            "w": 0.274,
+            "h": 0.087
+          },
+          {
+            "role": "body",
+            "text": "Carry out essential\ntasks during sprint cycles consistently and efficiently.",
+            "x": 8.074,
+            "y": 8.432,
+            "w": 2.448,
+            "h": 1.185,
+            "fontSize": 16
+          },
+          {
+            "role": "body",
+            "text": "Execute Plan",
+            "x": 8.074,
+            "y": 7.94,
+            "w": 2.448,
+            "h": 0.346,
+            "fontSize": 18
+          },
+          {
+            "role": "body",
+            "text": "",
+            "x": 0,
+            "y": 0,
+            "w": 0.274,
+            "h": 0.045
+          },
+          {
+            "role": "body",
+            "text": "",
+            "x": 0,
+            "y": -0.042,
+            "w": 0.274,
+            "h": 0.087
+          },
+          {
+            "role": "body",
+            "text": "Measure significant progress against clearly defined goals and established quality standards.",
+            "x": 11.228,
+            "y": 8.432,
+            "w": 2.448,
+            "h": 1.487,
+            "fontSize": 16
+          },
+          {
+            "role": "body",
+            "text": "Check Results",
+            "x": 11.228,
+            "y": 7.94,
+            "w": 2.448,
+            "h": 0.346,
+            "fontSize": 18
+          },
+          {
+            "role": "body",
+            "text": "",
+            "x": 0,
+            "y": 0,
+            "w": 0.274,
+            "h": 0.045
+          },
+          {
+            "role": "body",
+            "text": "",
+            "x": 0,
+            "y": -0.042,
+            "w": 0.274,
+            "h": 0.087
+          },
+          {
+            "role": "body",
+            "text": "Apply valuable learnings to significantly enhance team efficiency continuously.",
+            "x": 14.383,
+            "y": 8.432,
+            "w": 2.448,
+            "h": 1.185,
+            "fontSize": 16
+          },
+          {
+            "role": "body",
+            "text": "Improve Process",
+            "x": 14.383,
+            "y": 7.94,
+            "w": 2.448,
+            "h": 0.346,
+            "fontSize": 18
+          },
+          {
+            "role": "body",
+            "text": "01",
+            "x": 1.765,
+            "y": 2.84,
+            "w": 1.361,
+            "h": 0.671,
+            "fontSize": 36
+          },
+          {
+            "role": "body",
+            "text": "02",
+            "x": 4.671,
+            "y": 2.84,
+            "w": 1.361,
+            "h": 0.671,
+            "fontSize": 36
+          },
+          {
+            "role": "body",
+            "text": "03",
+            "x": 8.068,
+            "y": 2.84,
+            "w": 1.361,
+            "h": 0.671,
+            "fontSize": 36
+          },
+          {
+            "role": "body",
+            "text": "04",
+            "x": 11.409,
+            "y": 2.84,
+            "w": 1.361,
+            "h": 0.671,
+            "fontSize": 36
+          },
+          {
+            "role": "body",
+            "text": "05",
+            "x": 14.926,
+            "y": 2.84,
+            "w": 1.361,
+            "h": 0.671,
+            "fontSize": 36
+          },
+          {
+            "role": "body",
+            "text": "",
+            "x": 8.828,
+            "y": 6.405,
+            "w": 0.737,
+            "h": 0.737
+          },
+          {
+            "role": "body",
+            "text": "",
+            "x": 12.339,
+            "y": 6.405,
+            "w": 0.671,
+            "h": 0.737
+          },
+          {
+            "role": "body",
+            "text": "",
+            "x": 15.954,
+            "y": 6.322,
+            "w": 0.82,
+            "h": 0.82
+          }
+        ]
+      },
+      "gcsUri": "gs://alltheway-rinegan-slide-designs-prod/catalog/corporate-agile-project-workflow-infographic/slide-10.png"
+    }
+  }
+}

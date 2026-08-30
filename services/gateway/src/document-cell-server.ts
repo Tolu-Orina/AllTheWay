@@ -13,6 +13,7 @@ import { WALL_MS_WITH_IMAGES } from "./document-budget.js";
 import { critiqueDeck, vertexVision } from "./document-critic.js";
 import { generateStill } from "./document-images.js";
 import { isLibreOfficeAvailable } from "./document-libreoffice.js";
+import { vertexPlanner } from "./document-planner.js";
 import { runDocumentQuality } from "./document-quality.js";
 import { MAX_CRITIQUE_ROUNDS, MAX_IMAGES, VISUAL_PASS_SCORE } from "./office-ir.js";
 
@@ -22,8 +23,8 @@ const PUBLIC_URL = (process.env.PUBLIC_URL ?? `http://localhost:${PORT}`).replac
 export const agentCard = {
   name: "AllTheWay Document Cell",
   description:
-    "Compiles a deck.v1 or report.v1 into one Office file. Resolves planned image slots, screenshots the PPTX in LibreOffice, and runs visual QA until score >= 95 or 6 turns. Returns one artifact. Never talks to the person.",
-  version: "1.3.0",
+    "After Yes: planner maps Office layout, background, and x/y; worker generates stills and compiles; an independent judge scores LibreOffice screenshots. Never talks to the person.",
+  version: "1.4.0",
   protocolVersion: "0.3.0",
   url: PUBLIC_URL,
   skills: [
@@ -31,7 +32,7 @@ export const agentCard = {
       id: "compile_document",
       name: "Compile a document",
       description:
-        "Validates layout IR, generates at least 3 Studio photographs, compiles templates, screenshots those slides in LibreOffice, and runs visual QA against the same eight archetype screenshots locally and in production. Visual QA is never skipped. Bounded in code: 240s without images, 360s with, 6 turns, pass at score >= 95. After 6 turns the last compile is persisted even if the score is still below 95.",
+        "Planner writes layout, background, and coordinates. Worker generates planned stills, compiles PPTX, screenshots in LibreOffice. Independent judge (fresh call, no rewrite) scores against the same eight archetypes. Bounded: 240s without images, 420s with, 6 turns, pass at score >= 95.",
       tags: ["document", "slides", "bounded"],
       inputModes: ["application/json"],
       outputModes: ["application/json"],
@@ -55,6 +56,7 @@ async function compile(req: express.Request, res: express.Response): Promise<voi
       args,
       imagesRemaining: Number.isFinite(imagesRemaining) ? imagesRemaining : null,
       generateImage: generateStill,
+      planner: vertexPlanner,
       critic: async (deck, pages) => critiqueDeck(deck, pages, vertexVision),
     });
     res.json({

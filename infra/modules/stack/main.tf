@@ -252,7 +252,7 @@ locals {
     ]
     orchestrator        = ["roles/aiplatform.user"] # Vertex, via ModelProvider
     research-cell       = ["roles/aiplatform.user"]
-    document-cell       = ["roles/aiplatform.user"] # image slots + vision critic
+    document-cell       = ["roles/aiplatform.user", "roles/datastore.user"] # Vertex + slideDesigns catalog
     profile-synthesizer = ["roles/datastore.user"]
     watcher-runtime = [
       "roles/datastore.user",
@@ -323,12 +323,18 @@ locals {
       MEDIA_LOCATION      = var.media_location
       SLIDE_REFERENCE_DIR = "/repo/services/document-cell/references"
       HOME                = "/tmp"
+      SLIDE_DESIGN_BUCKET = google_storage_bucket.slide_designs.name
+      SLIDE_EMBEDDING_MODEL    = "gemini-embedding-2"
+      SLIDE_EMBEDDING_LOCATION = "global"
     }
     gateway = {
       # Where artifact bytes live. Empty would disable artifacts rather than
       # fail at import, but it is never empty here — the bucket is created
       # alongside the service.
       ARTIFACTS_BUCKET = google_storage_bucket.artifacts.name
+      SLIDE_DESIGN_BUCKET      = google_storage_bucket.slide_designs.name
+      SLIDE_EMBEDDING_MODEL    = "gemini-embedding-2"
+      SLIDE_EMBEDDING_LOCATION = "global"
 
       MAIL_FROM         = var.mail_from
       GEMINI_LIVE_MODEL = var.gemini_live_model
@@ -488,8 +494,9 @@ module "service" {
   # resumption in Phase F is for, and it is a reconnect problem rather than a
   # number that can be raised.
   #
-  # Document-cell visual QA is compile + LibreOffice + critic, budgeted at
-  # 360s with images. 300s was killing the request before the sixth turn.
+  # Document-cell visual QA is planner + stills + LibreOffice + independent
+  # judge, budgeted at 420s with images. 300s was killing the request before
+  # the later turns.
   timeout_seconds = contains(["gateway", "scribe"], each.key) ? 3600 : each.key == "document-cell" ? 480 : 300
 
   # Studio video: the gateway joins shots in /tmp; connector-gateway holds a
@@ -868,6 +875,30 @@ resource "google_firestore_index" "document_chunks_nearest" {
     field_path = "ownerUid"
     order      = "ASCENDING"
   }
+
+  fields {
+    field_path = "__name__"
+    order      = "ASCENDING"
+  }
+
+  fields {
+    field_path = "embedding"
+    vector_config {
+      dimension = 1536
+      flat {}
+    }
+  }
+}
+
+# slideDesigns.find_nearest(embedding). Product catalog of sample-deck
+# geometry — not user documents. query_scope is COLLECTION on the root
+# collection, never a collection group. gemini-embedding-2 at 1536
+# (default 3072 exceeds Firestore's 2048 cap).
+resource "google_firestore_index" "slide_designs_nearest" {
+  project     = var.project_id
+  database    = google_firestore_database.this.name
+  collection  = "slideDesigns"
+  query_scope = "COLLECTION"
 
   fields {
     field_path = "__name__"

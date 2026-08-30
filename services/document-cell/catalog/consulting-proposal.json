@@ -1,0 +1,6638 @@
+{
+  "id": "consulting-proposal",
+  "title": "consulting proposal",
+  "source": "Consulting proposal.pptx",
+  "width": 10,
+  "height": 5.625,
+  "overall_deck_description": "This consulting proposal deck is designed with a modern, clean editorial aesthetic bookended by high-impact landscape imagery on the cover and closing slides, with clean white-background content layouts in between. The sequence establishes a consistent structure using a subtle light-gray top header bar (holding metadata or minimal navigation icons) and a signature two-tone (teal and orange) horizontal accent line positioned directly above left-aligned section titles. Bold, heavy sans-serif typography anchors the headlines, complemented by clean regular sans-serif body text, teal-accented numbered lists, and structured photographic collages across the internal body slides.",
+  "slides": {
+    "slide-01": {
+      "index": 0,
+      "prev": null,
+      "next": "slide-02",
+      "image": "consulting-proposal/slide-01.png",
+      "coordinates": [
+        {
+          "x": 0,
+          "y": 0.533,
+          "w": 10,
+          "h": 5.092,
+          "kind": "picture",
+          "bold": false,
+          "name": "Google Shape;10;p2"
+        },
+        {
+          "x": 0.798,
+          "y": 1.446,
+          "w": 5.349,
+          "h": 1.821,
+          "kind": "text",
+          "text": "Consulting Proposal",
+          "fontSize": 48,
+          "color": "000000",
+          "bold": false,
+          "placeholder": "ctrTitle",
+          "name": "Google Shape;176;p18"
+        },
+        {
+          "x": 0.798,
+          "y": 3.279,
+          "w": 5.349,
+          "h": 0.592,
+          "kind": "text",
+          "text": "Lorem ipsum dolor sit amet.",
+          "fontSize": 14,
+          "bold": true,
+          "placeholder": "subTitle",
+          "name": "Google Shape;177;p18"
+        }
+      ],
+      "description": {
+        "looksLike": "A clean title slide featuring large bold typography over a scenic snow-covered mountain range photograph spanning the bottom half.",
+        "title": "Consulting Proposal",
+        "layout": "title-slide",
+        "background": {
+          "scope": "slide",
+          "kind": "photograph"
+        },
+        "contentPlacement": "Header bar at the top displays metadata; left-aligned large bold title and subtitle sit in the upper-left on the pale sky area above a snowy alpine landscape.",
+        "images": [
+          {
+            "kind": "picture",
+            "what": "photograph",
+            "x": 0,
+            "y": 0.533,
+            "w": 10,
+            "h": 5.092
+          }
+        ],
+        "boxes": [
+          {
+            "role": "body",
+            "text": "",
+            "x": 0,
+            "y": 0.533,
+            "w": 10,
+            "h": 5.092
+          },
+          {
+            "role": "body",
+            "text": "Consulting Proposal",
+            "x": 0.798,
+            "y": 1.446,
+            "w": 5.349,
+            "h": 1.821,
+            "fontSize": 48
+          },
+          {
+            "role": "body",
+            "text": "Lorem ipsum dolor sit amet.",
+            "x": 0.798,
+            "y": 3.279,
+            "w": 5.349,
+            "h": 0.592,
+            "fontSize": 14
+          }
+        ]
+      },
+      "gcsUri": "gs://alltheway-rinegan-slide-designs-prod/catalog/consulting-proposal/slide-01.png"
+    },
+    "slide-02": {
+      "index": 1,
+      "prev": "slide-01",
+      "next": "slide-03",
+      "image": "consulting-proposal/slide-02.png",
+      "coordinates": [
+        {
+          "x": 1.431,
+          "y": 1.442,
+          "w": 7.776,
+          "h": 0.585,
+          "kind": "text",
+          "text": "TOC",
+          "bold": false,
+          "placeholder": "title",
+          "name": "Google Shape;182;p19"
+        },
+        {
+          "x": 1.415,
+          "y": 2.519,
+          "w": 1.758,
+          "h": 0.356,
+          "kind": "text",
+          "text": "Overview",
+          "fontSize": 13,
+          "color": "FFFFFF",
+          "bold": false,
+          "name": "Google Shape;183;p19"
+        },
+        {
+          "x": 1.415,
+          "y": 2.958,
+          "w": 1.758,
+          "h": 0.356,
+          "kind": "text",
+          "text": "Problems to solve",
+          "fontSize": 13,
+          "color": "FFFFFF",
+          "bold": false,
+          "name": "Google Shape;184;p19"
+        },
+        {
+          "x": 1.415,
+          "y": 3.397,
+          "w": 1.758,
+          "h": 0.356,
+          "kind": "text",
+          "text": "Project objective",
+          "fontSize": 13,
+          "color": "FFFFFF",
+          "bold": false,
+          "name": "Google Shape;185;p19"
+        },
+        {
+          "x": 1.415,
+          "y": 3.837,
+          "w": 1.758,
+          "h": 0.356,
+          "kind": "text",
+          "text": "Market trends",
+          "fontSize": 13,
+          "color": "FFFFFF",
+          "bold": false,
+          "name": "Google Shape;186;p19"
+        },
+        {
+          "x": 3.771,
+          "y": 2.519,
+          "w": 1.788,
+          "h": 0.356,
+          "kind": "text",
+          "text": "Trend analysis",
+          "fontSize": 13,
+          "color": "FFFFFF",
+          "bold": false,
+          "name": "Google Shape;187;p19"
+        },
+        {
+          "x": 3.771,
+          "y": 2.958,
+          "w": 1.788,
+          "h": 0.356,
+          "kind": "text",
+          "text": "Target audience",
+          "fontSize": 13,
+          "color": "FFFFFF",
+          "bold": false,
+          "name": "Google Shape;188;p19"
+        },
+        {
+          "x": 3.771,
+          "y": 3.397,
+          "w": 1.788,
+          "h": 0.356,
+          "kind": "text",
+          "text": "Proposed solution",
+          "fontSize": 13,
+          "color": "FFFFFF",
+          "bold": false,
+          "name": "Google Shape;189;p19"
+        },
+        {
+          "x": 3.771,
+          "y": 3.837,
+          "w": 1.788,
+          "h": 0.356,
+          "kind": "text",
+          "text": "Process",
+          "fontSize": 13,
+          "color": "FFFFFF",
+          "bold": false,
+          "name": "Google Shape;190;p19"
+        },
+        {
+          "x": 6.136,
+          "y": 2.519,
+          "w": 1.357,
+          "h": 0.356,
+          "kind": "text",
+          "text": "Deliverables",
+          "fontSize": 13,
+          "color": "FFFFFF",
+          "bold": false,
+          "name": "Google Shape;191;p19"
+        },
+        {
+          "x": 6.136,
+          "y": 2.958,
+          "w": 1.357,
+          "h": 0.356,
+          "kind": "text",
+          "text": "Vision",
+          "fontSize": 13,
+          "color": "FFFFFF",
+          "bold": false,
+          "name": "Google Shape;192;p19"
+        },
+        {
+          "x": 6.136,
+          "y": 3.397,
+          "w": 1.357,
+          "h": 0.356,
+          "kind": "text",
+          "text": "Team",
+          "fontSize": 13,
+          "color": "FFFFFF",
+          "bold": false,
+          "name": "Google Shape;193;p19"
+        }
+      ],
+      "description": {
+        "looksLike": "A teal table of contents slide with a bold white header and agenda items arranged across three columns.",
+        "title": "TOC",
+        "layout": "title-and-two-columns",
+        "background": {
+          "scope": "slide",
+          "kind": "solid"
+        },
+        "contentPlacement": "Header at the upper left with agenda topics listed beneath in three horizontal columns.",
+        "images": [],
+        "boxes": [
+          {
+            "role": "body",
+            "text": "TOC",
+            "x": 1.431,
+            "y": 1.442,
+            "w": 7.776,
+            "h": 0.585
+          },
+          {
+            "role": "body",
+            "text": "Overview",
+            "x": 1.415,
+            "y": 2.519,
+            "w": 1.758,
+            "h": 0.356,
+            "fontSize": 13
+          },
+          {
+            "role": "body",
+            "text": "Problems to solve",
+            "x": 1.415,
+            "y": 2.958,
+            "w": 1.758,
+            "h": 0.356,
+            "fontSize": 13
+          },
+          {
+            "role": "body",
+            "text": "Project objective",
+            "x": 1.415,
+            "y": 3.397,
+            "w": 1.758,
+            "h": 0.356,
+            "fontSize": 13
+          },
+          {
+            "role": "body",
+            "text": "Market trends",
+            "x": 1.415,
+            "y": 3.837,
+            "w": 1.758,
+            "h": 0.356,
+            "fontSize": 13
+          },
+          {
+            "role": "body",
+            "text": "Trend analysis",
+            "x": 3.771,
+            "y": 2.519,
+            "w": 1.788,
+            "h": 0.356,
+            "fontSize": 13
+          },
+          {
+            "role": "body",
+            "text": "Target audience",
+            "x": 3.771,
+            "y": 2.958,
+            "w": 1.788,
+            "h": 0.356,
+            "fontSize": 13
+          },
+          {
+            "role": "body",
+            "text": "Proposed solution",
+            "x": 3.771,
+            "y": 3.397,
+            "w": 1.788,
+            "h": 0.356,
+            "fontSize": 13
+          },
+          {
+            "role": "body",
+            "text": "Process",
+            "x": 3.771,
+            "y": 3.837,
+            "w": 1.788,
+            "h": 0.356,
+            "fontSize": 13
+          },
+          {
+            "role": "body",
+            "text": "Deliverables",
+            "x": 6.136,
+            "y": 2.519,
+            "w": 1.357,
+            "h": 0.356,
+            "fontSize": 13
+          },
+          {
+            "role": "body",
+            "text": "Vision",
+            "x": 6.136,
+            "y": 2.958,
+            "w": 1.357,
+            "h": 0.356,
+            "fontSize": 13
+          },
+          {
+            "role": "body",
+            "text": "Team",
+            "x": 6.136,
+            "y": 3.397,
+            "w": 1.357,
+            "h": 0.356,
+            "fontSize": 13
+          }
+        ]
+      },
+      "gcsUri": "gs://alltheway-rinegan-slide-designs-prod/catalog/consulting-proposal/slide-02.png"
+    },
+    "slide-03": {
+      "index": 2,
+      "prev": "slide-02",
+      "next": "slide-04",
+      "image": "consulting-proposal/slide-03.png",
+      "coordinates": [
+        {
+          "x": 0.798,
+          "y": 1.442,
+          "w": 8.408,
+          "h": 0.585,
+          "kind": "text",
+          "text": "Overview",
+          "bold": false,
+          "placeholder": "title",
+          "name": "Google Shape;198;p20"
+        },
+        {
+          "x": 1.417,
+          "y": 2.273,
+          "w": 7.79,
+          "h": 1.451,
+          "kind": "text",
+          "text": "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.",
+          "fontSize": 11,
+          "bold": false,
+          "placeholder": "body",
+          "name": "Google Shape;199;p20"
+        },
+        {
+          "x": 0,
+          "y": 4.195,
+          "w": 10,
+          "h": 1.451,
+          "kind": "picture",
+          "bold": false,
+          "name": "Google Shape;200;p20"
+        }
+      ],
+      "description": {
+        "looksLike": "Section overview slide with dark text positioned above a winter mountain landscape image.",
+        "title": "Overview",
+        "layout": "section-title-and-description",
+        "background": {
+          "scope": "slide",
+          "kind": "photograph"
+        },
+        "contentPlacement": "Left-aligned title and paragraph in the upper half above a landscape image strip.",
+        "images": [
+          {
+            "kind": "picture",
+            "what": "photograph",
+            "x": 0,
+            "y": 4.195,
+            "w": 10,
+            "h": 1.451
+          }
+        ],
+        "boxes": [
+          {
+            "role": "body",
+            "text": "",
+            "x": 0.798,
+            "y": 1.442,
+            "w": 8.408,
+            "h": 0.585
+          },
+          {
+            "role": "body",
+            "text": "",
+            "x": 1.417,
+            "y": 2.273,
+            "w": 7.79,
+            "h": 1.451
+          },
+          {
+            "role": "body",
+            "text": "",
+            "x": 0,
+            "y": 4.195,
+            "w": 10,
+            "h": 1.451
+          }
+        ]
+      },
+      "gcsUri": "gs://alltheway-rinegan-slide-designs-prod/catalog/consulting-proposal/slide-03.png"
+    },
+    "slide-04": {
+      "index": 3,
+      "prev": "slide-03",
+      "next": "slide-05",
+      "image": "consulting-proposal/slide-04.png",
+      "coordinates": [
+        {
+          "x": 0.798,
+          "y": 1.442,
+          "w": 8.408,
+          "h": 0.585,
+          "kind": "text",
+          "text": "Problems to solve",
+          "bold": false,
+          "placeholder": "title",
+          "name": "Google Shape;205;p21"
+        },
+        {
+          "x": 1.532,
+          "y": 2.386,
+          "w": 0.36,
+          "h": 0.36,
+          "kind": "text",
+          "text": "1",
+          "fontSize": 8,
+          "color": "00BFA5",
+          "bold": true,
+          "name": "Google Shape;206;p21"
+        },
+        {
+          "x": 2.021,
+          "y": 2.268,
+          "w": 3.098,
+          "h": 1.15,
+          "kind": "text",
+          "text": "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna nec. Lorem ipsum dolor sit amet, consectetur adipiscing elit.",
+          "fontSize": 11,
+          "bold": false,
+          "placeholder": "body",
+          "name": "Google Shape;207;p21"
+        },
+        {
+          "x": 1.532,
+          "y": 3.723,
+          "w": 0.36,
+          "h": 0.36,
+          "kind": "text",
+          "text": "2",
+          "fontSize": 8,
+          "color": "00BFA5",
+          "bold": true,
+          "name": "Google Shape;208;p21"
+        },
+        {
+          "x": 2.021,
+          "y": 3.618,
+          "w": 3.098,
+          "h": 1.15,
+          "kind": "text",
+          "text": "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna nec. Lorem ipsum dolor sit amet, consectetur adipiscing elit.",
+          "fontSize": 11,
+          "bold": false,
+          "placeholder": "body",
+          "name": "Google Shape;209;p21"
+        },
+        {
+          "x": 5.567,
+          "y": 2.386,
+          "w": 0.36,
+          "h": 0.36,
+          "kind": "text",
+          "text": "3",
+          "fontSize": 8,
+          "color": "00BFA5",
+          "bold": true,
+          "name": "Google Shape;210;p21"
+        },
+        {
+          "x": 6.054,
+          "y": 2.268,
+          "w": 3.098,
+          "h": 1.15,
+          "kind": "text",
+          "text": "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna nec. Lorem ipsum dolor sit amet, consectetur adipiscing elit.",
+          "fontSize": 11,
+          "bold": false,
+          "placeholder": "body",
+          "name": "Google Shape;211;p21"
+        },
+        {
+          "x": 5.567,
+          "y": 3.723,
+          "w": 0.36,
+          "h": 0.36,
+          "kind": "text",
+          "text": "4",
+          "fontSize": 8,
+          "color": "00BFA5",
+          "bold": true,
+          "name": "Google Shape;212;p21"
+        },
+        {
+          "x": 6.054,
+          "y": 3.618,
+          "w": 3.098,
+          "h": 1.15,
+          "kind": "text",
+          "text": "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna nec. Lorem ipsum dolor sit amet, consectetur adipiscing elit.",
+          "fontSize": 11,
+          "bold": false,
+          "placeholder": "body",
+          "name": "Google Shape;213;p21"
+        }
+      ],
+      "description": {
+        "looksLike": "A 2x2 grid of numbered problem statements with turquoise circle badges and descriptive text blocks below a bold section title.",
+        "title": "Problems to solve",
+        "layout": "title-and-two-columns",
+        "background": {
+          "scope": "deck",
+          "kind": "solid"
+        },
+        "contentPlacement": "Bold headline in the upper-left with a two-column, two-row numbered list grid filling the lower half.",
+        "images": [],
+        "boxes": [
+          {
+            "role": "body",
+            "text": "Problems to solve",
+            "x": 0.798,
+            "y": 1.442,
+            "w": 8.408,
+            "h": 0.585
+          },
+          {
+            "role": "body",
+            "text": "1",
+            "x": 1.532,
+            "y": 2.386,
+            "w": 0.36,
+            "h": 0.36,
+            "fontSize": 8
+          },
+          {
+            "role": "body",
+            "text": "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna nec. Lorem ipsum dolor sit amet, consectetur adipiscing elit.",
+            "x": 2.021,
+            "y": 2.268,
+            "w": 3.098,
+            "h": 1.15,
+            "fontSize": 11
+          },
+          {
+            "role": "body",
+            "text": "2",
+            "x": 1.532,
+            "y": 3.723,
+            "w": 0.36,
+            "h": 0.36,
+            "fontSize": 8
+          },
+          {
+            "role": "body",
+            "text": "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna nec. Lorem ipsum dolor sit amet, consectetur adipiscing elit.",
+            "x": 2.021,
+            "y": 3.618,
+            "w": 3.098,
+            "h": 1.15,
+            "fontSize": 11
+          },
+          {
+            "role": "body",
+            "text": "3",
+            "x": 5.567,
+            "y": 2.386,
+            "w": 0.36,
+            "h": 0.36,
+            "fontSize": 8
+          },
+          {
+            "role": "body",
+            "text": "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna nec. Lorem ipsum dolor sit amet, consectetur adipiscing elit.",
+            "x": 6.054,
+            "y": 2.268,
+            "w": 3.098,
+            "h": 1.15,
+            "fontSize": 11
+          },
+          {
+            "role": "body",
+            "text": "4",
+            "x": 5.567,
+            "y": 3.723,
+            "w": 0.36,
+            "h": 0.36,
+            "fontSize": 8
+          },
+          {
+            "role": "body",
+            "text": "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna nec. Lorem ipsum dolor sit amet, consectetur adipiscing elit.",
+            "x": 6.054,
+            "y": 3.618,
+            "w": 3.098,
+            "h": 1.15,
+            "fontSize": 11
+          }
+        ]
+      },
+      "gcsUri": "gs://alltheway-rinegan-slide-designs-prod/catalog/consulting-proposal/slide-04.png"
+    },
+    "slide-05": {
+      "index": 4,
+      "prev": "slide-04",
+      "next": "slide-06",
+      "image": "consulting-proposal/slide-05.png",
+      "coordinates": [
+        {
+          "x": 0.798,
+          "y": 1.446,
+          "w": 7.666,
+          "h": 0.384,
+          "kind": "text",
+          "text": "Project objective",
+          "fontSize": 12,
+          "bold": false,
+          "placeholder": "title",
+          "name": "Google Shape;218;p22"
+        },
+        {
+          "x": 0.798,
+          "y": 1.913,
+          "w": 7.666,
+          "h": 2.874,
+          "kind": "text",
+          "text": "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua ipsum dolor sit amet.",
+          "fontSize": 30,
+          "color": "FFFFFF",
+          "bold": false,
+          "placeholder": "body",
+          "name": "Google Shape;219;p22"
+        }
+      ],
+      "description": {
+        "looksLike": "A dark minimalist slide featuring a small section header and a large key statement.",
+        "title": "Project objective",
+        "layout": "main-point",
+        "background": {
+          "scope": "slide",
+          "kind": "solid"
+        },
+        "contentPlacement": "Left-aligned small title above large body statement text occupying the middle-left area.",
+        "images": [],
+        "boxes": [
+          {
+            "role": "body",
+            "text": "Project objective",
+            "x": 0.798,
+            "y": 1.446,
+            "w": 7.666,
+            "h": 0.384,
+            "fontSize": 12
+          },
+          {
+            "role": "body",
+            "text": "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua ipsum dolor sit amet.",
+            "x": 0.798,
+            "y": 1.913,
+            "w": 7.666,
+            "h": 2.874,
+            "fontSize": 30
+          }
+        ]
+      },
+      "gcsUri": "gs://alltheway-rinegan-slide-designs-prod/catalog/consulting-proposal/slide-05.png"
+    },
+    "slide-06": {
+      "index": 5,
+      "prev": "slide-05",
+      "next": "slide-07",
+      "image": "consulting-proposal/slide-06.png",
+      "coordinates": [
+        {
+          "x": 0,
+          "y": 0.533,
+          "w": 10,
+          "h": 5.092,
+          "kind": "picture",
+          "bold": false,
+          "name": "Google Shape;65;p7"
+        },
+        {
+          "x": 0.798,
+          "y": 2.249,
+          "w": 5.69,
+          "h": 1.661,
+          "kind": "text",
+          "text": "Understanding the market",
+          "bold": false,
+          "placeholder": "title",
+          "name": "Google Shape;224;p23"
+        }
+      ],
+      "description": {
+        "looksLike": "Section header slide featuring a full-bleed architectural photograph across the bottom with bold white text overlaid on the left.",
+        "title": "Understanding the market",
+        "layout": "section-header",
+        "background": {
+          "scope": "slide",
+          "kind": "solid"
+        },
+        "contentPlacement": "Header bar at the top with a large photographic panel below covering the rest of the slide, overlaying bold white section text on the mid-left.",
+        "images": [
+          {
+            "kind": "picture",
+            "what": "photograph",
+            "x": 0,
+            "y": 0.533,
+            "w": 10,
+            "h": 5.092
+          }
+        ],
+        "boxes": [
+          {
+            "role": "body",
+            "text": "",
+            "x": 0.798,
+            "y": 2.249,
+            "w": 5.69,
+            "h": 1.661
+          }
+        ]
+      },
+      "gcsUri": "gs://alltheway-rinegan-slide-designs-prod/catalog/consulting-proposal/slide-06.png"
+    },
+    "slide-07": {
+      "index": 6,
+      "prev": "slide-06",
+      "next": "slide-08",
+      "image": "consulting-proposal/slide-07.png",
+      "coordinates": [
+        {
+          "x": 0.799,
+          "y": 1.442,
+          "w": 4.258,
+          "h": 1.131,
+          "kind": "text",
+          "text": "Market trends\n01",
+          "bold": false,
+          "placeholder": "title",
+          "name": "Google Shape;229;p24"
+        },
+        {
+          "x": 0.789,
+          "y": 2.662,
+          "w": 4.258,
+          "h": 2.285,
+          "kind": "text",
+          "text": "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt labore dolore magna aliqua. Lorem ipsum dolor sit amet, consectetur adipiscing elit.\nClient Implications:\nConsectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Lorem ipsum dolor sit amet, consectetur adipiscing elit tempor incididunt ut labore et dolore magna aliqua.",
+          "fontSize": 11,
+          "bold": true,
+          "placeholder": "body",
+          "name": "Google Shape;230;p24"
+        },
+        {
+          "x": 5.629,
+          "y": 3.639,
+          "w": 2.158,
+          "h": 1.224,
+          "kind": "shape",
+          "color": "008FFF",
+          "bold": false,
+          "name": "Google Shape;233;p24"
+        },
+        {
+          "x": 5.776,
+          "y": 3.752,
+          "w": 1.617,
+          "h": 0.829,
+          "kind": "text",
+          "text": "QUICK TIP\nTry right clicking on a photo and using \"Replace Image\" to show your own photo.",
+          "fontSize": 12,
+          "color": "FFFFFF",
+          "bold": true,
+          "name": "Google Shape;234;p24"
+        },
+        {
+          "x": 5.629,
+          "y": 1.295,
+          "w": 2.158,
+          "h": 3.568,
+          "kind": "picture",
+          "bold": false,
+          "name": "Google Shape;231;p24"
+        },
+        {
+          "x": 7.842,
+          "y": 1.295,
+          "w": 2.158,
+          "h": 3.568,
+          "kind": "picture",
+          "bold": false,
+          "name": "Google Shape;235;p24"
+        }
+      ],
+      "description": {
+        "looksLike": "Left-heavy narrative slide with a large numbered section header and descriptive paragraphs on the left, balanced by two tall vertical photo panels on the right.",
+        "title": "Market trends 01",
+        "layout": "section-title-and-description",
+        "background": {
+          "scope": "slide",
+          "kind": "solid"
+        },
+        "contentPlacement": "Section title and detailed narrative on the left half; two vertical photo columns occupying the right half.",
+        "images": [
+          {
+            "kind": "picture",
+            "what": "photograph",
+            "x": 5.629,
+            "y": 1.295,
+            "w": 2.158,
+            "h": 3.568
+          },
+          {
+            "kind": "picture",
+            "what": "photograph",
+            "x": 7.842,
+            "y": 1.295,
+            "w": 2.158,
+            "h": 3.568
+          }
+        ],
+        "boxes": [
+          {
+            "role": "body",
+            "text": "",
+            "x": 0.799,
+            "y": 1.442,
+            "w": 4.258,
+            "h": 1.131
+          },
+          {
+            "role": "body",
+            "text": "",
+            "x": 0.789,
+            "y": 2.662,
+            "w": 4.258,
+            "h": 2.285
+          },
+          {
+            "role": "body",
+            "text": "",
+            "x": 5.629,
+            "y": 3.639,
+            "w": 2.158,
+            "h": 1.224
+          },
+          {
+            "role": "body",
+            "text": "",
+            "x": 5.776,
+            "y": 3.752,
+            "w": 1.617,
+            "h": 0.829
+          }
+        ]
+      },
+      "gcsUri": "gs://alltheway-rinegan-slide-designs-prod/catalog/consulting-proposal/slide-07.png"
+    },
+    "slide-08": {
+      "index": 7,
+      "prev": "slide-07",
+      "next": "slide-09",
+      "image": "consulting-proposal/slide-08.png",
+      "coordinates": [
+        {
+          "x": 0.799,
+          "y": 1.442,
+          "w": 4.258,
+          "h": 1.131,
+          "kind": "text",
+          "text": "Market trends\n02",
+          "bold": false,
+          "placeholder": "title",
+          "name": "Google Shape;240;p25"
+        },
+        {
+          "x": 0.789,
+          "y": 2.662,
+          "w": 4.258,
+          "h": 2.285,
+          "kind": "text",
+          "text": "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt labore dolore magna aliqua. Lorem ipsum dolor sit amet, consectetur adipiscing elit.\nClient Implications:\nConsectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Lorem ipsum dolor sit amet, consectetur adipiscing elit tempor incididunt ut labore et dolore magna aliqua.",
+          "fontSize": 11,
+          "bold": true,
+          "placeholder": "body",
+          "name": "Google Shape;241;p25"
+        },
+        {
+          "x": 5.629,
+          "y": 1.295,
+          "w": 4.371,
+          "h": 3.568,
+          "kind": "picture",
+          "bold": false,
+          "name": "Google Shape;242;p25"
+        }
+      ],
+      "description": {
+        "looksLike": "A split slide layout with a bold section title, numbered subheader, and two descriptive paragraphs on the left, paired with a full-height industrial photograph on the right.",
+        "title": "Market trends 02",
+        "layout": "section-title-and-description",
+        "background": {
+          "scope": "deck",
+          "kind": "solid"
+        },
+        "contentPlacement": "The slide header and multi-paragraph narrative occupy the left column, while a large rectangular photograph of heavy machinery fills the right half of the slide.",
+        "images": [
+          {
+            "kind": "picture",
+            "what": "photograph",
+            "x": 5.629,
+            "y": 1.295,
+            "w": 4.371,
+            "h": 3.568
+          }
+        ],
+        "boxes": [
+          {
+            "role": "body",
+            "text": "Market trends\n02",
+            "x": 0.799,
+            "y": 1.442,
+            "w": 4.258,
+            "h": 1.131
+          },
+          {
+            "role": "body",
+            "text": "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt labore dolore magna aliqua. Lorem ipsum dolor sit amet, consectetur adipiscing elit.\nClient Implications:\nConsectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Lorem ipsum dolor sit amet, consectetur adipiscing elit tempor incididunt ut labore et dolore magna aliqua.",
+            "x": 0.789,
+            "y": 2.662,
+            "w": 4.258,
+            "h": 2.285,
+            "fontSize": 11
+          },
+          {
+            "role": "body",
+            "text": "",
+            "x": 5.629,
+            "y": 1.295,
+            "w": 4.371,
+            "h": 3.568
+          }
+        ]
+      },
+      "gcsUri": "gs://alltheway-rinegan-slide-designs-prod/catalog/consulting-proposal/slide-08.png"
+    },
+    "slide-09": {
+      "index": 8,
+      "prev": "slide-08",
+      "next": "slide-10",
+      "image": "consulting-proposal/slide-09.png",
+      "coordinates": [
+        {
+          "x": 0.798,
+          "y": 1.442,
+          "w": 3.062,
+          "h": 1.131,
+          "kind": "text",
+          "text": "Trend analysis",
+          "color": "000000",
+          "bold": false,
+          "placeholder": "title",
+          "name": "Google Shape;247;p26"
+        },
+        {
+          "x": 3.943,
+          "y": 1.169,
+          "w": 5.247,
+          "h": 1.131,
+          "kind": "text",
+          "text": "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt labore dolore magna aliqua. Lorem ipsum dolor sit amet, consectetur adipiscing elit. Lorem ipsum dolor\nsit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt labore dolore magna aliqua. Lorem ipsum dolor sit amet, consectetur adipiscing elit.",
+          "fontSize": 11,
+          "bold": false,
+          "placeholder": "body",
+          "name": "Google Shape;248;p26"
+        },
+        {
+          "x": 0.954,
+          "y": 2.758,
+          "w": 8.086,
+          "h": 1.902,
+          "kind": "shape",
+          "bold": false,
+          "name": "Google Shape;251;p26"
+        },
+        {
+          "x": 1.164,
+          "y": 4.802,
+          "w": 0.392,
+          "h": 0.275,
+          "kind": "text",
+          "text": "Jan",
+          "fontSize": 7,
+          "color": "000000",
+          "bold": false,
+          "name": "Google Shape;277;p26"
+        },
+        {
+          "x": 1.839,
+          "y": 4.802,
+          "w": 0.392,
+          "h": 0.275,
+          "kind": "text",
+          "text": "Feb",
+          "fontSize": 7,
+          "color": "000000",
+          "bold": false,
+          "name": "Google Shape;278;p26"
+        },
+        {
+          "x": 2.492,
+          "y": 4.802,
+          "w": 0.392,
+          "h": 0.275,
+          "kind": "text",
+          "text": "Mar",
+          "fontSize": 7,
+          "color": "000000",
+          "bold": false,
+          "name": "Google Shape;279;p26"
+        },
+        {
+          "x": 3.157,
+          "y": 4.802,
+          "w": 0.392,
+          "h": 0.275,
+          "kind": "text",
+          "text": "Apr",
+          "fontSize": 7,
+          "color": "000000",
+          "bold": false,
+          "name": "Google Shape;280;p26"
+        },
+        {
+          "x": 3.812,
+          "y": 4.802,
+          "w": 0.392,
+          "h": 0.275,
+          "kind": "text",
+          "text": "May",
+          "fontSize": 7,
+          "color": "000000",
+          "bold": false,
+          "name": "Google Shape;281;p26"
+        },
+        {
+          "x": 4.476,
+          "y": 4.802,
+          "w": 0.392,
+          "h": 0.275,
+          "kind": "text",
+          "text": "Jun",
+          "fontSize": 7,
+          "color": "000000",
+          "bold": false,
+          "name": "Google Shape;282;p26"
+        },
+        {
+          "x": 5.139,
+          "y": 4.802,
+          "w": 0.392,
+          "h": 0.275,
+          "kind": "text",
+          "text": "Jul",
+          "fontSize": 7,
+          "color": "000000",
+          "bold": false,
+          "name": "Google Shape;283;p26"
+        },
+        {
+          "x": 5.797,
+          "y": 4.802,
+          "w": 0.392,
+          "h": 0.275,
+          "kind": "text",
+          "text": "Aug",
+          "fontSize": 7,
+          "color": "000000",
+          "bold": false,
+          "name": "Google Shape;284;p26"
+        },
+        {
+          "x": 6.461,
+          "y": 4.802,
+          "w": 0.392,
+          "h": 0.275,
+          "kind": "text",
+          "text": "Sep",
+          "fontSize": 7,
+          "color": "000000",
+          "bold": false,
+          "name": "Google Shape;285;p26"
+        },
+        {
+          "x": 7.122,
+          "y": 4.802,
+          "w": 0.392,
+          "h": 0.275,
+          "kind": "text",
+          "text": "Oct",
+          "fontSize": 7,
+          "color": "000000",
+          "bold": false,
+          "name": "Google Shape;286;p26"
+        },
+        {
+          "x": 7.787,
+          "y": 4.802,
+          "w": 0.392,
+          "h": 0.275,
+          "kind": "text",
+          "text": "Nov",
+          "fontSize": 7,
+          "color": "000000",
+          "bold": false,
+          "name": "Google Shape;287;p26"
+        },
+        {
+          "x": 8.446,
+          "y": 4.802,
+          "w": 0.392,
+          "h": 0.275,
+          "kind": "text",
+          "text": "Dec",
+          "fontSize": 7,
+          "color": "000000",
+          "bold": false,
+          "name": "Google Shape;288;p26"
+        },
+        {
+          "x": 0.694,
+          "y": 4.682,
+          "w": 0.376,
+          "h": 0.1,
+          "kind": "text",
+          "text": "0",
+          "fontSize": 7,
+          "color": "666666",
+          "bold": false,
+          "name": "Google Shape;289;p26"
+        },
+        {
+          "x": 0.694,
+          "y": 4.302,
+          "w": 0.376,
+          "h": 0.1,
+          "kind": "text",
+          "text": "20",
+          "fontSize": 7,
+          "color": "666666",
+          "bold": false,
+          "name": "Google Shape;290;p26"
+        },
+        {
+          "x": 0.694,
+          "y": 3.926,
+          "w": 0.376,
+          "h": 0.1,
+          "kind": "text",
+          "text": "40",
+          "fontSize": 7,
+          "color": "666666",
+          "bold": false,
+          "name": "Google Shape;291;p26"
+        },
+        {
+          "x": 0.694,
+          "y": 3.55,
+          "w": 0.376,
+          "h": 0.1,
+          "kind": "text",
+          "text": "60",
+          "fontSize": 7,
+          "color": "666666",
+          "bold": false,
+          "name": "Google Shape;292;p26"
+        },
+        {
+          "x": 0.694,
+          "y": 3.177,
+          "w": 0.376,
+          "h": 0.1,
+          "kind": "text",
+          "text": "80",
+          "fontSize": 7,
+          "color": "666666",
+          "bold": false,
+          "name": "Google Shape;293;p26"
+        },
+        {
+          "x": 0.555,
+          "y": 2.801,
+          "w": 0.515,
+          "h": 0.1,
+          "kind": "text",
+          "text": "100",
+          "fontSize": 7,
+          "color": "666666",
+          "bold": false,
+          "name": "Google Shape;294;p26"
+        },
+        {
+          "x": 1.596,
+          "y": 4.126,
+          "w": 1.068,
+          "h": 0.148,
+          "kind": "shape",
+          "bold": false,
+          "name": "Google Shape;295;p26"
+        },
+        {
+          "x": 1.348,
+          "y": 4.067,
+          "w": 1.186,
+          "h": 0.149,
+          "kind": "shape",
+          "bold": false,
+          "name": "Google Shape;296;p26"
+        },
+        {
+          "x": 0.928,
+          "y": 4.126,
+          "w": 1.068,
+          "h": 0.148,
+          "kind": "shape",
+          "bold": false,
+          "name": "Google Shape;297;p26"
+        },
+        {
+          "x": 0.679,
+          "y": 4.067,
+          "w": 1.186,
+          "h": 0.149,
+          "kind": "shape",
+          "bold": false,
+          "name": "Google Shape;298;p26"
+        },
+        {
+          "x": 3.569,
+          "y": 4.126,
+          "w": 1.068,
+          "h": 0.148,
+          "kind": "shape",
+          "bold": false,
+          "name": "Google Shape;299;p26"
+        },
+        {
+          "x": 3.32,
+          "y": 4.067,
+          "w": 1.186,
+          "h": 0.149,
+          "kind": "shape",
+          "bold": false,
+          "name": "Google Shape;300;p26"
+        },
+        {
+          "x": 2.914,
+          "y": 4.126,
+          "w": 1.068,
+          "h": 0.148,
+          "kind": "shape",
+          "bold": false,
+          "name": "Google Shape;301;p26"
+        },
+        {
+          "x": 2.665,
+          "y": 4.067,
+          "w": 1.186,
+          "h": 0.149,
+          "kind": "shape",
+          "bold": false,
+          "name": "Google Shape;302;p26"
+        },
+        {
+          "x": 2.252,
+          "y": 4.126,
+          "w": 1.068,
+          "h": 0.148,
+          "kind": "shape",
+          "bold": false,
+          "name": "Google Shape;303;p26"
+        },
+        {
+          "x": 2.004,
+          "y": 4.067,
+          "w": 1.186,
+          "h": 0.149,
+          "kind": "shape",
+          "bold": false,
+          "name": "Google Shape;304;p26"
+        },
+        {
+          "x": 6.88,
+          "y": 4.126,
+          "w": 1.068,
+          "h": 0.148,
+          "kind": "shape",
+          "bold": false,
+          "name": "Google Shape;305;p26"
+        },
+        {
+          "x": 6.631,
+          "y": 4.067,
+          "w": 1.186,
+          "h": 0.149,
+          "kind": "shape",
+          "bold": false,
+          "name": "Google Shape;306;p26"
+        },
+        {
+          "x": 7.545,
+          "y": 4.126,
+          "w": 1.068,
+          "h": 0.148,
+          "kind": "shape",
+          "bold": false,
+          "name": "Google Shape;307;p26"
+        },
+        {
+          "x": 7.296,
+          "y": 4.067,
+          "w": 1.186,
+          "h": 0.149,
+          "kind": "shape",
+          "bold": false,
+          "name": "Google Shape;308;p26"
+        },
+        {
+          "x": 8.203,
+          "y": 4.126,
+          "w": 1.068,
+          "h": 0.148,
+          "kind": "shape",
+          "bold": false,
+          "name": "Google Shape;309;p26"
+        },
+        {
+          "x": 7.955,
+          "y": 4.067,
+          "w": 1.186,
+          "h": 0.149,
+          "kind": "shape",
+          "bold": false,
+          "name": "Google Shape;310;p26"
+        },
+        {
+          "x": 4.234,
+          "y": 4.126,
+          "w": 1.068,
+          "h": 0.148,
+          "kind": "shape",
+          "bold": false,
+          "name": "Google Shape;311;p26"
+        },
+        {
+          "x": 3.986,
+          "y": 4.067,
+          "w": 1.186,
+          "h": 0.149,
+          "kind": "shape",
+          "bold": false,
+          "name": "Google Shape;312;p26"
+        },
+        {
+          "x": 4.896,
+          "y": 4.126,
+          "w": 1.068,
+          "h": 0.148,
+          "kind": "shape",
+          "bold": false,
+          "name": "Google Shape;313;p26"
+        },
+        {
+          "x": 4.648,
+          "y": 4.067,
+          "w": 1.186,
+          "h": 0.149,
+          "kind": "shape",
+          "bold": false,
+          "name": "Google Shape;314;p26"
+        },
+        {
+          "x": 5.555,
+          "y": 4.126,
+          "w": 1.068,
+          "h": 0.148,
+          "kind": "shape",
+          "bold": false,
+          "name": "Google Shape;315;p26"
+        },
+        {
+          "x": 5.307,
+          "y": 4.067,
+          "w": 1.186,
+          "h": 0.149,
+          "kind": "shape",
+          "bold": false,
+          "name": "Google Shape;316;p26"
+        },
+        {
+          "x": 6.217,
+          "y": 4.126,
+          "w": 1.068,
+          "h": 0.148,
+          "kind": "shape",
+          "bold": false,
+          "name": "Google Shape;317;p26"
+        },
+        {
+          "x": 5.969,
+          "y": 4.067,
+          "w": 1.186,
+          "h": 0.149,
+          "kind": "shape",
+          "bold": false,
+          "name": "Google Shape;318;p26"
+        },
+        {
+          "x": 4.371,
+          "y": 5.107,
+          "w": 0.066,
+          "h": 0.066,
+          "kind": "shape",
+          "bold": false,
+          "name": "Google Shape;320;p26"
+        },
+        {
+          "x": 4.38,
+          "y": 4.983,
+          "w": 0.618,
+          "h": 0.275,
+          "kind": "text",
+          "text": "Trend 01",
+          "fontSize": 7,
+          "color": "000000",
+          "bold": false,
+          "name": "Google Shape;321;p26"
+        },
+        {
+          "x": 5.081,
+          "y": 5.107,
+          "w": 0.066,
+          "h": 0.066,
+          "kind": "shape",
+          "bold": false,
+          "name": "Google Shape;322;p26"
+        },
+        {
+          "x": 5.09,
+          "y": 4.983,
+          "w": 0.618,
+          "h": 0.275,
+          "kind": "text",
+          "text": "Trend 0\n2",
+          "fontSize": 7,
+          "color": "000000",
+          "bold": false,
+          "name": "Google Shape;323;p26"
+        }
+      ],
+      "description": {
+        "looksLike": "A trend analysis slide featuring a bold left-aligned title with adjacent descriptive copy at the top, and a full-width monthly bar chart comparing two metrics across the year below.",
+        "title": "Trend analysis",
+        "layout": "title-and-two-columns",
+        "background": {
+          "scope": "deck",
+          "kind": "solid"
+        },
+        "contentPlacement": "Title in the upper-left, body paragraph in the upper-right, and a horizontal bar chart graphic spanning the bottom half of the slide.",
+        "images": [],
+        "boxes": [
+          {
+            "role": "body",
+            "text": "Trend analysis",
+            "x": 0.798,
+            "y": 1.442,
+            "w": 3.062,
+            "h": 1.131
+          },
+          {
+            "role": "body",
+            "text": "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt labore dolore magna aliqua. Lorem ipsum dolor sit amet, consectetur adipiscing elit. Lorem ipsum dolor\nsit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt labore dolore magna aliqua. Lorem ipsum dolor sit amet, consectetur adipiscing elit.",
+            "x": 3.943,
+            "y": 1.169,
+            "w": 5.247,
+            "h": 1.131,
+            "fontSize": 11
+          },
+          {
+            "role": "body",
+            "text": "",
+            "x": 0.954,
+            "y": 2.758,
+            "w": 8.086,
+            "h": 1.902
+          },
+          {
+            "role": "body",
+            "text": "Jan",
+            "x": 1.164,
+            "y": 4.802,
+            "w": 0.392,
+            "h": 0.275,
+            "fontSize": 7
+          },
+          {
+            "role": "body",
+            "text": "Feb",
+            "x": 1.839,
+            "y": 4.802,
+            "w": 0.392,
+            "h": 0.275,
+            "fontSize": 7
+          },
+          {
+            "role": "body",
+            "text": "Mar",
+            "x": 2.492,
+            "y": 4.802,
+            "w": 0.392,
+            "h": 0.275,
+            "fontSize": 7
+          },
+          {
+            "role": "body",
+            "text": "Apr",
+            "x": 3.157,
+            "y": 4.802,
+            "w": 0.392,
+            "h": 0.275,
+            "fontSize": 7
+          },
+          {
+            "role": "body",
+            "text": "May",
+            "x": 3.812,
+            "y": 4.802,
+            "w": 0.392,
+            "h": 0.275,
+            "fontSize": 7
+          },
+          {
+            "role": "body",
+            "text": "Jun",
+            "x": 4.476,
+            "y": 4.802,
+            "w": 0.392,
+            "h": 0.275,
+            "fontSize": 7
+          },
+          {
+            "role": "body",
+            "text": "Jul",
+            "x": 5.139,
+            "y": 4.802,
+            "w": 0.392,
+            "h": 0.275,
+            "fontSize": 7
+          },
+          {
+            "role": "body",
+            "text": "Aug",
+            "x": 5.797,
+            "y": 4.802,
+            "w": 0.392,
+            "h": 0.275,
+            "fontSize": 7
+          },
+          {
+            "role": "body",
+            "text": "Sep",
+            "x": 6.461,
+            "y": 4.802,
+            "w": 0.392,
+            "h": 0.275,
+            "fontSize": 7
+          },
+          {
+            "role": "body",
+            "text": "Oct",
+            "x": 7.122,
+            "y": 4.802,
+            "w": 0.392,
+            "h": 0.275,
+            "fontSize": 7
+          },
+          {
+            "role": "body",
+            "text": "Nov",
+            "x": 7.787,
+            "y": 4.802,
+            "w": 0.392,
+            "h": 0.275,
+            "fontSize": 7
+          },
+          {
+            "role": "body",
+            "text": "Dec",
+            "x": 8.446,
+            "y": 4.802,
+            "w": 0.392,
+            "h": 0.275,
+            "fontSize": 7
+          },
+          {
+            "role": "body",
+            "text": "0",
+            "x": 0.694,
+            "y": 4.682,
+            "w": 0.376,
+            "h": 0.1,
+            "fontSize": 7
+          },
+          {
+            "role": "body",
+            "text": "20",
+            "x": 0.694,
+            "y": 4.302,
+            "w": 0.376,
+            "h": 0.1,
+            "fontSize": 7
+          },
+          {
+            "role": "body",
+            "text": "40",
+            "x": 0.694,
+            "y": 3.926,
+            "w": 0.376,
+            "h": 0.1,
+            "fontSize": 7
+          },
+          {
+            "role": "body",
+            "text": "60",
+            "x": 0.694,
+            "y": 3.55,
+            "w": 0.376,
+            "h": 0.1,
+            "fontSize": 7
+          },
+          {
+            "role": "body",
+            "text": "80",
+            "x": 0.694,
+            "y": 3.177,
+            "w": 0.376,
+            "h": 0.1,
+            "fontSize": 7
+          },
+          {
+            "role": "body",
+            "text": "100",
+            "x": 0.555,
+            "y": 2.801,
+            "w": 0.515,
+            "h": 0.1,
+            "fontSize": 7
+          },
+          {
+            "role": "body",
+            "text": "",
+            "x": 4.371,
+            "y": 5.107,
+            "w": 0.066,
+            "h": 0.066
+          },
+          {
+            "role": "body",
+            "text": "Trend 01",
+            "x": 4.38,
+            "y": 4.983,
+            "w": 0.618,
+            "h": 0.275,
+            "fontSize": 7
+          },
+          {
+            "role": "body",
+            "text": "",
+            "x": 5.081,
+            "y": 5.107,
+            "w": 0.066,
+            "h": 0.066
+          },
+          {
+            "role": "body",
+            "text": "Trend 0\n2",
+            "x": 5.09,
+            "y": 4.983,
+            "w": 0.618,
+            "h": 0.275,
+            "fontSize": 7
+          }
+        ]
+      },
+      "gcsUri": "gs://alltheway-rinegan-slide-designs-prod/catalog/consulting-proposal/slide-09.png"
+    },
+    "slide-10": {
+      "index": 9,
+      "prev": "slide-09",
+      "next": "slide-11",
+      "image": "consulting-proposal/slide-10.png",
+      "coordinates": [
+        {
+          "x": 0.798,
+          "y": 1.169,
+          "w": 8.408,
+          "h": 1.131,
+          "kind": "text",
+          "text": "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt labore dolore magna aliqua. Consectetur adipiscing elit.\nSed do eiusmod tempor incididunt ut labore et dolore magna nec. Lorem ipsum dolor sit amet, adipiscing elit. Eiusmod tempor incididunt ut labore et dolore magna nec. Lorem ipsum dolor sit amet, consectetur dolor ipsum adipiscing elit.",
+          "fontSize": 11,
+          "bold": false,
+          "placeholder": "body",
+          "name": "Google Shape;328;p27"
+        },
+        {
+          "x": 0.825,
+          "y": 2.379,
+          "w": 0.816,
+          "h": 0.348,
+          "kind": "text",
+          "text": "Trend 01",
+          "fontSize": 8,
+          "color": "000000",
+          "bold": false,
+          "name": "Google Shape;329;p27"
+        },
+        {
+          "x": 7.362,
+          "y": 2.488,
+          "w": 1.123,
+          "h": 0.507,
+          "kind": "text",
+          "text": "75%",
+          "fontSize": 20,
+          "color": "000000",
+          "bold": true,
+          "name": "Google Shape;330;p27"
+        },
+        {
+          "x": 7.362,
+          "y": 3.009,
+          "w": 1.929,
+          "h": 0.666,
+          "kind": "text",
+          "text": "Incididunt ut labore et dolore sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.",
+          "fontSize": 8,
+          "color": "000000",
+          "bold": false,
+          "name": "Google Shape;331;p27"
+        },
+        {
+          "x": 0.825,
+          "y": 3.812,
+          "w": 0.816,
+          "h": 0.348,
+          "kind": "text",
+          "text": "Trend 02",
+          "fontSize": 8,
+          "color": "000000",
+          "bold": false,
+          "name": "Google Shape;332;p27"
+        },
+        {
+          "x": 7.362,
+          "y": 3.92,
+          "w": 1.123,
+          "h": 0.507,
+          "kind": "text",
+          "text": "53%",
+          "fontSize": 20,
+          "color": "000000",
+          "bold": true,
+          "name": "Google Shape;333;p27"
+        },
+        {
+          "x": 7.362,
+          "y": 4.441,
+          "w": 1.929,
+          "h": 0.666,
+          "kind": "text",
+          "text": "Tempor incididunt labore et dolore sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.",
+          "fontSize": 8,
+          "color": "000000",
+          "bold": false,
+          "name": "Google Shape;334;p27"
+        },
+        {
+          "x": 0.908,
+          "y": 2.565,
+          "w": 0.588,
+          "h": 0.05,
+          "kind": "shape",
+          "bold": false,
+          "name": "Google Shape;336;p27"
+        },
+        {
+          "x": 1.554,
+          "y": 2.565,
+          "w": 0.588,
+          "h": 0.05,
+          "kind": "shape",
+          "bold": false,
+          "name": "Google Shape;337;p27"
+        },
+        {
+          "x": 2.199,
+          "y": 2.565,
+          "w": 0.588,
+          "h": 0.05,
+          "kind": "shape",
+          "bold": false,
+          "name": "Google Shape;338;p27"
+        },
+        {
+          "x": 2.845,
+          "y": 2.565,
+          "w": 0.588,
+          "h": 0.05,
+          "kind": "shape",
+          "bold": false,
+          "name": "Google Shape;339;p27"
+        },
+        {
+          "x": 3.49,
+          "y": 2.565,
+          "w": 0.588,
+          "h": 0.05,
+          "kind": "shape",
+          "bold": false,
+          "name": "Google Shape;340;p27"
+        },
+        {
+          "x": 4.136,
+          "y": 2.565,
+          "w": 0.588,
+          "h": 0.05,
+          "kind": "shape",
+          "bold": false,
+          "name": "Google Shape;341;p27"
+        },
+        {
+          "x": 4.781,
+          "y": 2.565,
+          "w": 0.588,
+          "h": 0.05,
+          "kind": "shape",
+          "bold": false,
+          "name": "Google Shape;342;p27"
+        },
+        {
+          "x": 5.427,
+          "y": 2.565,
+          "w": 0.588,
+          "h": 0.05,
+          "kind": "shape",
+          "color": "EFEFEF",
+          "bold": false,
+          "name": "Google Shape;343;p27"
+        },
+        {
+          "x": 6.072,
+          "y": 2.565,
+          "w": 0.588,
+          "h": 0.05,
+          "kind": "shape",
+          "color": "EFEFEF",
+          "bold": false,
+          "name": "Google Shape;344;p27"
+        },
+        {
+          "x": 6.718,
+          "y": 2.565,
+          "w": 0.588,
+          "h": 0.05,
+          "kind": "shape",
+          "color": "EFEFEF",
+          "bold": false,
+          "name": "Google Shape;345;p27"
+        },
+        {
+          "x": 0.908,
+          "y": 2.667,
+          "w": 0.588,
+          "h": 0.05,
+          "kind": "shape",
+          "bold": false,
+          "name": "Google Shape;346;p27"
+        },
+        {
+          "x": 1.554,
+          "y": 2.667,
+          "w": 0.588,
+          "h": 0.05,
+          "kind": "shape",
+          "bold": false,
+          "name": "Google Shape;347;p27"
+        },
+        {
+          "x": 2.199,
+          "y": 2.667,
+          "w": 0.588,
+          "h": 0.05,
+          "kind": "shape",
+          "bold": false,
+          "name": "Google Shape;348;p27"
+        },
+        {
+          "x": 2.845,
+          "y": 2.667,
+          "w": 0.588,
+          "h": 0.05,
+          "kind": "shape",
+          "bold": false,
+          "name": "Google Shape;349;p27"
+        },
+        {
+          "x": 3.49,
+          "y": 2.667,
+          "w": 0.588,
+          "h": 0.05,
+          "kind": "shape",
+          "bold": false,
+          "name": "Google Shape;350;p27"
+        },
+        {
+          "x": 4.136,
+          "y": 2.667,
+          "w": 0.588,
+          "h": 0.05,
+          "kind": "shape",
+          "bold": false,
+          "name": "Google Shape;351;p27"
+        },
+        {
+          "x": 4.781,
+          "y": 2.667,
+          "w": 0.588,
+          "h": 0.05,
+          "kind": "shape",
+          "bold": false,
+          "name": "Google Shape;352;p27"
+        },
+        {
+          "x": 5.427,
+          "y": 2.667,
+          "w": 0.588,
+          "h": 0.05,
+          "kind": "shape",
+          "color": "EFEFEF",
+          "bold": false,
+          "name": "Google Shape;353;p27"
+        },
+        {
+          "x": 6.072,
+          "y": 2.667,
+          "w": 0.588,
+          "h": 0.05,
+          "kind": "shape",
+          "color": "EFEFEF",
+          "bold": false,
+          "name": "Google Shape;354;p27"
+        },
+        {
+          "x": 6.718,
+          "y": 2.667,
+          "w": 0.588,
+          "h": 0.05,
+          "kind": "shape",
+          "color": "EFEFEF",
+          "bold": false,
+          "name": "Google Shape;355;p27"
+        },
+        {
+          "x": 0.908,
+          "y": 2.77,
+          "w": 0.588,
+          "h": 0.05,
+          "kind": "shape",
+          "bold": false,
+          "name": "Google Shape;356;p27"
+        },
+        {
+          "x": 1.554,
+          "y": 2.77,
+          "w": 0.588,
+          "h": 0.05,
+          "kind": "shape",
+          "bold": false,
+          "name": "Google Shape;357;p27"
+        },
+        {
+          "x": 2.199,
+          "y": 2.77,
+          "w": 0.588,
+          "h": 0.05,
+          "kind": "shape",
+          "bold": false,
+          "name": "Google Shape;358;p27"
+        },
+        {
+          "x": 2.845,
+          "y": 2.77,
+          "w": 0.588,
+          "h": 0.05,
+          "kind": "shape",
+          "bold": false,
+          "name": "Google Shape;359;p27"
+        },
+        {
+          "x": 3.49,
+          "y": 2.77,
+          "w": 0.588,
+          "h": 0.05,
+          "kind": "shape",
+          "bold": false,
+          "name": "Google Shape;360;p27"
+        },
+        {
+          "x": 4.136,
+          "y": 2.77,
+          "w": 0.588,
+          "h": 0.05,
+          "kind": "shape",
+          "bold": false,
+          "name": "Google Shape;361;p27"
+        },
+        {
+          "x": 4.781,
+          "y": 2.77,
+          "w": 0.588,
+          "h": 0.05,
+          "kind": "shape",
+          "bold": false,
+          "name": "Google Shape;362;p27"
+        },
+        {
+          "x": 5.427,
+          "y": 2.77,
+          "w": 0.588,
+          "h": 0.05,
+          "kind": "shape",
+          "color": "EFEFEF",
+          "bold": false,
+          "name": "Google Shape;363;p27"
+        },
+        {
+          "x": 6.072,
+          "y": 2.77,
+          "w": 0.588,
+          "h": 0.05,
+          "kind": "shape",
+          "color": "EFEFEF",
+          "bold": false,
+          "name": "Google Shape;364;p27"
+        },
+        {
+          "x": 6.718,
+          "y": 2.77,
+          "w": 0.588,
+          "h": 0.05,
+          "kind": "shape",
+          "color": "EFEFEF",
+          "bold": false,
+          "name": "Google Shape;365;p27"
+        },
+        {
+          "x": 0.908,
+          "y": 2.873,
+          "w": 0.588,
+          "h": 0.05,
+          "kind": "shape",
+          "bold": false,
+          "name": "Google Shape;366;p27"
+        },
+        {
+          "x": 1.554,
+          "y": 2.873,
+          "w": 0.588,
+          "h": 0.05,
+          "kind": "shape",
+          "bold": false,
+          "name": "Google Shape;367;p27"
+        },
+        {
+          "x": 2.199,
+          "y": 2.873,
+          "w": 0.588,
+          "h": 0.05,
+          "kind": "shape",
+          "bold": false,
+          "name": "Google Shape;368;p27"
+        },
+        {
+          "x": 2.845,
+          "y": 2.873,
+          "w": 0.588,
+          "h": 0.05,
+          "kind": "shape",
+          "bold": false,
+          "name": "Google Shape;369;p27"
+        },
+        {
+          "x": 3.49,
+          "y": 2.873,
+          "w": 0.588,
+          "h": 0.05,
+          "kind": "shape",
+          "bold": false,
+          "name": "Google Shape;370;p27"
+        },
+        {
+          "x": 4.136,
+          "y": 2.873,
+          "w": 0.588,
+          "h": 0.05,
+          "kind": "shape",
+          "bold": false,
+          "name": "Google Shape;371;p27"
+        },
+        {
+          "x": 4.781,
+          "y": 2.873,
+          "w": 0.588,
+          "h": 0.05,
+          "kind": "shape",
+          "bold": false,
+          "name": "Google Shape;372;p27"
+        },
+        {
+          "x": 5.427,
+          "y": 2.873,
+          "w": 0.588,
+          "h": 0.05,
+          "kind": "shape",
+          "color": "EFEFEF",
+          "bold": false,
+          "name": "Google Shape;373;p27"
+        },
+        {
+          "x": 6.072,
+          "y": 2.873,
+          "w": 0.588,
+          "h": 0.05,
+          "kind": "shape",
+          "color": "EFEFEF",
+          "bold": false,
+          "name": "Google Shape;374;p27"
+        },
+        {
+          "x": 6.718,
+          "y": 2.873,
+          "w": 0.588,
+          "h": 0.05,
+          "kind": "shape",
+          "color": "EFEFEF",
+          "bold": false,
+          "name": "Google Shape;375;p27"
+        },
+        {
+          "x": 0.908,
+          "y": 2.976,
+          "w": 0.588,
+          "h": 0.05,
+          "kind": "shape",
+          "bold": false,
+          "name": "Google Shape;376;p27"
+        },
+        {
+          "x": 1.554,
+          "y": 2.976,
+          "w": 0.588,
+          "h": 0.05,
+          "kind": "shape",
+          "bold": false,
+          "name": "Google Shape;377;p27"
+        },
+        {
+          "x": 2.199,
+          "y": 2.976,
+          "w": 0.588,
+          "h": 0.05,
+          "kind": "shape",
+          "bold": false,
+          "name": "Google Shape;378;p27"
+        },
+        {
+          "x": 2.845,
+          "y": 2.976,
+          "w": 0.588,
+          "h": 0.05,
+          "kind": "shape",
+          "bold": false,
+          "name": "Google Shape;379;p27"
+        },
+        {
+          "x": 3.49,
+          "y": 2.976,
+          "w": 0.588,
+          "h": 0.05,
+          "kind": "shape",
+          "bold": false,
+          "name": "Google Shape;380;p27"
+        },
+        {
+          "x": 4.136,
+          "y": 2.976,
+          "w": 0.588,
+          "h": 0.05,
+          "kind": "shape",
+          "bold": false,
+          "name": "Google Shape;381;p27"
+        },
+        {
+          "x": 4.781,
+          "y": 2.976,
+          "w": 0.588,
+          "h": 0.05,
+          "kind": "shape",
+          "bold": false,
+          "name": "Google Shape;382;p27"
+        },
+        {
+          "x": 5.427,
+          "y": 2.976,
+          "w": 0.588,
+          "h": 0.05,
+          "kind": "shape",
+          "color": "EFEFEF",
+          "bold": false,
+          "name": "Google Shape;383;p27"
+        },
+        {
+          "x": 6.072,
+          "y": 2.976,
+          "w": 0.588,
+          "h": 0.05,
+          "kind": "shape",
+          "color": "EFEFEF",
+          "bold": false,
+          "name": "Google Shape;384;p27"
+        },
+        {
+          "x": 6.718,
+          "y": 2.976,
+          "w": 0.588,
+          "h": 0.05,
+          "kind": "shape",
+          "color": "EFEFEF",
+          "bold": false,
+          "name": "Google Shape;385;p27"
+        },
+        {
+          "x": 0.908,
+          "y": 3.078,
+          "w": 0.588,
+          "h": 0.05,
+          "kind": "shape",
+          "bold": false,
+          "name": "Google Shape;386;p27"
+        },
+        {
+          "x": 1.554,
+          "y": 3.078,
+          "w": 0.588,
+          "h": 0.05,
+          "kind": "shape",
+          "bold": false,
+          "name": "Google Shape;387;p27"
+        },
+        {
+          "x": 2.199,
+          "y": 3.078,
+          "w": 0.588,
+          "h": 0.05,
+          "kind": "shape",
+          "bold": false,
+          "name": "Google Shape;388;p27"
+        },
+        {
+          "x": 2.845,
+          "y": 3.078,
+          "w": 0.588,
+          "h": 0.05,
+          "kind": "shape",
+          "bold": false,
+          "name": "Google Shape;389;p27"
+        },
+        {
+          "x": 3.49,
+          "y": 3.078,
+          "w": 0.588,
+          "h": 0.05,
+          "kind": "shape",
+          "bold": false,
+          "name": "Google Shape;390;p27"
+        },
+        {
+          "x": 4.136,
+          "y": 3.078,
+          "w": 0.588,
+          "h": 0.05,
+          "kind": "shape",
+          "bold": false,
+          "name": "Google Shape;391;p27"
+        },
+        {
+          "x": 4.781,
+          "y": 3.078,
+          "w": 0.588,
+          "h": 0.05,
+          "kind": "shape",
+          "bold": false,
+          "name": "Google Shape;392;p27"
+        },
+        {
+          "x": 5.427,
+          "y": 3.078,
+          "w": 0.588,
+          "h": 0.05,
+          "kind": "shape",
+          "bold": false,
+          "name": "Google Shape;393;p27"
+        },
+        {
+          "x": 6.072,
+          "y": 3.078,
+          "w": 0.588,
+          "h": 0.05,
+          "kind": "shape",
+          "color": "EFEFEF",
+          "bold": false,
+          "name": "Google Shape;394;p27"
+        },
+        {
+          "x": 6.718,
+          "y": 3.078,
+          "w": 0.588,
+          "h": 0.05,
+          "kind": "shape",
+          "color": "EFEFEF",
+          "bold": false,
+          "name": "Google Shape;395;p27"
+        },
+        {
+          "x": 0.908,
+          "y": 3.181,
+          "w": 0.588,
+          "h": 0.05,
+          "kind": "shape",
+          "bold": false,
+          "name": "Google Shape;396;p27"
+        },
+        {
+          "x": 1.554,
+          "y": 3.181,
+          "w": 0.588,
+          "h": 0.05,
+          "kind": "shape",
+          "bold": false,
+          "name": "Google Shape;397;p27"
+        },
+        {
+          "x": 2.199,
+          "y": 3.181,
+          "w": 0.588,
+          "h": 0.05,
+          "kind": "shape",
+          "bold": false,
+          "name": "Google Shape;398;p27"
+        },
+        {
+          "x": 2.845,
+          "y": 3.181,
+          "w": 0.588,
+          "h": 0.05,
+          "kind": "shape",
+          "bold": false,
+          "name": "Google Shape;399;p27"
+        },
+        {
+          "x": 3.49,
+          "y": 3.181,
+          "w": 0.588,
+          "h": 0.05,
+          "kind": "shape",
+          "bold": false,
+          "name": "Google Shape;400;p27"
+        },
+        {
+          "x": 4.136,
+          "y": 3.181,
+          "w": 0.588,
+          "h": 0.05,
+          "kind": "shape",
+          "bold": false,
+          "name": "Google Shape;401;p27"
+        },
+        {
+          "x": 4.781,
+          "y": 3.181,
+          "w": 0.588,
+          "h": 0.05,
+          "kind": "shape",
+          "bold": false,
+          "name": "Google Shape;402;p27"
+        },
+        {
+          "x": 5.427,
+          "y": 3.181,
+          "w": 0.588,
+          "h": 0.05,
+          "kind": "shape",
+          "bold": false,
+          "name": "Google Shape;403;p27"
+        },
+        {
+          "x": 6.072,
+          "y": 3.181,
+          "w": 0.588,
+          "h": 0.05,
+          "kind": "shape",
+          "color": "EFEFEF",
+          "bold": false,
+          "name": "Google Shape;404;p27"
+        },
+        {
+          "x": 6.718,
+          "y": 3.181,
+          "w": 0.588,
+          "h": 0.05,
+          "kind": "shape",
+          "color": "EFEFEF",
+          "bold": false,
+          "name": "Google Shape;405;p27"
+        },
+        {
+          "x": 0.908,
+          "y": 3.284,
+          "w": 0.588,
+          "h": 0.05,
+          "kind": "shape",
+          "bold": false,
+          "name": "Google Shape;406;p27"
+        },
+        {
+          "x": 1.554,
+          "y": 3.284,
+          "w": 0.588,
+          "h": 0.05,
+          "kind": "shape",
+          "bold": false,
+          "name": "Google Shape;407;p27"
+        },
+        {
+          "x": 2.199,
+          "y": 3.284,
+          "w": 0.588,
+          "h": 0.05,
+          "kind": "shape",
+          "bold": false,
+          "name": "Google Shape;408;p27"
+        },
+        {
+          "x": 2.845,
+          "y": 3.284,
+          "w": 0.588,
+          "h": 0.05,
+          "kind": "shape",
+          "bold": false,
+          "name": "Google Shape;409;p27"
+        },
+        {
+          "x": 3.49,
+          "y": 3.284,
+          "w": 0.588,
+          "h": 0.05,
+          "kind": "shape",
+          "bold": false,
+          "name": "Google Shape;410;p27"
+        },
+        {
+          "x": 4.136,
+          "y": 3.284,
+          "w": 0.588,
+          "h": 0.05,
+          "kind": "shape",
+          "bold": false,
+          "name": "Google Shape;411;p27"
+        },
+        {
+          "x": 4.781,
+          "y": 3.284,
+          "w": 0.588,
+          "h": 0.05,
+          "kind": "shape",
+          "bold": false,
+          "name": "Google Shape;412;p27"
+        },
+        {
+          "x": 5.427,
+          "y": 3.284,
+          "w": 0.588,
+          "h": 0.05,
+          "kind": "shape",
+          "bold": false,
+          "name": "Google Shape;413;p27"
+        },
+        {
+          "x": 6.072,
+          "y": 3.284,
+          "w": 0.588,
+          "h": 0.05,
+          "kind": "shape",
+          "color": "EFEFEF",
+          "bold": false,
+          "name": "Google Shape;414;p27"
+        },
+        {
+          "x": 6.718,
+          "y": 3.284,
+          "w": 0.588,
+          "h": 0.05,
+          "kind": "shape",
+          "color": "EFEFEF",
+          "bold": false,
+          "name": "Google Shape;415;p27"
+        },
+        {
+          "x": 0.908,
+          "y": 3.386,
+          "w": 0.588,
+          "h": 0.05,
+          "kind": "shape",
+          "bold": false,
+          "name": "Google Shape;416;p27"
+        },
+        {
+          "x": 1.554,
+          "y": 3.386,
+          "w": 0.588,
+          "h": 0.05,
+          "kind": "shape",
+          "bold": false,
+          "name": "Google Shape;417;p27"
+        },
+        {
+          "x": 2.199,
+          "y": 3.386,
+          "w": 0.588,
+          "h": 0.05,
+          "kind": "shape",
+          "bold": false,
+          "name": "Google Shape;418;p27"
+        },
+        {
+          "x": 2.845,
+          "y": 3.386,
+          "w": 0.588,
+          "h": 0.05,
+          "kind": "shape",
+          "bold": false,
+          "name": "Google Shape;419;p27"
+        },
+        {
+          "x": 3.49,
+          "y": 3.386,
+          "w": 0.588,
+          "h": 0.05,
+          "kind": "shape",
+          "bold": false,
+          "name": "Google Shape;420;p27"
+        },
+        {
+          "x": 4.136,
+          "y": 3.386,
+          "w": 0.588,
+          "h": 0.05,
+          "kind": "shape",
+          "bold": false,
+          "name": "Google Shape;421;p27"
+        },
+        {
+          "x": 4.781,
+          "y": 3.386,
+          "w": 0.588,
+          "h": 0.05,
+          "kind": "shape",
+          "bold": false,
+          "name": "Google Shape;422;p27"
+        },
+        {
+          "x": 5.427,
+          "y": 3.386,
+          "w": 0.588,
+          "h": 0.05,
+          "kind": "shape",
+          "bold": false,
+          "name": "Google Shape;423;p27"
+        },
+        {
+          "x": 6.072,
+          "y": 3.386,
+          "w": 0.588,
+          "h": 0.05,
+          "kind": "shape",
+          "color": "EFEFEF",
+          "bold": false,
+          "name": "Google Shape;424;p27"
+        },
+        {
+          "x": 6.718,
+          "y": 3.386,
+          "w": 0.588,
+          "h": 0.05,
+          "kind": "shape",
+          "color": "EFEFEF",
+          "bold": false,
+          "name": "Google Shape;425;p27"
+        },
+        {
+          "x": 0.908,
+          "y": 3.489,
+          "w": 0.588,
+          "h": 0.05,
+          "kind": "shape",
+          "bold": false,
+          "name": "Google Shape;426;p27"
+        },
+        {
+          "x": 1.554,
+          "y": 3.489,
+          "w": 0.588,
+          "h": 0.05,
+          "kind": "shape",
+          "bold": false,
+          "name": "Google Shape;427;p27"
+        },
+        {
+          "x": 2.199,
+          "y": 3.489,
+          "w": 0.588,
+          "h": 0.05,
+          "kind": "shape",
+          "bold": false,
+          "name": "Google Shape;428;p27"
+        },
+        {
+          "x": 2.845,
+          "y": 3.489,
+          "w": 0.588,
+          "h": 0.05,
+          "kind": "shape",
+          "bold": false,
+          "name": "Google Shape;429;p27"
+        },
+        {
+          "x": 3.49,
+          "y": 3.489,
+          "w": 0.588,
+          "h": 0.05,
+          "kind": "shape",
+          "bold": false,
+          "name": "Google Shape;430;p27"
+        },
+        {
+          "x": 4.136,
+          "y": 3.489,
+          "w": 0.588,
+          "h": 0.05,
+          "kind": "shape",
+          "bold": false,
+          "name": "Google Shape;431;p27"
+        },
+        {
+          "x": 4.781,
+          "y": 3.489,
+          "w": 0.588,
+          "h": 0.05,
+          "kind": "shape",
+          "bold": false,
+          "name": "Google Shape;432;p27"
+        },
+        {
+          "x": 5.427,
+          "y": 3.489,
+          "w": 0.588,
+          "h": 0.05,
+          "kind": "shape",
+          "bold": false,
+          "name": "Google Shape;433;p27"
+        },
+        {
+          "x": 6.072,
+          "y": 3.489,
+          "w": 0.588,
+          "h": 0.05,
+          "kind": "shape",
+          "color": "EFEFEF",
+          "bold": false,
+          "name": "Google Shape;434;p27"
+        },
+        {
+          "x": 6.718,
+          "y": 3.489,
+          "w": 0.588,
+          "h": 0.05,
+          "kind": "shape",
+          "color": "EFEFEF",
+          "bold": false,
+          "name": "Google Shape;435;p27"
+        },
+        {
+          "x": 0.908,
+          "y": 3.997,
+          "w": 0.588,
+          "h": 0.05,
+          "kind": "shape",
+          "bold": false,
+          "name": "Google Shape;437;p27"
+        },
+        {
+          "x": 1.554,
+          "y": 3.997,
+          "w": 0.588,
+          "h": 0.05,
+          "kind": "shape",
+          "bold": false,
+          "name": "Google Shape;438;p27"
+        },
+        {
+          "x": 2.199,
+          "y": 3.997,
+          "w": 0.588,
+          "h": 0.05,
+          "kind": "shape",
+          "bold": false,
+          "name": "Google Shape;439;p27"
+        },
+        {
+          "x": 2.845,
+          "y": 3.997,
+          "w": 0.588,
+          "h": 0.05,
+          "kind": "shape",
+          "bold": false,
+          "name": "Google Shape;440;p27"
+        },
+        {
+          "x": 3.49,
+          "y": 3.997,
+          "w": 0.588,
+          "h": 0.05,
+          "kind": "shape",
+          "bold": false,
+          "name": "Google Shape;441;p27"
+        },
+        {
+          "x": 4.136,
+          "y": 3.997,
+          "w": 0.588,
+          "h": 0.05,
+          "kind": "shape",
+          "color": "EFEFEF",
+          "bold": false,
+          "name": "Google Shape;442;p27"
+        },
+        {
+          "x": 4.781,
+          "y": 3.997,
+          "w": 0.588,
+          "h": 0.05,
+          "kind": "shape",
+          "color": "EFEFEF",
+          "bold": false,
+          "name": "Google Shape;443;p27"
+        },
+        {
+          "x": 5.427,
+          "y": 3.997,
+          "w": 0.588,
+          "h": 0.05,
+          "kind": "shape",
+          "color": "EFEFEF",
+          "bold": false,
+          "name": "Google Shape;444;p27"
+        },
+        {
+          "x": 6.072,
+          "y": 3.997,
+          "w": 0.588,
+          "h": 0.05,
+          "kind": "shape",
+          "color": "EFEFEF",
+          "bold": false,
+          "name": "Google Shape;445;p27"
+        },
+        {
+          "x": 6.718,
+          "y": 3.997,
+          "w": 0.588,
+          "h": 0.05,
+          "kind": "shape",
+          "color": "EFEFEF",
+          "bold": false,
+          "name": "Google Shape;446;p27"
+        },
+        {
+          "x": 0.908,
+          "y": 4.1,
+          "w": 0.588,
+          "h": 0.05,
+          "kind": "shape",
+          "bold": false,
+          "name": "Google Shape;447;p27"
+        },
+        {
+          "x": 1.554,
+          "y": 4.1,
+          "w": 0.588,
+          "h": 0.05,
+          "kind": "shape",
+          "bold": false,
+          "name": "Google Shape;448;p27"
+        },
+        {
+          "x": 2.199,
+          "y": 4.1,
+          "w": 0.588,
+          "h": 0.05,
+          "kind": "shape",
+          "bold": false,
+          "name": "Google Shape;449;p27"
+        },
+        {
+          "x": 2.845,
+          "y": 4.1,
+          "w": 0.588,
+          "h": 0.05,
+          "kind": "shape",
+          "bold": false,
+          "name": "Google Shape;450;p27"
+        },
+        {
+          "x": 3.49,
+          "y": 4.1,
+          "w": 0.588,
+          "h": 0.05,
+          "kind": "shape",
+          "bold": false,
+          "name": "Google Shape;451;p27"
+        },
+        {
+          "x": 4.136,
+          "y": 4.1,
+          "w": 0.588,
+          "h": 0.05,
+          "kind": "shape",
+          "color": "EFEFEF",
+          "bold": false,
+          "name": "Google Shape;452;p27"
+        },
+        {
+          "x": 4.781,
+          "y": 4.1,
+          "w": 0.588,
+          "h": 0.05,
+          "kind": "shape",
+          "color": "EFEFEF",
+          "bold": false,
+          "name": "Google Shape;453;p27"
+        },
+        {
+          "x": 5.427,
+          "y": 4.1,
+          "w": 0.588,
+          "h": 0.05,
+          "kind": "shape",
+          "color": "EFEFEF",
+          "bold": false,
+          "name": "Google Shape;454;p27"
+        },
+        {
+          "x": 6.072,
+          "y": 4.1,
+          "w": 0.588,
+          "h": 0.05,
+          "kind": "shape",
+          "color": "EFEFEF",
+          "bold": false,
+          "name": "Google Shape;455;p27"
+        },
+        {
+          "x": 6.718,
+          "y": 4.1,
+          "w": 0.588,
+          "h": 0.05,
+          "kind": "shape",
+          "color": "EFEFEF",
+          "bold": false,
+          "name": "Google Shape;456;p27"
+        },
+        {
+          "x": 0.908,
+          "y": 4.203,
+          "w": 0.588,
+          "h": 0.05,
+          "kind": "shape",
+          "bold": false,
+          "name": "Google Shape;457;p27"
+        },
+        {
+          "x": 1.554,
+          "y": 4.203,
+          "w": 0.588,
+          "h": 0.05,
+          "kind": "shape",
+          "bold": false,
+          "name": "Google Shape;458;p27"
+        },
+        {
+          "x": 2.199,
+          "y": 4.203,
+          "w": 0.588,
+          "h": 0.05,
+          "kind": "shape",
+          "bold": false,
+          "name": "Google Shape;459;p27"
+        },
+        {
+          "x": 2.845,
+          "y": 4.203,
+          "w": 0.588,
+          "h": 0.05,
+          "kind": "shape",
+          "bold": false,
+          "name": "Google Shape;460;p27"
+        },
+        {
+          "x": 3.49,
+          "y": 4.203,
+          "w": 0.588,
+          "h": 0.05,
+          "kind": "shape",
+          "bold": false,
+          "name": "Google Shape;461;p27"
+        },
+        {
+          "x": 4.136,
+          "y": 4.203,
+          "w": 0.588,
+          "h": 0.05,
+          "kind": "shape",
+          "color": "EFEFEF",
+          "bold": false,
+          "name": "Google Shape;462;p27"
+        },
+        {
+          "x": 4.781,
+          "y": 4.203,
+          "w": 0.588,
+          "h": 0.05,
+          "kind": "shape",
+          "color": "EFEFEF",
+          "bold": false,
+          "name": "Google Shape;463;p27"
+        },
+        {
+          "x": 5.427,
+          "y": 4.203,
+          "w": 0.588,
+          "h": 0.05,
+          "kind": "shape",
+          "color": "EFEFEF",
+          "bold": false,
+          "name": "Google Shape;464;p27"
+        },
+        {
+          "x": 6.072,
+          "y": 4.203,
+          "w": 0.588,
+          "h": 0.05,
+          "kind": "shape",
+          "color": "EFEFEF",
+          "bold": false,
+          "name": "Google Shape;465;p27"
+        },
+        {
+          "x": 6.718,
+          "y": 4.203,
+          "w": 0.588,
+          "h": 0.05,
+          "kind": "shape",
+          "color": "EFEFEF",
+          "bold": false,
+          "name": "Google Shape;466;p27"
+        },
+        {
+          "x": 0.908,
+          "y": 4.305,
+          "w": 0.588,
+          "h": 0.05,
+          "kind": "shape",
+          "bold": false,
+          "name": "Google Shape;467;p27"
+        },
+        {
+          "x": 1.554,
+          "y": 4.305,
+          "w": 0.588,
+          "h": 0.05,
+          "kind": "shape",
+          "bold": false,
+          "name": "Google Shape;468;p27"
+        },
+        {
+          "x": 2.199,
+          "y": 4.305,
+          "w": 0.588,
+          "h": 0.05,
+          "kind": "shape",
+          "bold": false,
+          "name": "Google Shape;469;p27"
+        },
+        {
+          "x": 2.845,
+          "y": 4.305,
+          "w": 0.588,
+          "h": 0.05,
+          "kind": "shape",
+          "bold": false,
+          "name": "Google Shape;470;p27"
+        },
+        {
+          "x": 3.49,
+          "y": 4.305,
+          "w": 0.588,
+          "h": 0.05,
+          "kind": "shape",
+          "bold": false,
+          "name": "Google Shape;471;p27"
+        },
+        {
+          "x": 4.136,
+          "y": 4.305,
+          "w": 0.588,
+          "h": 0.05,
+          "kind": "shape",
+          "color": "EFEFEF",
+          "bold": false,
+          "name": "Google Shape;472;p27"
+        },
+        {
+          "x": 4.781,
+          "y": 4.305,
+          "w": 0.588,
+          "h": 0.05,
+          "kind": "shape",
+          "color": "EFEFEF",
+          "bold": false,
+          "name": "Google Shape;473;p27"
+        },
+        {
+          "x": 5.427,
+          "y": 4.305,
+          "w": 0.588,
+          "h": 0.05,
+          "kind": "shape",
+          "color": "EFEFEF",
+          "bold": false,
+          "name": "Google Shape;474;p27"
+        },
+        {
+          "x": 6.072,
+          "y": 4.305,
+          "w": 0.588,
+          "h": 0.05,
+          "kind": "shape",
+          "color": "EFEFEF",
+          "bold": false,
+          "name": "Google Shape;475;p27"
+        },
+        {
+          "x": 6.718,
+          "y": 4.305,
+          "w": 0.588,
+          "h": 0.05,
+          "kind": "shape",
+          "color": "EFEFEF",
+          "bold": false,
+          "name": "Google Shape;476;p27"
+        },
+        {
+          "x": 0.908,
+          "y": 4.408,
+          "w": 0.588,
+          "h": 0.05,
+          "kind": "shape",
+          "bold": false,
+          "name": "Google Shape;477;p27"
+        },
+        {
+          "x": 1.554,
+          "y": 4.408,
+          "w": 0.588,
+          "h": 0.05,
+          "kind": "shape",
+          "bold": false,
+          "name": "Google Shape;478;p27"
+        },
+        {
+          "x": 2.199,
+          "y": 4.408,
+          "w": 0.588,
+          "h": 0.05,
+          "kind": "shape",
+          "bold": false,
+          "name": "Google Shape;479;p27"
+        },
+        {
+          "x": 2.845,
+          "y": 4.408,
+          "w": 0.588,
+          "h": 0.05,
+          "kind": "shape",
+          "bold": false,
+          "name": "Google Shape;480;p27"
+        },
+        {
+          "x": 3.49,
+          "y": 4.408,
+          "w": 0.588,
+          "h": 0.05,
+          "kind": "shape",
+          "bold": false,
+          "name": "Google Shape;481;p27"
+        },
+        {
+          "x": 4.136,
+          "y": 4.408,
+          "w": 0.588,
+          "h": 0.05,
+          "kind": "shape",
+          "color": "EFEFEF",
+          "bold": false,
+          "name": "Google Shape;482;p27"
+        },
+        {
+          "x": 4.781,
+          "y": 4.408,
+          "w": 0.588,
+          "h": 0.05,
+          "kind": "shape",
+          "color": "EFEFEF",
+          "bold": false,
+          "name": "Google Shape;483;p27"
+        },
+        {
+          "x": 5.427,
+          "y": 4.408,
+          "w": 0.588,
+          "h": 0.05,
+          "kind": "shape",
+          "color": "EFEFEF",
+          "bold": false,
+          "name": "Google Shape;484;p27"
+        },
+        {
+          "x": 6.072,
+          "y": 4.408,
+          "w": 0.588,
+          "h": 0.05,
+          "kind": "shape",
+          "color": "EFEFEF",
+          "bold": false,
+          "name": "Google Shape;485;p27"
+        },
+        {
+          "x": 6.718,
+          "y": 4.408,
+          "w": 0.588,
+          "h": 0.05,
+          "kind": "shape",
+          "color": "EFEFEF",
+          "bold": false,
+          "name": "Google Shape;486;p27"
+        },
+        {
+          "x": 0.908,
+          "y": 4.511,
+          "w": 0.588,
+          "h": 0.05,
+          "kind": "shape",
+          "bold": false,
+          "name": "Google Shape;487;p27"
+        },
+        {
+          "x": 1.554,
+          "y": 4.511,
+          "w": 0.588,
+          "h": 0.05,
+          "kind": "shape",
+          "bold": false,
+          "name": "Google Shape;488;p27"
+        },
+        {
+          "x": 2.199,
+          "y": 4.511,
+          "w": 0.588,
+          "h": 0.05,
+          "kind": "shape",
+          "bold": false,
+          "name": "Google Shape;489;p27"
+        },
+        {
+          "x": 2.845,
+          "y": 4.511,
+          "w": 0.588,
+          "h": 0.05,
+          "kind": "shape",
+          "bold": false,
+          "name": "Google Shape;490;p27"
+        },
+        {
+          "x": 3.49,
+          "y": 4.511,
+          "w": 0.588,
+          "h": 0.05,
+          "kind": "shape",
+          "bold": false,
+          "name": "Google Shape;491;p27"
+        },
+        {
+          "x": 4.136,
+          "y": 4.511,
+          "w": 0.588,
+          "h": 0.05,
+          "kind": "shape",
+          "color": "EFEFEF",
+          "bold": false,
+          "name": "Google Shape;492;p27"
+        },
+        {
+          "x": 4.781,
+          "y": 4.511,
+          "w": 0.588,
+          "h": 0.05,
+          "kind": "shape",
+          "color": "EFEFEF",
+          "bold": false,
+          "name": "Google Shape;493;p27"
+        },
+        {
+          "x": 5.427,
+          "y": 4.511,
+          "w": 0.588,
+          "h": 0.05,
+          "kind": "shape",
+          "color": "EFEFEF",
+          "bold": false,
+          "name": "Google Shape;494;p27"
+        },
+        {
+          "x": 6.072,
+          "y": 4.511,
+          "w": 0.588,
+          "h": 0.05,
+          "kind": "shape",
+          "color": "EFEFEF",
+          "bold": false,
+          "name": "Google Shape;495;p27"
+        },
+        {
+          "x": 6.718,
+          "y": 4.511,
+          "w": 0.588,
+          "h": 0.05,
+          "kind": "shape",
+          "color": "EFEFEF",
+          "bold": false,
+          "name": "Google Shape;496;p27"
+        },
+        {
+          "x": 0.908,
+          "y": 4.614,
+          "w": 0.588,
+          "h": 0.05,
+          "kind": "shape",
+          "bold": false,
+          "name": "Google Shape;497;p27"
+        },
+        {
+          "x": 1.554,
+          "y": 4.614,
+          "w": 0.588,
+          "h": 0.05,
+          "kind": "shape",
+          "bold": false,
+          "name": "Google Shape;498;p27"
+        },
+        {
+          "x": 2.199,
+          "y": 4.614,
+          "w": 0.588,
+          "h": 0.05,
+          "kind": "shape",
+          "bold": false,
+          "name": "Google Shape;499;p27"
+        },
+        {
+          "x": 2.845,
+          "y": 4.614,
+          "w": 0.588,
+          "h": 0.05,
+          "kind": "shape",
+          "bold": false,
+          "name": "Google Shape;500;p27"
+        },
+        {
+          "x": 3.49,
+          "y": 4.614,
+          "w": 0.588,
+          "h": 0.05,
+          "kind": "shape",
+          "bold": false,
+          "name": "Google Shape;501;p27"
+        },
+        {
+          "x": 4.136,
+          "y": 4.614,
+          "w": 0.588,
+          "h": 0.05,
+          "kind": "shape",
+          "color": "EFEFEF",
+          "bold": false,
+          "name": "Google Shape;502;p27"
+        },
+        {
+          "x": 4.781,
+          "y": 4.614,
+          "w": 0.588,
+          "h": 0.05,
+          "kind": "shape",
+          "color": "EFEFEF",
+          "bold": false,
+          "name": "Google Shape;503;p27"
+        },
+        {
+          "x": 5.427,
+          "y": 4.614,
+          "w": 0.588,
+          "h": 0.05,
+          "kind": "shape",
+          "color": "EFEFEF",
+          "bold": false,
+          "name": "Google Shape;504;p27"
+        },
+        {
+          "x": 6.072,
+          "y": 4.614,
+          "w": 0.588,
+          "h": 0.05,
+          "kind": "shape",
+          "color": "EFEFEF",
+          "bold": false,
+          "name": "Google Shape;505;p27"
+        },
+        {
+          "x": 6.718,
+          "y": 4.614,
+          "w": 0.588,
+          "h": 0.05,
+          "kind": "shape",
+          "color": "EFEFEF",
+          "bold": false,
+          "name": "Google Shape;506;p27"
+        },
+        {
+          "x": 0.908,
+          "y": 4.716,
+          "w": 0.588,
+          "h": 0.05,
+          "kind": "shape",
+          "bold": false,
+          "name": "Google Shape;507;p27"
+        },
+        {
+          "x": 1.554,
+          "y": 4.716,
+          "w": 0.588,
+          "h": 0.05,
+          "kind": "shape",
+          "bold": false,
+          "name": "Google Shape;508;p27"
+        },
+        {
+          "x": 2.199,
+          "y": 4.716,
+          "w": 0.588,
+          "h": 0.05,
+          "kind": "shape",
+          "bold": false,
+          "name": "Google Shape;509;p27"
+        },
+        {
+          "x": 2.845,
+          "y": 4.716,
+          "w": 0.588,
+          "h": 0.05,
+          "kind": "shape",
+          "bold": false,
+          "name": "Google Shape;510;p27"
+        },
+        {
+          "x": 3.49,
+          "y": 4.716,
+          "w": 0.588,
+          "h": 0.05,
+          "kind": "shape",
+          "bold": false,
+          "name": "Google Shape;511;p27"
+        },
+        {
+          "x": 4.136,
+          "y": 4.716,
+          "w": 0.588,
+          "h": 0.05,
+          "kind": "shape",
+          "bold": false,
+          "name": "Google Shape;512;p27"
+        },
+        {
+          "x": 4.781,
+          "y": 4.716,
+          "w": 0.588,
+          "h": 0.05,
+          "kind": "shape",
+          "color": "EFEFEF",
+          "bold": false,
+          "name": "Google Shape;513;p27"
+        },
+        {
+          "x": 5.427,
+          "y": 4.716,
+          "w": 0.588,
+          "h": 0.05,
+          "kind": "shape",
+          "color": "EFEFEF",
+          "bold": false,
+          "name": "Google Shape;514;p27"
+        },
+        {
+          "x": 6.072,
+          "y": 4.716,
+          "w": 0.588,
+          "h": 0.05,
+          "kind": "shape",
+          "color": "EFEFEF",
+          "bold": false,
+          "name": "Google Shape;515;p27"
+        },
+        {
+          "x": 6.718,
+          "y": 4.716,
+          "w": 0.588,
+          "h": 0.05,
+          "kind": "shape",
+          "color": "EFEFEF",
+          "bold": false,
+          "name": "Google Shape;516;p27"
+        },
+        {
+          "x": 0.908,
+          "y": 4.819,
+          "w": 0.588,
+          "h": 0.05,
+          "kind": "shape",
+          "bold": false,
+          "name": "Google Shape;517;p27"
+        },
+        {
+          "x": 1.554,
+          "y": 4.819,
+          "w": 0.588,
+          "h": 0.05,
+          "kind": "shape",
+          "bold": false,
+          "name": "Google Shape;518;p27"
+        },
+        {
+          "x": 2.199,
+          "y": 4.819,
+          "w": 0.588,
+          "h": 0.05,
+          "kind": "shape",
+          "bold": false,
+          "name": "Google Shape;519;p27"
+        },
+        {
+          "x": 2.845,
+          "y": 4.819,
+          "w": 0.588,
+          "h": 0.05,
+          "kind": "shape",
+          "bold": false,
+          "name": "Google Shape;520;p27"
+        },
+        {
+          "x": 3.49,
+          "y": 4.819,
+          "w": 0.588,
+          "h": 0.05,
+          "kind": "shape",
+          "bold": false,
+          "name": "Google Shape;521;p27"
+        },
+        {
+          "x": 4.136,
+          "y": 4.819,
+          "w": 0.588,
+          "h": 0.05,
+          "kind": "shape",
+          "bold": false,
+          "name": "Google Shape;522;p27"
+        },
+        {
+          "x": 4.781,
+          "y": 4.819,
+          "w": 0.588,
+          "h": 0.05,
+          "kind": "shape",
+          "color": "EFEFEF",
+          "bold": false,
+          "name": "Google Shape;523;p27"
+        },
+        {
+          "x": 5.427,
+          "y": 4.819,
+          "w": 0.588,
+          "h": 0.05,
+          "kind": "shape",
+          "color": "EFEFEF",
+          "bold": false,
+          "name": "Google Shape;524;p27"
+        },
+        {
+          "x": 6.072,
+          "y": 4.819,
+          "w": 0.588,
+          "h": 0.05,
+          "kind": "shape",
+          "color": "EFEFEF",
+          "bold": false,
+          "name": "Google Shape;525;p27"
+        },
+        {
+          "x": 6.718,
+          "y": 4.819,
+          "w": 0.588,
+          "h": 0.05,
+          "kind": "shape",
+          "color": "EFEFEF",
+          "bold": false,
+          "name": "Google Shape;526;p27"
+        },
+        {
+          "x": 0.908,
+          "y": 4.922,
+          "w": 0.588,
+          "h": 0.05,
+          "kind": "shape",
+          "bold": false,
+          "name": "Google Shape;527;p27"
+        },
+        {
+          "x": 1.554,
+          "y": 4.922,
+          "w": 0.588,
+          "h": 0.05,
+          "kind": "shape",
+          "bold": false,
+          "name": "Google Shape;528;p27"
+        },
+        {
+          "x": 2.199,
+          "y": 4.922,
+          "w": 0.588,
+          "h": 0.05,
+          "kind": "shape",
+          "bold": false,
+          "name": "Google Shape;529;p27"
+        },
+        {
+          "x": 2.845,
+          "y": 4.922,
+          "w": 0.588,
+          "h": 0.05,
+          "kind": "shape",
+          "bold": false,
+          "name": "Google Shape;530;p27"
+        },
+        {
+          "x": 3.49,
+          "y": 4.922,
+          "w": 0.588,
+          "h": 0.05,
+          "kind": "shape",
+          "bold": false,
+          "name": "Google Shape;531;p27"
+        },
+        {
+          "x": 4.136,
+          "y": 4.922,
+          "w": 0.588,
+          "h": 0.05,
+          "kind": "shape",
+          "bold": false,
+          "name": "Google Shape;532;p27"
+        },
+        {
+          "x": 4.781,
+          "y": 4.922,
+          "w": 0.588,
+          "h": 0.05,
+          "kind": "shape",
+          "color": "EFEFEF",
+          "bold": false,
+          "name": "Google Shape;533;p27"
+        },
+        {
+          "x": 5.427,
+          "y": 4.922,
+          "w": 0.588,
+          "h": 0.05,
+          "kind": "shape",
+          "color": "EFEFEF",
+          "bold": false,
+          "name": "Google Shape;534;p27"
+        },
+        {
+          "x": 6.072,
+          "y": 4.922,
+          "w": 0.588,
+          "h": 0.05,
+          "kind": "shape",
+          "color": "EFEFEF",
+          "bold": false,
+          "name": "Google Shape;535;p27"
+        },
+        {
+          "x": 6.718,
+          "y": 4.922,
+          "w": 0.588,
+          "h": 0.05,
+          "kind": "shape",
+          "color": "EFEFEF",
+          "bold": false,
+          "name": "Google Shape;536;p27"
+        }
+      ],
+      "description": {
+        "looksLike": "A quantitative metrics slide featuring an introductory summary paragraph above two stacked trend indicators, each visualized via a segmented waffle-style progress bar paired with a bold percentage stat and description.",
+        "title": "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt labore dolore magna aliqua. Consectetur adipiscing elit.\nSed do eiusmod tempor incididunt ut labore et dolore magna nec. Lorem ipsum dolor sit amet, adipiscing elit. Eiusmod tempor incididunt ut labore et dolore magna nec. Lorem ipsum dolor sit amet, consectetur dolor ipsum adipiscing elit.",
+        "layout": "title-and-two-columns",
+        "background": {
+          "scope": "deck",
+          "kind": "solid"
+        },
+        "contentPlacement": "A wide text paragraph occupies the top-left area beneath the header bar, while the bottom half contains two metric rows with segmented chart bars on the left and large percentage callouts with descriptions on the right.",
+        "images": [],
+        "boxes": [
+          {
+            "role": "body",
+            "text": "",
+            "x": 0.798,
+            "y": 1.169,
+            "w": 8.408,
+            "h": 1.131
+          },
+          {
+            "role": "body",
+            "text": "",
+            "x": 0.825,
+            "y": 2.379,
+            "w": 0.816,
+            "h": 0.348
+          },
+          {
+            "role": "body",
+            "text": "",
+            "x": 7.362,
+            "y": 2.488,
+            "w": 1.123,
+            "h": 0.507
+          },
+          {
+            "role": "body",
+            "text": "",
+            "x": 7.362,
+            "y": 3.009,
+            "w": 1.929,
+            "h": 0.666
+          },
+          {
+            "role": "body",
+            "text": "",
+            "x": 0.825,
+            "y": 3.812,
+            "w": 0.816,
+            "h": 0.348
+          },
+          {
+            "role": "body",
+            "text": "",
+            "x": 7.362,
+            "y": 3.92,
+            "w": 1.123,
+            "h": 0.507
+          },
+          {
+            "role": "body",
+            "text": "",
+            "x": 7.362,
+            "y": 4.441,
+            "w": 1.929,
+            "h": 0.666
+          }
+        ]
+      },
+      "gcsUri": "gs://alltheway-rinegan-slide-designs-prod/catalog/consulting-proposal/slide-10.png"
+    },
+    "slide-11": {
+      "index": 10,
+      "prev": "slide-10",
+      "next": "slide-12",
+      "image": "consulting-proposal/slide-11.png",
+      "coordinates": [
+        {
+          "x": 0.798,
+          "y": 1.442,
+          "w": 3.977,
+          "h": 0.624,
+          "kind": "text",
+          "text": "Target audience",
+          "bold": false,
+          "placeholder": "title",
+          "name": "Google Shape;541;p28"
+        },
+        {
+          "x": 0.789,
+          "y": 2.149,
+          "w": 3.977,
+          "h": 0.932,
+          "kind": "text",
+          "text": "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt labore dolore magna aliqua. Lorem ipsum dolor sit amet consectetur adipiscing elit.",
+          "fontSize": 11,
+          "bold": false,
+          "placeholder": "body",
+          "name": "Google Shape;542;p28"
+        },
+        {
+          "x": 0.803,
+          "y": 3.372,
+          "w": 3.977,
+          "h": 0.286,
+          "kind": "text",
+          "text": "01 |\nConsectetur adipiscing elit",
+          "fontSize": 10,
+          "color": "000000",
+          "bold": true,
+          "name": "Google Shape;543;p28"
+        },
+        {
+          "x": 0.803,
+          "y": 3.658,
+          "w": 3.977,
+          "h": 0.286,
+          "kind": "text",
+          "text": "02 |\nSed do eiusmod tempor incididunt ut labore",
+          "fontSize": 10,
+          "color": "CCCCCC",
+          "bold": true,
+          "name": "Google Shape;544;p28"
+        },
+        {
+          "x": 0.803,
+          "y": 3.943,
+          "w": 3.977,
+          "h": 0.286,
+          "kind": "text",
+          "text": "03 |\nMagna aliqua lorem ipsum dolor sit amet",
+          "fontSize": 10,
+          "color": "CCCCCC",
+          "bold": true,
+          "name": "Google Shape;545;p28"
+        },
+        {
+          "x": 0.803,
+          "y": 4.229,
+          "w": 3.977,
+          "h": 0.286,
+          "kind": "text",
+          "text": "04 |\nEiusmod tempor incididunt ut labore et",
+          "fontSize": 10,
+          "color": "000000",
+          "bold": true,
+          "name": "Google Shape;546;p28"
+        },
+        {
+          "x": 0.803,
+          "y": 4.515,
+          "w": 3.977,
+          "h": 0.286,
+          "kind": "text",
+          "text": "05 |\nDolore magna aliqua",
+          "fontSize": 10,
+          "color": "53C6A1",
+          "bold": true,
+          "name": "Google Shape;547;p28"
+        },
+        {
+          "x": 5.629,
+          "y": 1.295,
+          "w": 2.163,
+          "h": 3.568,
+          "kind": "picture",
+          "bold": false,
+          "name": "Google Shape;548;p28"
+        },
+        {
+          "x": 7.844,
+          "y": 1.296,
+          "w": 2.156,
+          "h": 1.762,
+          "kind": "picture",
+          "bold": false,
+          "name": "Google Shape;549;p28"
+        },
+        {
+          "x": 7.844,
+          "y": 3.101,
+          "w": 2.156,
+          "h": 1.762,
+          "kind": "picture",
+          "bold": false,
+          "name": "Google Shape;550;p28"
+        }
+      ],
+      "description": {
+        "looksLike": "A split-layout slide with a title, descriptive paragraph, and a numbered list on the left, paired with a three-photo gallery grid on the right.",
+        "title": "Target audience",
+        "layout": "section-title-and-description",
+        "background": {
+          "scope": "slide",
+          "kind": "solid"
+        },
+        "contentPlacement": "Left half contains the section title, introductory paragraph, and a vertically stacked numbered list (01 to 05); the right half contains three photographic images arranged in a grid with one tall portrait image alongside two stacked landscape images.",
+        "images": [
+          {
+            "kind": "picture",
+            "what": "photograph",
+            "x": 5.629,
+            "y": 1.295,
+            "w": 2.163,
+            "h": 3.568
+          },
+          {
+            "kind": "picture",
+            "what": "photograph",
+            "x": 7.844,
+            "y": 1.296,
+            "w": 2.156,
+            "h": 1.762
+          },
+          {
+            "kind": "picture",
+            "what": "photograph",
+            "x": 7.844,
+            "y": 3.101,
+            "w": 2.156,
+            "h": 1.762
+          }
+        ],
+        "boxes": [
+          {
+            "role": "body",
+            "text": "",
+            "x": 0.798,
+            "y": 1.442,
+            "w": 3.977,
+            "h": 0.624
+          },
+          {
+            "role": "body",
+            "text": "",
+            "x": 0.789,
+            "y": 2.149,
+            "w": 3.977,
+            "h": 0.932
+          },
+          {
+            "role": "body",
+            "text": "",
+            "x": 0.803,
+            "y": 3.372,
+            "w": 3.977,
+            "h": 0.286
+          },
+          {
+            "role": "body",
+            "text": "",
+            "x": 0.803,
+            "y": 3.658,
+            "w": 3.977,
+            "h": 0.286
+          },
+          {
+            "role": "body",
+            "text": "",
+            "x": 0.803,
+            "y": 3.943,
+            "w": 3.977,
+            "h": 0.286
+          },
+          {
+            "role": "body",
+            "text": "",
+            "x": 0.803,
+            "y": 4.229,
+            "w": 3.977,
+            "h": 0.286
+          },
+          {
+            "role": "body",
+            "text": "",
+            "x": 0.803,
+            "y": 4.515,
+            "w": 3.977,
+            "h": 0.286
+          }
+        ]
+      },
+      "gcsUri": "gs://alltheway-rinegan-slide-designs-prod/catalog/consulting-proposal/slide-11.png"
+    },
+    "slide-12": {
+      "index": 11,
+      "prev": "slide-11",
+      "next": "slide-13",
+      "image": "consulting-proposal/slide-12.png",
+      "coordinates": [
+        {
+          "x": 0.798,
+          "y": 1.446,
+          "w": 7.666,
+          "h": 0.384,
+          "kind": "text",
+          "text": "Proposed solution",
+          "fontSize": 12,
+          "bold": false,
+          "placeholder": "title",
+          "name": "Google Shape;555;p29"
+        },
+        {
+          "x": 0.798,
+          "y": 1.913,
+          "w": 7.666,
+          "h": 2.874,
+          "kind": "text",
+          "text": "C\nonsectetur adipiscing elit i\npsum dolor sit amet\neiusmod tempor, incididunt nec labore et dolore magna aliqua ipsum dolor sit amet\ntempor incididunt .",
+          "fontSize": 30,
+          "color": "FFFFFF",
+          "bold": false,
+          "placeholder": "body",
+          "name": "Google Shape;556;p29"
+        }
+      ],
+      "description": {
+        "looksLike": "A dark charcoal slide featuring a small uppercase section category above a large prominent statement in white text.",
+        "title": "Proposed solution",
+        "layout": "main-point",
+        "background": {
+          "scope": "slide",
+          "kind": "solid"
+        },
+        "contentPlacement": "The section header sits above a large multiline key message block in the upper-left quadrant of the dark slide.",
+        "images": [],
+        "boxes": [
+          {
+            "role": "body",
+            "text": "",
+            "x": 0.798,
+            "y": 1.446,
+            "w": 7.666,
+            "h": 0.384
+          },
+          {
+            "role": "body",
+            "text": "",
+            "x": 0.798,
+            "y": 1.913,
+            "w": 7.666,
+            "h": 2.874
+          }
+        ]
+      },
+      "gcsUri": "gs://alltheway-rinegan-slide-designs-prod/catalog/consulting-proposal/slide-12.png"
+    },
+    "slide-13": {
+      "index": 12,
+      "prev": "slide-12",
+      "next": "slide-14",
+      "image": "consulting-proposal/slide-13.png",
+      "coordinates": [
+        {
+          "x": 0.798,
+          "y": 1.496,
+          "w": 8.408,
+          "h": 0.585,
+          "kind": "text",
+          "text": "Process",
+          "fontSize": 10,
+          "bold": false,
+          "placeholder": "title",
+          "name": "Google Shape;561;p30"
+        },
+        {
+          "x": 0.944,
+          "y": 2.645,
+          "w": 0.641,
+          "h": 1.029,
+          "kind": "text",
+          "text": "01",
+          "fontSize": 30,
+          "color": "FFFFFF",
+          "bold": true,
+          "name": "Google Shape;563;p30"
+        },
+        {
+          "x": 0.908,
+          "y": 3.675,
+          "w": 2.736,
+          "h": 1.386,
+          "kind": "shape",
+          "bold": false,
+          "name": "Google Shape;565;p30"
+        },
+        {
+          "x": 1.158,
+          "y": 3.581,
+          "w": 0.24,
+          "h": 0.102,
+          "kind": "shape",
+          "bold": false,
+          "name": "Google Shape;566;p30"
+        },
+        {
+          "x": 1.058,
+          "y": 3.779,
+          "w": 2.448,
+          "h": 0.47,
+          "kind": "text",
+          "text": "Lorem ipsum dolor sit",
+          "fontSize": 10,
+          "bold": false,
+          "placeholder": "title",
+          "name": "Google Shape;567;p30"
+        },
+        {
+          "x": 1.058,
+          "y": 4.249,
+          "w": 2.448,
+          "h": 0.711,
+          "kind": "text",
+          "text": "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor dolor incididunt labore dolore magna aliqua.",
+          "fontSize": 8,
+          "bold": false,
+          "placeholder": "body",
+          "name": "Google Shape;568;p30"
+        },
+        {
+          "x": 3.707,
+          "y": 3.897,
+          "w": 0.641,
+          "h": 1.029,
+          "kind": "text",
+          "text": "0\n2",
+          "fontSize": 30,
+          "color": "FFFFFF",
+          "bold": true,
+          "name": "Google Shape;570;p30"
+        },
+        {
+          "x": 0.908,
+          "y": 3.675,
+          "w": 2.736,
+          "h": 1.386,
+          "kind": "shape",
+          "bold": false,
+          "name": "Google Shape;572;p30"
+        },
+        {
+          "x": 1.158,
+          "y": 3.581,
+          "w": 0.24,
+          "h": 0.102,
+          "kind": "shape",
+          "bold": false,
+          "name": "Google Shape;573;p30"
+        },
+        {
+          "x": 3.789,
+          "y": 2.38,
+          "w": 2.448,
+          "h": 0.47,
+          "kind": "text",
+          "text": "Lorem ipsum dolor sit",
+          "fontSize": 10,
+          "bold": false,
+          "placeholder": "title",
+          "name": "Google Shape;574;p30"
+        },
+        {
+          "x": 3.789,
+          "y": 2.85,
+          "w": 2.448,
+          "h": 0.711,
+          "kind": "text",
+          "text": "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor dolor incididunt labore dolore magna aliqua.",
+          "fontSize": 8,
+          "bold": false,
+          "placeholder": "body",
+          "name": "Google Shape;575;p30"
+        },
+        {
+          "x": 6.404,
+          "y": 2.645,
+          "w": 0.641,
+          "h": 1.029,
+          "kind": "text",
+          "text": "0\n3",
+          "fontSize": 30,
+          "color": "FFFFFF",
+          "bold": true,
+          "name": "Google Shape;577;p30"
+        },
+        {
+          "x": 0.908,
+          "y": 3.675,
+          "w": 2.736,
+          "h": 1.386,
+          "kind": "shape",
+          "bold": false,
+          "name": "Google Shape;579;p30"
+        },
+        {
+          "x": 1.158,
+          "y": 3.581,
+          "w": 0.24,
+          "h": 0.102,
+          "kind": "shape",
+          "bold": false,
+          "name": "Google Shape;580;p30"
+        },
+        {
+          "x": 6.519,
+          "y": 3.779,
+          "w": 2.448,
+          "h": 0.47,
+          "kind": "text",
+          "text": "Lorem ipsum dolor sit",
+          "fontSize": 10,
+          "bold": false,
+          "placeholder": "title",
+          "name": "Google Shape;581;p30"
+        },
+        {
+          "x": 6.519,
+          "y": 4.249,
+          "w": 2.448,
+          "h": 0.711,
+          "kind": "text",
+          "text": "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor dolor incididunt labore dolore magna aliqua.",
+          "fontSize": 8,
+          "bold": false,
+          "placeholder": "body",
+          "name": "Google Shape;582;p30"
+        },
+        {
+          "x": 0.908,
+          "y": 2.287,
+          "w": 2.735,
+          "h": 1.387,
+          "kind": "picture",
+          "bold": false,
+          "name": "Google Shape;562;p30"
+        },
+        {
+          "x": 3.645,
+          "y": 3.673,
+          "w": 2.735,
+          "h": 1.387,
+          "kind": "picture",
+          "bold": false,
+          "name": "Google Shape;569;p30"
+        },
+        {
+          "x": 6.379,
+          "y": 2.287,
+          "w": 2.735,
+          "h": 1.387,
+          "kind": "picture",
+          "bold": false,
+          "name": "Google Shape;576;p30"
+        }
+      ],
+      "description": {
+        "looksLike": "A three-step alternating checkerboard process slide featuring three image tiles with overlaid step numbers paired with light grey text cards under a top-left title.",
+        "title": "Process",
+        "layout": "title-and-two-columns",
+        "background": {
+          "scope": "slide",
+          "kind": "solid"
+        },
+        "contentPlacement": "Header title at top left; three columns below feature an alternating grid of photo blocks with large white step numbers and light grey description cards with bold subheaders and body text.",
+        "images": [
+          {
+            "kind": "picture",
+            "what": "photograph",
+            "x": 0.908,
+            "y": 2.287,
+            "w": 2.735,
+            "h": 1.387
+          },
+          {
+            "kind": "picture",
+            "what": "photograph",
+            "x": 3.645,
+            "y": 3.673,
+            "w": 2.735,
+            "h": 1.387
+          },
+          {
+            "kind": "picture",
+            "what": "photograph",
+            "x": 6.379,
+            "y": 2.287,
+            "w": 2.735,
+            "h": 1.387
+          }
+        ],
+        "boxes": [
+          {
+            "role": "body",
+            "text": "",
+            "x": 0.798,
+            "y": 1.496,
+            "w": 8.408,
+            "h": 0.585
+          },
+          {
+            "role": "body",
+            "text": "",
+            "x": 0.944,
+            "y": 2.645,
+            "w": 0.641,
+            "h": 1.029
+          },
+          {
+            "role": "body",
+            "text": "",
+            "x": 0.908,
+            "y": 3.675,
+            "w": 2.736,
+            "h": 1.386
+          },
+          {
+            "role": "body",
+            "text": "",
+            "x": 1.158,
+            "y": 3.581,
+            "w": 0.24,
+            "h": 0.102
+          },
+          {
+            "role": "body",
+            "text": "",
+            "x": 1.058,
+            "y": 3.779,
+            "w": 2.448,
+            "h": 0.47
+          },
+          {
+            "role": "body",
+            "text": "",
+            "x": 1.058,
+            "y": 4.249,
+            "w": 2.448,
+            "h": 0.711
+          },
+          {
+            "role": "body",
+            "text": "",
+            "x": 3.707,
+            "y": 3.897,
+            "w": 0.641,
+            "h": 1.029
+          },
+          {
+            "role": "body",
+            "text": "",
+            "x": 0.908,
+            "y": 3.675,
+            "w": 2.736,
+            "h": 1.386
+          },
+          {
+            "role": "body",
+            "text": "",
+            "x": 1.158,
+            "y": 3.581,
+            "w": 0.24,
+            "h": 0.102
+          },
+          {
+            "role": "body",
+            "text": "",
+            "x": 3.789,
+            "y": 2.38,
+            "w": 2.448,
+            "h": 0.47
+          },
+          {
+            "role": "body",
+            "text": "",
+            "x": 3.789,
+            "y": 2.85,
+            "w": 2.448,
+            "h": 0.711
+          },
+          {
+            "role": "body",
+            "text": "",
+            "x": 6.404,
+            "y": 2.645,
+            "w": 0.641,
+            "h": 1.029
+          },
+          {
+            "role": "body",
+            "text": "",
+            "x": 0.908,
+            "y": 3.675,
+            "w": 2.736,
+            "h": 1.386
+          },
+          {
+            "role": "body",
+            "text": "",
+            "x": 1.158,
+            "y": 3.581,
+            "w": 0.24,
+            "h": 0.102
+          },
+          {
+            "role": "body",
+            "text": "",
+            "x": 6.519,
+            "y": 3.779,
+            "w": 2.448,
+            "h": 0.47
+          },
+          {
+            "role": "body",
+            "text": "",
+            "x": 6.519,
+            "y": 4.249,
+            "w": 2.448,
+            "h": 0.711
+          }
+        ]
+      },
+      "gcsUri": "gs://alltheway-rinegan-slide-designs-prod/catalog/consulting-proposal/slide-13.png"
+    },
+    "slide-14": {
+      "index": 13,
+      "prev": "slide-13",
+      "next": "slide-15",
+      "image": "consulting-proposal/slide-14.png",
+      "coordinates": [
+        {
+          "x": 0.798,
+          "y": 1.442,
+          "w": 3.062,
+          "h": 1.131,
+          "kind": "text",
+          "text": "Deliverables",
+          "color": "000000",
+          "bold": false,
+          "placeholder": "title",
+          "name": "Google Shape;587;p31"
+        },
+        {
+          "x": 3.943,
+          "y": 1.169,
+          "w": 5.247,
+          "h": 1.131,
+          "kind": "text",
+          "text": "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt labore dolore magna aliqua. Lorem ipsum dolor sit amet, consectetur adipiscing elit. Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt labore dolore magna aliqua. Lorem ipsum dolor sit amet, consectetur adipiscing elit.",
+          "fontSize": 11,
+          "bold": false,
+          "placeholder": "body",
+          "name": "Google Shape;588;p31"
+        },
+        {
+          "x": 1.085,
+          "y": 2.96,
+          "w": 1.934,
+          "h": 0.251,
+          "kind": "text",
+          "text": "Consectetur nec labore",
+          "fontSize": 8,
+          "color": "000000",
+          "bold": true,
+          "name": "Google Shape;589;p31"
+        },
+        {
+          "x": 0.791,
+          "y": 3.206,
+          "w": 2.524,
+          "h": 1.044,
+          "kind": "text",
+          "text": "45K",
+          "fontSize": 48,
+          "color": "000000",
+          "bold": true,
+          "name": "Google Shape;590;p31"
+        },
+        {
+          "x": 0.921,
+          "y": 4.121,
+          "w": 2.262,
+          "h": 0.813,
+          "kind": "text",
+          "text": "Lorem ipsum dolor sit amet ut labore et dolore magna",
+          "fontSize": 11,
+          "color": "000000",
+          "bold": true,
+          "name": "Google Shape;591;p31"
+        },
+        {
+          "x": 4.033,
+          "y": 2.96,
+          "w": 1.934,
+          "h": 0.251,
+          "kind": "text",
+          "text": "Adipiscing elit sed",
+          "fontSize": 8,
+          "color": "000000",
+          "bold": true,
+          "name": "Google Shape;593;p31"
+        },
+        {
+          "x": 3.738,
+          "y": 3.206,
+          "w": 2.524,
+          "h": 1.044,
+          "kind": "text",
+          "text": "690K",
+          "fontSize": 48,
+          "color": "000000",
+          "bold": true,
+          "name": "Google Shape;594;p31"
+        },
+        {
+          "x": 3.869,
+          "y": 4.121,
+          "w": 2.262,
+          "h": 0.813,
+          "kind": "text",
+          "text": "Tempor incididunt ut labore et dolore magna aliqua",
+          "fontSize": 11,
+          "color": "000000",
+          "bold": true,
+          "name": "Google Shape;595;p31"
+        },
+        {
+          "x": 6.98,
+          "y": 2.96,
+          "w": 1.934,
+          "h": 0.251,
+          "kind": "text",
+          "text": "Sed eiusmod",
+          "fontSize": 8,
+          "color": "000000",
+          "bold": true,
+          "name": "Google Shape;597;p31"
+        },
+        {
+          "x": 6.686,
+          "y": 3.206,
+          "w": 2.524,
+          "h": 1.044,
+          "kind": "text",
+          "text": "100K",
+          "fontSize": 48,
+          "color": "000000",
+          "bold": true,
+          "name": "Google Shape;598;p31"
+        },
+        {
+          "x": 6.817,
+          "y": 4.121,
+          "w": 2.262,
+          "h": 0.813,
+          "kind": "text",
+          "text": "Do eiusmod tempor incididunt ut labore et dolore magna",
+          "fontSize": 11,
+          "color": "000000",
+          "bold": true,
+          "name": "Google Shape;599;p31"
+        }
+      ],
+      "description": {
+        "looksLike": "A clean metrics slide featuring a bold title and intro paragraph across the top, followed by three large statistical callouts separated by dotted vertical dividers.",
+        "title": "Deliverables",
+        "layout": "big-number",
+        "background": {
+          "scope": "deck",
+          "kind": "solid"
+        },
+        "contentPlacement": "Section title on the upper left with a descriptive overview paragraph on the upper right; lower half contains three evenly spaced columns highlighting large numerical KPIs with category labels above and explanations below.",
+        "images": [],
+        "boxes": [
+          {
+            "role": "body",
+            "text": "Deliverables",
+            "x": 0.798,
+            "y": 1.442,
+            "w": 3.062,
+            "h": 1.131
+          },
+          {
+            "role": "body",
+            "text": "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt labore dolore magna aliqua. Lorem ipsum dolor sit amet, consectetur adipiscing elit. Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt labore dolore magna aliqua. Lorem ipsum dolor sit amet, consectetur adipiscing elit.",
+            "x": 3.943,
+            "y": 1.169,
+            "w": 5.247,
+            "h": 1.131,
+            "fontSize": 11
+          },
+          {
+            "role": "body",
+            "text": "Consectetur nec labore",
+            "x": 1.085,
+            "y": 2.96,
+            "w": 1.934,
+            "h": 0.251,
+            "fontSize": 8
+          },
+          {
+            "role": "body",
+            "text": "45K",
+            "x": 0.791,
+            "y": 3.206,
+            "w": 2.524,
+            "h": 1.044,
+            "fontSize": 48
+          },
+          {
+            "role": "body",
+            "text": "Lorem ipsum dolor sit amet ut labore et dolore magna",
+            "x": 0.921,
+            "y": 4.121,
+            "w": 2.262,
+            "h": 0.813,
+            "fontSize": 11
+          },
+          {
+            "role": "body",
+            "text": "Adipiscing elit sed",
+            "x": 4.033,
+            "y": 2.96,
+            "w": 1.934,
+            "h": 0.251,
+            "fontSize": 8
+          },
+          {
+            "role": "body",
+            "text": "690K",
+            "x": 3.738,
+            "y": 3.206,
+            "w": 2.524,
+            "h": 1.044,
+            "fontSize": 48
+          },
+          {
+            "role": "body",
+            "text": "Tempor incididunt ut labore et dolore magna aliqua",
+            "x": 3.869,
+            "y": 4.121,
+            "w": 2.262,
+            "h": 0.813,
+            "fontSize": 11
+          },
+          {
+            "role": "body",
+            "text": "Sed eiusmod",
+            "x": 6.98,
+            "y": 2.96,
+            "w": 1.934,
+            "h": 0.251,
+            "fontSize": 8
+          },
+          {
+            "role": "body",
+            "text": "100K",
+            "x": 6.686,
+            "y": 3.206,
+            "w": 2.524,
+            "h": 1.044,
+            "fontSize": 48
+          },
+          {
+            "role": "body",
+            "text": "Do eiusmod tempor incididunt ut labore et dolore magna",
+            "x": 6.817,
+            "y": 4.121,
+            "w": 2.262,
+            "h": 0.813,
+            "fontSize": 11
+          }
+        ]
+      },
+      "gcsUri": "gs://alltheway-rinegan-slide-designs-prod/catalog/consulting-proposal/slide-14.png"
+    },
+    "slide-15": {
+      "index": 14,
+      "prev": "slide-14",
+      "next": "slide-16",
+      "image": "consulting-proposal/slide-15.png",
+      "coordinates": [
+        {
+          "x": 0.798,
+          "y": 1.442,
+          "w": 8.408,
+          "h": 0.585,
+          "kind": "text",
+          "text": "Vision",
+          "fontSize": 8,
+          "color": "000000",
+          "bold": false,
+          "placeholder": "title",
+          "name": "Google Shape;604;p32"
+        },
+        {
+          "x": 0.504,
+          "y": 3.787,
+          "w": 0.953,
+          "h": 0.406,
+          "kind": "text",
+          "text": "20XX",
+          "color": "000000",
+          "bold": true,
+          "name": "Google Shape;605;p32"
+        },
+        {
+          "x": 0.879,
+          "y": 2.492,
+          "w": 2.422,
+          "h": 0.253,
+          "kind": "text",
+          "text": "Lorem ipsum dolor sit",
+          "fontSize": 8,
+          "color": "000000",
+          "bold": false,
+          "placeholder": "title",
+          "name": "Google Shape;606;p32"
+        },
+        {
+          "x": 0.879,
+          "y": 2.745,
+          "w": 2.422,
+          "h": 0.602,
+          "kind": "text",
+          "text": "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt labore dolore magna aliqua dolor sit amet, consectetur adipiscing.",
+          "fontSize": 7,
+          "bold": false,
+          "placeholder": "body",
+          "name": "Google Shape;607;p32"
+        },
+        {
+          "x": 2.256,
+          "y": 3.234,
+          "w": 0.816,
+          "h": 0.406,
+          "kind": "text",
+          "text": "20XX",
+          "color": "000000",
+          "bold": true,
+          "name": "Google Shape;608;p32"
+        },
+        {
+          "x": 2.44,
+          "y": 4.197,
+          "w": 2.422,
+          "h": 0.253,
+          "kind": "text",
+          "text": "Lorem ipsum dolor sit",
+          "fontSize": 8,
+          "color": "000000",
+          "bold": false,
+          "placeholder": "title",
+          "name": "Google Shape;609;p32"
+        },
+        {
+          "x": 2.44,
+          "y": 4.449,
+          "w": 2.422,
+          "h": 0.602,
+          "kind": "text",
+          "text": "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt labore dolore magna aliqua dolor sit amet, consectetur adipiscing.",
+          "fontSize": 7,
+          "bold": false,
+          "placeholder": "body",
+          "name": "Google Shape;610;p32"
+        },
+        {
+          "x": 3.79,
+          "y": 3.787,
+          "w": 0.758,
+          "h": 0.406,
+          "kind": "text",
+          "text": "20XX",
+          "color": "000000",
+          "bold": true,
+          "name": "Google Shape;611;p32"
+        },
+        {
+          "x": 4.027,
+          "y": 2.492,
+          "w": 2.422,
+          "h": 0.253,
+          "kind": "text",
+          "text": "Lorem ipsum dolor sit",
+          "fontSize": 8,
+          "color": "000000",
+          "bold": false,
+          "placeholder": "title",
+          "name": "Google Shape;612;p32"
+        },
+        {
+          "x": 4.027,
+          "y": 2.745,
+          "w": 2.422,
+          "h": 0.602,
+          "kind": "text",
+          "text": "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt labore dolore magna aliqua dolor sit amet, consectetur adipiscing.",
+          "fontSize": 7,
+          "bold": false,
+          "placeholder": "body",
+          "name": "Google Shape;613;p32"
+        },
+        {
+          "x": 5.327,
+          "y": 3.234,
+          "w": 0.816,
+          "h": 0.406,
+          "kind": "text",
+          "text": "20XX",
+          "color": "000000",
+          "bold": true,
+          "name": "Google Shape;614;p32"
+        },
+        {
+          "x": 5.617,
+          "y": 4.197,
+          "w": 2.422,
+          "h": 0.253,
+          "kind": "text",
+          "text": "Lorem ipsum dolor sit",
+          "fontSize": 8,
+          "color": "000000",
+          "bold": false,
+          "placeholder": "title",
+          "name": "Google Shape;615;p32"
+        },
+        {
+          "x": 5.617,
+          "y": 4.449,
+          "w": 2.422,
+          "h": 0.602,
+          "kind": "text",
+          "text": "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt labore dolore magna aliqua dolor sit amet, consectetur adipiscing.",
+          "fontSize": 7,
+          "bold": false,
+          "placeholder": "body",
+          "name": "Google Shape;616;p32"
+        },
+        {
+          "x": 6.917,
+          "y": 3.787,
+          "w": 0.816,
+          "h": 0.406,
+          "kind": "text",
+          "text": "20XX",
+          "color": "000000",
+          "bold": true,
+          "name": "Google Shape;617;p32"
+        },
+        {
+          "x": 7.202,
+          "y": 2.492,
+          "w": 2.422,
+          "h": 0.253,
+          "kind": "text",
+          "text": "Lorem ipsum dolor sit",
+          "fontSize": 8,
+          "color": "000000",
+          "bold": false,
+          "placeholder": "title",
+          "name": "Google Shape;618;p32"
+        },
+        {
+          "x": 7.202,
+          "y": 2.745,
+          "w": 2.422,
+          "h": 0.602,
+          "kind": "text",
+          "text": "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt labore dolore magna aliqua dolor sit amet, consectetur adipiscing.",
+          "fontSize": 7,
+          "bold": false,
+          "placeholder": "body",
+          "name": "Google Shape;619;p32"
+        },
+        {
+          "x": 0.925,
+          "y": 2.804,
+          "w": 0.101,
+          "h": 0.101,
+          "kind": "shape",
+          "color": "000000",
+          "bold": false,
+          "name": "Google Shape;623;p32"
+        },
+        {
+          "x": 2.264,
+          "y": 2.804,
+          "w": 0.101,
+          "h": 0.101,
+          "kind": "shape",
+          "color": "000000",
+          "bold": false,
+          "name": "Google Shape;626;p32"
+        },
+        {
+          "x": 0.925,
+          "y": 2.804,
+          "w": 0.101,
+          "h": 0.101,
+          "kind": "shape",
+          "color": "000000",
+          "bold": false,
+          "name": "Google Shape;629;p32"
+        },
+        {
+          "x": 2.264,
+          "y": 2.804,
+          "w": 0.101,
+          "h": 0.101,
+          "kind": "shape",
+          "color": "000000",
+          "bold": false,
+          "name": "Google Shape;632;p32"
+        },
+        {
+          "x": 0.925,
+          "y": 2.804,
+          "w": 0.101,
+          "h": 0.101,
+          "kind": "shape",
+          "color": "000000",
+          "bold": false,
+          "name": "Google Shape;635;p32"
+        },
+        {
+          "x": 0.968,
+          "y": 3.652,
+          "w": 9.039,
+          "h": 0.145,
+          "kind": "picture",
+          "bold": false,
+          "name": "Google Shape;620;p32"
+        }
+      ],
+      "description": {
+        "looksLike": "A visual roadmap timeline slide with milestone callouts and year markers mapped across a panoramic snowy mountain landscape background.",
+        "title": "Vision",
+        "layout": "title-and-two-columns",
+        "background": {
+          "scope": "slide",
+          "kind": "photograph"
+        },
+        "contentPlacement": "The title sits at the upper left, while a multi-stage timeline with alternating year labels, pin markers, and descriptive text blocks spans horizontally across the landscape image.",
+        "images": [
+          {
+            "kind": "picture",
+            "what": "photograph",
+            "x": 0.968,
+            "y": 3.652,
+            "w": 9.039,
+            "h": 0.145
+          }
+        ],
+        "boxes": [
+          {
+            "role": "body",
+            "text": "",
+            "x": 0.798,
+            "y": 1.442,
+            "w": 8.408,
+            "h": 0.585
+          },
+          {
+            "role": "body",
+            "text": "",
+            "x": 0.504,
+            "y": 3.787,
+            "w": 0.953,
+            "h": 0.406
+          },
+          {
+            "role": "body",
+            "text": "",
+            "x": 0.879,
+            "y": 2.492,
+            "w": 2.422,
+            "h": 0.253
+          },
+          {
+            "role": "body",
+            "text": "",
+            "x": 0.879,
+            "y": 2.745,
+            "w": 2.422,
+            "h": 0.602
+          },
+          {
+            "role": "body",
+            "text": "",
+            "x": 2.256,
+            "y": 3.234,
+            "w": 0.816,
+            "h": 0.406
+          },
+          {
+            "role": "body",
+            "text": "",
+            "x": 2.44,
+            "y": 4.197,
+            "w": 2.422,
+            "h": 0.253
+          },
+          {
+            "role": "body",
+            "text": "",
+            "x": 2.44,
+            "y": 4.449,
+            "w": 2.422,
+            "h": 0.602
+          },
+          {
+            "role": "body",
+            "text": "",
+            "x": 3.79,
+            "y": 3.787,
+            "w": 0.758,
+            "h": 0.406
+          },
+          {
+            "role": "body",
+            "text": "",
+            "x": 4.027,
+            "y": 2.492,
+            "w": 2.422,
+            "h": 0.253
+          },
+          {
+            "role": "body",
+            "text": "",
+            "x": 4.027,
+            "y": 2.745,
+            "w": 2.422,
+            "h": 0.602
+          },
+          {
+            "role": "body",
+            "text": "",
+            "x": 5.327,
+            "y": 3.234,
+            "w": 0.816,
+            "h": 0.406
+          },
+          {
+            "role": "body",
+            "text": "",
+            "x": 5.617,
+            "y": 4.197,
+            "w": 2.422,
+            "h": 0.253
+          },
+          {
+            "role": "body",
+            "text": "",
+            "x": 5.617,
+            "y": 4.449,
+            "w": 2.422,
+            "h": 0.602
+          },
+          {
+            "role": "body",
+            "text": "",
+            "x": 6.917,
+            "y": 3.787,
+            "w": 0.816,
+            "h": 0.406
+          },
+          {
+            "role": "body",
+            "text": "",
+            "x": 7.202,
+            "y": 2.492,
+            "w": 2.422,
+            "h": 0.253
+          },
+          {
+            "role": "body",
+            "text": "",
+            "x": 7.202,
+            "y": 2.745,
+            "w": 2.422,
+            "h": 0.602
+          },
+          {
+            "role": "body",
+            "text": "",
+            "x": 0.925,
+            "y": 2.804,
+            "w": 0.101,
+            "h": 0.101
+          },
+          {
+            "role": "body",
+            "text": "",
+            "x": 2.264,
+            "y": 2.804,
+            "w": 0.101,
+            "h": 0.101
+          },
+          {
+            "role": "body",
+            "text": "",
+            "x": 0.925,
+            "y": 2.804,
+            "w": 0.101,
+            "h": 0.101
+          },
+          {
+            "role": "body",
+            "text": "",
+            "x": 2.264,
+            "y": 2.804,
+            "w": 0.101,
+            "h": 0.101
+          },
+          {
+            "role": "body",
+            "text": "",
+            "x": 0.925,
+            "y": 2.804,
+            "w": 0.101,
+            "h": 0.101
+          }
+        ]
+      },
+      "gcsUri": "gs://alltheway-rinegan-slide-designs-prod/catalog/consulting-proposal/slide-15.png"
+    },
+    "slide-16": {
+      "index": 15,
+      "prev": "slide-15",
+      "next": "slide-17",
+      "image": "consulting-proposal/slide-16.png",
+      "coordinates": [
+        {
+          "x": 0.797,
+          "y": 1.442,
+          "w": 2.414,
+          "h": 0.612,
+          "kind": "text",
+          "text": "Team",
+          "bold": false,
+          "placeholder": "title",
+          "name": "Google Shape;640;p33"
+        },
+        {
+          "x": 0.789,
+          "y": 2.149,
+          "w": 2.414,
+          "h": 2.407,
+          "kind": "text",
+          "text": "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt labore dolore magna aliqua. Lorem ipsum dolor sit amet consectetur adipiscing elit.",
+          "fontSize": 11,
+          "bold": false,
+          "placeholder": "body",
+          "name": "Google Shape;641;p33"
+        },
+        {
+          "x": 3.503,
+          "y": 4.136,
+          "w": 1.663,
+          "h": 0.179,
+          "kind": "text",
+          "text": "CEO",
+          "fontSize": 6,
+          "color": "FFFFFF",
+          "bold": true,
+          "name": "Google Shape;643;p33"
+        },
+        {
+          "x": 3.503,
+          "y": 4.332,
+          "w": 1.663,
+          "h": 0.445,
+          "kind": "text",
+          "text": "Berry Books",
+          "color": "FFFFFF",
+          "bold": false,
+          "name": "Google Shape;644;p33"
+        },
+        {
+          "x": 5.72,
+          "y": 4.136,
+          "w": 1.663,
+          "h": 0.179,
+          "kind": "text",
+          "text": "CFO",
+          "fontSize": 6,
+          "color": "FFFFFF",
+          "bold": true,
+          "name": "Google Shape;646;p33"
+        },
+        {
+          "x": 5.72,
+          "y": 4.332,
+          "w": 1.663,
+          "h": 0.445,
+          "kind": "text",
+          "text": "Vinny Viewer",
+          "color": "FFFFFF",
+          "bold": false,
+          "name": "Google Shape;647;p33"
+        },
+        {
+          "x": 7.932,
+          "y": 4.136,
+          "w": 1.663,
+          "h": 0.179,
+          "kind": "text",
+          "text": "Sales Director",
+          "fontSize": 6,
+          "color": "FFFFFF",
+          "bold": true,
+          "name": "Google Shape;649;p33"
+        },
+        {
+          "x": 7.932,
+          "y": 4.332,
+          "w": 1.663,
+          "h": 0.445,
+          "kind": "text",
+          "text": "Wendy Writer",
+          "color": "FFFFFF",
+          "bold": false,
+          "name": "Google Shape;650;p33"
+        },
+        {
+          "x": 3.416,
+          "y": 1.295,
+          "w": 2.163,
+          "h": 3.568,
+          "kind": "picture",
+          "bold": false,
+          "name": "Google Shape;642;p33"
+        },
+        {
+          "x": 5.629,
+          "y": 1.295,
+          "w": 2.158,
+          "h": 3.568,
+          "kind": "picture",
+          "bold": false,
+          "name": "Google Shape;645;p33"
+        },
+        {
+          "x": 7.842,
+          "y": 1.295,
+          "w": 2.158,
+          "h": 3.568,
+          "kind": "picture",
+          "bold": false,
+          "name": "Google Shape;648;p33"
+        }
+      ],
+      "description": {
+        "looksLike": "A team presentation slide with a left-hand text introduction and three side-by-side portrait photos displaying member roles and names overlaid at the bottom.",
+        "title": "Team",
+        "layout": "title-and-two-columns",
+        "background": {
+          "scope": "slide",
+          "kind": "solid"
+        },
+        "contentPlacement": "Section title and introductory text occupy the left column; three vertical team portrait cards are arranged horizontally across the remaining width with overlaid white role and name text.",
+        "images": [
+          {
+            "kind": "picture",
+            "what": "photograph",
+            "x": 3.416,
+            "y": 1.295,
+            "w": 2.163,
+            "h": 3.568
+          },
+          {
+            "kind": "picture",
+            "what": "photograph",
+            "x": 5.629,
+            "y": 1.295,
+            "w": 2.158,
+            "h": 3.568
+          },
+          {
+            "kind": "picture",
+            "what": "photograph",
+            "x": 7.842,
+            "y": 1.295,
+            "w": 2.158,
+            "h": 3.568
+          }
+        ],
+        "boxes": [
+          {
+            "role": "body",
+            "text": "",
+            "x": 0.797,
+            "y": 1.442,
+            "w": 2.414,
+            "h": 0.612
+          },
+          {
+            "role": "body",
+            "text": "",
+            "x": 0.789,
+            "y": 2.149,
+            "w": 2.414,
+            "h": 2.407
+          },
+          {
+            "role": "body",
+            "text": "",
+            "x": 3.503,
+            "y": 4.136,
+            "w": 1.663,
+            "h": 0.179
+          },
+          {
+            "role": "body",
+            "text": "",
+            "x": 3.503,
+            "y": 4.332,
+            "w": 1.663,
+            "h": 0.445
+          },
+          {
+            "role": "body",
+            "text": "",
+            "x": 5.72,
+            "y": 4.136,
+            "w": 1.663,
+            "h": 0.179
+          },
+          {
+            "role": "body",
+            "text": "",
+            "x": 5.72,
+            "y": 4.332,
+            "w": 1.663,
+            "h": 0.445
+          },
+          {
+            "role": "body",
+            "text": "",
+            "x": 7.932,
+            "y": 4.136,
+            "w": 1.663,
+            "h": 0.179
+          },
+          {
+            "role": "body",
+            "text": "",
+            "x": 7.932,
+            "y": 4.332,
+            "w": 1.663,
+            "h": 0.445
+          }
+        ]
+      },
+      "gcsUri": "gs://alltheway-rinegan-slide-designs-prod/catalog/consulting-proposal/slide-16.png"
+    },
+    "slide-17": {
+      "index": 16,
+      "prev": "slide-16",
+      "next": "slide-18",
+      "image": "consulting-proposal/slide-17.png",
+      "coordinates": [
+        {
+          "x": 0.789,
+          "y": 1.518,
+          "w": 3.676,
+          "h": 0.259,
+          "kind": "text",
+          "text": "CEO",
+          "fontSize": 8,
+          "bold": false,
+          "placeholder": "subTitle",
+          "name": "Google Shape;655;p34"
+        },
+        {
+          "x": 0.789,
+          "y": 1.813,
+          "w": 3.61,
+          "h": 0.565,
+          "kind": "text",
+          "text": "Berry Books",
+          "bold": false,
+          "placeholder": "title",
+          "name": "Google Shape;656;p34"
+        },
+        {
+          "x": 0.789,
+          "y": 2.503,
+          "w": 3.61,
+          "h": 1.168,
+          "kind": "text",
+          "text": "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt labore dolore magna aliqua. Lorem ipsum dolor sit amet, consectetur adipiscing elit.",
+          "fontSize": 11,
+          "bold": false,
+          "placeholder": "body",
+          "name": "Google Shape;657;p34"
+        },
+        {
+          "x": 0.823,
+          "y": 3.768,
+          "w": 0.73,
+          "h": 0.259,
+          "kind": "text",
+          "text": "Skill A",
+          "fontSize": 7,
+          "color": "000000",
+          "bold": true,
+          "name": "Google Shape;658;p34"
+        },
+        {
+          "x": 3.813,
+          "y": 3.768,
+          "w": 0.73,
+          "h": 0.259,
+          "kind": "text",
+          "text": "90%",
+          "fontSize": 7,
+          "color": "000000",
+          "bold": true,
+          "name": "Google Shape;659;p34"
+        },
+        {
+          "x": 0.823,
+          "y": 4.004,
+          "w": 0.73,
+          "h": 0.259,
+          "kind": "text",
+          "text": "Skill B",
+          "fontSize": 7,
+          "color": "000000",
+          "bold": true,
+          "name": "Google Shape;660;p34"
+        },
+        {
+          "x": 3.813,
+          "y": 4.004,
+          "w": 0.73,
+          "h": 0.259,
+          "kind": "text",
+          "text": "85%",
+          "fontSize": 7,
+          "color": "000000",
+          "bold": true,
+          "name": "Google Shape;661;p34"
+        },
+        {
+          "x": 0.823,
+          "y": 4.24,
+          "w": 0.73,
+          "h": 0.259,
+          "kind": "text",
+          "text": "Skill C",
+          "fontSize": 7,
+          "color": "000000",
+          "bold": true,
+          "name": "Google Shape;662;p34"
+        },
+        {
+          "x": 3.813,
+          "y": 4.24,
+          "w": 0.73,
+          "h": 0.259,
+          "kind": "text",
+          "text": "83%",
+          "fontSize": 7,
+          "color": "000000",
+          "bold": true,
+          "name": "Google Shape;663;p34"
+        },
+        {
+          "x": 0.823,
+          "y": 4.476,
+          "w": 0.73,
+          "h": 0.259,
+          "kind": "text",
+          "text": "Skill D",
+          "fontSize": 7,
+          "color": "000000",
+          "bold": true,
+          "name": "Google Shape;664;p34"
+        },
+        {
+          "x": 3.813,
+          "y": 4.476,
+          "w": 0.73,
+          "h": 0.259,
+          "kind": "text",
+          "text": "65%",
+          "fontSize": 7,
+          "color": "000000",
+          "bold": true,
+          "name": "Google Shape;665;p34"
+        },
+        {
+          "x": 1.849,
+          "y": 3.665,
+          "w": 1.994,
+          "h": 0.09,
+          "kind": "shape",
+          "bold": false,
+          "name": "Google Shape;667;p34"
+        },
+        {
+          "x": 1.849,
+          "y": 3.665,
+          "w": 1.882,
+          "h": 0.09,
+          "kind": "shape",
+          "bold": false,
+          "name": "Google Shape;668;p34"
+        },
+        {
+          "x": 1.849,
+          "y": 3.907,
+          "w": 1.994,
+          "h": 0.09,
+          "kind": "shape",
+          "bold": false,
+          "name": "Google Shape;670;p34"
+        },
+        {
+          "x": 1.849,
+          "y": 3.907,
+          "w": 1.634,
+          "h": 0.09,
+          "kind": "shape",
+          "bold": false,
+          "name": "Google Shape;671;p34"
+        },
+        {
+          "x": 1.849,
+          "y": 4.12,
+          "w": 1.994,
+          "h": 0.09,
+          "kind": "shape",
+          "bold": false,
+          "name": "Google Shape;673;p34"
+        },
+        {
+          "x": 1.849,
+          "y": 4.12,
+          "w": 1.532,
+          "h": 0.09,
+          "kind": "shape",
+          "bold": false,
+          "name": "Google Shape;674;p34"
+        },
+        {
+          "x": 1.849,
+          "y": 4.355,
+          "w": 1.994,
+          "h": 0.09,
+          "kind": "shape",
+          "bold": false,
+          "name": "Google Shape;676;p34"
+        },
+        {
+          "x": 1.849,
+          "y": 4.355,
+          "w": 1.139,
+          "h": 0.09,
+          "kind": "shape",
+          "bold": false,
+          "name": "Google Shape;677;p34"
+        },
+        {
+          "x": 5.629,
+          "y": 1.295,
+          "w": 4.371,
+          "h": 3.568,
+          "kind": "picture",
+          "bold": false,
+          "name": "Google Shape;678;p34"
+        }
+      ],
+      "description": {
+        "looksLike": "A team profile slide featuring a person's role, name, biographical paragraph, and horizontal skill progress bars on the left, alongside a large portrait photograph filling the right half.",
+        "title": "Berry Books",
+        "layout": "title-and-two-columns",
+        "background": {
+          "scope": "deck",
+          "kind": "solid"
+        },
+        "contentPlacement": "The left side hosts the job title, name, bio text, and four horizontal skill rating bars, while the right side displays a prominent portrait photograph.",
+        "images": [
+          {
+            "kind": "picture",
+            "what": "photograph",
+            "x": 5.629,
+            "y": 1.295,
+            "w": 4.371,
+            "h": 3.568
+          }
+        ],
+        "boxes": [
+          {
+            "role": "body",
+            "text": "",
+            "x": 0.789,
+            "y": 1.518,
+            "w": 3.676,
+            "h": 0.259
+          },
+          {
+            "role": "body",
+            "text": "",
+            "x": 0.789,
+            "y": 1.813,
+            "w": 3.61,
+            "h": 0.565
+          },
+          {
+            "role": "body",
+            "text": "",
+            "x": 0.789,
+            "y": 2.503,
+            "w": 3.61,
+            "h": 1.168
+          },
+          {
+            "role": "body",
+            "text": "",
+            "x": 0.823,
+            "y": 3.768,
+            "w": 0.73,
+            "h": 0.259
+          },
+          {
+            "role": "body",
+            "text": "",
+            "x": 3.813,
+            "y": 3.768,
+            "w": 0.73,
+            "h": 0.259
+          },
+          {
+            "role": "body",
+            "text": "",
+            "x": 0.823,
+            "y": 4.004,
+            "w": 0.73,
+            "h": 0.259
+          },
+          {
+            "role": "body",
+            "text": "",
+            "x": 3.813,
+            "y": 4.004,
+            "w": 0.73,
+            "h": 0.259
+          },
+          {
+            "role": "body",
+            "text": "",
+            "x": 0.823,
+            "y": 4.24,
+            "w": 0.73,
+            "h": 0.259
+          },
+          {
+            "role": "body",
+            "text": "",
+            "x": 3.813,
+            "y": 4.24,
+            "w": 0.73,
+            "h": 0.259
+          },
+          {
+            "role": "body",
+            "text": "",
+            "x": 0.823,
+            "y": 4.476,
+            "w": 0.73,
+            "h": 0.259
+          },
+          {
+            "role": "body",
+            "text": "",
+            "x": 3.813,
+            "y": 4.476,
+            "w": 0.73,
+            "h": 0.259
+          },
+          {
+            "role": "body",
+            "text": "",
+            "x": 1.849,
+            "y": 3.665,
+            "w": 1.994,
+            "h": 0.09
+          },
+          {
+            "role": "body",
+            "text": "",
+            "x": 1.849,
+            "y": 3.665,
+            "w": 1.882,
+            "h": 0.09
+          },
+          {
+            "role": "body",
+            "text": "",
+            "x": 1.849,
+            "y": 3.907,
+            "w": 1.994,
+            "h": 0.09
+          },
+          {
+            "role": "body",
+            "text": "",
+            "x": 1.849,
+            "y": 3.907,
+            "w": 1.634,
+            "h": 0.09
+          },
+          {
+            "role": "body",
+            "text": "",
+            "x": 1.849,
+            "y": 4.12,
+            "w": 1.994,
+            "h": 0.09
+          },
+          {
+            "role": "body",
+            "text": "",
+            "x": 1.849,
+            "y": 4.12,
+            "w": 1.532,
+            "h": 0.09
+          },
+          {
+            "role": "body",
+            "text": "",
+            "x": 1.849,
+            "y": 4.355,
+            "w": 1.994,
+            "h": 0.09
+          },
+          {
+            "role": "body",
+            "text": "",
+            "x": 1.849,
+            "y": 4.355,
+            "w": 1.139,
+            "h": 0.09
+          }
+        ]
+      },
+      "gcsUri": "gs://alltheway-rinegan-slide-designs-prod/catalog/consulting-proposal/slide-17.png"
+    },
+    "slide-18": {
+      "index": 17,
+      "prev": "slide-17",
+      "next": "slide-19",
+      "image": "consulting-proposal/slide-18.png",
+      "coordinates": [
+        {
+          "x": 0.789,
+          "y": 1.518,
+          "w": 3.676,
+          "h": 0.259,
+          "kind": "text",
+          "text": "CFO",
+          "fontSize": 8,
+          "bold": false,
+          "placeholder": "subTitle",
+          "name": "Google Shape;683;p35"
+        },
+        {
+          "x": 0.789,
+          "y": 1.813,
+          "w": 3.61,
+          "h": 0.565,
+          "kind": "text",
+          "text": "Vinny Viewer",
+          "bold": false,
+          "placeholder": "title",
+          "name": "Google Shape;684;p35"
+        },
+        {
+          "x": 0.789,
+          "y": 2.503,
+          "w": 3.61,
+          "h": 1.168,
+          "kind": "text",
+          "text": "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt labore dolore magna aliqua. Lorem ipsum dolor sit amet, consectetur adipiscing elit.",
+          "fontSize": 11,
+          "bold": false,
+          "placeholder": "body",
+          "name": "Google Shape;685;p35"
+        },
+        {
+          "x": 0.823,
+          "y": 3.768,
+          "w": 0.73,
+          "h": 0.259,
+          "kind": "text",
+          "text": "Skill A",
+          "fontSize": 7,
+          "color": "000000",
+          "bold": true,
+          "name": "Google Shape;686;p35"
+        },
+        {
+          "x": 3.813,
+          "y": 3.768,
+          "w": 0.73,
+          "h": 0.259,
+          "kind": "text",
+          "text": "90%",
+          "fontSize": 7,
+          "color": "000000",
+          "bold": true,
+          "name": "Google Shape;687;p35"
+        },
+        {
+          "x": 0.823,
+          "y": 4.004,
+          "w": 0.73,
+          "h": 0.259,
+          "kind": "text",
+          "text": "Skill B",
+          "fontSize": 7,
+          "color": "000000",
+          "bold": true,
+          "name": "Google Shape;688;p35"
+        },
+        {
+          "x": 3.813,
+          "y": 4.004,
+          "w": 0.73,
+          "h": 0.259,
+          "kind": "text",
+          "text": "85%",
+          "fontSize": 7,
+          "color": "000000",
+          "bold": true,
+          "name": "Google Shape;689;p35"
+        },
+        {
+          "x": 0.823,
+          "y": 4.24,
+          "w": 0.73,
+          "h": 0.259,
+          "kind": "text",
+          "text": "Skill C",
+          "fontSize": 7,
+          "color": "000000",
+          "bold": true,
+          "name": "Google Shape;690;p35"
+        },
+        {
+          "x": 3.813,
+          "y": 4.24,
+          "w": 0.73,
+          "h": 0.259,
+          "kind": "text",
+          "text": "83%",
+          "fontSize": 7,
+          "color": "000000",
+          "bold": true,
+          "name": "Google Shape;691;p35"
+        },
+        {
+          "x": 0.823,
+          "y": 4.476,
+          "w": 0.73,
+          "h": 0.259,
+          "kind": "text",
+          "text": "Skill D",
+          "fontSize": 7,
+          "color": "000000",
+          "bold": true,
+          "name": "Google Shape;692;p35"
+        },
+        {
+          "x": 3.813,
+          "y": 4.476,
+          "w": 0.73,
+          "h": 0.259,
+          "kind": "text",
+          "text": "65%",
+          "fontSize": 7,
+          "color": "000000",
+          "bold": true,
+          "name": "Google Shape;693;p35"
+        },
+        {
+          "x": 1.849,
+          "y": 3.665,
+          "w": 1.994,
+          "h": 0.09,
+          "kind": "shape",
+          "bold": false,
+          "name": "Google Shape;695;p35"
+        },
+        {
+          "x": 1.849,
+          "y": 3.665,
+          "w": 1.882,
+          "h": 0.09,
+          "kind": "shape",
+          "bold": false,
+          "name": "Google Shape;696;p35"
+        },
+        {
+          "x": 1.849,
+          "y": 3.907,
+          "w": 1.994,
+          "h": 0.09,
+          "kind": "shape",
+          "bold": false,
+          "name": "Google Shape;698;p35"
+        },
+        {
+          "x": 1.849,
+          "y": 3.907,
+          "w": 1.634,
+          "h": 0.09,
+          "kind": "shape",
+          "bold": false,
+          "name": "Google Shape;699;p35"
+        },
+        {
+          "x": 1.849,
+          "y": 4.12,
+          "w": 1.994,
+          "h": 0.09,
+          "kind": "shape",
+          "bold": false,
+          "name": "Google Shape;701;p35"
+        },
+        {
+          "x": 1.849,
+          "y": 4.12,
+          "w": 1.532,
+          "h": 0.09,
+          "kind": "shape",
+          "bold": false,
+          "name": "Google Shape;702;p35"
+        },
+        {
+          "x": 1.849,
+          "y": 4.355,
+          "w": 1.994,
+          "h": 0.09,
+          "kind": "shape",
+          "bold": false,
+          "name": "Google Shape;704;p35"
+        },
+        {
+          "x": 1.849,
+          "y": 4.355,
+          "w": 1.139,
+          "h": 0.09,
+          "kind": "shape",
+          "bold": false,
+          "name": "Google Shape;705;p35"
+        },
+        {
+          "x": 5.629,
+          "y": 1.295,
+          "w": 4.371,
+          "h": 3.568,
+          "kind": "picture",
+          "bold": false,
+          "name": "Google Shape;706;p35"
+        }
+      ],
+      "description": {
+        "looksLike": "Executive profile or persona slide featuring a job title, name heading, biographical summary, and skill proficiency bars on the left side alongside a photographic portrait on the right.",
+        "title": "Vinny Viewer",
+        "layout": "title-and-two-columns",
+        "background": {
+          "scope": "deck",
+          "kind": "solid"
+        },
+        "contentPlacement": "Role label, candidate name, and descriptive bio sit on the left above four horizontal skill progress bars, balanced by a large portrait photograph filling the right side.",
+        "images": [
+          {
+            "kind": "picture",
+            "what": "photograph",
+            "x": 5.629,
+            "y": 1.295,
+            "w": 4.371,
+            "h": 3.568
+          }
+        ],
+        "boxes": [
+          {
+            "role": "body",
+            "text": "",
+            "x": 0.789,
+            "y": 1.518,
+            "w": 3.676,
+            "h": 0.259
+          },
+          {
+            "role": "body",
+            "text": "",
+            "x": 0.789,
+            "y": 1.813,
+            "w": 3.61,
+            "h": 0.565
+          },
+          {
+            "role": "body",
+            "text": "",
+            "x": 0.789,
+            "y": 2.503,
+            "w": 3.61,
+            "h": 1.168
+          },
+          {
+            "role": "body",
+            "text": "",
+            "x": 0.823,
+            "y": 3.768,
+            "w": 0.73,
+            "h": 0.259
+          },
+          {
+            "role": "body",
+            "text": "",
+            "x": 3.813,
+            "y": 3.768,
+            "w": 0.73,
+            "h": 0.259
+          },
+          {
+            "role": "body",
+            "text": "",
+            "x": 0.823,
+            "y": 4.004,
+            "w": 0.73,
+            "h": 0.259
+          },
+          {
+            "role": "body",
+            "text": "",
+            "x": 3.813,
+            "y": 4.004,
+            "w": 0.73,
+            "h": 0.259
+          },
+          {
+            "role": "body",
+            "text": "",
+            "x": 0.823,
+            "y": 4.24,
+            "w": 0.73,
+            "h": 0.259
+          },
+          {
+            "role": "body",
+            "text": "",
+            "x": 3.813,
+            "y": 4.24,
+            "w": 0.73,
+            "h": 0.259
+          },
+          {
+            "role": "body",
+            "text": "",
+            "x": 0.823,
+            "y": 4.476,
+            "w": 0.73,
+            "h": 0.259
+          },
+          {
+            "role": "body",
+            "text": "",
+            "x": 3.813,
+            "y": 4.476,
+            "w": 0.73,
+            "h": 0.259
+          },
+          {
+            "role": "body",
+            "text": "",
+            "x": 1.849,
+            "y": 3.665,
+            "w": 1.994,
+            "h": 0.09
+          },
+          {
+            "role": "body",
+            "text": "",
+            "x": 1.849,
+            "y": 3.665,
+            "w": 1.882,
+            "h": 0.09
+          },
+          {
+            "role": "body",
+            "text": "",
+            "x": 1.849,
+            "y": 3.907,
+            "w": 1.994,
+            "h": 0.09
+          },
+          {
+            "role": "body",
+            "text": "",
+            "x": 1.849,
+            "y": 3.907,
+            "w": 1.634,
+            "h": 0.09
+          },
+          {
+            "role": "body",
+            "text": "",
+            "x": 1.849,
+            "y": 4.12,
+            "w": 1.994,
+            "h": 0.09
+          },
+          {
+            "role": "body",
+            "text": "",
+            "x": 1.849,
+            "y": 4.12,
+            "w": 1.532,
+            "h": 0.09
+          },
+          {
+            "role": "body",
+            "text": "",
+            "x": 1.849,
+            "y": 4.355,
+            "w": 1.994,
+            "h": 0.09
+          },
+          {
+            "role": "body",
+            "text": "",
+            "x": 1.849,
+            "y": 4.355,
+            "w": 1.139,
+            "h": 0.09
+          }
+        ]
+      },
+      "gcsUri": "gs://alltheway-rinegan-slide-designs-prod/catalog/consulting-proposal/slide-18.png"
+    },
+    "slide-19": {
+      "index": 18,
+      "prev": "slide-18",
+      "next": "slide-20",
+      "image": "consulting-proposal/slide-19.png",
+      "coordinates": [
+        {
+          "x": 0.789,
+          "y": 1.518,
+          "w": 3.676,
+          "h": 0.259,
+          "kind": "text",
+          "text": "Sales Director",
+          "fontSize": 8,
+          "bold": false,
+          "placeholder": "subTitle",
+          "name": "Google Shape;711;p36"
+        },
+        {
+          "x": 0.789,
+          "y": 1.813,
+          "w": 3.61,
+          "h": 0.565,
+          "kind": "text",
+          "text": "Wendy Writers",
+          "bold": false,
+          "placeholder": "title",
+          "name": "Google Shape;712;p36"
+        },
+        {
+          "x": 0.789,
+          "y": 2.503,
+          "w": 3.61,
+          "h": 1.168,
+          "kind": "text",
+          "text": "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt labore dolore magna aliqua. Lorem ipsum dolor sit amet, consectetur adipiscing elit.",
+          "fontSize": 11,
+          "bold": false,
+          "placeholder": "body",
+          "name": "Google Shape;713;p36"
+        },
+        {
+          "x": 0.823,
+          "y": 3.768,
+          "w": 0.73,
+          "h": 0.259,
+          "kind": "text",
+          "text": "Skill A",
+          "fontSize": 7,
+          "color": "000000",
+          "bold": true,
+          "name": "Google Shape;714;p36"
+        },
+        {
+          "x": 3.813,
+          "y": 3.768,
+          "w": 0.73,
+          "h": 0.259,
+          "kind": "text",
+          "text": "90%",
+          "fontSize": 7,
+          "color": "000000",
+          "bold": true,
+          "name": "Google Shape;715;p36"
+        },
+        {
+          "x": 0.823,
+          "y": 4.004,
+          "w": 0.73,
+          "h": 0.259,
+          "kind": "text",
+          "text": "Skill B",
+          "fontSize": 7,
+          "color": "000000",
+          "bold": true,
+          "name": "Google Shape;716;p36"
+        },
+        {
+          "x": 3.813,
+          "y": 4.004,
+          "w": 0.73,
+          "h": 0.259,
+          "kind": "text",
+          "text": "85%",
+          "fontSize": 7,
+          "color": "000000",
+          "bold": true,
+          "name": "Google Shape;717;p36"
+        },
+        {
+          "x": 0.823,
+          "y": 4.24,
+          "w": 0.73,
+          "h": 0.259,
+          "kind": "text",
+          "text": "Skill C",
+          "fontSize": 7,
+          "color": "000000",
+          "bold": true,
+          "name": "Google Shape;718;p36"
+        },
+        {
+          "x": 3.813,
+          "y": 4.24,
+          "w": 0.73,
+          "h": 0.259,
+          "kind": "text",
+          "text": "83%",
+          "fontSize": 7,
+          "color": "000000",
+          "bold": true,
+          "name": "Google Shape;719;p36"
+        },
+        {
+          "x": 0.823,
+          "y": 4.476,
+          "w": 0.73,
+          "h": 0.259,
+          "kind": "text",
+          "text": "Skill D",
+          "fontSize": 7,
+          "color": "000000",
+          "bold": true,
+          "name": "Google Shape;720;p36"
+        },
+        {
+          "x": 3.813,
+          "y": 4.476,
+          "w": 0.73,
+          "h": 0.259,
+          "kind": "text",
+          "text": "65%",
+          "fontSize": 7,
+          "color": "000000",
+          "bold": true,
+          "name": "Google Shape;721;p36"
+        },
+        {
+          "x": 1.849,
+          "y": 3.665,
+          "w": 1.994,
+          "h": 0.09,
+          "kind": "shape",
+          "bold": false,
+          "name": "Google Shape;723;p36"
+        },
+        {
+          "x": 1.849,
+          "y": 3.665,
+          "w": 1.882,
+          "h": 0.09,
+          "kind": "shape",
+          "bold": false,
+          "name": "Google Shape;724;p36"
+        },
+        {
+          "x": 1.849,
+          "y": 3.907,
+          "w": 1.994,
+          "h": 0.09,
+          "kind": "shape",
+          "bold": false,
+          "name": "Google Shape;726;p36"
+        },
+        {
+          "x": 1.849,
+          "y": 3.907,
+          "w": 1.634,
+          "h": 0.09,
+          "kind": "shape",
+          "bold": false,
+          "name": "Google Shape;727;p36"
+        },
+        {
+          "x": 1.849,
+          "y": 4.12,
+          "w": 1.994,
+          "h": 0.09,
+          "kind": "shape",
+          "bold": false,
+          "name": "Google Shape;729;p36"
+        },
+        {
+          "x": 1.849,
+          "y": 4.12,
+          "w": 1.532,
+          "h": 0.09,
+          "kind": "shape",
+          "bold": false,
+          "name": "Google Shape;730;p36"
+        },
+        {
+          "x": 1.849,
+          "y": 4.355,
+          "w": 1.994,
+          "h": 0.09,
+          "kind": "shape",
+          "bold": false,
+          "name": "Google Shape;732;p36"
+        },
+        {
+          "x": 1.849,
+          "y": 4.355,
+          "w": 1.139,
+          "h": 0.09,
+          "kind": "shape",
+          "bold": false,
+          "name": "Google Shape;733;p36"
+        },
+        {
+          "x": 5.629,
+          "y": 1.295,
+          "w": 4.371,
+          "h": 3.568,
+          "kind": "picture",
+          "bold": false,
+          "name": "Google Shape;734;p36"
+        }
+      ],
+      "description": {
+        "looksLike": "A team profile slide featuring a professional portrait on the right half paired with a role, candidate name, brief bio, and skill proficiency bars on the left.",
+        "title": "Wendy Writers",
+        "layout": "title-and-two-columns",
+        "background": {
+          "scope": "deck",
+          "kind": "solid"
+        },
+        "contentPlacement": "Left side holds the job title, person's name, biography summary, and four horizontal skill progress bars; right side displays a prominent portrait photo.",
+        "images": [
+          {
+            "kind": "picture",
+            "what": "photograph",
+            "x": 5.629,
+            "y": 1.295,
+            "w": 4.371,
+            "h": 3.568
+          }
+        ],
+        "boxes": [
+          {
+            "role": "body",
+            "text": "",
+            "x": 0.789,
+            "y": 1.518,
+            "w": 3.676,
+            "h": 0.259
+          },
+          {
+            "role": "body",
+            "text": "",
+            "x": 0.789,
+            "y": 1.813,
+            "w": 3.61,
+            "h": 0.565
+          },
+          {
+            "role": "body",
+            "text": "",
+            "x": 0.789,
+            "y": 2.503,
+            "w": 3.61,
+            "h": 1.168
+          },
+          {
+            "role": "body",
+            "text": "",
+            "x": 0.823,
+            "y": 3.768,
+            "w": 0.73,
+            "h": 0.259
+          },
+          {
+            "role": "body",
+            "text": "",
+            "x": 3.813,
+            "y": 3.768,
+            "w": 0.73,
+            "h": 0.259
+          },
+          {
+            "role": "body",
+            "text": "",
+            "x": 0.823,
+            "y": 4.004,
+            "w": 0.73,
+            "h": 0.259
+          },
+          {
+            "role": "body",
+            "text": "",
+            "x": 3.813,
+            "y": 4.004,
+            "w": 0.73,
+            "h": 0.259
+          },
+          {
+            "role": "body",
+            "text": "",
+            "x": 0.823,
+            "y": 4.24,
+            "w": 0.73,
+            "h": 0.259
+          },
+          {
+            "role": "body",
+            "text": "",
+            "x": 3.813,
+            "y": 4.24,
+            "w": 0.73,
+            "h": 0.259
+          },
+          {
+            "role": "body",
+            "text": "",
+            "x": 0.823,
+            "y": 4.476,
+            "w": 0.73,
+            "h": 0.259
+          },
+          {
+            "role": "body",
+            "text": "",
+            "x": 3.813,
+            "y": 4.476,
+            "w": 0.73,
+            "h": 0.259
+          },
+          {
+            "role": "body",
+            "text": "",
+            "x": 1.849,
+            "y": 3.665,
+            "w": 1.994,
+            "h": 0.09
+          },
+          {
+            "role": "body",
+            "text": "",
+            "x": 1.849,
+            "y": 3.665,
+            "w": 1.882,
+            "h": 0.09
+          },
+          {
+            "role": "body",
+            "text": "",
+            "x": 1.849,
+            "y": 3.907,
+            "w": 1.994,
+            "h": 0.09
+          },
+          {
+            "role": "body",
+            "text": "",
+            "x": 1.849,
+            "y": 3.907,
+            "w": 1.634,
+            "h": 0.09
+          },
+          {
+            "role": "body",
+            "text": "",
+            "x": 1.849,
+            "y": 4.12,
+            "w": 1.994,
+            "h": 0.09
+          },
+          {
+            "role": "body",
+            "text": "",
+            "x": 1.849,
+            "y": 4.12,
+            "w": 1.532,
+            "h": 0.09
+          },
+          {
+            "role": "body",
+            "text": "",
+            "x": 1.849,
+            "y": 4.355,
+            "w": 1.994,
+            "h": 0.09
+          },
+          {
+            "role": "body",
+            "text": "",
+            "x": 1.849,
+            "y": 4.355,
+            "w": 1.139,
+            "h": 0.09
+          },
+          {
+            "role": "body",
+            "text": "",
+            "x": 5.629,
+            "y": 1.295,
+            "w": 4.371,
+            "h": 3.568
+          }
+        ]
+      },
+      "gcsUri": "gs://alltheway-rinegan-slide-designs-prod/catalog/consulting-proposal/slide-19.png"
+    },
+    "slide-20": {
+      "index": 19,
+      "prev": "slide-19",
+      "next": null,
+      "image": "consulting-proposal/slide-20.png",
+      "coordinates": [
+        {
+          "x": 0,
+          "y": 0.533,
+          "w": 10,
+          "h": 5.092,
+          "kind": "picture",
+          "bold": false,
+          "name": "Google Shape;22;p3"
+        },
+        {
+          "x": 0.798,
+          "y": 1.446,
+          "w": 8.408,
+          "h": 1.821,
+          "kind": "text",
+          "text": "Thank you.",
+          "fontSize": 48,
+          "color": "000000",
+          "bold": false,
+          "placeholder": "ctrTitle",
+          "name": "Google Shape;739;p37"
+        }
+      ],
+      "description": {
+        "looksLike": "A clean closing slide featuring a bold 'Thank you.' title set against an open sky above a scenic snow-covered mountain range photograph.",
+        "title": "Thank you.",
+        "layout": "title-slide",
+        "background": {
+          "scope": "slide",
+          "kind": "solid"
+        },
+        "contentPlacement": "Left-aligned large title text placed in the upper half above a landscape mountain photo spanning the lower half of the slide.",
+        "images": [
+          {
+            "kind": "picture",
+            "what": "photograph",
+            "x": 0,
+            "y": 0.533,
+            "w": 10,
+            "h": 5.092
+          }
+        ],
+        "boxes": [
+          {
+            "role": "body",
+            "text": "",
+            "x": 0.798,
+            "y": 1.446,
+            "w": 8.408,
+            "h": 1.821
+          }
+        ]
+      },
+      "gcsUri": "gs://alltheway-rinegan-slide-designs-prod/catalog/consulting-proposal/slide-20.png"
+    }
+  }
+}

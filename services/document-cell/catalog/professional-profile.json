@@ -1,0 +1,683 @@
+{
+  "id": "professional-profile",
+  "title": "professional profile",
+  "source": "Professional profile.pptx",
+  "width": 10,
+  "height": 5.625,
+  "overall_deck_description": "A clean, modern professional portfolio deck built on a minimalist split-layout design system. The visual palette pairs a crisp white background with a deep royal purple accent block, high-contrast bold black headings, and neutral slate gray body copy. Typography uses heavy, extra-bold sans-serif titles paired with clean, readable regular sans-serif text. Across the deck, slides maintain generous negative space and consistent left-aligned text hierarchies. The sequence opens with a horizontally split title slide featuring identity text above a solid purple block, moves through structured body layouts that balance text blocks against rich photo grids, and closes with an asymmetric vertical split pairing contact information against full-height imagery.",
+  "slides": {
+    "slide-01": {
+      "index": 0,
+      "prev": null,
+      "next": "slide-02",
+      "image": "professional-profile/slide-01.png",
+      "coordinates": [
+        {
+          "x": 0.531,
+          "y": 0.289,
+          "w": 8.95,
+          "h": 1.612,
+          "kind": "text",
+          "text": "Your Name",
+          "bold": false,
+          "placeholder": "ctrTitle",
+          "name": "Google Shape;58;p13"
+        },
+        {
+          "x": 0.531,
+          "y": 1.901,
+          "w": 8.95,
+          "h": 0.942,
+          "kind": "text",
+          "text": "Digital project manager",
+          "bold": false,
+          "placeholder": "subTitle",
+          "name": "Google Shape;59;p13"
+        }
+      ],
+      "description": {
+        "looksLike": "A clean professional title slide featuring left-aligned name and job title across the top half on white, with a bold purple color block filling the bottom half.",
+        "title": "Your Name",
+        "layout": "title-slide",
+        "background": {
+          "scope": "slide",
+          "kind": "solid"
+        },
+        "contentPlacement": "The title and subtitle sit left-aligned in the upper white section, above a large purple horizontal block filling the bottom half of the slide.",
+        "images": [],
+        "boxes": [
+          {
+            "role": "body",
+            "text": "Your Name",
+            "x": 0.531,
+            "y": 0.289,
+            "w": 8.95,
+            "h": 1.612
+          },
+          {
+            "role": "body",
+            "text": "Digital project manager",
+            "x": 0.531,
+            "y": 1.901,
+            "w": 8.95,
+            "h": 0.942
+          }
+        ]
+      },
+      "gcsUri": "gs://alltheway-rinegan-slide-designs-prod/catalog/professional-profile/slide-01.png"
+    },
+    "slide-02": {
+      "index": 1,
+      "prev": "slide-01",
+      "next": "slide-03",
+      "image": "professional-profile/slide-02.png",
+      "coordinates": [
+        {
+          "x": 0.341,
+          "y": 0.487,
+          "w": 9.318,
+          "h": 0.682,
+          "kind": "text",
+          "text": "Hi, I’m Your Name",
+          "bold": false,
+          "placeholder": "title",
+          "name": "Google Shape;64;p14"
+        },
+        {
+          "x": 0.341,
+          "y": 1.26,
+          "w": 9.318,
+          "h": 3.736,
+          "kind": "text",
+          "text": "I’m passionate about building great products that make people’s lives easier. I have over 10 years strategizing innovative digital experiences for small startups to the world’s biggest brands.\nI grew up in Anytown, am an avid kayaker, and am excited to partner with you!",
+          "bold": false,
+          "placeholder": "body",
+          "name": "Google Shape;65;p14"
+        }
+      ],
+      "description": {
+        "looksLike": "Minimalist introduction slide featuring a bold title and two brief bio paragraphs against a plain white background.",
+        "title": "Hi, I’m Your Name",
+        "layout": "title-and-body",
+        "background": {
+          "scope": "deck",
+          "kind": "solid"
+        },
+        "contentPlacement": "Left-aligned title at the upper left with body text directly beneath it spanning the slide width.",
+        "images": [],
+        "boxes": [
+          {
+            "role": "body",
+            "text": "Hi, I’m Your Name",
+            "x": 0.341,
+            "y": 0.487,
+            "w": 9.318,
+            "h": 0.682
+          },
+          {
+            "role": "body",
+            "text": "I’m passionate about building great products that make people’s lives easier. I have over 10 years strategizing innovative digital experiences for small startups to the world’s biggest brands.\nI grew up in Anytown, am an avid kayaker, and am excited to partner with you!",
+            "x": 0.341,
+            "y": 1.26,
+            "w": 9.318,
+            "h": 3.736
+          }
+        ]
+      },
+      "gcsUri": "gs://alltheway-rinegan-slide-designs-prod/catalog/professional-profile/slide-02.png"
+    },
+    "slide-03": {
+      "index": 2,
+      "prev": "slide-02",
+      "next": "slide-04",
+      "image": "professional-profile/slide-03.png",
+      "coordinates": [
+        {
+          "x": 0.29,
+          "y": 1.836,
+          "w": 4.424,
+          "h": 1.953,
+          "kind": "text",
+          "text": "Skills & expertise",
+          "bold": false,
+          "placeholder": "title",
+          "name": "Google Shape;70;p15"
+        },
+        {
+          "x": 5.402,
+          "y": 0.792,
+          "w": 4.196,
+          "h": 4.041,
+          "kind": "text",
+          "text": "Project scheduling\nSoftware development\nQA\nRequirements analysis\nBudgeting",
+          "fontSize": 21,
+          "bold": false,
+          "placeholder": "body",
+          "name": "Google Shape;71;p15"
+        }
+      ],
+      "description": {
+        "looksLike": "Split two-tone slide with a bold title on the white left half and a white bulleted list over a solid purple right half.",
+        "title": "Skills & expertise",
+        "layout": "title-and-body",
+        "background": {
+          "scope": "slide",
+          "kind": "solid"
+        },
+        "contentPlacement": "The slide is divided into two vertical sections: the left side contains the large heading on a white field, while the right side displays a bulleted list of skills against a dark purple background panel.",
+        "images": [],
+        "boxes": [
+          {
+            "role": "body",
+            "text": "Skills & expertise",
+            "x": 0.29,
+            "y": 1.836,
+            "w": 4.424,
+            "h": 1.953
+          },
+          {
+            "role": "body",
+            "text": "Project scheduling\nSoftware development\nQA\nRequirements analysis\nBudgeting",
+            "x": 5.402,
+            "y": 0.792,
+            "w": 4.196,
+            "h": 4.041,
+            "fontSize": 21
+          }
+        ]
+      },
+      "gcsUri": "gs://alltheway-rinegan-slide-designs-prod/catalog/professional-profile/slide-03.png"
+    },
+    "slide-04": {
+      "index": 3,
+      "prev": "slide-03",
+      "next": "slide-05",
+      "image": "professional-profile/slide-04.png",
+      "coordinates": [
+        {
+          "x": 0.341,
+          "y": 0.487,
+          "w": 9.318,
+          "h": 0.682,
+          "kind": "text",
+          "text": "Employment history",
+          "bold": false,
+          "placeholder": "title",
+          "name": "Google Shape;76;p16"
+        },
+        {
+          "x": 0.709,
+          "y": 3.028,
+          "w": 0.215,
+          "h": 0.214,
+          "kind": "shape",
+          "bold": false,
+          "name": "Google Shape;79;p16"
+        },
+        {
+          "x": 0.901,
+          "y": 1.422,
+          "w": 2.911,
+          "h": 1.063,
+          "kind": "text",
+          "text": "Engineering Intern\nCompany Name, Location\nJanuary 20XX - May 20XX",
+          "fontSize": 14,
+          "bold": true,
+          "placeholder": "body",
+          "name": "Google Shape;81;p16"
+        },
+        {
+          "x": 2.748,
+          "y": 3.028,
+          "w": 0.215,
+          "h": 0.214,
+          "kind": "shape",
+          "bold": false,
+          "name": "Google Shape;84;p16"
+        },
+        {
+          "x": 2.945,
+          "y": 4.216,
+          "w": 2.911,
+          "h": 1.063,
+          "kind": "text",
+          "text": "Software engineer\nCompany Name, Location\nMay 20XX - August 20XX",
+          "fontSize": 14,
+          "bold": true,
+          "placeholder": "body",
+          "name": "Google Shape;85;p16"
+        },
+        {
+          "x": 4.68,
+          "y": 3.028,
+          "w": 0.215,
+          "h": 0.214,
+          "kind": "shape",
+          "bold": false,
+          "name": "Google Shape;88;p16"
+        },
+        {
+          "x": 4.871,
+          "y": 1.422,
+          "w": 2.911,
+          "h": 1.063,
+          "kind": "text",
+          "text": "Project manager\nCompany Name, Location\nSeptember 20XX - August 20XX",
+          "fontSize": 14,
+          "bold": true,
+          "placeholder": "body",
+          "name": "Google Shape;89;p16"
+        },
+        {
+          "x": 6.611,
+          "y": 3.028,
+          "w": 0.215,
+          "h": 0.214,
+          "kind": "shape",
+          "bold": false,
+          "name": "Google Shape;92;p16"
+        },
+        {
+          "x": 6.809,
+          "y": 4.216,
+          "w": 2.911,
+          "h": 1.063,
+          "kind": "text",
+          "text": "Sr. Project Manager\nCompany Name, Location\nSeptember 20XX - Present",
+          "fontSize": 14,
+          "bold": true,
+          "placeholder": "body",
+          "name": "Google Shape;93;p16"
+        }
+      ],
+      "description": {
+        "looksLike": "A minimalist horizontal timeline slide displaying four chronological career milestones alternating above and below a dotted center line.",
+        "title": "Employment history",
+        "layout": "title-and-two-columns",
+        "background": {
+          "scope": "slide",
+          "kind": "solid"
+        },
+        "contentPlacement": "Top-aligned header on the left with a four-point alternating milestone timeline spanning horizontally across the slide.",
+        "images": [],
+        "boxes": [
+          {
+            "role": "body",
+            "text": "Employment history",
+            "x": 0.341,
+            "y": 0.487,
+            "w": 9.318,
+            "h": 0.682
+          },
+          {
+            "role": "body",
+            "text": "",
+            "x": 0.709,
+            "y": 3.028,
+            "w": 0.215,
+            "h": 0.214
+          },
+          {
+            "role": "body",
+            "text": "Engineering Intern\nCompany Name, Location\nJanuary 20XX - May 20XX",
+            "x": 0.901,
+            "y": 1.422,
+            "w": 2.911,
+            "h": 1.063,
+            "fontSize": 14
+          },
+          {
+            "role": "body",
+            "text": "",
+            "x": 2.748,
+            "y": 3.028,
+            "w": 0.215,
+            "h": 0.214
+          },
+          {
+            "role": "body",
+            "text": "Software engineer\nCompany Name, Location\nMay 20XX - August 20XX",
+            "x": 2.945,
+            "y": 4.216,
+            "w": 2.911,
+            "h": 1.063,
+            "fontSize": 14
+          },
+          {
+            "role": "body",
+            "text": "",
+            "x": 4.68,
+            "y": 3.028,
+            "w": 0.215,
+            "h": 0.214
+          },
+          {
+            "role": "body",
+            "text": "Project manager\nCompany Name, Location\nSeptember 20XX - August 20XX",
+            "x": 4.871,
+            "y": 1.422,
+            "w": 2.911,
+            "h": 1.063,
+            "fontSize": 14
+          },
+          {
+            "role": "body",
+            "text": "",
+            "x": 6.611,
+            "y": 3.028,
+            "w": 0.215,
+            "h": 0.214
+          },
+          {
+            "role": "body",
+            "text": "Sr. Project Manager\nCompany Name, Location\nSeptember 20XX - Present",
+            "x": 6.809,
+            "y": 4.216,
+            "w": 2.911,
+            "h": 1.063,
+            "fontSize": 14
+          }
+        ]
+      },
+      "gcsUri": "gs://alltheway-rinegan-slide-designs-prod/catalog/professional-profile/slide-04.png"
+    },
+    "slide-05": {
+      "index": 4,
+      "prev": "slide-04",
+      "next": "slide-06",
+      "image": "professional-profile/slide-05.png",
+      "coordinates": [
+        {
+          "x": 0.341,
+          "y": 0.608,
+          "w": 3.071,
+          "h": 0.826,
+          "kind": "text",
+          "text": "Sample project",
+          "bold": false,
+          "placeholder": "title",
+          "name": "Google Shape;98;p17"
+        },
+        {
+          "x": 0.341,
+          "y": 1.52,
+          "w": 3.071,
+          "h": 3.477,
+          "kind": "text",
+          "text": "Lorem ipsum dolor sit amet, consectetur adipiscing elit.\nSed do eiusmod tempor incididunt ut labore et dolore magna aliqua.",
+          "fontSize": 16,
+          "bold": false,
+          "placeholder": "body",
+          "name": "Google Shape;99;p17"
+        },
+        {
+          "x": 4.721,
+          "y": 0.479,
+          "w": 4.255,
+          "h": 3.013,
+          "kind": "picture",
+          "bold": false,
+          "name": "Google Shape;100;p17"
+        },
+        {
+          "x": 4.721,
+          "y": 3.61,
+          "w": 2.116,
+          "h": 1.535,
+          "kind": "picture",
+          "bold": false,
+          "name": "Google Shape;101;p17"
+        },
+        {
+          "x": 6.951,
+          "y": 3.61,
+          "w": 2.025,
+          "h": 1.535,
+          "kind": "picture",
+          "bold": false,
+          "name": "Google Shape;102;p17"
+        }
+      ],
+      "description": {
+        "looksLike": "A project showcase slide featuring a title and descriptive text on the left, paired with a three-photo gallery layout on the right.",
+        "title": "Sample project",
+        "layout": "section-title-and-description",
+        "background": {
+          "scope": "deck",
+          "kind": "solid"
+        },
+        "contentPlacement": "Left column holds the project title and body paragraphs, while the right side displays a prominent wide photo over two smaller side-by-side supporting photos.",
+        "images": [
+          {
+            "kind": "picture",
+            "what": "photograph",
+            "x": 4.721,
+            "y": 0.479,
+            "w": 4.255,
+            "h": 3.013
+          },
+          {
+            "kind": "picture",
+            "what": "photograph",
+            "x": 4.721,
+            "y": 3.61,
+            "w": 2.116,
+            "h": 1.535
+          },
+          {
+            "kind": "picture",
+            "what": "photograph",
+            "x": 6.951,
+            "y": 3.61,
+            "w": 2.025,
+            "h": 1.535
+          }
+        ],
+        "boxes": [
+          {
+            "role": "body",
+            "text": "Sample project",
+            "x": 0.341,
+            "y": 0.608,
+            "w": 3.071,
+            "h": 0.826
+          },
+          {
+            "role": "body",
+            "text": "Lorem ipsum dolor sit amet, consectetur adipiscing elit.\nSed do eiusmod tempor incididunt ut labore et dolore magna aliqua.",
+            "x": 0.341,
+            "y": 1.52,
+            "w": 3.071,
+            "h": 3.477,
+            "fontSize": 16
+          }
+        ]
+      },
+      "gcsUri": "gs://alltheway-rinegan-slide-designs-prod/catalog/professional-profile/slide-05.png"
+    },
+    "slide-06": {
+      "index": 5,
+      "prev": "slide-05",
+      "next": "slide-07",
+      "image": "professional-profile/slide-06.png",
+      "coordinates": [
+        {
+          "x": 0.536,
+          "y": 0.576,
+          "w": 6.129,
+          "h": 4.474,
+          "kind": "text",
+          "text": "Acme Design Award recipient\nParker Music campaign",
+          "fontSize": 24,
+          "bold": false,
+          "placeholder": "title",
+          "name": "Google Shape;107;p18"
+        }
+      ],
+      "description": {
+        "looksLike": "Bold white text left-aligned on a solid purple background.",
+        "title": "Acme Design Award recipient",
+        "layout": "main-point",
+        "background": {
+          "scope": "slide",
+          "kind": "solid"
+        },
+        "contentPlacement": "Left-aligned prominent title and subtitle on the left half of the slide.",
+        "images": [],
+        "boxes": [
+          {
+            "role": "body",
+            "text": "Acme Design Award recipient\nParker Music campaign",
+            "x": 0.536,
+            "y": 0.576,
+            "w": 6.129,
+            "h": 4.474,
+            "fontSize": 24
+          }
+        ]
+      },
+      "gcsUri": "gs://alltheway-rinegan-slide-designs-prod/catalog/professional-profile/slide-06.png"
+    },
+    "slide-07": {
+      "index": 6,
+      "prev": "slide-06",
+      "next": "slide-08",
+      "image": "professional-profile/slide-07.png",
+      "coordinates": [
+        {
+          "x": 0.29,
+          "y": 1.836,
+          "w": 4.424,
+          "h": 1.953,
+          "kind": "text",
+          "text": "Education",
+          "bold": false,
+          "placeholder": "title",
+          "name": "Google Shape;112;p19"
+        },
+        {
+          "x": 5.402,
+          "y": 0.792,
+          "w": 4.196,
+          "h": 4.041,
+          "kind": "text",
+          "text": "School Name\nAnytown, ST\nMBA: May 20XX\nSchool Name\nAnytown, ST\nBS, Computer Science: May 20XX\nSchool Name\nAnytown, ST\nAdTech Lab: January 20XX",
+          "fontSize": 15,
+          "bold": true,
+          "placeholder": "body",
+          "name": "Google Shape;113;p19"
+        }
+      ],
+      "description": {
+        "looksLike": "A split-layout slide featuring a large section title on the left white half and structured education entries in white text over a solid purple block on the right half.",
+        "title": "Education",
+        "layout": "title-and-body",
+        "background": {
+          "scope": "slide",
+          "kind": "solid"
+        },
+        "contentPlacement": "The category title is vertically centered on the left white side, while the right purple container holds stacked education history entries with bold school names and degree details.",
+        "images": [],
+        "boxes": [
+          {
+            "role": "body",
+            "text": "Education",
+            "x": 0.29,
+            "y": 1.836,
+            "w": 4.424,
+            "h": 1.953
+          },
+          {
+            "role": "body",
+            "text": "School Name\nAnytown, ST\nMBA: May 20XX\nSchool Name\nAnytown, ST\nBS, Computer Science: May 20XX\nSchool Name\nAnytown, ST\nAdTech Lab: January 20XX",
+            "x": 5.402,
+            "y": 0.792,
+            "w": 4.196,
+            "h": 4.041,
+            "fontSize": 15
+          }
+        ]
+      },
+      "gcsUri": "gs://alltheway-rinegan-slide-designs-prod/catalog/professional-profile/slide-07.png"
+    },
+    "slide-08": {
+      "index": 7,
+      "prev": "slide-07",
+      "next": null,
+      "image": "professional-profile/slide-08.png",
+      "coordinates": [
+        {
+          "x": 0.341,
+          "y": 0.608,
+          "w": 3.071,
+          "h": 0.826,
+          "kind": "text",
+          "text": "Contact",
+          "bold": false,
+          "placeholder": "title",
+          "name": "Google Shape;118;p20"
+        },
+        {
+          "x": 0.341,
+          "y": 1.52,
+          "w": 3.071,
+          "h": 3.477,
+          "kind": "text",
+          "text": "Your Name\nno_reply@example.com\nwww.example.com",
+          "fontSize": 16,
+          "bold": true,
+          "placeholder": "body",
+          "name": "Google Shape;119;p20"
+        },
+        {
+          "x": 3.581,
+          "y": 0,
+          "w": 6.419,
+          "h": 5.625,
+          "kind": "picture",
+          "bold": false,
+          "name": "Google Shape;120;p20"
+        }
+      ],
+      "description": {
+        "looksLike": "Split contact slide with a clean white column for contact details on the left and a large, full-height photograph filling the right two-thirds.",
+        "title": "Contact",
+        "layout": "section-title-and-description",
+        "background": {
+          "scope": "deck",
+          "kind": "solid"
+        },
+        "contentPlacement": "Title and contact information stacked vertically in the left column; full-height vertical image occupying the right side.",
+        "images": [
+          {
+            "kind": "picture",
+            "what": "photograph",
+            "x": 3.581,
+            "y": 0,
+            "w": 6.419,
+            "h": 5.625
+          }
+        ],
+        "boxes": [
+          {
+            "role": "body",
+            "text": "",
+            "x": 0.341,
+            "y": 0.608,
+            "w": 3.071,
+            "h": 0.826
+          },
+          {
+            "role": "body",
+            "text": "",
+            "x": 0.341,
+            "y": 1.52,
+            "w": 3.071,
+            "h": 3.477
+          }
+        ]
+      },
+      "gcsUri": "gs://alltheway-rinegan-slide-designs-prod/catalog/professional-profile/slide-08.png"
+    }
+  }
+}

@@ -1,0 +1,979 @@
+{
+  "id": "recipe-showcase",
+  "title": "recipe showcase",
+  "source": "Recipe showcase.pptx",
+  "width": 10,
+  "height": 5.625,
+  "overall_deck_description": "Designed with a warm, scrapbook-inspired culinary aesthetic, this recipe showcase pairs realistic kitchen surface backgrounds—such as rich dark wood and white marble—with crisp white-bordered photo collages featuring realistic drop shadows and subtle tilt angles. A recurring homestyle motif is established through fabric accents like blue gingham napkins and red checkered icon badges. Typography is clean and modern in a legible neutral sans-serif, using bright white text over dark wood covers and deep charcoal on bright white recipe cards accented by delicate horizontal rule dividers. The sequence progresses naturally from an inviting title cover into an appetizer photo gallery, transitioning into clean two-column recipe layouts (dividing ingredients and instructions alongside featured food photography) before closing the collection.",
+  "slides": {
+    "slide-01": {
+      "index": 0,
+      "prev": null,
+      "next": "slide-02",
+      "image": "recipe-showcase/slide-01.png",
+      "coordinates": [
+        {
+          "x": 6.261,
+          "y": 1.17,
+          "w": 3.252,
+          "h": 3.931,
+          "kind": "shape",
+          "color": "FFFFFF",
+          "bold": false,
+          "name": "Google Shape;71;p13"
+        },
+        {
+          "x": 2.867,
+          "y": 0.346,
+          "w": 3.252,
+          "h": 4.457,
+          "kind": "shape",
+          "color": "FFFFFF",
+          "bold": false,
+          "name": "Google Shape;73;p13"
+        },
+        {
+          "x": 0.537,
+          "y": 0.751,
+          "w": 2.098,
+          "h": 2.193,
+          "kind": "text",
+          "text": "Family Recipes",
+          "fontSize": 36,
+          "color": "FFFFFF",
+          "bold": false,
+          "placeholder": "ctrTitle",
+          "name": "Google Shape;76;p13"
+        },
+        {
+          "x": 0,
+          "y": 0,
+          "w": 10,
+          "h": 5.625,
+          "kind": "picture",
+          "bold": false,
+          "name": "Google Shape;68;p13"
+        },
+        {
+          "x": 0,
+          "y": 0,
+          "w": 10,
+          "h": 5.625,
+          "kind": "picture",
+          "bold": false,
+          "name": "Google Shape;69;p13"
+        },
+        {
+          "x": 6.318,
+          "y": 1.222,
+          "w": 3.138,
+          "h": 3.825,
+          "kind": "picture",
+          "bold": false,
+          "name": "Google Shape;72;p13"
+        },
+        {
+          "x": 2.924,
+          "y": 0.404,
+          "w": 3.138,
+          "h": 4.341,
+          "kind": "picture",
+          "bold": false,
+          "name": "Google Shape;74;p13"
+        },
+        {
+          "x": 0,
+          "y": 2.498,
+          "w": 2.635,
+          "h": 3.127,
+          "kind": "picture",
+          "bold": false,
+          "name": "Google Shape;75;p13"
+        }
+      ],
+      "description": {
+        "looksLike": "A warm culinary title slide set against a rustic dark wood surface, featuring large white title text on the left, an overlapping blue-and-white checkered napkin, and two angled recipe photo cards displaying fresh pasta and a homemade pie.",
+        "title": "Family Recipes",
+        "layout": "title-slide",
+        "background": {
+          "scope": "deck",
+          "kind": "photograph"
+        },
+        "contentPlacement": "The slide title sits in the upper-left corner above a blue checkered napkin, flanked on the right by two overlapping photo cards showcasing finished culinary dishes.",
+        "images": [
+          {
+            "kind": "picture",
+            "what": "photograph",
+            "x": 0,
+            "y": 0,
+            "w": 10,
+            "h": 5.625
+          },
+          {
+            "kind": "picture",
+            "what": "photograph",
+            "x": 0,
+            "y": 0,
+            "w": 10,
+            "h": 5.625
+          },
+          {
+            "kind": "picture",
+            "what": "photograph",
+            "x": 0,
+            "y": 2.498,
+            "w": 2.635,
+            "h": 3.127
+          },
+          {
+            "kind": "picture",
+            "what": "photograph",
+            "x": 2.924,
+            "y": 0.404,
+            "w": 3.138,
+            "h": 4.341
+          },
+          {
+            "kind": "picture",
+            "what": "photograph",
+            "x": 6.318,
+            "y": 1.222,
+            "w": 3.138,
+            "h": 3.825
+          }
+        ],
+        "boxes": [
+          {
+            "role": "body",
+            "text": "",
+            "x": 0.537,
+            "y": 0.751,
+            "w": 2.098,
+            "h": 2.193
+          },
+          {
+            "role": "body",
+            "text": "",
+            "x": 2.867,
+            "y": 0.346,
+            "w": 3.252,
+            "h": 4.457
+          },
+          {
+            "role": "body",
+            "text": "",
+            "x": 6.261,
+            "y": 1.17,
+            "w": 3.252,
+            "h": 3.931
+          }
+        ]
+      },
+      "gcsUri": "gs://alltheway-rinegan-slide-designs-prod/catalog/recipe-showcase/slide-01.png"
+    },
+    "slide-02": {
+      "index": 1,
+      "prev": "slide-01",
+      "next": "slide-03",
+      "image": "recipe-showcase/slide-02.png",
+      "coordinates": [
+        {
+          "x": 5.167,
+          "y": 4.078,
+          "w": 3.537,
+          "h": 1.064,
+          "kind": "shape",
+          "color": "008FFF",
+          "bold": false,
+          "name": "Google Shape;82;p14"
+        },
+        {
+          "x": 5.603,
+          "y": 4.206,
+          "w": 2.626,
+          "h": 0.733,
+          "kind": "text",
+          "text": "QUICK TIP\nTry right clicking on a photo and using \"Replace Image\" to build your own recipe showcase.",
+          "fontSize": 12,
+          "color": "FFFFFF",
+          "bold": true,
+          "name": "Google Shape;83;p14"
+        },
+        {
+          "x": 5.167,
+          "y": 0,
+          "w": 4.415,
+          "h": 4.078,
+          "kind": "shape",
+          "color": "FFFFFF",
+          "bold": false,
+          "name": "Google Shape;85;p14"
+        },
+        {
+          "x": 0.418,
+          "y": 1.558,
+          "w": 4.415,
+          "h": 4.078,
+          "kind": "shape",
+          "color": "FFFFFF",
+          "bold": false,
+          "name": "Google Shape;87;p14"
+        },
+        {
+          "x": 0,
+          "y": 0,
+          "w": 10,
+          "h": 5.625,
+          "kind": "picture",
+          "bold": false,
+          "name": "Google Shape;81;p14"
+        },
+        {
+          "x": 5.334,
+          "y": 4.281,
+          "w": 0.233,
+          "h": 0.233,
+          "kind": "picture",
+          "bold": false,
+          "name": "Google Shape;84;p14"
+        },
+        {
+          "x": 5.265,
+          "y": 0,
+          "w": 4.22,
+          "h": 3.985,
+          "kind": "picture",
+          "bold": false,
+          "name": "Google Shape;86;p14"
+        },
+        {
+          "x": 0.516,
+          "y": 1.66,
+          "w": 4.22,
+          "h": 3.985,
+          "kind": "picture",
+          "bold": false,
+          "name": "Google Shape;88;p14"
+        }
+      ],
+      "description": {
+        "looksLike": "Two large offset photo cards with white borders displayed over a blue-and-white gingham tablecloth background, accompanied by a small blue quick-tip callout box at the bottom right.",
+        "title": "",
+        "layout": "blank",
+        "background": {
+          "scope": "slide",
+          "kind": "photograph"
+        },
+        "contentPlacement": "Two overlapping or staggered framed image cards occupy the slide: one on the lower-left and one on the upper-right, with a small blue instructional callout anchored below the right image.",
+        "images": [
+          {
+            "kind": "picture",
+            "what": "photograph",
+            "x": 0,
+            "y": 0,
+            "w": 10,
+            "h": 5.625
+          },
+          {
+            "kind": "picture",
+            "what": "photograph",
+            "x": 5.334,
+            "y": 4.281,
+            "w": 0.233,
+            "h": 0.233
+          },
+          {
+            "kind": "picture",
+            "what": "photograph",
+            "x": 5.265,
+            "y": 0,
+            "w": 4.22,
+            "h": 3.985
+          },
+          {
+            "kind": "picture",
+            "what": "photograph",
+            "x": 0.516,
+            "y": 1.66,
+            "w": 4.22,
+            "h": 3.985
+          }
+        ],
+        "boxes": [
+          {
+            "role": "body",
+            "text": "",
+            "x": 5.167,
+            "y": 4.078,
+            "w": 3.537,
+            "h": 1.064
+          },
+          {
+            "role": "body",
+            "text": "",
+            "x": 5.603,
+            "y": 4.206,
+            "w": 2.626,
+            "h": 0.733
+          },
+          {
+            "role": "body",
+            "text": "",
+            "x": 5.167,
+            "y": 0,
+            "w": 4.415,
+            "h": 4.078
+          },
+          {
+            "role": "body",
+            "text": "",
+            "x": 0.418,
+            "y": 1.558,
+            "w": 4.415,
+            "h": 4.078
+          }
+        ]
+      },
+      "gcsUri": "gs://alltheway-rinegan-slide-designs-prod/catalog/recipe-showcase/slide-02.png"
+    },
+    "slide-03": {
+      "index": 2,
+      "prev": "slide-02",
+      "next": "slide-04",
+      "image": "recipe-showcase/slide-03.png",
+      "coordinates": [
+        {
+          "x": 5.279,
+          "y": 0.89,
+          "w": 4.286,
+          "h": 3.098,
+          "kind": "shape",
+          "fontSize": 18,
+          "color": "FFFFFF",
+          "bold": false,
+          "name": "Google Shape;94;p15"
+        },
+        {
+          "x": 0.489,
+          "y": 1.229,
+          "w": 4.381,
+          "h": 3.166,
+          "kind": "shape",
+          "fontSize": 18,
+          "color": "FFFFFF",
+          "bold": false,
+          "name": "Google Shape;96;p15"
+        },
+        {
+          "x": 0,
+          "y": 0,
+          "w": 10,
+          "h": 5.625,
+          "kind": "picture",
+          "bold": false,
+          "name": "Google Shape;93;p15"
+        },
+        {
+          "x": 5.342,
+          "y": 0.958,
+          "w": 4.148,
+          "h": 2.963,
+          "kind": "picture",
+          "bold": false,
+          "name": "Google Shape;95;p15"
+        },
+        {
+          "x": 0.555,
+          "y": 1.295,
+          "w": 4.25,
+          "h": 3.036,
+          "kind": "picture",
+          "bold": false,
+          "name": "Google Shape;97;p15"
+        },
+        {
+          "x": 7.365,
+          "y": 2.498,
+          "w": 2.635,
+          "h": 3.127,
+          "kind": "picture",
+          "bold": false,
+          "name": "Google Shape;98;p15"
+        }
+      ],
+      "description": {
+        "looksLike": "A scrapbook-style photo collage slide showing two framed food and tabletop photographs placed over a rustic wooden plank background with a blue checkered napkin accent.",
+        "title": "Slide",
+        "layout": "blank",
+        "background": {
+          "scope": "slide",
+          "kind": "photograph"
+        },
+        "contentPlacement": "Two framed photographs are angled across the left and right center, overlaid on a full-bleed rustic wood surface with a checkered napkin in the bottom right corner.",
+        "images": [
+          {
+            "kind": "picture",
+            "what": "photograph",
+            "x": 0,
+            "y": 0,
+            "w": 10,
+            "h": 5.625
+          },
+          {
+            "kind": "picture",
+            "what": "photograph",
+            "x": 5.342,
+            "y": 0.958,
+            "w": 4.148,
+            "h": 2.963
+          },
+          {
+            "kind": "picture",
+            "what": "photograph",
+            "x": 0.555,
+            "y": 1.295,
+            "w": 4.25,
+            "h": 3.036
+          },
+          {
+            "kind": "picture",
+            "what": "photograph",
+            "x": 7.365,
+            "y": 2.498,
+            "w": 2.635,
+            "h": 3.127
+          }
+        ],
+        "boxes": [
+          {
+            "role": "body",
+            "text": "",
+            "x": 5.279,
+            "y": 0.89,
+            "w": 4.286,
+            "h": 3.098
+          },
+          {
+            "role": "body",
+            "text": "",
+            "x": 0.489,
+            "y": 1.229,
+            "w": 4.381,
+            "h": 3.166
+          }
+        ]
+      },
+      "gcsUri": "gs://alltheway-rinegan-slide-designs-prod/catalog/recipe-showcase/slide-03.png"
+    },
+    "slide-04": {
+      "index": 3,
+      "prev": "slide-03",
+      "next": "slide-05",
+      "image": "recipe-showcase/slide-04.png",
+      "coordinates": [
+        {
+          "x": 6.102,
+          "y": 0.399,
+          "w": 3.393,
+          "h": 2.302,
+          "kind": "shape",
+          "color": "FFFFFF",
+          "bold": false,
+          "name": "Google Shape;104;p16"
+        },
+        {
+          "x": 0.46,
+          "y": 0.754,
+          "w": 3.293,
+          "h": 2.238,
+          "kind": "shape",
+          "color": "FFFFFF",
+          "bold": false,
+          "name": "Google Shape;106;p16"
+        },
+        {
+          "x": 6.026,
+          "y": 2.379,
+          "w": 2.356,
+          "h": 2.879,
+          "kind": "shape",
+          "color": "FFFFFF",
+          "bold": false,
+          "name": "Google Shape;108;p16"
+        },
+        {
+          "x": 0.702,
+          "y": 2.894,
+          "w": 3.117,
+          "h": 2.106,
+          "kind": "shape",
+          "color": "FFFFFF",
+          "bold": false,
+          "name": "Google Shape;110;p16"
+        },
+        {
+          "x": 3.51,
+          "y": 1.134,
+          "w": 2.842,
+          "h": 3.45,
+          "kind": "shape",
+          "color": "FFFFFF",
+          "bold": false,
+          "name": "Google Shape;112;p16"
+        },
+        {
+          "x": 0,
+          "y": 0,
+          "w": 10,
+          "h": 5.625,
+          "kind": "picture",
+          "bold": false,
+          "name": "Google Shape;103;p16"
+        },
+        {
+          "x": 6.17,
+          "y": 0.468,
+          "w": 3.258,
+          "h": 2.171,
+          "kind": "picture",
+          "bold": false,
+          "name": "Google Shape;105;p16"
+        },
+        {
+          "x": 0.519,
+          "y": 0.815,
+          "w": 3.172,
+          "h": 2.114,
+          "kind": "picture",
+          "bold": false,
+          "name": "Google Shape;107;p16"
+        },
+        {
+          "x": 6.077,
+          "y": 2.43,
+          "w": 2.254,
+          "h": 2.776,
+          "kind": "picture",
+          "bold": false,
+          "name": "Google Shape;109;p16"
+        },
+        {
+          "x": 0.757,
+          "y": 2.953,
+          "w": 3.004,
+          "h": 2.002,
+          "kind": "picture",
+          "bold": false,
+          "name": "Google Shape;111;p16"
+        },
+        {
+          "x": 3.565,
+          "y": 1.2,
+          "w": 2.724,
+          "h": 3.321,
+          "kind": "picture",
+          "bold": false,
+          "name": "Google Shape;113;p16"
+        },
+        {
+          "x": 1.039,
+          "y": -1.039,
+          "w": 1.562,
+          "h": 3.639,
+          "kind": "picture",
+          "bold": false,
+          "name": "Google Shape;114;p16"
+        }
+      ],
+      "description": {
+        "looksLike": "A collage of five tilted Polaroid-style food photographs scattered across a marble background with a blue gingham ribbon at the top left.",
+        "title": "Slide",
+        "layout": "blank",
+        "background": {
+          "scope": "slide",
+          "kind": "photograph"
+        },
+        "contentPlacement": "Five overlapping framed food photos are arranged dynamically across the entire slide over a marble texture backdrop with no text elements.",
+        "images": [
+          {
+            "kind": "picture",
+            "what": "photograph",
+            "x": 0,
+            "y": 0,
+            "w": 10,
+            "h": 5.625
+          },
+          {
+            "kind": "picture",
+            "what": "photograph",
+            "x": 6.17,
+            "y": 0.468,
+            "w": 3.258,
+            "h": 2.171
+          },
+          {
+            "kind": "picture",
+            "what": "photograph",
+            "x": 0.519,
+            "y": 0.815,
+            "w": 3.172,
+            "h": 2.114
+          },
+          {
+            "kind": "picture",
+            "what": "photograph",
+            "x": 6.077,
+            "y": 2.43,
+            "w": 2.254,
+            "h": 2.776
+          },
+          {
+            "kind": "picture",
+            "what": "photograph",
+            "x": 0.757,
+            "y": 2.953,
+            "w": 3.004,
+            "h": 2.002
+          },
+          {
+            "kind": "picture",
+            "what": "photograph",
+            "x": 3.565,
+            "y": 1.2,
+            "w": 2.724,
+            "h": 3.321
+          },
+          {
+            "kind": "picture",
+            "what": "photograph",
+            "x": 1.039,
+            "y": -1.039,
+            "w": 1.562,
+            "h": 3.639
+          }
+        ],
+        "boxes": [
+          {
+            "role": "body",
+            "text": "",
+            "x": 6.102,
+            "y": 0.399,
+            "w": 3.393,
+            "h": 2.302
+          },
+          {
+            "role": "body",
+            "text": "",
+            "x": 0.46,
+            "y": 0.754,
+            "w": 3.293,
+            "h": 2.238
+          },
+          {
+            "role": "body",
+            "text": "",
+            "x": 6.026,
+            "y": 2.379,
+            "w": 2.356,
+            "h": 2.879
+          },
+          {
+            "role": "body",
+            "text": "",
+            "x": 0.702,
+            "y": 2.894,
+            "w": 3.117,
+            "h": 2.106
+          },
+          {
+            "role": "body",
+            "text": "",
+            "x": 3.51,
+            "y": 1.134,
+            "w": 2.842,
+            "h": 3.45
+          }
+        ]
+      },
+      "gcsUri": "gs://alltheway-rinegan-slide-designs-prod/catalog/recipe-showcase/slide-04.png"
+    },
+    "slide-05": {
+      "index": 4,
+      "prev": "slide-04",
+      "next": "slide-06",
+      "image": "recipe-showcase/slide-05.png",
+      "coordinates": [
+        {
+          "x": 0.401,
+          "y": 1.049,
+          "w": 3.91,
+          "h": 1.772,
+          "kind": "text",
+          "text": "Lamb Chop",
+          "fontSize": 30,
+          "bold": false,
+          "placeholder": "ctrTitle",
+          "name": "Google Shape;122;p17"
+        },
+        {
+          "x": 0.401,
+          "y": 3.229,
+          "w": 1.888,
+          "h": 2.018,
+          "kind": "text",
+          "text": "Ingredients:\nLorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco.",
+          "fontSize": 9,
+          "bold": true,
+          "placeholder": "body",
+          "name": "Google Shape;123;p17"
+        },
+        {
+          "x": 2.617,
+          "y": 3.229,
+          "w": 1.888,
+          "h": 2.018,
+          "kind": "text",
+          "text": "Methods:\nLorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco.",
+          "fontSize": 9,
+          "bold": true,
+          "placeholder": "body",
+          "name": "Google Shape;124;p17"
+        },
+        {
+          "x": 0.879,
+          "y": 0.455,
+          "w": 3.288,
+          "h": 0.339,
+          "kind": "text",
+          "text": "Created by Grandpa",
+          "fontSize": 11,
+          "bold": false,
+          "placeholder": "subTitle",
+          "name": "Google Shape;125;p17"
+        },
+        {
+          "x": 5.069,
+          "y": 0,
+          "w": 4.946,
+          "h": 5.625,
+          "kind": "picture",
+          "bold": false,
+          "name": "Google Shape;119;p17"
+        },
+        {
+          "x": 0.5,
+          "y": 0.463,
+          "w": 0.345,
+          "h": 0.339,
+          "kind": "picture",
+          "color": "FFFFFF",
+          "bold": false,
+          "placeholder": "none",
+          "name": "Google Shape;121;p17"
+        }
+      ],
+      "description": {
+        "looksLike": "Split-screen recipe slide with a vibrant cyan left panel containing the dish title and two columns for ingredients and methods, beside a full-height photograph of a lamb rack sizzling in a skillet on the right.",
+        "title": "Lamb Chop",
+        "layout": "title-and-two-columns",
+        "background": {
+          "scope": "slide",
+          "kind": "solid"
+        },
+        "contentPlacement": "Left half holds the author tag and icon at the top, dish title in the upper portion, and two equal columns for ingredients and methods below; right half is filled entirely by a food photo.",
+        "images": [
+          {
+            "kind": "picture",
+            "what": "photograph",
+            "x": 5.069,
+            "y": 0,
+            "w": 4.946,
+            "h": 5.625
+          },
+          {
+            "kind": "picture",
+            "what": "photograph",
+            "x": 0.5,
+            "y": 0.463,
+            "w": 0.345,
+            "h": 0.339
+          }
+        ],
+        "boxes": [
+          {
+            "role": "body",
+            "text": "",
+            "x": 0.879,
+            "y": 0.455,
+            "w": 3.288,
+            "h": 0.339
+          },
+          {
+            "role": "body",
+            "text": "",
+            "x": 0.401,
+            "y": 1.049,
+            "w": 3.91,
+            "h": 1.772
+          },
+          {
+            "role": "body",
+            "text": "",
+            "x": 0.401,
+            "y": 3.229,
+            "w": 1.888,
+            "h": 2.018
+          },
+          {
+            "role": "body",
+            "text": "",
+            "x": 2.617,
+            "y": 3.229,
+            "w": 1.888,
+            "h": 2.018
+          }
+        ]
+      },
+      "gcsUri": "gs://alltheway-rinegan-slide-designs-prod/catalog/recipe-showcase/slide-05.png"
+    },
+    "slide-06": {
+      "index": 5,
+      "prev": "slide-05",
+      "next": null,
+      "image": "recipe-showcase/slide-06.png",
+      "coordinates": [
+        {
+          "x": 5.499,
+          "y": 1.049,
+          "w": 3.91,
+          "h": 1.772,
+          "kind": "text",
+          "text": "Peach Foster",
+          "fontSize": 30,
+          "bold": false,
+          "placeholder": "ctrTitle",
+          "name": "Google Shape;133;p18"
+        },
+        {
+          "x": 5.499,
+          "y": 3.229,
+          "w": 1.888,
+          "h": 2.018,
+          "kind": "text",
+          "text": "Ingredients:\nLorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco.",
+          "fontSize": 9,
+          "bold": true,
+          "placeholder": "body",
+          "name": "Google Shape;134;p18"
+        },
+        {
+          "x": 7.716,
+          "y": 3.229,
+          "w": 1.888,
+          "h": 2.018,
+          "kind": "text",
+          "text": "Methods:\nLorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco.",
+          "fontSize": 9,
+          "bold": true,
+          "placeholder": "body",
+          "name": "Google Shape;135;p18"
+        },
+        {
+          "x": 5.978,
+          "y": 0.455,
+          "w": 3.288,
+          "h": 0.339,
+          "kind": "text",
+          "text": "Created by Grandma",
+          "fontSize": 11,
+          "bold": false,
+          "placeholder": "subTitle",
+          "name": "Google Shape;136;p18"
+        },
+        {
+          "x": 0,
+          "y": 0,
+          "w": 4.946,
+          "h": 5.625,
+          "kind": "picture",
+          "bold": false,
+          "name": "Google Shape;130;p18"
+        },
+        {
+          "x": 5.599,
+          "y": 0.463,
+          "w": 0.345,
+          "h": 0.339,
+          "kind": "picture",
+          "color": "FFFFFF",
+          "bold": false,
+          "placeholder": "none",
+          "name": "Google Shape;132;p18"
+        }
+      ],
+      "description": {
+        "looksLike": "A split recipe slide with a vibrant full-height food photo on the left and a recipe card layout on the right featuring author credits, large dish title, and two columns for ingredients and instructions.",
+        "title": "Peach Foster",
+        "layout": "title-and-two-columns",
+        "background": {
+          "scope": "slide",
+          "kind": "solid"
+        },
+        "contentPlacement": "Full-bleed photograph on the left half; right half has author header at top, recipe title in the upper middle, and two side-by-side text columns across the bottom.",
+        "images": [
+          {
+            "kind": "picture",
+            "what": "photograph",
+            "x": 0,
+            "y": 0,
+            "w": 4.946,
+            "h": 5.625
+          },
+          {
+            "kind": "picture",
+            "what": "photograph",
+            "x": 5.599,
+            "y": 0.463,
+            "w": 0.345,
+            "h": 0.339
+          }
+        ],
+        "boxes": [
+          {
+            "role": "body",
+            "text": "",
+            "x": 5.978,
+            "y": 0.455,
+            "w": 3.288,
+            "h": 0.339
+          },
+          {
+            "role": "body",
+            "text": "",
+            "x": 5.499,
+            "y": 1.049,
+            "w": 3.91,
+            "h": 1.772
+          },
+          {
+            "role": "body",
+            "text": "",
+            "x": 5.499,
+            "y": 3.229,
+            "w": 1.888,
+            "h": 2.018
+          },
+          {
+            "role": "body",
+            "text": "",
+            "x": 7.716,
+            "y": 3.229,
+            "w": 1.888,
+            "h": 2.018
+          }
+        ]
+      },
+      "gcsUri": "gs://alltheway-rinegan-slide-designs-prod/catalog/recipe-showcase/slide-06.png"
+    }
+  }
+}

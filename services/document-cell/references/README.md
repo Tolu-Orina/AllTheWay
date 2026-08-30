@@ -1,10 +1,10 @@
 # Slide archetypes
 
 Eight screenshots from the consulting-proposal sample. They are the visual
-bar for the document-cell critic — the same files locally and on Cloud Run.
+bar for the document-cell planner and the independent judge — the same files
+locally and on Cloud Run.
 
-The compiler owns x/y. These images teach the critic the layouts, not the
-coordinates.
+The cell planner owns x/y. These images teach both models the layouts.
 
 | File | Layout |
 |---|---|

@@ -1,0 +1,2380 @@
+{
+  "id": "project-wireframes",
+  "title": "project wireframes",
+  "source": "Project Wireframes.pptx",
+  "width": 10,
+  "height": 5.625,
+  "overall_deck_description": "Designed for digital product pitches and design reviews, this 25-slide deck adopts a crisp, modern tech aesthetic built around an off-white and cool-gray backdrop with high-contrast black typography. The color system uses dark slate for text, framed by light neutral backgrounds and a recurring signature two-tone horizontal accent bar (mint/teal paired with warm orange). Slide titles consistently feature an ultra-bold geometric sans-serif, while body and subtitle copy use a clean, legible regular sans-serif. The deck opens with a product-focused title slide showcasing device wireframe mockups, progresses through content using structured single- and two-column layouts, captions, and bold section-break slides to pace narrative phases, and closes with a reference and summary slide adhering to the same top-band framing.",
+  "slides": {
+    "slide-01": {
+      "index": 0,
+      "prev": null,
+      "next": "slide-02",
+      "image": "project-wireframes/slide-01.png",
+      "coordinates": [
+        {
+          "x": 0.798,
+          "y": 1.446,
+          "w": 4.142,
+          "h": 1.582,
+          "kind": "text",
+          "text": "Project Wireframes",
+          "bold": false,
+          "placeholder": "ctrTitle",
+          "name": "Google Shape;138;p17"
+        },
+        {
+          "x": 0.798,
+          "y": 3.195,
+          "w": 4.142,
+          "h": 0.901,
+          "kind": "text",
+          "text": "Problem statement and\nsolution proposal",
+          "bold": false,
+          "placeholder": "subTitle",
+          "name": "Google Shape;139;p17"
+        },
+        {
+          "x": 5.038,
+          "y": 1.531,
+          "w": 4.962,
+          "h": 3.087,
+          "kind": "picture",
+          "bold": false,
+          "name": "Google Shape;135;p17"
+        },
+        {
+          "x": 5.666,
+          "y": 1.8,
+          "w": 3.796,
+          "h": 2.159,
+          "kind": "picture",
+          "bold": false,
+          "name": "Google Shape;136;p17"
+        },
+        {
+          "x": 8.991,
+          "y": 2.351,
+          "w": 1.009,
+          "h": 2.478,
+          "kind": "picture",
+          "bold": false,
+          "name": "Google Shape;137;p17"
+        },
+        {
+          "x": 9.046,
+          "y": 2.556,
+          "w": 0.954,
+          "h": 2.01,
+          "kind": "picture",
+          "bold": false,
+          "name": "Google Shape;140;p17"
+        }
+      ],
+      "description": {
+        "looksLike": "A clean title slide featuring a bold left-aligned title and subtitle alongside laptop and mobile UI wireframe mockups on the right against a light gray background.",
+        "title": "Project Wireframes",
+        "layout": "title-slide",
+        "background": {
+          "scope": "deck",
+          "kind": "solid"
+        },
+        "contentPlacement": "Large title and subtitle stacked on the left half, with responsive wireframe device mockups filling the right half.",
+        "images": [
+          {
+            "kind": "picture",
+            "what": "photograph",
+            "x": 5.038,
+            "y": 1.531,
+            "w": 4.962,
+            "h": 3.087
+          },
+          {
+            "kind": "picture",
+            "what": "photograph",
+            "x": 5.666,
+            "y": 1.8,
+            "w": 3.796,
+            "h": 2.159
+          },
+          {
+            "kind": "picture",
+            "what": "photograph",
+            "x": 8.991,
+            "y": 2.351,
+            "w": 1.009,
+            "h": 2.478
+          },
+          {
+            "kind": "picture",
+            "what": "photograph",
+            "x": 9.046,
+            "y": 2.556,
+            "w": 0.954,
+            "h": 2.01
+          }
+        ],
+        "boxes": [
+          {
+            "role": "title",
+            "text": "",
+            "x": 0.798,
+            "y": 1.446,
+            "w": 4.142,
+            "h": 1.582
+          },
+          {
+            "role": "subtitle",
+            "text": "",
+            "x": 0.798,
+            "y": 3.195,
+            "w": 4.142,
+            "h": 0.901
+          }
+        ]
+      },
+      "gcsUri": "gs://alltheway-rinegan-slide-designs-prod/catalog/project-wireframes/slide-01.png"
+    },
+    "slide-02": {
+      "index": 1,
+      "prev": "slide-01",
+      "next": "slide-03",
+      "image": "project-wireframes/slide-02.png",
+      "coordinates": [
+        {
+          "x": 0.798,
+          "y": 1.446,
+          "w": 3.128,
+          "h": 1.661,
+          "kind": "text",
+          "text": "Outline",
+          "bold": false,
+          "placeholder": "title",
+          "name": "Google Shape;145;p18"
+        },
+        {
+          "x": 4.968,
+          "y": 1.505,
+          "w": 4.462,
+          "h": 3.557,
+          "kind": "text",
+          "text": "The Problem\nSolution Proposal\nWireframes\nNext Steps",
+          "fontSize": 16,
+          "color": "FFFFFF",
+          "bold": false,
+          "placeholder": "subTitle",
+          "name": "Google Shape;146;p18"
+        }
+      ],
+      "description": {
+        "looksLike": "A solid blue agenda slide featuring a bold section title on the left and a vertical list of underlined topics on the right.",
+        "title": "Outline",
+        "layout": "section-title-and-description",
+        "background": {
+          "scope": "deck",
+          "kind": "solid"
+        },
+        "contentPlacement": "Section title sits on the middle left beneath a white accent line, while the outline items are stacked vertically across the right half.",
+        "images": [],
+        "boxes": [
+          {
+            "role": "body",
+            "text": "",
+            "x": 0.798,
+            "y": 1.446,
+            "w": 3.128,
+            "h": 1.661
+          },
+          {
+            "role": "body",
+            "text": "",
+            "x": 4.968,
+            "y": 1.505,
+            "w": 4.462,
+            "h": 3.557
+          }
+        ]
+      },
+      "gcsUri": "gs://alltheway-rinegan-slide-designs-prod/catalog/project-wireframes/slide-02.png"
+    },
+    "slide-03": {
+      "index": 2,
+      "prev": "slide-02",
+      "next": "slide-04",
+      "image": "project-wireframes/slide-03.png",
+      "coordinates": [
+        {
+          "x": 0.798,
+          "y": 1.446,
+          "w": 8.408,
+          "h": 1.661,
+          "kind": "text",
+          "text": "The Problem",
+          "bold": false,
+          "placeholder": "title",
+          "name": "Google Shape;151;p19"
+        }
+      ],
+      "description": {
+        "looksLike": "A minimalist teal section transition slide with a bold white header and thin accent rule line above.",
+        "title": "The Problem",
+        "layout": "section-header",
+        "background": {
+          "scope": "slide",
+          "kind": "solid"
+        },
+        "contentPlacement": "The section title sits on the upper-left of the slide below a thin horizontal white rule, surrounded by ample negative space on a teal background.",
+        "images": [],
+        "boxes": [
+          {
+            "role": "body",
+            "text": "",
+            "x": 0.798,
+            "y": 1.446,
+            "w": 8.408,
+            "h": 1.661
+          }
+        ]
+      },
+      "gcsUri": "gs://alltheway-rinegan-slide-designs-prod/catalog/project-wireframes/slide-03.png"
+    },
+    "slide-04": {
+      "index": 3,
+      "prev": "slide-03",
+      "next": "slide-05",
+      "image": "project-wireframes/slide-04.png",
+      "coordinates": [
+        {
+          "x": 0,
+          "y": 0,
+          "w": 5,
+          "h": 5.625,
+          "kind": "picture",
+          "bold": false,
+          "name": "Google Shape;100;p12"
+        },
+        {
+          "x": 0.798,
+          "y": 1.442,
+          "w": 3.61,
+          "h": 1.845,
+          "kind": "text",
+          "text": "Problem statement",
+          "fontSize": 30,
+          "bold": false,
+          "placeholder": "title",
+          "name": "Google Shape;156;p20"
+        },
+        {
+          "x": 5.659,
+          "y": 1.479,
+          "w": 3.69,
+          "h": 3.309,
+          "kind": "text",
+          "text": "State the problem you are solving in one or two sentences.\nMake sure to explain why it is a real problem.",
+          "fontSize": 16,
+          "bold": true,
+          "placeholder": "body",
+          "name": "Google Shape;157;p20"
+        }
+      ],
+      "description": {
+        "looksLike": "Split-layout slide with a solid teal block and title on the left and descriptive text over a grayscale photo on the right.",
+        "title": "Problem statement",
+        "layout": "section-title-and-description",
+        "background": {
+          "scope": "slide",
+          "kind": "photograph"
+        },
+        "contentPlacement": "Title sits inside a solid teal block on the left half; description text sits on the right half over the photo.",
+        "images": [
+          {
+            "kind": "picture",
+            "what": "photograph",
+            "x": 0,
+            "y": 0,
+            "w": 5,
+            "h": 5.625
+          }
+        ],
+        "boxes": [
+          {
+            "role": "body",
+            "text": "",
+            "x": 0.798,
+            "y": 1.442,
+            "w": 3.61,
+            "h": 1.845
+          },
+          {
+            "role": "body",
+            "text": "",
+            "x": 5.659,
+            "y": 1.479,
+            "w": 3.69,
+            "h": 3.309
+          }
+        ]
+      },
+      "gcsUri": "gs://alltheway-rinegan-slide-designs-prod/catalog/project-wireframes/slide-04.png"
+    },
+    "slide-05": {
+      "index": 4,
+      "prev": "slide-04",
+      "next": "slide-06",
+      "image": "project-wireframes/slide-05.png",
+      "coordinates": [
+        {
+          "x": 0,
+          "y": 0,
+          "w": 5.004,
+          "h": 5.625,
+          "kind": "picture",
+          "bold": false,
+          "name": "Google Shape;110;p13"
+        },
+        {
+          "x": 0.798,
+          "y": 1.442,
+          "w": 3.61,
+          "h": 1.845,
+          "kind": "text",
+          "text": "What customers do today",
+          "fontSize": 30,
+          "bold": false,
+          "placeholder": "title",
+          "name": "Google Shape;162;p21"
+        },
+        {
+          "x": 5.659,
+          "y": 1.479,
+          "w": 3.69,
+          "h": 3.309,
+          "kind": "text",
+          "text": "Justify your effort to try to solve the problem.\nHighlight the pain points of the current solution or how customers deal with not having a solution to the problem.",
+          "fontSize": 16,
+          "bold": true,
+          "placeholder": "body",
+          "name": "Google Shape;163;p21"
+        }
+      ],
+      "description": {
+        "looksLike": "Split-layout slide with a solid teal color block covering the left half containing the section title, set over a grayscale laptop photo background with explanatory text on the right.",
+        "title": "What customers do today",
+        "layout": "section-title-and-description",
+        "background": {
+          "scope": "slide",
+          "kind": "photograph"
+        },
+        "contentPlacement": "Section title sits within the solid teal panel on the left half, while the right half displays a teal bold header and body paragraph over the photograph background.",
+        "images": [
+          {
+            "kind": "picture",
+            "what": "photograph",
+            "x": 0,
+            "y": 0,
+            "w": 5.004,
+            "h": 5.625
+          }
+        ],
+        "boxes": [
+          {
+            "role": "body",
+            "text": "",
+            "x": 0,
+            "y": 0,
+            "w": 5.004,
+            "h": 5.625
+          },
+          {
+            "role": "body",
+            "text": "What customers do today",
+            "x": 0.798,
+            "y": 1.442,
+            "w": 3.61,
+            "h": 1.845,
+            "fontSize": 30
+          },
+          {
+            "role": "body",
+            "text": "Justify your effort to try to solve the problem.\nHighlight the pain points of the current solution or how customers deal with not having a solution to the problem.",
+            "x": 5.659,
+            "y": 1.479,
+            "w": 3.69,
+            "h": 3.309,
+            "fontSize": 16
+          }
+        ]
+      },
+      "gcsUri": "gs://alltheway-rinegan-slide-designs-prod/catalog/project-wireframes/slide-05.png"
+    },
+    "slide-06": {
+      "index": 5,
+      "prev": "slide-05",
+      "next": "slide-07",
+      "image": "project-wireframes/slide-06.png",
+      "coordinates": [
+        {
+          "x": 5.659,
+          "y": 1.479,
+          "w": 3.69,
+          "h": 3.309,
+          "kind": "text",
+          "text": "1",
+          "fontSize": 7,
+          "bold": true,
+          "placeholder": "body",
+          "name": "Google Shape;168;p22"
+        },
+        {
+          "x": 0.798,
+          "y": 1.442,
+          "w": 3.61,
+          "h": 1.845,
+          "kind": "text",
+          "text": "Supporting information\n01",
+          "fontSize": 30,
+          "bold": false,
+          "placeholder": "title",
+          "name": "Google Shape;169;p22"
+        },
+        {
+          "x": 0.793,
+          "y": 3.624,
+          "w": 3.61,
+          "h": 0.83,
+          "kind": "text",
+          "text": "List any research or data you have to support the need for a solution.",
+          "fontSize": 13,
+          "bold": false,
+          "placeholder": "subTitle",
+          "name": "Google Shape;170;p22"
+        },
+        {
+          "x": 5.436,
+          "y": 1.443,
+          "w": 4.136,
+          "h": 3.067,
+          "kind": "picture",
+          "bold": false,
+          "name": "Google Shape;171;p22"
+        }
+      ],
+      "description": {
+        "looksLike": "A split layout slide with a bold section title and descriptive text on the light gray left panel, balanced by a vertical bar chart graphic on the white right side.",
+        "title": "Supporting information 01",
+        "layout": "section-title-and-description",
+        "background": {
+          "scope": "slide",
+          "kind": "solid"
+        },
+        "contentPlacement": "The large bold section header and description sit vertically aligned on the left half, while the data chart graphic occupies the right half.",
+        "images": [
+          {
+            "kind": "picture",
+            "what": "photograph",
+            "x": 5.436,
+            "y": 1.443,
+            "w": 4.136,
+            "h": 3.067
+          }
+        ],
+        "boxes": [
+          {
+            "role": "body",
+            "text": "Supporting information\n01",
+            "x": 0.798,
+            "y": 1.442,
+            "w": 3.61,
+            "h": 1.845,
+            "fontSize": 30
+          },
+          {
+            "role": "body",
+            "text": "List any research or data you have to support the need for a solution.",
+            "x": 0.793,
+            "y": 3.624,
+            "w": 3.61,
+            "h": 0.83,
+            "fontSize": 13
+          },
+          {
+            "role": "body",
+            "text": "1",
+            "x": 5.659,
+            "y": 1.479,
+            "w": 3.69,
+            "h": 3.309,
+            "fontSize": 7
+          }
+        ]
+      },
+      "gcsUri": "gs://alltheway-rinegan-slide-designs-prod/catalog/project-wireframes/slide-06.png"
+    },
+    "slide-07": {
+      "index": 6,
+      "prev": "slide-06",
+      "next": "slide-08",
+      "image": "project-wireframes/slide-07.png",
+      "coordinates": [
+        {
+          "x": 6.03,
+          "y": 1.509,
+          "w": 2.941,
+          "h": 2.941,
+          "kind": "shape",
+          "color": "EFEFEF",
+          "bold": false,
+          "name": "Google Shape;176;p23"
+        },
+        {
+          "x": 0.798,
+          "y": 1.442,
+          "w": 3.61,
+          "h": 1.845,
+          "kind": "text",
+          "text": "Supporting information\n02",
+          "fontSize": 30,
+          "bold": false,
+          "placeholder": "title",
+          "name": "Google Shape;177;p23"
+        },
+        {
+          "x": 0.793,
+          "y": 3.624,
+          "w": 3.356,
+          "h": 0.83,
+          "kind": "text",
+          "text": "Explain why you’re focusing on a particular part of the problem or a particular subset of users.",
+          "fontSize": 13,
+          "bold": false,
+          "placeholder": "subTitle",
+          "name": "Google Shape;178;p23"
+        },
+        {
+          "x": 6.604,
+          "y": 2.276,
+          "w": 1.792,
+          "h": 0.699,
+          "kind": "text",
+          "text": "82%",
+          "fontSize": 36,
+          "bold": true,
+          "placeholder": "body",
+          "name": "Google Shape;179;p23"
+        },
+        {
+          "x": 6.03,
+          "y": 1.509,
+          "w": 2.941,
+          "h": 2.941,
+          "kind": "shape",
+          "bold": false,
+          "name": "Google Shape;180;p23"
+        },
+        {
+          "x": 6.428,
+          "y": 2.97,
+          "w": 2.145,
+          "h": 0.83,
+          "kind": "text",
+          "text": "Users are constantly searching for a solution",
+          "fontSize": 11,
+          "bold": false,
+          "placeholder": "body",
+          "name": "Google Shape;181;p23"
+        }
+      ],
+      "description": {
+        "looksLike": "A split-layout metric slide featuring section title and descriptive text on the left, paired with a large circular donut percentage chart on the right.",
+        "title": "Supporting information 02",
+        "layout": "big-number",
+        "background": {
+          "scope": "slide",
+          "kind": "solid"
+        },
+        "contentPlacement": "Left column holds the title and explanatory body text; right column centers a prominent donut chart with an 82% metric and supporting caption inside.",
+        "images": [],
+        "boxes": [
+          {
+            "role": "body",
+            "text": "",
+            "x": 6.03,
+            "y": 1.509,
+            "w": 2.941,
+            "h": 2.941
+          },
+          {
+            "role": "body",
+            "text": "",
+            "x": 0.798,
+            "y": 1.442,
+            "w": 3.61,
+            "h": 1.845
+          },
+          {
+            "role": "body",
+            "text": "",
+            "x": 0.793,
+            "y": 3.624,
+            "w": 3.356,
+            "h": 0.83
+          },
+          {
+            "role": "body",
+            "text": "",
+            "x": 6.604,
+            "y": 2.276,
+            "w": 1.792,
+            "h": 0.699
+          },
+          {
+            "role": "body",
+            "text": "",
+            "x": 6.03,
+            "y": 1.509,
+            "w": 2.941,
+            "h": 2.941
+          },
+          {
+            "role": "body",
+            "text": "",
+            "x": 6.428,
+            "y": 2.97,
+            "w": 2.145,
+            "h": 0.83
+          }
+        ]
+      },
+      "gcsUri": "gs://alltheway-rinegan-slide-designs-prod/catalog/project-wireframes/slide-07.png"
+    },
+    "slide-08": {
+      "index": 7,
+      "prev": "slide-07",
+      "next": "slide-09",
+      "image": "project-wireframes/slide-08.png",
+      "coordinates": [
+        {
+          "x": 0.798,
+          "y": 1.442,
+          "w": 3.61,
+          "h": 1.952,
+          "kind": "text",
+          "text": "Supporting information\n03",
+          "fontSize": 30,
+          "bold": false,
+          "placeholder": "title",
+          "name": "Google Shape;186;p24"
+        },
+        {
+          "x": 0.793,
+          "y": 3.624,
+          "w": 3.61,
+          "h": 0.83,
+          "kind": "text",
+          "text": "Reference your\npersonas\n, if you have them.",
+          "fontSize": 13,
+          "bold": false,
+          "placeholder": "subTitle",
+          "name": "Google Shape;187;p24"
+        },
+        {
+          "x": 5.695,
+          "y": 3.162,
+          "w": 3.61,
+          "h": 0.388,
+          "kind": "text",
+          "text": "Julia",
+          "fontSize": 11,
+          "bold": true,
+          "name": "Google Shape;189;p24"
+        },
+        {
+          "x": 5.695,
+          "y": 3.851,
+          "w": 3.61,
+          "h": 0.564,
+          "kind": "text",
+          "text": "Describe the content of Julia’s job and the problem she and her team are currently facing.",
+          "fontSize": 11,
+          "bold": false,
+          "name": "Google Shape;190;p24"
+        },
+        {
+          "x": 5.695,
+          "y": 3.437,
+          "w": 3.61,
+          "h": 0.339,
+          "kind": "text",
+          "text": "Team Manager",
+          "fontSize": 11,
+          "bold": false,
+          "name": "Google Shape;191;p24"
+        },
+        {
+          "x": 6.713,
+          "y": 1.3,
+          "w": 1.575,
+          "h": 1.575,
+          "kind": "picture",
+          "bold": false,
+          "name": "Google Shape;188;p24"
+        }
+      ],
+      "description": {
+        "looksLike": "A split-screen persona introduction slide featuring a bold section title and subtitle on the muted left panel, paired with a circular illustrated avatar, name, role, and bio on the white right panel.",
+        "title": "Supporting information 03",
+        "layout": "section-title-and-description",
+        "background": {
+          "scope": "slide",
+          "kind": "solid"
+        },
+        "contentPlacement": "Left column holds the section header and guidance text, while the right column showcases a centered circular persona illustration above centered name, role, and descriptive copy.",
+        "images": [
+          {
+            "kind": "picture",
+            "what": "photograph",
+            "x": 6.713,
+            "y": 1.3,
+            "w": 1.575,
+            "h": 1.575
+          }
+        ],
+        "boxes": [
+          {
+            "role": "body",
+            "text": "",
+            "x": 0.798,
+            "y": 1.442,
+            "w": 3.61,
+            "h": 1.952
+          },
+          {
+            "role": "body",
+            "text": "",
+            "x": 0.793,
+            "y": 3.624,
+            "w": 3.61,
+            "h": 0.83
+          },
+          {
+            "role": "body",
+            "text": "",
+            "x": 5.695,
+            "y": 3.162,
+            "w": 3.61,
+            "h": 0.388
+          },
+          {
+            "role": "body",
+            "text": "",
+            "x": 5.695,
+            "y": 3.437,
+            "w": 3.61,
+            "h": 0.339
+          },
+          {
+            "role": "body",
+            "text": "",
+            "x": 5.695,
+            "y": 3.851,
+            "w": 3.61,
+            "h": 0.564
+          }
+        ]
+      },
+      "gcsUri": "gs://alltheway-rinegan-slide-designs-prod/catalog/project-wireframes/slide-08.png"
+    },
+    "slide-09": {
+      "index": 8,
+      "prev": "slide-08",
+      "next": "slide-10",
+      "image": "project-wireframes/slide-09.png",
+      "coordinates": [
+        {
+          "x": 0.798,
+          "y": 2.273,
+          "w": 8.408,
+          "h": 2.473,
+          "kind": "text",
+          "text": "Use cases, user stories, notes to set up the wireframes. Such as…\n“As an Administrator, I would like to restrict permissions based on role.”\n“As a Moderator, I would like to flag and approve comments.”\nExecutives indicated that being able to see a summary of each segment of data was their #1 priority.\nNote: secondary admin workflow not planned for this release.",
+          "bold": false,
+          "placeholder": "body",
+          "name": "Google Shape;196;p25"
+        },
+        {
+          "x": 0.798,
+          "y": 1.442,
+          "w": 8.408,
+          "h": 0.585,
+          "kind": "text",
+          "text": "Use cases / user stories",
+          "fontSize": 30,
+          "bold": false,
+          "placeholder": "title",
+          "name": "Google Shape;197;p25"
+        }
+      ],
+      "description": {
+        "looksLike": "Clean title and arrow-bulleted list layout on a white background with a subtle top header bar.",
+        "title": "Use cases / user stories",
+        "layout": "title-and-body",
+        "background": {
+          "scope": "deck",
+          "kind": "solid"
+        },
+        "contentPlacement": "Left-aligned slide header at the upper-left with a single text block of bulleted user story notes directly beneath it.",
+        "images": [],
+        "boxes": [
+          {
+            "role": "body",
+            "text": "",
+            "x": 0.798,
+            "y": 1.442,
+            "w": 8.408,
+            "h": 0.585
+          },
+          {
+            "role": "body",
+            "text": "",
+            "x": 0.798,
+            "y": 2.273,
+            "w": 8.408,
+            "h": 2.473
+          }
+        ]
+      },
+      "gcsUri": "gs://alltheway-rinegan-slide-designs-prod/catalog/project-wireframes/slide-09.png"
+    },
+    "slide-10": {
+      "index": 9,
+      "prev": "slide-09",
+      "next": "slide-11",
+      "image": "project-wireframes/slide-10.png",
+      "coordinates": [
+        {
+          "x": 0.798,
+          "y": 0.945,
+          "w": 7.678,
+          "h": 0.737,
+          "kind": "text",
+          "text": "Assumptions",
+          "bold": false,
+          "placeholder": "title",
+          "name": "Google Shape;202;p26"
+        },
+        {
+          "x": 0.798,
+          "y": 1.909,
+          "w": 7.678,
+          "h": 2.419,
+          "kind": "text",
+          "text": "State your assumptions or any unknowns here.",
+          "fontSize": 16,
+          "bold": false,
+          "placeholder": "title",
+          "name": "Google Shape;203;p26"
+        }
+      ],
+      "description": {
+        "looksLike": "A minimal dark gray wireframe slide featuring a bold white title and a brief explanatory sentence below it with generous negative space.",
+        "title": "Assumptions",
+        "layout": "title-and-body",
+        "background": {
+          "scope": "deck",
+          "kind": "solid"
+        },
+        "contentPlacement": "Left-aligned title and body text placed in the upper-left area over a solid dark gray backdrop.",
+        "images": [],
+        "boxes": [
+          {
+            "role": "body",
+            "text": "",
+            "x": 0.798,
+            "y": 0.945,
+            "w": 7.678,
+            "h": 0.737
+          },
+          {
+            "role": "body",
+            "text": "",
+            "x": 0.798,
+            "y": 1.909,
+            "w": 7.678,
+            "h": 2.419
+          }
+        ]
+      },
+      "gcsUri": "gs://alltheway-rinegan-slide-designs-prod/catalog/project-wireframes/slide-10.png"
+    },
+    "slide-11": {
+      "index": 10,
+      "prev": "slide-10",
+      "next": "slide-12",
+      "image": "project-wireframes/slide-11.png",
+      "coordinates": [
+        {
+          "x": 0.798,
+          "y": 1.446,
+          "w": 8.408,
+          "h": 1.661,
+          "kind": "text",
+          "text": "Solution Proposal",
+          "bold": false,
+          "placeholder": "title",
+          "name": "Google Shape;208;p27"
+        }
+      ],
+      "description": {
+        "looksLike": "A minimalist teal section break slide with bold white text positioned in the upper-left quadrant.",
+        "title": "Solution Proposal",
+        "layout": "main-point",
+        "background": {
+          "scope": "deck",
+          "kind": "solid"
+        },
+        "contentPlacement": "The section title sits on the upper-left side with generous negative space across the rest of the canvas.",
+        "images": [],
+        "boxes": [
+          {
+            "role": "body",
+            "text": "",
+            "x": 0.798,
+            "y": 1.446,
+            "w": 8.408,
+            "h": 1.661
+          }
+        ]
+      },
+      "gcsUri": "gs://alltheway-rinegan-slide-designs-prod/catalog/project-wireframes/slide-11.png"
+    },
+    "slide-12": {
+      "index": 11,
+      "prev": "slide-11",
+      "next": "slide-13",
+      "image": "project-wireframes/slide-12.png",
+      "coordinates": [
+        {
+          "x": 0.798,
+          "y": 1.442,
+          "w": 8.408,
+          "h": 0.585,
+          "kind": "text",
+          "text": "Solution description",
+          "bold": false,
+          "placeholder": "title",
+          "name": "Google Shape;213;p28"
+        },
+        {
+          "x": 0.798,
+          "y": 2.273,
+          "w": 8.408,
+          "h": 2.473,
+          "kind": "text",
+          "text": "Now that you’ve justified your attention to the problem, summarize your solution in one or two sentences.",
+          "bold": false,
+          "placeholder": "body",
+          "name": "Google Shape;214;p28"
+        }
+      ],
+      "description": {
+        "looksLike": "A clean, minimalist slide featuring a prominent left-aligned title followed by a short descriptive sentence with ample negative space.",
+        "title": "Solution description",
+        "layout": "title-and-body",
+        "background": {
+          "scope": "deck",
+          "kind": "solid"
+        },
+        "contentPlacement": "The slide title sits in the upper-left area with a single descriptive text block positioned directly beneath it, leaving generous open white space below.",
+        "images": [],
+        "boxes": [
+          {
+            "role": "body",
+            "text": "",
+            "x": 0.798,
+            "y": 1.442,
+            "w": 8.408,
+            "h": 0.585
+          },
+          {
+            "role": "body",
+            "text": "",
+            "x": 0.798,
+            "y": 2.273,
+            "w": 8.408,
+            "h": 2.473
+          }
+        ]
+      },
+      "gcsUri": "gs://alltheway-rinegan-slide-designs-prod/catalog/project-wireframes/slide-12.png"
+    },
+    "slide-13": {
+      "index": 12,
+      "prev": "slide-12",
+      "next": "slide-14",
+      "image": "project-wireframes/slide-13.png",
+      "coordinates": [
+        {
+          "x": 0.798,
+          "y": 1.442,
+          "w": 8.408,
+          "h": 0.585,
+          "kind": "text",
+          "text": "Why it’s better than existing solutions",
+          "bold": false,
+          "placeholder": "title",
+          "name": "Google Shape;219;p29"
+        },
+        {
+          "x": 0.798,
+          "y": 2.273,
+          "w": 8.408,
+          "h": 2.473,
+          "kind": "text",
+          "text": "Return to the problem now that you’ve introduced your solution. Compare your solution to others and describe how it is superior.",
+          "bold": false,
+          "placeholder": "body",
+          "name": "Google Shape;220;p29"
+        }
+      ],
+      "description": {
+        "looksLike": "Minimalist text slide featuring a strong bold title and descriptive body paragraph on a clean white background.",
+        "title": "Why it’s better than existing solutions",
+        "layout": "title-and-body",
+        "background": {
+          "scope": "deck",
+          "kind": "solid"
+        },
+        "contentPlacement": "Left-aligned title positioned in the upper half with body copy positioned directly beneath it.",
+        "images": [],
+        "boxes": [
+          {
+            "role": "body",
+            "text": "Why it’s better than existing solutions",
+            "x": 0.798,
+            "y": 1.442,
+            "w": 8.408,
+            "h": 0.585
+          },
+          {
+            "role": "body",
+            "text": "Return to the problem now that you’ve introduced your solution. Compare your solution to others and describe how it is superior.",
+            "x": 0.798,
+            "y": 2.273,
+            "w": 8.408,
+            "h": 2.473
+          }
+        ]
+      },
+      "gcsUri": "gs://alltheway-rinegan-slide-designs-prod/catalog/project-wireframes/slide-13.png"
+    },
+    "slide-14": {
+      "index": 13,
+      "prev": "slide-13",
+      "next": "slide-15",
+      "image": "project-wireframes/slide-14.png",
+      "coordinates": [
+        {
+          "x": 0.798,
+          "y": 1.446,
+          "w": 8.408,
+          "h": 1.661,
+          "kind": "text",
+          "text": "Wireframes",
+          "bold": false,
+          "placeholder": "title",
+          "name": "Google Shape;225;p30"
+        }
+      ],
+      "description": {
+        "looksLike": "A minimalist teal section divider slide featuring a bold white title positioned on the left side below an accent line.",
+        "title": "Wireframes",
+        "layout": "section-header",
+        "background": {
+          "scope": "deck",
+          "kind": "solid"
+        },
+        "contentPlacement": "The section title sits left-aligned in the upper-left quadrant beneath a short horizontal line, with ample open space across the rest of the slide.",
+        "images": [],
+        "boxes": [
+          {
+            "role": "body",
+            "text": "Wireframes",
+            "x": 0.798,
+            "y": 1.446,
+            "w": 8.408,
+            "h": 1.661
+          }
+        ]
+      },
+      "gcsUri": "gs://alltheway-rinegan-slide-designs-prod/catalog/project-wireframes/slide-14.png"
+    },
+    "slide-15": {
+      "index": 14,
+      "prev": "slide-14",
+      "next": "slide-16",
+      "image": "project-wireframes/slide-15.png",
+      "coordinates": [
+        {
+          "x": 0,
+          "y": 5.191,
+          "w": 10,
+          "h": 0.433,
+          "kind": "shape",
+          "bold": false,
+          "name": "Google Shape;230;p31"
+        },
+        {
+          "x": 0.379,
+          "y": 5.191,
+          "w": 2.494,
+          "h": 0.431,
+          "kind": "text",
+          "text": "Information architecture",
+          "fontSize": 14,
+          "color": "FFFFFF",
+          "bold": false,
+          "placeholder": "title",
+          "name": "Google Shape;231;p31"
+        },
+        {
+          "x": 4.071,
+          "y": 5.298,
+          "w": 0.225,
+          "h": 0.224,
+          "kind": "shape",
+          "color": "FFFFFF",
+          "bold": false,
+          "name": "Google Shape;234;p31"
+        },
+        {
+          "x": 4.296,
+          "y": 5.271,
+          "w": 5.356,
+          "h": 0.3,
+          "kind": "text",
+          "text": "Balsamiq Tip |\nInformation architecture is the flow of content across the site or application (\nmore info\n).",
+          "fontSize": 8,
+          "color": "FFFFFF",
+          "bold": true,
+          "name": "Google Shape;236;p31"
+        },
+        {
+          "x": 1.233,
+          "y": 0.955,
+          "w": 7.533,
+          "h": 3.548,
+          "kind": "picture",
+          "bold": false,
+          "name": "Google Shape;232;p31"
+        },
+        {
+          "x": 4.113,
+          "y": 5.339,
+          "w": 0.14,
+          "h": 0.14,
+          "kind": "picture",
+          "bold": false,
+          "name": "Google Shape;235;p31"
+        }
+      ],
+      "description": {
+        "looksLike": "An information architecture hierarchy tree diagram centered on a white canvas with a teal bottom footer bar containing the title and a design tip.",
+        "title": "Information architecture",
+        "layout": "title-and-body",
+        "background": {
+          "scope": "slide",
+          "kind": "solid"
+        },
+        "contentPlacement": "The main canvas displays a centered site hierarchy diagram, while the slide title and a helpful tip occupy a full-width teal banner at the bottom.",
+        "images": [
+          {
+            "kind": "picture",
+            "what": "photograph",
+            "x": 1.233,
+            "y": 0.955,
+            "w": 7.533,
+            "h": 3.548
+          },
+          {
+            "kind": "picture",
+            "what": "photograph",
+            "x": 4.113,
+            "y": 5.339,
+            "w": 0.14,
+            "h": 0.14
+          }
+        ],
+        "boxes": [
+          {
+            "role": "body",
+            "text": "",
+            "x": 0,
+            "y": 5.191,
+            "w": 10,
+            "h": 0.433
+          },
+          {
+            "role": "body",
+            "text": "",
+            "x": 0.379,
+            "y": 5.191,
+            "w": 2.494,
+            "h": 0.431
+          },
+          {
+            "role": "body",
+            "text": "",
+            "x": 4.071,
+            "y": 5.298,
+            "w": 0.225,
+            "h": 0.224
+          },
+          {
+            "role": "body",
+            "text": "",
+            "x": 4.296,
+            "y": 5.271,
+            "w": 5.356,
+            "h": 0.3
+          }
+        ]
+      },
+      "gcsUri": "gs://alltheway-rinegan-slide-designs-prod/catalog/project-wireframes/slide-15.png"
+    },
+    "slide-16": {
+      "index": 15,
+      "prev": "slide-15",
+      "next": "slide-17",
+      "image": "project-wireframes/slide-16.png",
+      "coordinates": [
+        {
+          "x": 6.754,
+          "y": 2.53,
+          "w": 2.501,
+          "h": 0.574,
+          "kind": "shape",
+          "color": "1A9988",
+          "bold": false,
+          "name": "Google Shape;243;p32"
+        },
+        {
+          "x": 6.867,
+          "y": 2.611,
+          "w": 2.293,
+          "h": 0.431,
+          "kind": "text",
+          "text": "Call out key parts of the UI",
+          "fontSize": 12,
+          "color": "FFFFFF",
+          "bold": false,
+          "name": "Google Shape;244;p32"
+        },
+        {
+          "x": 0,
+          "y": 5.191,
+          "w": 10,
+          "h": 0.433,
+          "kind": "shape",
+          "bold": false,
+          "name": "Google Shape;246;p32"
+        },
+        {
+          "x": 0.379,
+          "y": 5.191,
+          "w": 2.494,
+          "h": 0.431,
+          "kind": "text",
+          "text": "Component Browser",
+          "fontSize": 14,
+          "color": "FFFFFF",
+          "bold": false,
+          "placeholder": "title",
+          "name": "Google Shape;247;p32"
+        },
+        {
+          "x": 4.071,
+          "y": 5.298,
+          "w": 0.225,
+          "h": 0.224,
+          "kind": "shape",
+          "color": "FFFFFF",
+          "bold": false,
+          "name": "Google Shape;249;p32"
+        },
+        {
+          "x": 4.296,
+          "y": 5.271,
+          "w": 3.817,
+          "h": 0.3,
+          "kind": "text",
+          "text": "Balsamiq Tip |\nUse the Balsamiq add-on to make your own wireframe.",
+          "fontSize": 8,
+          "color": "FFFFFF",
+          "bold": true,
+          "name": "Google Shape;251;p32"
+        },
+        {
+          "x": 1.761,
+          "y": 0.217,
+          "w": 6.478,
+          "h": 4.858,
+          "kind": "picture",
+          "bold": false,
+          "name": "Google Shape;241;p32"
+        },
+        {
+          "x": 4.113,
+          "y": 5.339,
+          "w": 0.14,
+          "h": 0.14,
+          "kind": "picture",
+          "bold": false,
+          "name": "Google Shape;250;p32"
+        }
+      ],
+      "description": {
+        "looksLike": "A large centered wireframe UI mockup with a teal callout bubble on the right and a solid teal footer bar displaying the slide title and a tool tip.",
+        "title": "Component Browser",
+        "layout": "caption",
+        "background": {
+          "scope": "deck",
+          "kind": "solid"
+        },
+        "contentPlacement": "[object Object]",
+        "images": [
+          {
+            "kind": "picture",
+            "what": "photograph",
+            "x": 1.761,
+            "y": 0.217,
+            "w": 6.478,
+            "h": 4.858
+          },
+          {
+            "kind": "picture",
+            "what": "photograph",
+            "x": 4.113,
+            "y": 5.339,
+            "w": 0.14,
+            "h": 0.14
+          }
+        ],
+        "boxes": [
+          {
+            "role": "body",
+            "text": "",
+            "x": 6.754,
+            "y": 2.53,
+            "w": 2.501,
+            "h": 0.574
+          },
+          {
+            "role": "body",
+            "text": "",
+            "x": 6.867,
+            "y": 2.611,
+            "w": 2.293,
+            "h": 0.431
+          },
+          {
+            "role": "body",
+            "text": "",
+            "x": 0,
+            "y": 5.191,
+            "w": 10,
+            "h": 0.433
+          },
+          {
+            "role": "body",
+            "text": "",
+            "x": 0.379,
+            "y": 5.191,
+            "w": 2.494,
+            "h": 0.431
+          },
+          {
+            "role": "body",
+            "text": "",
+            "x": 4.071,
+            "y": 5.298,
+            "w": 0.225,
+            "h": 0.224
+          },
+          {
+            "role": "body",
+            "text": "",
+            "x": 4.296,
+            "y": 5.271,
+            "w": 3.817,
+            "h": 0.3
+          }
+        ]
+      },
+      "gcsUri": "gs://alltheway-rinegan-slide-designs-prod/catalog/project-wireframes/slide-16.png"
+    },
+    "slide-17": {
+      "index": 16,
+      "prev": "slide-16",
+      "next": "slide-18",
+      "image": "project-wireframes/slide-17.png",
+      "coordinates": [
+        {
+          "x": 0,
+          "y": 5.191,
+          "w": 10,
+          "h": 0.433,
+          "kind": "shape",
+          "bold": false,
+          "name": "Google Shape;256;p33"
+        },
+        {
+          "x": 0.379,
+          "y": 5.191,
+          "w": 2.494,
+          "h": 0.431,
+          "kind": "text",
+          "text": "Component Detail",
+          "fontSize": 14,
+          "color": "FFFFFF",
+          "bold": false,
+          "placeholder": "title",
+          "name": "Google Shape;258;p33"
+        },
+        {
+          "x": 1.76,
+          "y": 0.216,
+          "w": 6.481,
+          "h": 4.861,
+          "kind": "picture",
+          "bold": false,
+          "name": "Google Shape;257;p33"
+        }
+      ],
+      "description": {
+        "looksLike": "A large UI wireframe mockup centered above a full-width teal bottom banner containing the slide title.",
+        "title": "Component Detail",
+        "layout": "caption",
+        "background": {
+          "scope": "slide",
+          "kind": "solid"
+        },
+        "contentPlacement": "Wireframe graphic occupies the upper center area; caption bar with title anchors the bottom edge.",
+        "images": [
+          {
+            "kind": "picture",
+            "what": "photograph",
+            "x": 1.76,
+            "y": 0.216,
+            "w": 6.481,
+            "h": 4.861
+          }
+        ],
+        "boxes": [
+          {
+            "role": "body",
+            "text": "",
+            "x": 0,
+            "y": 5.191,
+            "w": 10,
+            "h": 0.433
+          },
+          {
+            "role": "body",
+            "text": "",
+            "x": 0.379,
+            "y": 5.191,
+            "w": 2.494,
+            "h": 0.431
+          }
+        ]
+      },
+      "gcsUri": "gs://alltheway-rinegan-slide-designs-prod/catalog/project-wireframes/slide-17.png"
+    },
+    "slide-18": {
+      "index": 17,
+      "prev": "slide-17",
+      "next": "slide-19",
+      "image": "project-wireframes/slide-18.png",
+      "coordinates": [
+        {
+          "x": 6.754,
+          "y": 2.53,
+          "w": 2.501,
+          "h": 0.619,
+          "kind": "shape",
+          "color": "1A9988",
+          "bold": false,
+          "name": "Google Shape;265;p34"
+        },
+        {
+          "x": 6.808,
+          "y": 2.53,
+          "w": 2.447,
+          "h": 0.619,
+          "kind": "text",
+          "text": "Articulate your design decisions by adding justifications",
+          "fontSize": 11,
+          "color": "FFFFFF",
+          "bold": false,
+          "name": "Google Shape;266;p34"
+        },
+        {
+          "x": 0,
+          "y": 5.191,
+          "w": 10,
+          "h": 0.433,
+          "kind": "shape",
+          "bold": false,
+          "name": "Google Shape;268;p34"
+        },
+        {
+          "x": 0.379,
+          "y": 5.191,
+          "w": 3.729,
+          "h": 0.431,
+          "kind": "text",
+          "text": "Component Detail (Mobile)",
+          "fontSize": 14,
+          "color": "FFFFFF",
+          "bold": false,
+          "placeholder": "title",
+          "name": "Google Shape;269;p34"
+        },
+        {
+          "x": 3.745,
+          "y": 0.216,
+          "w": 2.51,
+          "h": 4.861,
+          "kind": "picture",
+          "bold": false,
+          "name": "Google Shape;263;p34"
+        }
+      ],
+      "description": {
+        "looksLike": "A mobile wireframe mockup centered on a white background with a teal callout box annotating design decisions on the right and a teal banner running across the bottom containing the slide title.",
+        "title": "Component Detail (Mobile)",
+        "layout": "title-only",
+        "background": {
+          "scope": "deck",
+          "kind": "solid"
+        },
+        "contentPlacement": "The slide title sits inside a full-width teal footer banner at the bottom left, a mobile screen wireframe graphic is centered vertically and horizontally, and a teal callout box sits to the right of the mockup.",
+        "images": [
+          {
+            "kind": "picture",
+            "what": "photograph",
+            "x": 3.745,
+            "y": 0.216,
+            "w": 2.51,
+            "h": 4.861
+          }
+        ],
+        "boxes": [
+          {
+            "role": "body",
+            "text": "",
+            "x": 6.754,
+            "y": 2.53,
+            "w": 2.501,
+            "h": 0.619
+          },
+          {
+            "role": "body",
+            "text": "Articulate your design decisions by adding justifications",
+            "x": 6.808,
+            "y": 2.53,
+            "w": 2.447,
+            "h": 0.619,
+            "fontSize": 11
+          },
+          {
+            "role": "body",
+            "text": "",
+            "x": 0,
+            "y": 5.191,
+            "w": 10,
+            "h": 0.433
+          },
+          {
+            "role": "body",
+            "text": "Component Detail (Mobile)",
+            "x": 0.379,
+            "y": 5.191,
+            "w": 3.729,
+            "h": 0.431,
+            "fontSize": 14
+          }
+        ]
+      },
+      "gcsUri": "gs://alltheway-rinegan-slide-designs-prod/catalog/project-wireframes/slide-18.png"
+    },
+    "slide-19": {
+      "index": 18,
+      "prev": "slide-18",
+      "next": "slide-20",
+      "image": "project-wireframes/slide-19.png",
+      "coordinates": [
+        {
+          "x": 0,
+          "y": 5.191,
+          "w": 10,
+          "h": 0.433,
+          "kind": "shape",
+          "bold": false,
+          "name": "Google Shape;274;p35"
+        },
+        {
+          "x": 0.379,
+          "y": 5.191,
+          "w": 3.729,
+          "h": 0.431,
+          "kind": "text",
+          "text": "Contacts",
+          "fontSize": 14,
+          "color": "FFFFFF",
+          "bold": false,
+          "placeholder": "title",
+          "name": "Google Shape;275;p35"
+        },
+        {
+          "x": 1.743,
+          "y": 0.198,
+          "w": 6.515,
+          "h": 4.861,
+          "kind": "picture",
+          "bold": false,
+          "name": "Google Shape;276;p35"
+        }
+      ],
+      "description": {
+        "looksLike": "A desktop wireframe mockup centered above a full-width teal footer banner with the slide title.",
+        "title": "Contacts",
+        "layout": "caption",
+        "background": {
+          "scope": "deck",
+          "kind": "solid"
+        },
+        "contentPlacement": "Wireframe image centered across the upper canvas with a bottom title banner.",
+        "images": [
+          {
+            "kind": "picture",
+            "what": "photograph",
+            "x": 1.743,
+            "y": 0.198,
+            "w": 6.515,
+            "h": 4.861
+          }
+        ],
+        "boxes": [
+          {
+            "role": "body",
+            "text": "",
+            "x": 0,
+            "y": 5.191,
+            "w": 10,
+            "h": 0.433
+          },
+          {
+            "role": "body",
+            "text": "",
+            "x": 0.379,
+            "y": 5.191,
+            "w": 3.729,
+            "h": 0.431
+          }
+        ]
+      },
+      "gcsUri": "gs://alltheway-rinegan-slide-designs-prod/catalog/project-wireframes/slide-19.png"
+    },
+    "slide-20": {
+      "index": 19,
+      "prev": "slide-19",
+      "next": "slide-21",
+      "image": "project-wireframes/slide-20.png",
+      "coordinates": [
+        {
+          "x": 0,
+          "y": 5.191,
+          "w": 10,
+          "h": 0.433,
+          "kind": "shape",
+          "bold": false,
+          "name": "Google Shape;282;p36"
+        },
+        {
+          "x": 0.379,
+          "y": 5.191,
+          "w": 3.729,
+          "h": 0.431,
+          "kind": "text",
+          "text": "Contacts (Mobile)",
+          "fontSize": 14,
+          "bold": false,
+          "placeholder": "title",
+          "name": "Google Shape;283;p36"
+        },
+        {
+          "x": 3.745,
+          "y": 0.216,
+          "w": 2.51,
+          "h": 4.861,
+          "kind": "picture",
+          "bold": false,
+          "name": "Google Shape;281;p36"
+        }
+      ],
+      "description": {
+        "looksLike": "A mobile wireframe mockup centered on a white slide above a teal bottom caption bar.",
+        "title": "Contacts (Mobile)",
+        "layout": "caption",
+        "background": {
+          "scope": "slide",
+          "kind": "solid"
+        },
+        "contentPlacement": "The wireframe image is centered vertically and horizontally in the upper region; the title sits inside a full-width teal banner at the bottom.",
+        "images": [
+          {
+            "kind": "picture",
+            "what": "photograph",
+            "x": 3.745,
+            "y": 0.216,
+            "w": 2.51,
+            "h": 4.861
+          }
+        ],
+        "boxes": [
+          {
+            "role": "body",
+            "text": "",
+            "x": 0,
+            "y": 5.191,
+            "w": 10,
+            "h": 0.433
+          },
+          {
+            "role": "body",
+            "text": "",
+            "x": 0.379,
+            "y": 5.191,
+            "w": 3.729,
+            "h": 0.431
+          }
+        ]
+      },
+      "gcsUri": "gs://alltheway-rinegan-slide-designs-prod/catalog/project-wireframes/slide-20.png"
+    },
+    "slide-21": {
+      "index": 20,
+      "prev": "slide-20",
+      "next": "slide-22",
+      "image": "project-wireframes/slide-21.png",
+      "coordinates": [
+        {
+          "x": 0.798,
+          "y": 1.446,
+          "w": 8.408,
+          "h": 1.661,
+          "kind": "text",
+          "text": "Next Steps",
+          "bold": false,
+          "placeholder": "title",
+          "name": "Google Shape;288;p37"
+        }
+      ],
+      "description": {
+        "looksLike": "Minimalist section divider slide featuring bold white title text beneath a horizontal accent line on a solid teal background.",
+        "title": "Next Steps",
+        "layout": "section-header",
+        "background": {
+          "scope": "slide",
+          "kind": "solid"
+        },
+        "contentPlacement": "Left-aligned section title positioned in the upper-left area below a thin horizontal line.",
+        "images": [],
+        "boxes": [
+          {
+            "role": "body",
+            "text": "Next Steps",
+            "x": 0.798,
+            "y": 1.446,
+            "w": 8.408,
+            "h": 1.661
+          }
+        ]
+      },
+      "gcsUri": "gs://alltheway-rinegan-slide-designs-prod/catalog/project-wireframes/slide-21.png"
+    },
+    "slide-22": {
+      "index": 21,
+      "prev": "slide-21",
+      "next": "slide-23",
+      "image": "project-wireframes/slide-22.png",
+      "coordinates": [
+        {
+          "x": 0.798,
+          "y": 1.442,
+          "w": 8.408,
+          "h": 0.585,
+          "kind": "text",
+          "text": "What next?",
+          "fontSize": 30,
+          "bold": false,
+          "placeholder": "title",
+          "name": "Google Shape;293;p38"
+        },
+        {
+          "x": 0.798,
+          "y": 2.273,
+          "w": 8.408,
+          "h": 2.473,
+          "kind": "text",
+          "text": "Present the timeline.\nSolicit comments on these slides or reviews on these wireframes in the Balsamiq add-on.\nUser testing plan.",
+          "bold": false,
+          "placeholder": "body",
+          "name": "Google Shape;294;p38"
+        }
+      ],
+      "description": {
+        "looksLike": "A clean title-and-body slide featuring a bold left-aligned header and arrow bullet points detailing next steps.",
+        "title": "What next?",
+        "layout": "title-and-body",
+        "background": {
+          "scope": "deck",
+          "kind": "solid"
+        },
+        "contentPlacement": "Left-aligned slide header located in the upper-left section below an accent bar, followed directly by an arrow-bulleted list.",
+        "images": [],
+        "boxes": [
+          {
+            "role": "body",
+            "text": "What next?",
+            "x": 0.798,
+            "y": 1.442,
+            "w": 8.408,
+            "h": 0.585,
+            "fontSize": 30
+          },
+          {
+            "role": "body",
+            "text": "Present the timeline.\nSolicit comments on these slides or reviews on these wireframes in the Balsamiq add-on.\nUser testing plan.",
+            "x": 0.798,
+            "y": 2.273,
+            "w": 8.408,
+            "h": 2.473
+          }
+        ]
+      },
+      "gcsUri": "gs://alltheway-rinegan-slide-designs-prod/catalog/project-wireframes/slide-22.png"
+    },
+    "slide-23": {
+      "index": 22,
+      "prev": "slide-22",
+      "next": "slide-24",
+      "image": "project-wireframes/slide-23.png",
+      "coordinates": [
+        {
+          "x": 0.798,
+          "y": 1.442,
+          "w": 8.408,
+          "h": 0.585,
+          "kind": "text",
+          "text": "Timeline",
+          "fontSize": 30,
+          "bold": false,
+          "placeholder": "title",
+          "name": "Google Shape;301;p39"
+        },
+        {
+          "x": 5.794,
+          "y": 3.124,
+          "w": 1.125,
+          "h": 0.942,
+          "kind": "text",
+          "text": "Prototype",
+          "fontSize": 9,
+          "color": "F3F3F3",
+          "bold": false,
+          "placeholder": "none",
+          "name": "Google Shape;303;p39"
+        },
+        {
+          "x": 5.789,
+          "y": 2.929,
+          "w": 1.138,
+          "h": 0.179,
+          "kind": "text",
+          "text": "SEPT",
+          "fontSize": 7,
+          "color": "666666",
+          "bold": false,
+          "name": "Google Shape;304;p39"
+        },
+        {
+          "x": 7.016,
+          "y": 3.124,
+          "w": 1.125,
+          "h": 0.942,
+          "kind": "text",
+          "text": "User testing",
+          "fontSize": 9,
+          "color": "666666",
+          "bold": false,
+          "name": "Google Shape;306;p39"
+        },
+        {
+          "x": 7.016,
+          "y": 2.929,
+          "w": 1.125,
+          "h": 0.179,
+          "kind": "text",
+          "text": "OCT",
+          "fontSize": 7,
+          "color": "666666",
+          "bold": false,
+          "name": "Google Shape;307;p39"
+        },
+        {
+          "x": 8.238,
+          "y": 3.124,
+          "w": 1.125,
+          "h": 0.942,
+          "kind": "text",
+          "text": "Dev hand-off",
+          "fontSize": 9,
+          "color": "666666",
+          "bold": false,
+          "name": "Google Shape;309;p39"
+        },
+        {
+          "x": 8.238,
+          "y": 2.929,
+          "w": 1.125,
+          "h": 0.179,
+          "kind": "text",
+          "text": "NOV",
+          "fontSize": 7,
+          "color": "666666",
+          "bold": false,
+          "name": "Google Shape;310;p39"
+        },
+        {
+          "x": 4.572,
+          "y": 3.124,
+          "w": 1.125,
+          "h": 0.942,
+          "kind": "text",
+          "text": "Review",
+          "fontSize": 9,
+          "color": "666666",
+          "bold": false,
+          "name": "Google Shape;312;p39"
+        },
+        {
+          "x": 4.572,
+          "y": 2.929,
+          "w": 1.125,
+          "h": 0.179,
+          "kind": "text",
+          "text": "AUG",
+          "fontSize": 7,
+          "color": "666666",
+          "bold": false,
+          "name": "Google Shape;313;p39"
+        },
+        {
+          "x": 3.35,
+          "y": 3.124,
+          "w": 1.125,
+          "h": 0.942,
+          "kind": "text",
+          "text": "Wireframes",
+          "fontSize": 9,
+          "color": "FFFFFF",
+          "bold": false,
+          "name": "Google Shape;315;p39"
+        },
+        {
+          "x": 3.35,
+          "y": 2.929,
+          "w": 1.125,
+          "h": 0.179,
+          "kind": "text",
+          "text": "TODAY",
+          "fontSize": 7,
+          "color": "FFFFFF",
+          "bold": false,
+          "name": "Google Shape;316;p39"
+        },
+        {
+          "x": 2.128,
+          "y": 3.124,
+          "w": 1.125,
+          "h": 0.942,
+          "kind": "text",
+          "text": "User research",
+          "fontSize": 9,
+          "color": "B7B7B7",
+          "bold": false,
+          "name": "Google Shape;318;p39"
+        },
+        {
+          "x": 2.128,
+          "y": 2.929,
+          "w": 1.125,
+          "h": 0.179,
+          "kind": "text",
+          "text": "JUN",
+          "fontSize": 7,
+          "color": "B7B7B7",
+          "bold": false,
+          "name": "Google Shape;319;p39"
+        },
+        {
+          "x": 0.906,
+          "y": 3.124,
+          "w": 1.125,
+          "h": 0.942,
+          "kind": "text",
+          "text": "Requirements gathering",
+          "fontSize": 9,
+          "color": "B7B7B7",
+          "bold": false,
+          "name": "Google Shape;321;p39"
+        },
+        {
+          "x": 0.906,
+          "y": 2.929,
+          "w": 1.125,
+          "h": 0.179,
+          "kind": "text",
+          "text": "MAY",
+          "fontSize": 7,
+          "color": "B7B7B7",
+          "bold": false,
+          "name": "Google Shape;322;p39"
+        },
+        {
+          "x": 3.924,
+          "y": 2.198,
+          "w": 1.384,
+          "h": 1.384,
+          "kind": "shape",
+          "bold": false,
+          "name": "Google Shape;324;p39"
+        },
+        {
+          "x": 5.19,
+          "y": 2.735,
+          "w": 0.165,
+          "h": 0.157,
+          "kind": "shape",
+          "bold": false,
+          "name": "Google Shape;325;p39"
+        },
+        {
+          "x": 3.924,
+          "y": 2.198,
+          "w": 1.384,
+          "h": 1.384,
+          "kind": "shape",
+          "color": "666666",
+          "bold": false,
+          "name": "Google Shape;327;p39"
+        },
+        {
+          "x": 5.19,
+          "y": 2.735,
+          "w": 0.165,
+          "h": 0.157,
+          "kind": "shape",
+          "color": "666666",
+          "bold": false,
+          "name": "Google Shape;328;p39"
+        }
+      ],
+      "description": {
+        "looksLike": "A clean horizontal project timeline diagram showing seven chronological milestone stages with 'TODAY' highlighted in teal and an iterative review loop.",
+        "title": "Timeline",
+        "layout": "title-only",
+        "background": {
+          "scope": "slide",
+          "kind": "solid"
+        },
+        "contentPlacement": "A bold left-aligned title sits in the upper half above a horizontal sequence of seven structured timeline cards spanning across the middle of the slide.",
+        "images": [],
+        "boxes": [
+          {
+            "role": "body",
+            "text": "Timeline",
+            "x": 0.798,
+            "y": 1.442,
+            "w": 8.408,
+            "h": 0.585,
+            "fontSize": 30
+          },
+          {
+            "role": "body",
+            "text": "MAY",
+            "x": 0.906,
+            "y": 2.929,
+            "w": 1.125,
+            "h": 0.179,
+            "fontSize": 7
+          },
+          {
+            "role": "body",
+            "text": "Requirements gathering",
+            "x": 0.906,
+            "y": 3.124,
+            "w": 1.125,
+            "h": 0.942,
+            "fontSize": 9
+          },
+          {
+            "role": "body",
+            "text": "JUN",
+            "x": 2.128,
+            "y": 2.929,
+            "w": 1.125,
+            "h": 0.179,
+            "fontSize": 7
+          },
+          {
+            "role": "body",
+            "text": "User research",
+            "x": 2.128,
+            "y": 3.124,
+            "w": 1.125,
+            "h": 0.942,
+            "fontSize": 9
+          },
+          {
+            "role": "body",
+            "text": "TODAY",
+            "x": 3.35,
+            "y": 2.929,
+            "w": 1.125,
+            "h": 0.179,
+            "fontSize": 7
+          },
+          {
+            "role": "body",
+            "text": "Wireframes",
+            "x": 3.35,
+            "y": 3.124,
+            "w": 1.125,
+            "h": 0.942,
+            "fontSize": 9
+          },
+          {
+            "role": "body",
+            "text": "AUG",
+            "x": 4.572,
+            "y": 2.929,
+            "w": 1.125,
+            "h": 0.179,
+            "fontSize": 7
+          },
+          {
+            "role": "body",
+            "text": "Review",
+            "x": 4.572,
+            "y": 3.124,
+            "w": 1.125,
+            "h": 0.942,
+            "fontSize": 9
+          },
+          {
+            "role": "body",
+            "text": "SEPT",
+            "x": 5.789,
+            "y": 2.929,
+            "w": 1.138,
+            "h": 0.179,
+            "fontSize": 7
+          },
+          {
+            "role": "body",
+            "text": "Prototype",
+            "x": 5.794,
+            "y": 3.124,
+            "w": 1.125,
+            "h": 0.942,
+            "fontSize": 9
+          },
+          {
+            "role": "body",
+            "text": "OCT",
+            "x": 7.016,
+            "y": 2.929,
+            "w": 1.125,
+            "h": 0.179,
+            "fontSize": 7
+          },
+          {
+            "role": "body",
+            "text": "User testing",
+            "x": 7.016,
+            "y": 3.124,
+            "w": 1.125,
+            "h": 0.942,
+            "fontSize": 9
+          },
+          {
+            "role": "body",
+            "text": "NOV",
+            "x": 8.238,
+            "y": 2.929,
+            "w": 1.125,
+            "h": 0.179,
+            "fontSize": 7
+          },
+          {
+            "role": "body",
+            "text": "Dev hand-off",
+            "x": 8.238,
+            "y": 3.124,
+            "w": 1.125,
+            "h": 0.942,
+            "fontSize": 9
+          },
+          {
+            "role": "body",
+            "text": "",
+            "x": 3.924,
+            "y": 2.198,
+            "w": 1.384,
+            "h": 1.384
+          },
+          {
+            "role": "body",
+            "text": "",
+            "x": 5.19,
+            "y": 2.735,
+            "w": 0.165,
+            "h": 0.157
+          },
+          {
+            "role": "body",
+            "text": "",
+            "x": 3.924,
+            "y": 2.198,
+            "w": 1.384,
+            "h": 1.384
+          },
+          {
+            "role": "body",
+            "text": "",
+            "x": 5.19,
+            "y": 2.735,
+            "w": 0.165,
+            "h": 0.157
+          }
+        ]
+      },
+      "gcsUri": "gs://alltheway-rinegan-slide-designs-prod/catalog/project-wireframes/slide-23.png"
+    },
+    "slide-24": {
+      "index": 23,
+      "prev": "slide-23",
+      "next": "slide-25",
+      "image": "project-wireframes/slide-24.png",
+      "coordinates": [
+        {
+          "x": 0.798,
+          "y": 0.945,
+          "w": 7.678,
+          "h": 3.264,
+          "kind": "text",
+          "text": "Questions?",
+          "bold": false,
+          "placeholder": "title",
+          "name": "Google Shape;333;p40"
+        }
+      ],
+      "description": {
+        "looksLike": "A bold orange closing or Q&A slide featuring a single prominent white text heading on the left.",
+        "title": "Questions?",
+        "layout": "main-point",
+        "background": {
+          "scope": "slide",
+          "kind": "solid"
+        },
+        "contentPlacement": "The question title sits on the mid-left portion of an all-orange slide.",
+        "images": [],
+        "boxes": [
+          {
+            "role": "body",
+            "text": "Questions?",
+            "x": 0.798,
+            "y": 0.945,
+            "w": 7.678,
+            "h": 3.264
+          }
+        ]
+      },
+      "gcsUri": "gs://alltheway-rinegan-slide-designs-prod/catalog/project-wireframes/slide-24.png"
+    },
+    "slide-25": {
+      "index": 24,
+      "prev": "slide-24",
+      "next": null,
+      "image": "project-wireframes/slide-25.png",
+      "coordinates": [
+        {
+          "x": 0.798,
+          "y": 1.442,
+          "w": 8.408,
+          "h": 0.585,
+          "kind": "text",
+          "text": "References",
+          "bold": false,
+          "placeholder": "title",
+          "name": "Google Shape;338;p41"
+        },
+        {
+          "x": 0.798,
+          "y": 2.273,
+          "w": 8.408,
+          "h": 2.473,
+          "kind": "text",
+          "text": "Tips for Presenting Your Wireframes\n3 Steps to Better UI Wireframes\nWireframing for Beginners",
+          "bold": false,
+          "placeholder": "body",
+          "name": "Google Shape;339;p41"
+        }
+      ],
+      "description": {
+        "looksLike": "A clean references slide featuring a bold heading and a left-aligned list of reference link titles.",
+        "title": "References",
+        "layout": "title-and-body",
+        "background": {
+          "scope": "deck",
+          "kind": "solid"
+        },
+        "contentPlacement": "Left-aligned slide title in the upper left with a vertical stack of reference links directly below it.",
+        "images": [],
+        "boxes": [
+          {
+            "role": "body",
+            "text": "References",
+            "x": 0.798,
+            "y": 1.442,
+            "w": 8.408,
+            "h": 0.585
+          },
+          {
+            "role": "body",
+            "text": "Tips for Presenting Your Wireframes\n3 Steps to Better UI Wireframes\nWireframing for Beginners",
+            "x": 0.798,
+            "y": 2.273,
+            "w": 8.408,
+            "h": 2.473
+          }
+        ]
+      },
+      "gcsUri": "gs://alltheway-rinegan-slide-designs-prod/catalog/project-wireframes/slide-25.png"
+    }
+  }
+}

@@ -1,0 +1,5037 @@
+{
+  "id": "purple-and-white-modern-startup-pitch-deck",
+  "title": "purple and white modern startup pitch deck",
+  "source": "Purple and White Modern Startup Pitch Deck Presentation.pptx",
+  "width": 20,
+  "height": 11.25,
+  "overall_deck_description": "This 10-slide startup pitch deck is built on a modern, high-contrast dark aesthetic with an inverted light closing. The color palette centers on deep midnight purple and dark indigo with crisp white typography, subtle grid blocking, and vibrant iridescent metallic accents, concluding on a soft lavender-tinted white background for the contact slide. Typography pairs ultra-bold, heavy sans-serif headers with clean, italicized and regular sans-serif body text. Consistent structural elements include a persistent top header bar housing the company logo on the left alongside pill-shaped metadata badges (presenter, date, deck tags) on the right, as well as rounded rectangular content containers and softly rounded photography frames. The sequence begins with an impactful dark cover featuring oversized typography and 3D geometric art (slide 0), moves through structured two-column and modular card-based content layouts with offset image blocks (slides 1–8), and wraps up with a light-mode contact slide anchored by a wide panoramic image and an icon-driven contact footer bar (slide 9).",
+  "slides": {
+    "slide-01": {
+      "index": 0,
+      "prev": null,
+      "next": "slide-02",
+      "image": "purple-and-white-modern-startup-pitch-deck/slide-01.png",
+      "coordinates": [
+        {
+          "x": 0.174,
+          "y": 2.08,
+          "w": 19.652,
+          "h": 5.337,
+          "kind": "text",
+          "text": "Startup",
+          "fontSize": 401.32,
+          "color": "EFEFEF",
+          "bold": false,
+          "name": "TextBox 2"
+        },
+        {
+          "x": 0,
+          "y": 0,
+          "w": 6.092,
+          "h": 0.757,
+          "kind": "shape",
+          "color": "0F062D",
+          "bold": false,
+          "name": "Freeform 4"
+        },
+        {
+          "x": 0,
+          "y": 0,
+          "w": 6.092,
+          "h": 0.757,
+          "kind": "shape",
+          "bold": false,
+          "name": "TextBox 5"
+        },
+        {
+          "x": 0,
+          "y": 0,
+          "w": 0.889,
+          "h": 1.352,
+          "kind": "shape",
+          "color": "EFEFEF",
+          "bold": false,
+          "name": "Freeform 8"
+        },
+        {
+          "x": 0,
+          "y": 0,
+          "w": 0.889,
+          "h": 1.352,
+          "kind": "shape",
+          "bold": false,
+          "name": "TextBox 9"
+        },
+        {
+          "x": 0,
+          "y": 0,
+          "w": 0.889,
+          "h": 1.352,
+          "kind": "shape",
+          "color": "EFEFEF",
+          "bold": false,
+          "name": "Freeform 11"
+        },
+        {
+          "x": 0,
+          "y": 0,
+          "w": 0.889,
+          "h": 1.352,
+          "kind": "shape",
+          "bold": false,
+          "name": "TextBox 12"
+        },
+        {
+          "x": 0,
+          "y": 0,
+          "w": 0.889,
+          "h": 1.659,
+          "kind": "shape",
+          "color": "EFEFEF",
+          "bold": false,
+          "name": "Freeform 14"
+        },
+        {
+          "x": 0,
+          "y": 0,
+          "w": 0.889,
+          "h": 1.659,
+          "kind": "shape",
+          "bold": false,
+          "name": "TextBox 15"
+        },
+        {
+          "x": 0,
+          "y": 0,
+          "w": 0.889,
+          "h": 1.659,
+          "kind": "shape",
+          "color": "EFEFEF",
+          "bold": false,
+          "name": "Freeform 17"
+        },
+        {
+          "x": 0,
+          "y": 0,
+          "w": 0.889,
+          "h": 1.659,
+          "kind": "shape",
+          "bold": false,
+          "name": "TextBox 18"
+        },
+        {
+          "x": 0,
+          "y": 0,
+          "w": 0.889,
+          "h": 1.989,
+          "kind": "shape",
+          "color": "EFEFEF",
+          "bold": false,
+          "name": "Freeform 20"
+        },
+        {
+          "x": 0,
+          "y": 0,
+          "w": 0.889,
+          "h": 1.989,
+          "kind": "shape",
+          "bold": false,
+          "name": "TextBox 21"
+        },
+        {
+          "x": 0,
+          "y": 0,
+          "w": 0.889,
+          "h": 1.989,
+          "kind": "shape",
+          "color": "EFEFEF",
+          "bold": false,
+          "name": "Freeform 23"
+        },
+        {
+          "x": 0,
+          "y": 0,
+          "w": 0.889,
+          "h": 1.989,
+          "kind": "shape",
+          "bold": false,
+          "name": "TextBox 24"
+        },
+        {
+          "x": 0,
+          "y": 0,
+          "w": 0.889,
+          "h": 2.458,
+          "kind": "shape",
+          "color": "EFEFEF",
+          "bold": false,
+          "name": "Freeform 26"
+        },
+        {
+          "x": 0,
+          "y": 0,
+          "w": 0.889,
+          "h": 2.458,
+          "kind": "shape",
+          "bold": false,
+          "name": "TextBox 27"
+        },
+        {
+          "x": 6.883,
+          "y": 9.488,
+          "w": 7.322,
+          "h": 3.322,
+          "kind": "shape",
+          "bold": false,
+          "name": "Freeform 28"
+        },
+        {
+          "x": 4.535,
+          "y": 7.096,
+          "w": 10.099,
+          "h": 4.583,
+          "kind": "shape",
+          "bold": false,
+          "name": "Freeform 29"
+        },
+        {
+          "x": 5.397,
+          "y": 5.875,
+          "w": 7.634,
+          "h": 3.464,
+          "kind": "shape",
+          "bold": false,
+          "name": "Freeform 30"
+        },
+        {
+          "x": 0,
+          "y": 0,
+          "w": 2.688,
+          "h": 0.444,
+          "kind": "shape",
+          "color": "EFEFEF",
+          "bold": false,
+          "name": "Freeform 32"
+        },
+        {
+          "x": 0,
+          "y": 0,
+          "w": 2.688,
+          "h": 0.444,
+          "kind": "shape",
+          "bold": false,
+          "name": "TextBox 33"
+        },
+        {
+          "x": 0,
+          "y": 0,
+          "w": 3.782,
+          "h": 0.444,
+          "kind": "shape",
+          "color": "EFEFEF",
+          "bold": false,
+          "name": "Freeform 35"
+        },
+        {
+          "x": 0,
+          "y": 0,
+          "w": 3.782,
+          "h": 0.444,
+          "kind": "shape",
+          "bold": false,
+          "name": "TextBox 36"
+        },
+        {
+          "x": 0,
+          "y": 0,
+          "w": 1.948,
+          "h": 0.444,
+          "kind": "shape",
+          "color": "0F062D",
+          "bold": false,
+          "name": "Freeform 38"
+        },
+        {
+          "x": 0,
+          "y": 0,
+          "w": 1.948,
+          "h": 0.444,
+          "kind": "shape",
+          "bold": false,
+          "name": "TextBox 39"
+        },
+        {
+          "x": 0,
+          "y": 0,
+          "w": 3.105,
+          "h": 0.444,
+          "kind": "shape",
+          "color": "0F062D",
+          "bold": false,
+          "name": "Freeform 41"
+        },
+        {
+          "x": 0,
+          "y": 0,
+          "w": 3.105,
+          "h": 0.444,
+          "kind": "shape",
+          "bold": false,
+          "name": "TextBox 42"
+        },
+        {
+          "x": 1.192,
+          "y": 0.612,
+          "w": 0.462,
+          "h": 0.399,
+          "kind": "shape",
+          "bold": false,
+          "name": "Freeform 43"
+        },
+        {
+          "x": 1.332,
+          "y": 7.134,
+          "w": 4.087,
+          "h": 0.565,
+          "kind": "text",
+          "text": "Pitch Deck",
+          "fontSize": 42.09,
+          "color": "EFEFEF",
+          "bold": false,
+          "name": "TextBox 44"
+        },
+        {
+          "x": 1.91,
+          "y": 0.705,
+          "w": 4.087,
+          "h": 0.285,
+          "kind": "text",
+          "text": "Salford & Co.",
+          "fontSize": 21.99,
+          "color": "EFEFEF",
+          "bold": false,
+          "name": "TextBox 45"
+        },
+        {
+          "x": 15.772,
+          "y": 0.741,
+          "w": 3.206,
+          "h": 0.236,
+          "kind": "text",
+          "text": "September 23, 2027",
+          "fontSize": 18,
+          "color": "EFEFEF",
+          "bold": false,
+          "name": "TextBox 46"
+        },
+        {
+          "x": 10.886,
+          "y": 0.741,
+          "w": 4.68,
+          "h": 0.236,
+          "kind": "text",
+          "text": "Presented by : Daniel Gallego",
+          "fontSize": 18,
+          "color": "0F042D",
+          "bold": false,
+          "name": "TextBox 47"
+        },
+        {
+          "x": 11.763,
+          "y": 7.134,
+          "w": 6.989,
+          "h": 0.565,
+          "kind": "text",
+          "text": "Business Presentation",
+          "fontSize": 42.09,
+          "color": "EFEFEF",
+          "bold": false,
+          "name": "TextBox 48"
+        }
+      ],
+      "description": {
+        "looksLike": "A modern dark-themed pitch deck title slide featuring an oversized bold title, top header with company info and presenter pills, and 3D iridescent ribbon graphics at the center bottom flanked by subtitle badges.",
+        "title": "Startup",
+        "layout": "title-slide",
+        "background": {
+          "scope": "slide",
+          "kind": "solid"
+        },
+        "contentPlacement": "Header metadata at the top, gigantic title across the center, and subtitle badges flanking a central 3D geometric graphic at the bottom.",
+        "images": [],
+        "boxes": [
+          {
+            "role": "body",
+            "text": "",
+            "x": 0.174,
+            "y": 2.08,
+            "w": 19.652,
+            "h": 5.337
+          },
+          {
+            "role": "body",
+            "text": "",
+            "x": 1.192,
+            "y": 0.612,
+            "w": 0.462,
+            "h": 0.399
+          },
+          {
+            "role": "body",
+            "text": "",
+            "x": 1.91,
+            "y": 0.705,
+            "w": 4.087,
+            "h": 0.285
+          },
+          {
+            "role": "body",
+            "text": "",
+            "x": 10.886,
+            "y": 0.741,
+            "w": 4.68,
+            "h": 0.236
+          },
+          {
+            "role": "body",
+            "text": "",
+            "x": 15.772,
+            "y": 0.741,
+            "w": 3.206,
+            "h": 0.236
+          },
+          {
+            "role": "body",
+            "text": "",
+            "x": 1.332,
+            "y": 7.134,
+            "w": 4.087,
+            "h": 0.565
+          },
+          {
+            "role": "body",
+            "text": "",
+            "x": 11.763,
+            "y": 7.134,
+            "w": 6.989,
+            "h": 0.565
+          },
+          {
+            "role": "body",
+            "text": "",
+            "x": 5.397,
+            "y": 5.875,
+            "w": 7.634,
+            "h": 3.464
+          },
+          {
+            "role": "body",
+            "text": "",
+            "x": 4.535,
+            "y": 7.096,
+            "w": 10.099,
+            "h": 4.583
+          },
+          {
+            "role": "body",
+            "text": "",
+            "x": 6.883,
+            "y": 9.488,
+            "w": 7.322,
+            "h": 3.322
+          }
+        ]
+      },
+      "gcsUri": "gs://alltheway-rinegan-slide-designs-prod/catalog/purple-and-white-modern-startup-pitch-deck/slide-01.png"
+    },
+    "slide-02": {
+      "index": 1,
+      "prev": "slide-01",
+      "next": "slide-03",
+      "image": "purple-and-white-modern-startup-pitch-deck/slide-02.png",
+      "coordinates": [
+        {
+          "x": 0,
+          "y": 0,
+          "w": 0.889,
+          "h": 1.352,
+          "kind": "shape",
+          "color": "EFEFEF",
+          "bold": false,
+          "name": "Freeform 4"
+        },
+        {
+          "x": 0,
+          "y": 0,
+          "w": 0.889,
+          "h": 1.352,
+          "kind": "shape",
+          "bold": false,
+          "name": "TextBox 5"
+        },
+        {
+          "x": 0,
+          "y": 0,
+          "w": 0.889,
+          "h": 1.352,
+          "kind": "shape",
+          "color": "EFEFEF",
+          "bold": false,
+          "name": "Freeform 7"
+        },
+        {
+          "x": 0,
+          "y": 0,
+          "w": 0.889,
+          "h": 1.352,
+          "kind": "shape",
+          "bold": false,
+          "name": "TextBox 8"
+        },
+        {
+          "x": 0,
+          "y": 0,
+          "w": 0.889,
+          "h": 1.659,
+          "kind": "shape",
+          "color": "EFEFEF",
+          "bold": false,
+          "name": "Freeform 10"
+        },
+        {
+          "x": 0,
+          "y": 0,
+          "w": 0.889,
+          "h": 1.659,
+          "kind": "shape",
+          "bold": false,
+          "name": "TextBox 11"
+        },
+        {
+          "x": 0,
+          "y": 0,
+          "w": 0.889,
+          "h": 1.659,
+          "kind": "shape",
+          "color": "EFEFEF",
+          "bold": false,
+          "name": "Freeform 13"
+        },
+        {
+          "x": 0,
+          "y": 0,
+          "w": 0.889,
+          "h": 1.659,
+          "kind": "shape",
+          "bold": false,
+          "name": "TextBox 14"
+        },
+        {
+          "x": 0,
+          "y": 0,
+          "w": 0.889,
+          "h": 1.989,
+          "kind": "shape",
+          "color": "EFEFEF",
+          "bold": false,
+          "name": "Freeform 16"
+        },
+        {
+          "x": 0,
+          "y": 0,
+          "w": 0.889,
+          "h": 1.989,
+          "kind": "shape",
+          "bold": false,
+          "name": "TextBox 17"
+        },
+        {
+          "x": 0,
+          "y": 0,
+          "w": 0.889,
+          "h": 1.989,
+          "kind": "shape",
+          "color": "EFEFEF",
+          "bold": false,
+          "name": "Freeform 19"
+        },
+        {
+          "x": 0,
+          "y": 0,
+          "w": 0.889,
+          "h": 1.989,
+          "kind": "shape",
+          "bold": false,
+          "name": "TextBox 20"
+        },
+        {
+          "x": 0,
+          "y": 0,
+          "w": 0.889,
+          "h": 2.458,
+          "kind": "shape",
+          "color": "EFEFEF",
+          "bold": false,
+          "name": "Freeform 22"
+        },
+        {
+          "x": 0,
+          "y": 0,
+          "w": 0.889,
+          "h": 2.458,
+          "kind": "shape",
+          "bold": false,
+          "name": "TextBox 23"
+        },
+        {
+          "x": 0,
+          "y": 0,
+          "w": 2.688,
+          "h": 0.444,
+          "kind": "shape",
+          "color": "EFEFEF",
+          "bold": false,
+          "name": "Freeform 25"
+        },
+        {
+          "x": 0,
+          "y": 0,
+          "w": 2.688,
+          "h": 0.444,
+          "kind": "shape",
+          "bold": false,
+          "name": "TextBox 26"
+        },
+        {
+          "x": 0,
+          "y": 0,
+          "w": 3.782,
+          "h": 0.444,
+          "kind": "shape",
+          "color": "EFEFEF",
+          "bold": false,
+          "name": "Freeform 28"
+        },
+        {
+          "x": 0,
+          "y": 0,
+          "w": 3.782,
+          "h": 0.444,
+          "kind": "shape",
+          "bold": false,
+          "name": "TextBox 29"
+        },
+        {
+          "x": 0,
+          "y": 0,
+          "w": 2.415,
+          "h": 0.444,
+          "kind": "shape",
+          "color": "EFEFEF",
+          "bold": false,
+          "name": "Freeform 31"
+        },
+        {
+          "x": 0,
+          "y": 0,
+          "w": 2.415,
+          "h": 0.444,
+          "kind": "shape",
+          "bold": false,
+          "name": "TextBox 32"
+        },
+        {
+          "x": 0,
+          "y": 0,
+          "w": 3.205,
+          "h": 0.444,
+          "kind": "shape",
+          "color": "EFEFEF",
+          "bold": false,
+          "name": "Freeform 34"
+        },
+        {
+          "x": 0,
+          "y": 0,
+          "w": 3.205,
+          "h": 0.444,
+          "kind": "shape",
+          "bold": false,
+          "name": "TextBox 35"
+        },
+        {
+          "x": 1.192,
+          "y": 0.612,
+          "w": 0.462,
+          "h": 0.399,
+          "kind": "shape",
+          "bold": false,
+          "name": "Freeform 36"
+        },
+        {
+          "x": 0,
+          "y": 0,
+          "w": 1.497,
+          "h": 0.626,
+          "kind": "shape",
+          "color": "EFEFEF",
+          "bold": false,
+          "name": "Freeform 38"
+        },
+        {
+          "x": 0,
+          "y": 0,
+          "w": 0.581,
+          "h": 0.828,
+          "kind": "shape",
+          "color": "EFEFEF",
+          "bold": false,
+          "name": "Freeform 40"
+        },
+        {
+          "x": 0,
+          "y": 0,
+          "w": 0.581,
+          "h": 0.828,
+          "kind": "shape",
+          "color": "EFEFEF",
+          "bold": false,
+          "name": "Freeform 42"
+        },
+        {
+          "x": 1.91,
+          "y": 0.705,
+          "w": 4.087,
+          "h": 0.285,
+          "kind": "text",
+          "text": "Salford & Co.",
+          "fontSize": 21.99,
+          "color": "EFEFEF",
+          "bold": false,
+          "name": "TextBox 43"
+        },
+        {
+          "x": 15.772,
+          "y": 0.741,
+          "w": 3.206,
+          "h": 0.236,
+          "kind": "text",
+          "text": "September 23, 2027",
+          "fontSize": 18,
+          "color": "EFEFEF",
+          "bold": false,
+          "name": "TextBox 44"
+        },
+        {
+          "x": 5.187,
+          "y": 0.741,
+          "w": 2.565,
+          "h": 0.236,
+          "kind": "text",
+          "text": "Startup Pitch Deck",
+          "fontSize": 18,
+          "color": "EFEFEF",
+          "bold": false,
+          "name": "TextBox 45"
+        },
+        {
+          "x": 10.886,
+          "y": 0.741,
+          "w": 4.68,
+          "h": 0.236,
+          "kind": "text",
+          "text": "Presented by : Daniel Gallego",
+          "fontSize": 18,
+          "color": "0F042D",
+          "bold": false,
+          "name": "TextBox 46"
+        },
+        {
+          "x": 7.814,
+          "y": 0.741,
+          "w": 2.925,
+          "h": 0.236,
+          "kind": "text",
+          "text": "Business Presentation",
+          "fontSize": 18,
+          "color": "0F042D",
+          "bold": false,
+          "name": "TextBox 47"
+        },
+        {
+          "x": 1.717,
+          "y": 2.119,
+          "w": 16.565,
+          "h": 1.281,
+          "kind": "text",
+          "text": "Introduction",
+          "fontSize": 96,
+          "color": "EFEFEF",
+          "bold": false,
+          "name": "TextBox 48"
+        },
+        {
+          "x": 5.701,
+          "y": 3.903,
+          "w": 8.598,
+          "h": 1.288,
+          "kind": "text",
+          "text": "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Quisque molestie nisl eu sem tristique, sit amet convallis ex aliquam. Maecenas varius lectus hendrerit augue blandit, ut posuere erat aliquam. Praesent auctor tellus eget nisl blandit, at varius purus elementum.",
+          "fontSize": 18,
+          "color": "B8B8B8",
+          "bold": false,
+          "name": "TextBox 49"
+        }
+      ],
+      "description": {
+        "looksLike": "A dark purple introduction slide with a massive bold headline, centered descriptive body paragraph, pill-shaped header tags, and a three-photo gallery layout across the bottom.",
+        "title": "Introduction",
+        "layout": "title-and-body",
+        "background": {
+          "scope": "slide",
+          "kind": "solid"
+        },
+        "contentPlacement": "Header metadata and branding along the top edge, large centered section title in the upper-middle, centered explanatory paragraph below it, and three photography cards spanning the lower half of the slide.",
+        "images": [],
+        "boxes": [
+          {
+            "role": "body",
+            "text": "",
+            "x": 1.192,
+            "y": 0.612,
+            "w": 0.462,
+            "h": 0.399
+          },
+          {
+            "role": "body",
+            "text": "",
+            "x": 1.91,
+            "y": 0.705,
+            "w": 4.087,
+            "h": 0.285
+          },
+          {
+            "role": "body",
+            "text": "",
+            "x": 5.187,
+            "y": 0.741,
+            "w": 2.565,
+            "h": 0.236
+          },
+          {
+            "role": "body",
+            "text": "",
+            "x": 7.814,
+            "y": 0.741,
+            "w": 2.925,
+            "h": 0.236
+          },
+          {
+            "role": "body",
+            "text": "",
+            "x": 10.886,
+            "y": 0.741,
+            "w": 4.68,
+            "h": 0.236
+          },
+          {
+            "role": "body",
+            "text": "",
+            "x": 15.772,
+            "y": 0.741,
+            "w": 3.206,
+            "h": 0.236
+          },
+          {
+            "role": "body",
+            "text": "",
+            "x": 1.717,
+            "y": 2.119,
+            "w": 16.565,
+            "h": 1.281
+          },
+          {
+            "role": "body",
+            "text": "",
+            "x": 5.701,
+            "y": 3.903,
+            "w": 8.598,
+            "h": 1.288
+          }
+        ]
+      },
+      "gcsUri": "gs://alltheway-rinegan-slide-designs-prod/catalog/purple-and-white-modern-startup-pitch-deck/slide-02.png"
+    },
+    "slide-03": {
+      "index": 2,
+      "prev": "slide-02",
+      "next": "slide-04",
+      "image": "purple-and-white-modern-startup-pitch-deck/slide-03.png",
+      "coordinates": [
+        {
+          "x": 0,
+          "y": 0,
+          "w": 2.688,
+          "h": 0.444,
+          "kind": "shape",
+          "color": "EFEFEF",
+          "bold": false,
+          "name": "Freeform 3"
+        },
+        {
+          "x": 0,
+          "y": 0,
+          "w": 2.688,
+          "h": 0.444,
+          "kind": "shape",
+          "bold": false,
+          "name": "TextBox 4"
+        },
+        {
+          "x": 0,
+          "y": 0,
+          "w": 3.782,
+          "h": 0.444,
+          "kind": "shape",
+          "color": "EFEFEF",
+          "bold": false,
+          "name": "Freeform 6"
+        },
+        {
+          "x": 0,
+          "y": 0,
+          "w": 3.782,
+          "h": 0.444,
+          "kind": "shape",
+          "bold": false,
+          "name": "TextBox 7"
+        },
+        {
+          "x": 0,
+          "y": 0,
+          "w": 2.415,
+          "h": 0.444,
+          "kind": "shape",
+          "color": "EFEFEF",
+          "bold": false,
+          "name": "Freeform 9"
+        },
+        {
+          "x": 0,
+          "y": 0,
+          "w": 2.415,
+          "h": 0.444,
+          "kind": "shape",
+          "bold": false,
+          "name": "TextBox 10"
+        },
+        {
+          "x": 0,
+          "y": 0,
+          "w": 3.205,
+          "h": 0.444,
+          "kind": "shape",
+          "color": "EFEFEF",
+          "bold": false,
+          "name": "Freeform 12"
+        },
+        {
+          "x": 0,
+          "y": 0,
+          "w": 3.205,
+          "h": 0.444,
+          "kind": "shape",
+          "bold": false,
+          "name": "TextBox 13"
+        },
+        {
+          "x": 1.192,
+          "y": 0.612,
+          "w": 0.462,
+          "h": 0.399,
+          "kind": "shape",
+          "bold": false,
+          "name": "Freeform 14"
+        },
+        {
+          "x": 0,
+          "y": 0,
+          "w": 0.889,
+          "h": 1.352,
+          "kind": "shape",
+          "color": "EFEFEF",
+          "bold": false,
+          "name": "Freeform 17"
+        },
+        {
+          "x": 0,
+          "y": 0,
+          "w": 0.889,
+          "h": 1.352,
+          "kind": "shape",
+          "bold": false,
+          "name": "TextBox 18"
+        },
+        {
+          "x": 0,
+          "y": 0,
+          "w": 0.889,
+          "h": 1.352,
+          "kind": "shape",
+          "color": "EFEFEF",
+          "bold": false,
+          "name": "Freeform 20"
+        },
+        {
+          "x": 0,
+          "y": 0,
+          "w": 0.889,
+          "h": 1.352,
+          "kind": "shape",
+          "bold": false,
+          "name": "TextBox 21"
+        },
+        {
+          "x": 0,
+          "y": 0,
+          "w": 0.889,
+          "h": 1.659,
+          "kind": "shape",
+          "color": "EFEFEF",
+          "bold": false,
+          "name": "Freeform 23"
+        },
+        {
+          "x": 0,
+          "y": 0,
+          "w": 0.889,
+          "h": 1.659,
+          "kind": "shape",
+          "bold": false,
+          "name": "TextBox 24"
+        },
+        {
+          "x": 0,
+          "y": 0,
+          "w": 0.889,
+          "h": 1.659,
+          "kind": "shape",
+          "color": "EFEFEF",
+          "bold": false,
+          "name": "Freeform 26"
+        },
+        {
+          "x": 0,
+          "y": 0,
+          "w": 0.889,
+          "h": 1.659,
+          "kind": "shape",
+          "bold": false,
+          "name": "TextBox 27"
+        },
+        {
+          "x": 0,
+          "y": 0,
+          "w": 0.889,
+          "h": 1.989,
+          "kind": "shape",
+          "color": "EFEFEF",
+          "bold": false,
+          "name": "Freeform 29"
+        },
+        {
+          "x": 0,
+          "y": 0,
+          "w": 0.889,
+          "h": 1.989,
+          "kind": "shape",
+          "bold": false,
+          "name": "TextBox 30"
+        },
+        {
+          "x": 0,
+          "y": 0,
+          "w": 0.889,
+          "h": 1.989,
+          "kind": "shape",
+          "color": "EFEFEF",
+          "bold": false,
+          "name": "Freeform 32"
+        },
+        {
+          "x": 0,
+          "y": 0,
+          "w": 0.889,
+          "h": 1.989,
+          "kind": "shape",
+          "bold": false,
+          "name": "TextBox 33"
+        },
+        {
+          "x": 0,
+          "y": 0,
+          "w": 0.889,
+          "h": 2.458,
+          "kind": "shape",
+          "color": "EFEFEF",
+          "bold": false,
+          "name": "Freeform 35"
+        },
+        {
+          "x": 0,
+          "y": 0,
+          "w": 0.889,
+          "h": 2.458,
+          "kind": "shape",
+          "bold": false,
+          "name": "TextBox 36"
+        },
+        {
+          "x": 0,
+          "y": 0,
+          "w": 2.75,
+          "h": 0.626,
+          "kind": "shape",
+          "color": "EFEFEF",
+          "bold": false,
+          "name": "Freeform 38"
+        },
+        {
+          "x": 0,
+          "y": 0,
+          "w": 1.118,
+          "h": 0.601,
+          "kind": "shape",
+          "color": "EFEFEF",
+          "bold": false,
+          "name": "Freeform 40"
+        },
+        {
+          "x": 1.91,
+          "y": 0.705,
+          "w": 4.087,
+          "h": 0.285,
+          "kind": "text",
+          "text": "Salford & Co.",
+          "fontSize": 21.99,
+          "color": "EFEFEF",
+          "bold": false,
+          "name": "TextBox 41"
+        },
+        {
+          "x": 15.772,
+          "y": 0.741,
+          "w": 3.206,
+          "h": 0.236,
+          "kind": "text",
+          "text": "September 23, 2027",
+          "fontSize": 18,
+          "color": "EFEFEF",
+          "bold": false,
+          "name": "TextBox 42"
+        },
+        {
+          "x": 5.187,
+          "y": 0.741,
+          "w": 2.565,
+          "h": 0.236,
+          "kind": "text",
+          "text": "Startup Pitch Deck",
+          "fontSize": 18,
+          "color": "EFEFEF",
+          "bold": false,
+          "name": "TextBox 43"
+        },
+        {
+          "x": 10.886,
+          "y": 0.741,
+          "w": 4.68,
+          "h": 0.236,
+          "kind": "text",
+          "text": "Presented by : Daniel Gallego",
+          "fontSize": 18,
+          "color": "0F042D",
+          "bold": false,
+          "name": "TextBox 44"
+        },
+        {
+          "x": 7.814,
+          "y": 0.741,
+          "w": 2.925,
+          "h": 0.236,
+          "kind": "text",
+          "text": "Business Presentation",
+          "fontSize": 18,
+          "color": "0F042D",
+          "bold": false,
+          "name": "TextBox 45"
+        },
+        {
+          "x": 1.192,
+          "y": 6.826,
+          "w": 9.077,
+          "h": 3.337,
+          "kind": "text",
+          "text": "Company Overview",
+          "fontSize": 96,
+          "color": "EFEFEF",
+          "bold": false,
+          "name": "TextBox 46"
+        },
+        {
+          "x": 10.27,
+          "y": 8.838,
+          "w": 8.598,
+          "h": 1.288,
+          "kind": "text",
+          "text": "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Quisque molestie nisl eu sem tristique, sit amet convallis ex aliquam. Maecenas varius lectus hendrerit augue blandit, ut posuere erat aliquam. Praesent auctor tellus eget nisl blandit, at varius purus elementum.",
+          "fontSize": 18,
+          "color": "B8B8B8",
+          "bold": false,
+          "name": "TextBox 47"
+        }
+      ],
+      "description": {
+        "looksLike": "A modern dark purple section header slide featuring top navigation pill badges, an overlapping photographic collage in the upper half, a prominent bold section title in the lower left, and a descriptive paragraph in the lower right.",
+        "title": "Company Overview",
+        "layout": "section-title-and-description",
+        "background": {
+          "scope": "slide",
+          "fill": "0F042D",
+          "kind": "solid"
+        },
+        "contentPlacement": "Header pill navigation bar along the top edge, overlapping workplace photographs across the upper half, large bold section title in the lower-left corner, and a multi-line body paragraph aligned in the lower-right area.",
+        "images": [],
+        "boxes": [
+          {
+            "role": "body",
+            "text": "",
+            "x": 1.192,
+            "y": 0.612,
+            "w": 0.462,
+            "h": 0.399
+          },
+          {
+            "role": "body",
+            "text": "Salford & Co.",
+            "x": 1.91,
+            "y": 0.705,
+            "w": 4.087,
+            "h": 0.285,
+            "fontSize": 21.99
+          },
+          {
+            "role": "body",
+            "text": "Startup Pitch Deck",
+            "x": 5.187,
+            "y": 0.741,
+            "w": 2.565,
+            "h": 0.236,
+            "fontSize": 18
+          },
+          {
+            "role": "body",
+            "text": "Business Presentation",
+            "x": 7.814,
+            "y": 0.741,
+            "w": 2.925,
+            "h": 0.236,
+            "fontSize": 18
+          },
+          {
+            "role": "body",
+            "text": "Presented by : Daniel Gallego",
+            "x": 10.886,
+            "y": 0.741,
+            "w": 4.68,
+            "h": 0.236,
+            "fontSize": 18
+          },
+          {
+            "role": "body",
+            "text": "September 23, 2027",
+            "x": 15.772,
+            "y": 0.741,
+            "w": 3.206,
+            "h": 0.236,
+            "fontSize": 18
+          },
+          {
+            "role": "body",
+            "text": "Company Overview",
+            "x": 1.192,
+            "y": 6.826,
+            "w": 9.077,
+            "h": 3.337,
+            "fontSize": 96
+          },
+          {
+            "role": "body",
+            "text": "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Quisque molestie nisl eu sem tristique, sit amet convallis ex aliquam. Maecenas varius lectus hendrerit augue blandit, ut posuere erat aliquam. Praesent auctor tellus eget nisl blandit, at varius purus elementum.",
+            "x": 10.27,
+            "y": 8.838,
+            "w": 8.598,
+            "h": 1.288,
+            "fontSize": 18
+          }
+        ]
+      },
+      "gcsUri": "gs://alltheway-rinegan-slide-designs-prod/catalog/purple-and-white-modern-startup-pitch-deck/slide-03.png"
+    },
+    "slide-04": {
+      "index": 3,
+      "prev": "slide-03",
+      "next": "slide-05",
+      "image": "purple-and-white-modern-startup-pitch-deck/slide-04.png",
+      "coordinates": [
+        {
+          "x": 0,
+          "y": 0,
+          "w": 0.889,
+          "h": 1.352,
+          "kind": "shape",
+          "color": "905BF4",
+          "bold": false,
+          "name": "Freeform 4"
+        },
+        {
+          "x": 0,
+          "y": 0,
+          "w": 0.889,
+          "h": 1.352,
+          "kind": "shape",
+          "bold": false,
+          "name": "TextBox 5"
+        },
+        {
+          "x": 0,
+          "y": 0,
+          "w": 0.889,
+          "h": 1.352,
+          "kind": "shape",
+          "color": "905BF4",
+          "bold": false,
+          "name": "Freeform 7"
+        },
+        {
+          "x": 0,
+          "y": 0,
+          "w": 0.889,
+          "h": 1.352,
+          "kind": "shape",
+          "bold": false,
+          "name": "TextBox 8"
+        },
+        {
+          "x": 0,
+          "y": 0,
+          "w": 0.889,
+          "h": 1.659,
+          "kind": "shape",
+          "color": "905BF4",
+          "bold": false,
+          "name": "Freeform 10"
+        },
+        {
+          "x": 0,
+          "y": 0,
+          "w": 0.889,
+          "h": 1.659,
+          "kind": "shape",
+          "bold": false,
+          "name": "TextBox 11"
+        },
+        {
+          "x": 0,
+          "y": 0,
+          "w": 0.889,
+          "h": 1.659,
+          "kind": "shape",
+          "color": "905BF4",
+          "bold": false,
+          "name": "Freeform 13"
+        },
+        {
+          "x": 0,
+          "y": 0,
+          "w": 0.889,
+          "h": 1.659,
+          "kind": "shape",
+          "bold": false,
+          "name": "TextBox 14"
+        },
+        {
+          "x": 0,
+          "y": 0,
+          "w": 0.889,
+          "h": 1.989,
+          "kind": "shape",
+          "color": "905BF4",
+          "bold": false,
+          "name": "Freeform 16"
+        },
+        {
+          "x": 0,
+          "y": 0,
+          "w": 0.889,
+          "h": 1.989,
+          "kind": "shape",
+          "bold": false,
+          "name": "TextBox 17"
+        },
+        {
+          "x": 0,
+          "y": 0,
+          "w": 0.889,
+          "h": 1.989,
+          "kind": "shape",
+          "color": "905BF4",
+          "bold": false,
+          "name": "Freeform 19"
+        },
+        {
+          "x": 0,
+          "y": 0,
+          "w": 0.889,
+          "h": 1.989,
+          "kind": "shape",
+          "bold": false,
+          "name": "TextBox 20"
+        },
+        {
+          "x": 0,
+          "y": 0,
+          "w": 0.889,
+          "h": 2.458,
+          "kind": "shape",
+          "color": "905BF4",
+          "bold": false,
+          "name": "Freeform 22"
+        },
+        {
+          "x": 0,
+          "y": 0,
+          "w": 0.889,
+          "h": 2.458,
+          "kind": "shape",
+          "bold": false,
+          "name": "TextBox 23"
+        },
+        {
+          "x": 0,
+          "y": 0,
+          "w": 2.688,
+          "h": 0.444,
+          "kind": "shape",
+          "color": "0F042D",
+          "bold": false,
+          "name": "Freeform 25"
+        },
+        {
+          "x": 0,
+          "y": 0,
+          "w": 2.688,
+          "h": 0.444,
+          "kind": "shape",
+          "bold": false,
+          "name": "TextBox 26"
+        },
+        {
+          "x": 0,
+          "y": 0,
+          "w": 3.782,
+          "h": 0.444,
+          "kind": "shape",
+          "color": "0F042D",
+          "bold": false,
+          "name": "Freeform 28"
+        },
+        {
+          "x": 0,
+          "y": 0,
+          "w": 3.782,
+          "h": 0.444,
+          "kind": "shape",
+          "bold": false,
+          "name": "TextBox 29"
+        },
+        {
+          "x": 0,
+          "y": 0,
+          "w": 2.415,
+          "h": 0.444,
+          "kind": "shape",
+          "color": "0F042D",
+          "bold": false,
+          "name": "Freeform 31"
+        },
+        {
+          "x": 0,
+          "y": 0,
+          "w": 2.415,
+          "h": 0.444,
+          "kind": "shape",
+          "bold": false,
+          "name": "TextBox 32"
+        },
+        {
+          "x": 0,
+          "y": 0,
+          "w": 3.205,
+          "h": 0.444,
+          "kind": "shape",
+          "color": "0F042D",
+          "bold": false,
+          "name": "Freeform 34"
+        },
+        {
+          "x": 0,
+          "y": 0,
+          "w": 3.205,
+          "h": 0.444,
+          "kind": "shape",
+          "bold": false,
+          "name": "TextBox 35"
+        },
+        {
+          "x": 1.192,
+          "y": 0.612,
+          "w": 0.462,
+          "h": 0.399,
+          "kind": "shape",
+          "bold": false,
+          "name": "Freeform 36"
+        },
+        {
+          "x": 1.91,
+          "y": 0.705,
+          "w": 4.087,
+          "h": 0.285,
+          "kind": "text",
+          "text": "Salford & Co.",
+          "fontSize": 21.99,
+          "color": "0F042D",
+          "bold": false,
+          "name": "TextBox 37"
+        },
+        {
+          "x": 15.772,
+          "y": 0.741,
+          "w": 3.206,
+          "h": 0.236,
+          "kind": "text",
+          "text": "September 23, 2027",
+          "fontSize": 18,
+          "color": "0F042D",
+          "bold": false,
+          "name": "TextBox 38"
+        },
+        {
+          "x": 5.187,
+          "y": 0.741,
+          "w": 2.565,
+          "h": 0.236,
+          "kind": "text",
+          "text": "Startup Pitch Deck",
+          "fontSize": 18,
+          "color": "0F042D",
+          "bold": false,
+          "name": "TextBox 39"
+        },
+        {
+          "x": 10.886,
+          "y": 0.741,
+          "w": 4.68,
+          "h": 0.236,
+          "kind": "text",
+          "text": "Presented by : Daniel Gallego",
+          "fontSize": 18,
+          "color": "EFEFEF",
+          "bold": false,
+          "name": "TextBox 40"
+        },
+        {
+          "x": 7.814,
+          "y": 0.741,
+          "w": 2.925,
+          "h": 0.236,
+          "kind": "text",
+          "text": "Business Presentation",
+          "fontSize": 18,
+          "color": "EFEFEF",
+          "bold": false,
+          "name": "TextBox 41"
+        },
+        {
+          "x": 0,
+          "y": 0,
+          "w": 0.386,
+          "h": 0.812,
+          "kind": "shape",
+          "color": "0F042D",
+          "bold": false,
+          "name": "Freeform 43"
+        },
+        {
+          "x": 0,
+          "y": 0,
+          "w": 0.386,
+          "h": 0.812,
+          "kind": "shape",
+          "color": "0F042D",
+          "bold": false,
+          "name": "Freeform 45"
+        },
+        {
+          "x": 0,
+          "y": 0,
+          "w": 0.739,
+          "h": 0.812,
+          "kind": "shape",
+          "color": "0F042D",
+          "bold": false,
+          "name": "Freeform 47"
+        },
+        {
+          "x": 11.044,
+          "y": 1.973,
+          "w": 7.831,
+          "h": 1.425,
+          "kind": "text",
+          "text": "Our Vision",
+          "fontSize": 96,
+          "color": "0F042D",
+          "bold": false,
+          "name": "TextBox 48"
+        },
+        {
+          "x": 11.044,
+          "y": 3.803,
+          "w": 7.831,
+          "h": 1.288,
+          "kind": "text",
+          "text": "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Quisque molestie nisl eu sem tristique, sit amet convallis ex aliquam. Maecenas varius lectus hendrerit augue blandit, ut posuere erat aliquam. Praesent auctor tellus eget nisl blandit, at varius purus elementum.",
+          "fontSize": 18,
+          "color": "0F042D",
+          "bold": false,
+          "name": "TextBox 49"
+        },
+        {
+          "x": 0,
+          "y": 0,
+          "w": 1.423,
+          "h": 0.965,
+          "kind": "shape",
+          "color": "573F9D",
+          "bold": false,
+          "name": "Freeform 51"
+        },
+        {
+          "x": 0,
+          "y": 0,
+          "w": 1.423,
+          "h": 0.965,
+          "kind": "shape",
+          "bold": false,
+          "name": "TextBox 52"
+        },
+        {
+          "x": 0,
+          "y": 0,
+          "w": 1.423,
+          "h": 0.965,
+          "kind": "shape",
+          "color": "0F042D",
+          "bold": false,
+          "name": "Freeform 54"
+        },
+        {
+          "x": 0,
+          "y": 0,
+          "w": 1.423,
+          "h": 0.965,
+          "kind": "shape",
+          "bold": false,
+          "name": "TextBox 55"
+        },
+        {
+          "x": 7.87,
+          "y": 6.07,
+          "w": 4.473,
+          "h": 0.555,
+          "kind": "text",
+          "text": "Vision 01",
+          "fontSize": 37.27,
+          "color": "EFEFEF",
+          "bold": false,
+          "name": "TextBox 56"
+        },
+        {
+          "x": 13.936,
+          "y": 6.875,
+          "w": 4.473,
+          "h": 0.555,
+          "kind": "text",
+          "text": "V\nision 02",
+          "fontSize": 37.27,
+          "color": "0F042D",
+          "bold": false,
+          "name": "TextBox 57"
+        },
+        {
+          "x": 7.898,
+          "y": 7.292,
+          "w": 4.446,
+          "h": 1.405,
+          "kind": "text",
+          "text": "Lorem ip\nsum dolor sit amet, consectetur adipiscing elit. Quisque molestie nisl eu sem tristique, sit amet convallis ex aliquam. Maecenas varius lectus hendrerit augue blandit, ut posuere erat aliquam.",
+          "fontSize": 15.99,
+          "color": "EFEFEF",
+          "bold": false,
+          "name": "TextBox 60"
+        },
+        {
+          "x": 13.964,
+          "y": 8.098,
+          "w": 4.446,
+          "h": 1.405,
+          "kind": "text",
+          "text": "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Quisque molestie nisl eu sem tristique, sit amet convallis ex aliquam. Maecenas varius lectus hendrerit augue blandit, ut posuere erat aliquam.",
+          "fontSize": 15.99,
+          "color": "696969",
+          "bold": false,
+          "name": "TextBox 61"
+        }
+      ],
+      "description": {
+        "looksLike": "A modern pitch deck slide featuring a large left-aligned handshake photograph overlapping two staggered vision cards—one solid deep purple and one outlined—positioned beneath a bold headline and intro paragraph.",
+        "title": "Our Vision",
+        "layout": "title-and-two-columns",
+        "background": {
+          "scope": "deck",
+          "kind": "solid"
+        },
+        "contentPlacement": "Header bar at the top with logo and metadata tags; large square photograph on the left overlapping two staggered vision callout cards on the bottom right beneath the primary title and introductory body copy.",
+        "images": [],
+        "boxes": [
+          {
+            "role": "body",
+            "text": "",
+            "x": 1.192,
+            "y": 0.612,
+            "w": 0.462,
+            "h": 0.399
+          },
+          {
+            "role": "body",
+            "text": "Salford & Co.",
+            "x": 1.91,
+            "y": 0.705,
+            "w": 4.087,
+            "h": 0.285,
+            "fontSize": 21.99
+          },
+          {
+            "role": "body",
+            "text": "Startup Pitch Deck",
+            "x": 5.187,
+            "y": 0.741,
+            "w": 2.565,
+            "h": 0.236,
+            "fontSize": 18
+          },
+          {
+            "role": "body",
+            "text": "Business Presentation",
+            "x": 7.814,
+            "y": 0.741,
+            "w": 2.925,
+            "h": 0.236,
+            "fontSize": 18
+          },
+          {
+            "role": "body",
+            "text": "Presented by : Daniel Gallego",
+            "x": 10.886,
+            "y": 0.741,
+            "w": 4.68,
+            "h": 0.236,
+            "fontSize": 18
+          },
+          {
+            "role": "body",
+            "text": "September 23, 2027",
+            "x": 15.772,
+            "y": 0.741,
+            "w": 3.206,
+            "h": 0.236,
+            "fontSize": 18
+          },
+          {
+            "role": "body",
+            "text": "Our Vision",
+            "x": 11.044,
+            "y": 1.973,
+            "w": 7.831,
+            "h": 1.425,
+            "fontSize": 96
+          },
+          {
+            "role": "body",
+            "text": "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Quisque molestie nisl eu sem tristique, sit amet convallis ex aliquam. Maecenas varius lectus hendrerit augue blandit, ut posuere erat aliquam. Praesent auctor tellus eget nisl blandit, at varius purus elementum.",
+            "x": 11.044,
+            "y": 3.803,
+            "w": 7.831,
+            "h": 1.288,
+            "fontSize": 18
+          },
+          {
+            "role": "body",
+            "text": "Vision 01",
+            "x": 7.87,
+            "y": 6.07,
+            "w": 4.473,
+            "h": 0.555,
+            "fontSize": 37.27
+          },
+          {
+            "role": "body",
+            "text": "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Quisque molestie nisl eu sem tristique, sit amet convallis ex aliquam. Maecenas varius lectus hendrerit augue blandit, ut posuere erat aliquam.",
+            "x": 7.898,
+            "y": 7.292,
+            "w": 4.446,
+            "h": 1.405,
+            "fontSize": 15.99
+          },
+          {
+            "role": "body",
+            "text": "Vision 02",
+            "x": 13.936,
+            "y": 6.875,
+            "w": 4.473,
+            "h": 0.555,
+            "fontSize": 37.27
+          },
+          {
+            "role": "body",
+            "text": "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Quisque molestie nisl eu sem tristique, sit amet convallis ex aliquam. Maecenas varius lectus hendrerit augue blandit, ut posuere erat aliquam.",
+            "x": 13.964,
+            "y": 8.098,
+            "w": 4.446,
+            "h": 1.405,
+            "fontSize": 15.99
+          }
+        ]
+      },
+      "gcsUri": "gs://alltheway-rinegan-slide-designs-prod/catalog/purple-and-white-modern-startup-pitch-deck/slide-04.png"
+    },
+    "slide-05": {
+      "index": 4,
+      "prev": "slide-04",
+      "next": "slide-06",
+      "image": "purple-and-white-modern-startup-pitch-deck/slide-05.png",
+      "coordinates": [
+        {
+          "x": 0,
+          "y": 0,
+          "w": 2.688,
+          "h": 0.444,
+          "kind": "shape",
+          "color": "0F042D",
+          "bold": false,
+          "name": "Freeform 3"
+        },
+        {
+          "x": 0,
+          "y": 0,
+          "w": 2.688,
+          "h": 0.444,
+          "kind": "shape",
+          "bold": false,
+          "name": "TextBox 4"
+        },
+        {
+          "x": 0,
+          "y": 0,
+          "w": 3.782,
+          "h": 0.444,
+          "kind": "shape",
+          "color": "0F042D",
+          "bold": false,
+          "name": "Freeform 6"
+        },
+        {
+          "x": 0,
+          "y": 0,
+          "w": 3.782,
+          "h": 0.444,
+          "kind": "shape",
+          "bold": false,
+          "name": "TextBox 7"
+        },
+        {
+          "x": 0,
+          "y": 0,
+          "w": 2.415,
+          "h": 0.444,
+          "kind": "shape",
+          "color": "0F042D",
+          "bold": false,
+          "name": "Freeform 9"
+        },
+        {
+          "x": 0,
+          "y": 0,
+          "w": 2.415,
+          "h": 0.444,
+          "kind": "shape",
+          "bold": false,
+          "name": "TextBox 10"
+        },
+        {
+          "x": 0,
+          "y": 0,
+          "w": 3.205,
+          "h": 0.444,
+          "kind": "shape",
+          "color": "0F042D",
+          "bold": false,
+          "name": "Freeform 12"
+        },
+        {
+          "x": 0,
+          "y": 0,
+          "w": 3.205,
+          "h": 0.444,
+          "kind": "shape",
+          "bold": false,
+          "name": "TextBox 13"
+        },
+        {
+          "x": 1.192,
+          "y": 0.612,
+          "w": 0.462,
+          "h": 0.399,
+          "kind": "shape",
+          "bold": false,
+          "name": "Freeform 14"
+        },
+        {
+          "x": 1.91,
+          "y": 0.705,
+          "w": 4.087,
+          "h": 0.285,
+          "kind": "text",
+          "text": "Salford & Co.",
+          "fontSize": 21.99,
+          "color": "0F042D",
+          "bold": false,
+          "name": "TextBox 15"
+        },
+        {
+          "x": 15.772,
+          "y": 0.741,
+          "w": 3.206,
+          "h": 0.236,
+          "kind": "text",
+          "text": "September 23, 2027",
+          "fontSize": 18,
+          "color": "0F042D",
+          "bold": false,
+          "name": "TextBox 16"
+        },
+        {
+          "x": 5.187,
+          "y": 0.741,
+          "w": 2.565,
+          "h": 0.236,
+          "kind": "text",
+          "text": "Startup Pitch Deck",
+          "fontSize": 18,
+          "color": "0F042D",
+          "bold": false,
+          "name": "TextBox 17"
+        },
+        {
+          "x": 10.886,
+          "y": 0.741,
+          "w": 4.68,
+          "h": 0.236,
+          "kind": "text",
+          "text": "Presented by : Daniel Gallego",
+          "fontSize": 18,
+          "color": "EFEFEF",
+          "bold": false,
+          "name": "TextBox 18"
+        },
+        {
+          "x": 7.814,
+          "y": 0.741,
+          "w": 2.925,
+          "h": 0.236,
+          "kind": "text",
+          "text": "Business Presentation",
+          "fontSize": 18,
+          "color": "EFEFEF",
+          "bold": false,
+          "name": "TextBox 19"
+        },
+        {
+          "x": 0,
+          "y": 0,
+          "w": 0.889,
+          "h": 1.352,
+          "kind": "shape",
+          "color": "905BF4",
+          "bold": false,
+          "name": "Freeform 22"
+        },
+        {
+          "x": 0,
+          "y": 0,
+          "w": 0.889,
+          "h": 1.352,
+          "kind": "shape",
+          "bold": false,
+          "name": "TextBox 23"
+        },
+        {
+          "x": 0,
+          "y": 0,
+          "w": 0.889,
+          "h": 1.352,
+          "kind": "shape",
+          "color": "905BF4",
+          "bold": false,
+          "name": "Freeform 25"
+        },
+        {
+          "x": 0,
+          "y": 0,
+          "w": 0.889,
+          "h": 1.352,
+          "kind": "shape",
+          "bold": false,
+          "name": "TextBox 26"
+        },
+        {
+          "x": 0,
+          "y": 0,
+          "w": 0.889,
+          "h": 1.659,
+          "kind": "shape",
+          "color": "905BF4",
+          "bold": false,
+          "name": "Freeform 28"
+        },
+        {
+          "x": 0,
+          "y": 0,
+          "w": 0.889,
+          "h": 1.659,
+          "kind": "shape",
+          "bold": false,
+          "name": "TextBox 29"
+        },
+        {
+          "x": 0,
+          "y": 0,
+          "w": 0.889,
+          "h": 1.659,
+          "kind": "shape",
+          "color": "905BF4",
+          "bold": false,
+          "name": "Freeform 31"
+        },
+        {
+          "x": 0,
+          "y": 0,
+          "w": 0.889,
+          "h": 1.659,
+          "kind": "shape",
+          "bold": false,
+          "name": "TextBox 32"
+        },
+        {
+          "x": 0,
+          "y": 0,
+          "w": 0.889,
+          "h": 1.989,
+          "kind": "shape",
+          "color": "905BF4",
+          "bold": false,
+          "name": "Freeform 34"
+        },
+        {
+          "x": 0,
+          "y": 0,
+          "w": 0.889,
+          "h": 1.989,
+          "kind": "shape",
+          "bold": false,
+          "name": "TextBox 35"
+        },
+        {
+          "x": 0,
+          "y": 0,
+          "w": 0.889,
+          "h": 1.989,
+          "kind": "shape",
+          "color": "905BF4",
+          "bold": false,
+          "name": "Freeform 37"
+        },
+        {
+          "x": 0,
+          "y": 0,
+          "w": 0.889,
+          "h": 1.989,
+          "kind": "shape",
+          "bold": false,
+          "name": "TextBox 38"
+        },
+        {
+          "x": 0,
+          "y": 0,
+          "w": 0.889,
+          "h": 2.458,
+          "kind": "shape",
+          "color": "905BF4",
+          "bold": false,
+          "name": "Freeform 40"
+        },
+        {
+          "x": 0,
+          "y": 0,
+          "w": 0.889,
+          "h": 2.458,
+          "kind": "shape",
+          "bold": false,
+          "name": "TextBox 41"
+        },
+        {
+          "x": 0,
+          "y": 0,
+          "w": 0.386,
+          "h": 0.812,
+          "kind": "shape",
+          "color": "0F042D",
+          "bold": false,
+          "name": "Freeform 43"
+        },
+        {
+          "x": 0,
+          "y": 0,
+          "w": 0.386,
+          "h": 0.812,
+          "kind": "shape",
+          "color": "0F042D",
+          "bold": false,
+          "name": "Freeform 45"
+        },
+        {
+          "x": 0,
+          "y": 0,
+          "w": 0.739,
+          "h": 0.812,
+          "kind": "shape",
+          "color": "0F042D",
+          "bold": false,
+          "name": "Freeform 47"
+        },
+        {
+          "x": 1.125,
+          "y": 1.973,
+          "w": 8.946,
+          "h": 1.425,
+          "kind": "text",
+          "text": "Our Mission",
+          "fontSize": 96,
+          "color": "0F042D",
+          "bold": false,
+          "name": "TextBox 48"
+        },
+        {
+          "x": 1.196,
+          "y": 3.803,
+          "w": 7.863,
+          "h": 1.288,
+          "kind": "text",
+          "text": "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Quisque molestie nisl eu sem tristique, sit amet convallis ex aliquam. Maecenas varius lectus hendrerit augue blandit, ut posuere erat aliquam. Praesent auctor tellus eget nisl blandit, at varius purus elementum.",
+          "fontSize": 18,
+          "color": "0F042D",
+          "bold": false,
+          "name": "TextBox 49"
+        },
+        {
+          "x": 0,
+          "y": 0,
+          "w": 1.423,
+          "h": 0.965,
+          "kind": "shape",
+          "color": "573F9D",
+          "bold": false,
+          "name": "Freeform 51"
+        },
+        {
+          "x": 0,
+          "y": 0,
+          "w": 1.423,
+          "h": 0.965,
+          "kind": "shape",
+          "bold": false,
+          "name": "TextBox 52"
+        },
+        {
+          "x": 0,
+          "y": 0,
+          "w": 1.423,
+          "h": 0.965,
+          "kind": "shape",
+          "color": "0F042D",
+          "bold": false,
+          "name": "Freeform 54"
+        },
+        {
+          "x": 0,
+          "y": 0,
+          "w": 1.423,
+          "h": 0.965,
+          "kind": "shape",
+          "bold": false,
+          "name": "TextBox 55"
+        },
+        {
+          "x": 7.87,
+          "y": 6.587,
+          "w": 4.473,
+          "h": 0.555,
+          "kind": "text",
+          "text": "M\nission 02",
+          "fontSize": 37.27,
+          "color": "EFEFEF",
+          "bold": false,
+          "name": "TextBox 56"
+        },
+        {
+          "x": 1.59,
+          "y": 6.039,
+          "w": 4.473,
+          "h": 0.555,
+          "kind": "text",
+          "text": "M\nission 01",
+          "fontSize": 37.27,
+          "color": "0F042D",
+          "bold": false,
+          "name": "TextBox 57"
+        },
+        {
+          "x": 7.898,
+          "y": 7.809,
+          "w": 4.446,
+          "h": 1.405,
+          "kind": "text",
+          "text": "Lorem ip\nsum dolor sit amet, consectetur adipiscing elit. Quisque molestie nisl eu sem tristique, sit amet convallis ex aliquam. Maecenas varius lectus hendrerit augue blandit, ut posuere erat aliquam.",
+          "fontSize": 15.99,
+          "color": "EFEFEF",
+          "bold": false,
+          "name": "TextBox 60"
+        },
+        {
+          "x": 1.618,
+          "y": 7.261,
+          "w": 4.446,
+          "h": 1.405,
+          "kind": "text",
+          "text": "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Quisque molestie nisl eu sem tristique, sit amet convallis ex aliquam. Maecenas varius lectus hendrerit augue blandit, ut posuere erat aliquam.",
+          "fontSize": 15.99,
+          "color": "696969",
+          "bold": false,
+          "name": "TextBox 61"
+        }
+      ],
+      "description": {
+        "looksLike": "A modern startup mission slide featuring a bold left-aligned headline and overview text, two highlighted mission cards below, and a cheerful team photograph on the right.",
+        "title": "Our Mission",
+        "layout": "title-and-two-columns",
+        "background": {
+          "scope": "slide",
+          "kind": "solid"
+        },
+        "contentPlacement": "The top bar contains presentation metadata badges. The left column hosts the large section title, introductory paragraph, and two side-by-side mission highlight cards. The right side features a large rounded office photograph.",
+        "images": [],
+        "boxes": [
+          {
+            "role": "body",
+            "text": "",
+            "x": 1.192,
+            "y": 0.612,
+            "w": 0.462,
+            "h": 0.399
+          },
+          {
+            "role": "body",
+            "text": "Salford & Co.",
+            "x": 1.91,
+            "y": 0.705,
+            "w": 4.087,
+            "h": 0.285,
+            "fontSize": 21.99
+          },
+          {
+            "role": "body",
+            "text": "Startup Pitch Deck",
+            "x": 5.187,
+            "y": 0.741,
+            "w": 2.565,
+            "h": 0.236,
+            "fontSize": 18
+          },
+          {
+            "role": "body",
+            "text": "Business Presentation",
+            "x": 7.814,
+            "y": 0.741,
+            "w": 2.925,
+            "h": 0.236,
+            "fontSize": 18
+          },
+          {
+            "role": "body",
+            "text": "Presented by : Daniel Gallego",
+            "x": 10.886,
+            "y": 0.741,
+            "w": 4.68,
+            "h": 0.236,
+            "fontSize": 18
+          },
+          {
+            "role": "body",
+            "text": "September 23, 2027",
+            "x": 15.772,
+            "y": 0.741,
+            "w": 3.206,
+            "h": 0.236,
+            "fontSize": 18
+          },
+          {
+            "role": "body",
+            "text": "Our Mission",
+            "x": 1.125,
+            "y": 1.973,
+            "w": 8.946,
+            "h": 1.425,
+            "fontSize": 96
+          },
+          {
+            "role": "body",
+            "text": "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Quisque molestie nisl eu sem tristique, sit amet convallis ex aliquam. Maecenas varius lectus hendrerit augue blandit, ut posuere erat aliquam. Praesent auctor tellus eget nisl blandit, at varius purus elementum.",
+            "x": 1.196,
+            "y": 3.803,
+            "w": 7.863,
+            "h": 1.288,
+            "fontSize": 18
+          },
+          {
+            "role": "body",
+            "text": "Mission 01",
+            "x": 1.59,
+            "y": 6.039,
+            "w": 4.473,
+            "h": 0.555,
+            "fontSize": 37.27
+          },
+          {
+            "role": "body",
+            "text": "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Quisque molestie nisl eu sem tristique, sit amet convallis ex aliquam. Maecenas varius lectus hendrerit augue blandit, ut posuere erat aliquam.",
+            "x": 1.618,
+            "y": 7.261,
+            "w": 4.446,
+            "h": 1.405,
+            "fontSize": 15.99
+          },
+          {
+            "role": "body",
+            "text": "Mission 02",
+            "x": 7.87,
+            "y": 6.587,
+            "w": 4.473,
+            "h": 0.555,
+            "fontSize": 37.27
+          },
+          {
+            "role": "body",
+            "text": "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Quisque molestie nisl eu sem tristique, sit amet convallis ex aliquam. Maecenas varius lectus hendrerit augue blandit, ut posuere erat aliquam.",
+            "x": 7.898,
+            "y": 7.809,
+            "w": 4.446,
+            "h": 1.405,
+            "fontSize": 15.99
+          }
+        ]
+      },
+      "gcsUri": "gs://alltheway-rinegan-slide-designs-prod/catalog/purple-and-white-modern-startup-pitch-deck/slide-05.png"
+    },
+    "slide-06": {
+      "index": 5,
+      "prev": "slide-05",
+      "next": "slide-07",
+      "image": "purple-and-white-modern-startup-pitch-deck/slide-06.png",
+      "coordinates": [
+        {
+          "x": 0,
+          "y": 0,
+          "w": 0.889,
+          "h": 1.352,
+          "kind": "shape",
+          "color": "EFEFEF",
+          "bold": false,
+          "name": "Freeform 4"
+        },
+        {
+          "x": 0,
+          "y": 0,
+          "w": 0.889,
+          "h": 1.352,
+          "kind": "shape",
+          "bold": false,
+          "name": "TextBox 5"
+        },
+        {
+          "x": 0,
+          "y": 0,
+          "w": 0.889,
+          "h": 1.352,
+          "kind": "shape",
+          "color": "EFEFEF",
+          "bold": false,
+          "name": "Freeform 7"
+        },
+        {
+          "x": 0,
+          "y": 0,
+          "w": 0.889,
+          "h": 1.352,
+          "kind": "shape",
+          "bold": false,
+          "name": "TextBox 8"
+        },
+        {
+          "x": 0,
+          "y": 0,
+          "w": 0.889,
+          "h": 1.659,
+          "kind": "shape",
+          "color": "EFEFEF",
+          "bold": false,
+          "name": "Freeform 10"
+        },
+        {
+          "x": 0,
+          "y": 0,
+          "w": 0.889,
+          "h": 1.659,
+          "kind": "shape",
+          "bold": false,
+          "name": "TextBox 11"
+        },
+        {
+          "x": 0,
+          "y": 0,
+          "w": 0.889,
+          "h": 1.659,
+          "kind": "shape",
+          "color": "EFEFEF",
+          "bold": false,
+          "name": "Freeform 13"
+        },
+        {
+          "x": 0,
+          "y": 0,
+          "w": 0.889,
+          "h": 1.659,
+          "kind": "shape",
+          "bold": false,
+          "name": "TextBox 14"
+        },
+        {
+          "x": 0,
+          "y": 0,
+          "w": 0.889,
+          "h": 1.989,
+          "kind": "shape",
+          "color": "EFEFEF",
+          "bold": false,
+          "name": "Freeform 16"
+        },
+        {
+          "x": 0,
+          "y": 0,
+          "w": 0.889,
+          "h": 1.989,
+          "kind": "shape",
+          "bold": false,
+          "name": "TextBox 17"
+        },
+        {
+          "x": 0,
+          "y": 0,
+          "w": 0.889,
+          "h": 1.989,
+          "kind": "shape",
+          "color": "EFEFEF",
+          "bold": false,
+          "name": "Freeform 19"
+        },
+        {
+          "x": 0,
+          "y": 0,
+          "w": 0.889,
+          "h": 1.989,
+          "kind": "shape",
+          "bold": false,
+          "name": "TextBox 20"
+        },
+        {
+          "x": 0,
+          "y": 0,
+          "w": 0.889,
+          "h": 2.458,
+          "kind": "shape",
+          "color": "EFEFEF",
+          "bold": false,
+          "name": "Freeform 22"
+        },
+        {
+          "x": 0,
+          "y": 0,
+          "w": 0.889,
+          "h": 2.458,
+          "kind": "shape",
+          "bold": false,
+          "name": "TextBox 23"
+        },
+        {
+          "x": 0,
+          "y": 0,
+          "w": 2.688,
+          "h": 0.444,
+          "kind": "shape",
+          "color": "EFEFEF",
+          "bold": false,
+          "name": "Freeform 25"
+        },
+        {
+          "x": 0,
+          "y": 0,
+          "w": 2.688,
+          "h": 0.444,
+          "kind": "shape",
+          "bold": false,
+          "name": "TextBox 26"
+        },
+        {
+          "x": 0,
+          "y": 0,
+          "w": 3.782,
+          "h": 0.444,
+          "kind": "shape",
+          "color": "EFEFEF",
+          "bold": false,
+          "name": "Freeform 28"
+        },
+        {
+          "x": 0,
+          "y": 0,
+          "w": 3.782,
+          "h": 0.444,
+          "kind": "shape",
+          "bold": false,
+          "name": "TextBox 29"
+        },
+        {
+          "x": 0,
+          "y": 0,
+          "w": 2.415,
+          "h": 0.444,
+          "kind": "shape",
+          "color": "EFEFEF",
+          "bold": false,
+          "name": "Freeform 31"
+        },
+        {
+          "x": 0,
+          "y": 0,
+          "w": 2.415,
+          "h": 0.444,
+          "kind": "shape",
+          "bold": false,
+          "name": "TextBox 32"
+        },
+        {
+          "x": 0,
+          "y": 0,
+          "w": 3.205,
+          "h": 0.444,
+          "kind": "shape",
+          "color": "EFEFEF",
+          "bold": false,
+          "name": "Freeform 34"
+        },
+        {
+          "x": 0,
+          "y": 0,
+          "w": 3.205,
+          "h": 0.444,
+          "kind": "shape",
+          "bold": false,
+          "name": "TextBox 35"
+        },
+        {
+          "x": 1.192,
+          "y": 0.612,
+          "w": 0.462,
+          "h": 0.399,
+          "kind": "shape",
+          "bold": false,
+          "name": "Freeform 36"
+        },
+        {
+          "x": 1.91,
+          "y": 0.705,
+          "w": 4.087,
+          "h": 0.285,
+          "kind": "text",
+          "text": "Salford & Co.",
+          "fontSize": 21.99,
+          "color": "EFEFEF",
+          "bold": false,
+          "name": "TextBox 37"
+        },
+        {
+          "x": 15.772,
+          "y": 0.741,
+          "w": 3.206,
+          "h": 0.236,
+          "kind": "text",
+          "text": "September 23, 2027",
+          "fontSize": 18,
+          "color": "EFEFEF",
+          "bold": false,
+          "name": "TextBox 38"
+        },
+        {
+          "x": 5.187,
+          "y": 0.741,
+          "w": 2.565,
+          "h": 0.236,
+          "kind": "text",
+          "text": "Startup Pitch Deck",
+          "fontSize": 18,
+          "color": "EFEFEF",
+          "bold": false,
+          "name": "TextBox 39"
+        },
+        {
+          "x": 10.886,
+          "y": 0.741,
+          "w": 4.68,
+          "h": 0.236,
+          "kind": "text",
+          "text": "Presented by : Daniel Gallego",
+          "fontSize": 18,
+          "color": "0F042D",
+          "bold": false,
+          "name": "TextBox 40"
+        },
+        {
+          "x": 7.814,
+          "y": 0.741,
+          "w": 2.925,
+          "h": 0.236,
+          "kind": "text",
+          "text": "Business Presentation",
+          "fontSize": 18,
+          "color": "0F042D",
+          "bold": false,
+          "name": "TextBox 41"
+        },
+        {
+          "x": 8.899,
+          "y": 2.119,
+          "w": 9.976,
+          "h": 1.281,
+          "kind": "text",
+          "text": "Our Solutions",
+          "fontSize": 96,
+          "color": "EFEFEF",
+          "bold": false,
+          "name": "TextBox 42"
+        },
+        {
+          "x": 0,
+          "y": 0,
+          "w": 0.729,
+          "h": 0.906,
+          "kind": "shape",
+          "color": "EFEFEF",
+          "bold": false,
+          "name": "Freeform 44"
+        },
+        {
+          "x": 0,
+          "y": 0,
+          "w": 0.729,
+          "h": 0.828,
+          "kind": "shape",
+          "color": "EFEFEF",
+          "bold": false,
+          "name": "Freeform 46"
+        },
+        {
+          "x": 0,
+          "y": 0,
+          "w": 1.423,
+          "h": 0.965,
+          "kind": "shape",
+          "color": "EFEFEF",
+          "bold": false,
+          "name": "Freeform 48"
+        },
+        {
+          "x": 0,
+          "y": 0,
+          "w": 1.423,
+          "h": 0.965,
+          "kind": "shape",
+          "bold": false,
+          "name": "TextBox 49"
+        },
+        {
+          "x": 0,
+          "y": 0,
+          "w": 1.423,
+          "h": 0.965,
+          "kind": "shape",
+          "color": "EFEFEF",
+          "bold": false,
+          "name": "Freeform 51"
+        },
+        {
+          "x": 0,
+          "y": 0,
+          "w": 1.423,
+          "h": 0.965,
+          "kind": "shape",
+          "bold": false,
+          "name": "TextBox 52"
+        },
+        {
+          "x": 8,
+          "y": 6.416,
+          "w": 4.473,
+          "h": 0.555,
+          "kind": "text",
+          "text": "Solut\nion 01",
+          "fontSize": 37.27,
+          "color": "0F042D",
+          "bold": false,
+          "name": "TextBox 53"
+        },
+        {
+          "x": 8.028,
+          "y": 7.638,
+          "w": 4.446,
+          "h": 1.405,
+          "kind": "text",
+          "text": "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Quisque molestie nisl eu sem tristique, sit amet convallis ex aliquam. Maecenas varius lectus hendrerit augue blandit, ut posuere erat aliquam.",
+          "fontSize": 15.99,
+          "color": "696969",
+          "bold": false,
+          "name": "TextBox 55"
+        },
+        {
+          "x": 13.947,
+          "y": 6.931,
+          "w": 4.473,
+          "h": 0.555,
+          "kind": "text",
+          "text": "Solut\nion 02",
+          "fontSize": 37.27,
+          "color": "EFEFEF",
+          "bold": false,
+          "name": "TextBox 56"
+        },
+        {
+          "x": 13.974,
+          "y": 8.153,
+          "w": 4.446,
+          "h": 1.405,
+          "kind": "text",
+          "text": "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Quisque molestie nisl eu sem tristique, sit amet convallis ex aliquam. Maecenas varius lectus hendrerit augue blandit, ut posuere erat aliquam.",
+          "fontSize": 15.99,
+          "color": "B8B8B8",
+          "bold": false,
+          "name": "TextBox 58"
+        },
+        {
+          "x": 8.899,
+          "y": 3.711,
+          "w": 9.969,
+          "h": 0.965,
+          "kind": "text",
+          "text": "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Quisque molestie nisl eu sem tristique, sit amet convallis ex aliquam. Maecenas varius lectus hendrerit augue blandit, ut posuere erat aliquam. Praesent auctor tellus eget nisl blandit, at varius purus elementum.",
+          "fontSize": 18,
+          "color": "B8B8B8",
+          "bold": false,
+          "name": "TextBox 59"
+        }
+      ],
+      "description": {
+        "looksLike": "A modern pitch deck solutions slide on a dark purple background, featuring overlapping office photos on the left, a large bold title with intro text in the upper right, and two side-by-side solution cards below.",
+        "title": "Our Solutions",
+        "layout": "title-and-two-columns",
+        "background": {
+          "scope": "deck",
+          "kind": "solid"
+        },
+        "contentPlacement": "Overlapping photographic panels sit on the left half of the slide, while the right side contains a large section title and summary paragraph above two side-by-side solution cards (one filled white card and one outlined card).",
+        "images": [],
+        "boxes": [
+          {
+            "role": "body",
+            "text": "",
+            "x": 1.91,
+            "y": 0.705,
+            "w": 4.087,
+            "h": 0.285
+          },
+          {
+            "role": "body",
+            "text": "",
+            "x": 5.187,
+            "y": 0.741,
+            "w": 2.565,
+            "h": 0.236
+          },
+          {
+            "role": "body",
+            "text": "",
+            "x": 7.814,
+            "y": 0.741,
+            "w": 2.925,
+            "h": 0.236
+          },
+          {
+            "role": "body",
+            "text": "",
+            "x": 10.886,
+            "y": 0.741,
+            "w": 4.68,
+            "h": 0.236
+          },
+          {
+            "role": "body",
+            "text": "",
+            "x": 15.772,
+            "y": 0.741,
+            "w": 3.206,
+            "h": 0.236
+          },
+          {
+            "role": "body",
+            "text": "",
+            "x": 8.899,
+            "y": 2.119,
+            "w": 9.976,
+            "h": 1.281
+          },
+          {
+            "role": "body",
+            "text": "",
+            "x": 8.899,
+            "y": 3.711,
+            "w": 9.969,
+            "h": 0.965
+          },
+          {
+            "role": "body",
+            "text": "",
+            "x": 8,
+            "y": 6.416,
+            "w": 4.473,
+            "h": 0.555
+          },
+          {
+            "role": "body",
+            "text": "",
+            "x": 8.028,
+            "y": 7.638,
+            "w": 4.446,
+            "h": 1.405
+          },
+          {
+            "role": "body",
+            "text": "",
+            "x": 13.947,
+            "y": 6.931,
+            "w": 4.473,
+            "h": 0.555
+          },
+          {
+            "role": "body",
+            "text": "",
+            "x": 13.974,
+            "y": 8.153,
+            "w": 4.446,
+            "h": 1.405
+          }
+        ]
+      },
+      "gcsUri": "gs://alltheway-rinegan-slide-designs-prod/catalog/purple-and-white-modern-startup-pitch-deck/slide-06.png"
+    },
+    "slide-07": {
+      "index": 6,
+      "prev": "slide-06",
+      "next": "slide-08",
+      "image": "purple-and-white-modern-startup-pitch-deck/slide-07.png",
+      "coordinates": [
+        {
+          "x": 0,
+          "y": 0,
+          "w": 2.688,
+          "h": 0.444,
+          "kind": "shape",
+          "color": "EFEFEF",
+          "bold": false,
+          "name": "Freeform 3"
+        },
+        {
+          "x": 0,
+          "y": 0,
+          "w": 2.688,
+          "h": 0.444,
+          "kind": "shape",
+          "bold": false,
+          "name": "TextBox 4"
+        },
+        {
+          "x": 0,
+          "y": 0,
+          "w": 3.782,
+          "h": 0.444,
+          "kind": "shape",
+          "color": "EFEFEF",
+          "bold": false,
+          "name": "Freeform 6"
+        },
+        {
+          "x": 0,
+          "y": 0,
+          "w": 3.782,
+          "h": 0.444,
+          "kind": "shape",
+          "bold": false,
+          "name": "TextBox 7"
+        },
+        {
+          "x": 0,
+          "y": 0,
+          "w": 2.415,
+          "h": 0.444,
+          "kind": "shape",
+          "color": "EFEFEF",
+          "bold": false,
+          "name": "Freeform 9"
+        },
+        {
+          "x": 0,
+          "y": 0,
+          "w": 2.415,
+          "h": 0.444,
+          "kind": "shape",
+          "bold": false,
+          "name": "TextBox 10"
+        },
+        {
+          "x": 0,
+          "y": 0,
+          "w": 3.205,
+          "h": 0.444,
+          "kind": "shape",
+          "color": "EFEFEF",
+          "bold": false,
+          "name": "Freeform 12"
+        },
+        {
+          "x": 0,
+          "y": 0,
+          "w": 3.205,
+          "h": 0.444,
+          "kind": "shape",
+          "bold": false,
+          "name": "TextBox 13"
+        },
+        {
+          "x": 1.192,
+          "y": 0.612,
+          "w": 0.462,
+          "h": 0.399,
+          "kind": "shape",
+          "bold": false,
+          "name": "Freeform 14"
+        },
+        {
+          "x": 1.91,
+          "y": 0.705,
+          "w": 4.087,
+          "h": 0.285,
+          "kind": "text",
+          "text": "Salford & Co.",
+          "fontSize": 21.99,
+          "color": "EFEFEF",
+          "bold": false,
+          "name": "TextBox 15"
+        },
+        {
+          "x": 15.772,
+          "y": 0.741,
+          "w": 3.206,
+          "h": 0.236,
+          "kind": "text",
+          "text": "September 23, 2027",
+          "fontSize": 18,
+          "color": "EFEFEF",
+          "bold": false,
+          "name": "TextBox 16"
+        },
+        {
+          "x": 5.187,
+          "y": 0.741,
+          "w": 2.565,
+          "h": 0.236,
+          "kind": "text",
+          "text": "Startup Pitch Deck",
+          "fontSize": 18,
+          "color": "EFEFEF",
+          "bold": false,
+          "name": "TextBox 17"
+        },
+        {
+          "x": 10.886,
+          "y": 0.741,
+          "w": 4.68,
+          "h": 0.236,
+          "kind": "text",
+          "text": "Presented by : Daniel Gallego",
+          "fontSize": 18,
+          "color": "0F042D",
+          "bold": false,
+          "name": "TextBox 18"
+        },
+        {
+          "x": 7.814,
+          "y": 0.741,
+          "w": 2.925,
+          "h": 0.236,
+          "kind": "text",
+          "text": "Business Presentation",
+          "fontSize": 18,
+          "color": "0F042D",
+          "bold": false,
+          "name": "TextBox 19"
+        },
+        {
+          "x": 1.125,
+          "y": 2.119,
+          "w": 17.75,
+          "h": 1.281,
+          "kind": "text",
+          "text": "Our Services",
+          "fontSize": 96,
+          "color": "EFEFEF",
+          "bold": false,
+          "name": "TextBox 20"
+        },
+        {
+          "x": 0,
+          "y": 0,
+          "w": 0.889,
+          "h": 1.352,
+          "kind": "shape",
+          "color": "EFEFEF",
+          "bold": false,
+          "name": "Freeform 23"
+        },
+        {
+          "x": 0,
+          "y": 0,
+          "w": 0.889,
+          "h": 1.352,
+          "kind": "shape",
+          "bold": false,
+          "name": "TextBox 24"
+        },
+        {
+          "x": 0,
+          "y": 0,
+          "w": 0.889,
+          "h": 1.352,
+          "kind": "shape",
+          "color": "EFEFEF",
+          "bold": false,
+          "name": "Freeform 26"
+        },
+        {
+          "x": 0,
+          "y": 0,
+          "w": 0.889,
+          "h": 1.352,
+          "kind": "shape",
+          "bold": false,
+          "name": "TextBox 27"
+        },
+        {
+          "x": 0,
+          "y": 0,
+          "w": 0.889,
+          "h": 1.659,
+          "kind": "shape",
+          "color": "EFEFEF",
+          "bold": false,
+          "name": "Freeform 29"
+        },
+        {
+          "x": 0,
+          "y": 0,
+          "w": 0.889,
+          "h": 1.659,
+          "kind": "shape",
+          "bold": false,
+          "name": "TextBox 30"
+        },
+        {
+          "x": 0,
+          "y": 0,
+          "w": 0.889,
+          "h": 1.659,
+          "kind": "shape",
+          "color": "EFEFEF",
+          "bold": false,
+          "name": "Freeform 32"
+        },
+        {
+          "x": 0,
+          "y": 0,
+          "w": 0.889,
+          "h": 1.659,
+          "kind": "shape",
+          "bold": false,
+          "name": "TextBox 33"
+        },
+        {
+          "x": 0,
+          "y": 0,
+          "w": 0.889,
+          "h": 1.989,
+          "kind": "shape",
+          "color": "EFEFEF",
+          "bold": false,
+          "name": "Freeform 35"
+        },
+        {
+          "x": 0,
+          "y": 0,
+          "w": 0.889,
+          "h": 1.989,
+          "kind": "shape",
+          "bold": false,
+          "name": "TextBox 36"
+        },
+        {
+          "x": 0,
+          "y": 0,
+          "w": 0.889,
+          "h": 1.989,
+          "kind": "shape",
+          "color": "EFEFEF",
+          "bold": false,
+          "name": "Freeform 38"
+        },
+        {
+          "x": 0,
+          "y": 0,
+          "w": 0.889,
+          "h": 1.989,
+          "kind": "shape",
+          "bold": false,
+          "name": "TextBox 39"
+        },
+        {
+          "x": 0,
+          "y": 0,
+          "w": 0.889,
+          "h": 2.458,
+          "kind": "shape",
+          "color": "EFEFEF",
+          "bold": false,
+          "name": "Freeform 41"
+        },
+        {
+          "x": 0,
+          "y": 0,
+          "w": 0.889,
+          "h": 2.458,
+          "kind": "shape",
+          "bold": false,
+          "name": "TextBox 42"
+        },
+        {
+          "x": 3.197,
+          "y": 3.711,
+          "w": 13.606,
+          "h": 0.642,
+          "kind": "text",
+          "text": "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Quisque molestie nisl eu sem tristique, sit amet convallis ex aliquam. Maecenas varius lectus hendrerit augue blandit, ut posuere erat aliquam. Praesent auctor tellus eget nisl blandit, at varius purus elementum.",
+          "fontSize": 18,
+          "color": "B8B8B8",
+          "bold": false,
+          "name": "TextBox 43"
+        },
+        {
+          "x": 0,
+          "y": 0,
+          "w": 0.675,
+          "h": 0.837,
+          "kind": "shape",
+          "color": "EFEFEF",
+          "bold": false,
+          "name": "Freeform 45"
+        },
+        {
+          "x": 0,
+          "y": 0,
+          "w": 0.675,
+          "h": 0.837,
+          "kind": "shape",
+          "color": "EFEFEF",
+          "bold": false,
+          "name": "Freeform 47"
+        },
+        {
+          "x": 0,
+          "y": 0,
+          "w": 0.923,
+          "h": 0.8,
+          "kind": "shape",
+          "color": "EFEFEF",
+          "bold": false,
+          "name": "Freeform 49"
+        },
+        {
+          "x": 0,
+          "y": 0,
+          "w": 1.423,
+          "h": 0.965,
+          "kind": "shape",
+          "color": "EFEFEF",
+          "bold": false,
+          "name": "Freeform 51"
+        },
+        {
+          "x": 0,
+          "y": 0,
+          "w": 1.423,
+          "h": 0.965,
+          "kind": "shape",
+          "bold": false,
+          "name": "TextBox 52"
+        },
+        {
+          "x": 1.38,
+          "y": 6.416,
+          "w": 4.473,
+          "h": 0.555,
+          "kind": "text",
+          "text": "Serv\nice 01",
+          "fontSize": 37.27,
+          "color": "0F042D",
+          "bold": false,
+          "name": "TextBox 53"
+        },
+        {
+          "x": 1.408,
+          "y": 7.638,
+          "w": 4.446,
+          "h": 1.405,
+          "kind": "text",
+          "text": "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Quisque molestie nisl eu sem tristique, sit amet convallis ex aliquam. Maecenas varius lectus hendrerit augue blandit, ut posuere erat aliquam.",
+          "fontSize": 15.99,
+          "color": "696969",
+          "bold": false,
+          "name": "TextBox 55"
+        },
+        {
+          "x": 0,
+          "y": 0,
+          "w": 1.423,
+          "h": 0.965,
+          "kind": "shape",
+          "color": "573F9D",
+          "bold": false,
+          "name": "Freeform 57"
+        },
+        {
+          "x": 0,
+          "y": 0,
+          "w": 1.423,
+          "h": 0.965,
+          "kind": "shape",
+          "bold": false,
+          "name": "TextBox 58"
+        },
+        {
+          "x": 14.109,
+          "y": 6.437,
+          "w": 4.473,
+          "h": 0.555,
+          "kind": "text",
+          "text": "Serv\nice 02",
+          "fontSize": 37.27,
+          "color": "EFEFEF",
+          "bold": false,
+          "name": "TextBox 59"
+        },
+        {
+          "x": 14.137,
+          "y": 7.659,
+          "w": 4.446,
+          "h": 1.405,
+          "kind": "text",
+          "text": "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Quisque molestie nisl eu sem tristique, sit amet convallis ex aliquam. Maecenas varius lectus hendrerit augue blandit, ut posuere erat aliquam.",
+          "fontSize": 15.99,
+          "color": "B8B8B8",
+          "bold": false,
+          "name": "TextBox 61"
+        }
+      ],
+      "description": {
+        "looksLike": "A dark purple services slide featuring a large bold header, a centered intro paragraph, and two service feature cards flanking a central team meeting photo.",
+        "title": "Our Services",
+        "layout": "title-and-two-columns",
+        "background": {
+          "scope": "slide",
+          "kind": "solid"
+        },
+        "contentPlacement": "The slide header and subtitle are centered in the upper half, while two service description cards sit on the lower left and right flanking a central photo.",
+        "images": [],
+        "boxes": [
+          {
+            "role": "body",
+            "text": "",
+            "x": 1.91,
+            "y": 0.705,
+            "w": 4.087,
+            "h": 0.285
+          },
+          {
+            "role": "body",
+            "text": "",
+            "x": 5.187,
+            "y": 0.741,
+            "w": 2.565,
+            "h": 0.236
+          },
+          {
+            "role": "body",
+            "text": "",
+            "x": 7.814,
+            "y": 0.741,
+            "w": 2.925,
+            "h": 0.236
+          },
+          {
+            "role": "body",
+            "text": "",
+            "x": 10.886,
+            "y": 0.741,
+            "w": 4.68,
+            "h": 0.236
+          },
+          {
+            "role": "body",
+            "text": "",
+            "x": 15.772,
+            "y": 0.741,
+            "w": 3.206,
+            "h": 0.236
+          },
+          {
+            "role": "body",
+            "text": "",
+            "x": 1.125,
+            "y": 2.119,
+            "w": 17.75,
+            "h": 1.281
+          },
+          {
+            "role": "body",
+            "text": "",
+            "x": 3.197,
+            "y": 3.711,
+            "w": 13.606,
+            "h": 0.642
+          },
+          {
+            "role": "body",
+            "text": "",
+            "x": 1.38,
+            "y": 6.416,
+            "w": 4.473,
+            "h": 0.555
+          },
+          {
+            "role": "body",
+            "text": "",
+            "x": 1.408,
+            "y": 7.638,
+            "w": 4.446,
+            "h": 1.405
+          },
+          {
+            "role": "body",
+            "text": "",
+            "x": 14.109,
+            "y": 6.437,
+            "w": 4.473,
+            "h": 0.555
+          },
+          {
+            "role": "body",
+            "text": "",
+            "x": 14.137,
+            "y": 7.659,
+            "w": 4.446,
+            "h": 1.405
+          }
+        ]
+      },
+      "gcsUri": "gs://alltheway-rinegan-slide-designs-prod/catalog/purple-and-white-modern-startup-pitch-deck/slide-07.png"
+    },
+    "slide-08": {
+      "index": 7,
+      "prev": "slide-07",
+      "next": "slide-09",
+      "image": "purple-and-white-modern-startup-pitch-deck/slide-08.png",
+      "coordinates": [
+        {
+          "x": 0,
+          "y": 0,
+          "w": 0.889,
+          "h": 1.352,
+          "kind": "shape",
+          "color": "905BF4",
+          "bold": false,
+          "name": "Freeform 4"
+        },
+        {
+          "x": 0,
+          "y": 0,
+          "w": 0.889,
+          "h": 1.352,
+          "kind": "shape",
+          "bold": false,
+          "name": "TextBox 5"
+        },
+        {
+          "x": 0,
+          "y": 0,
+          "w": 0.889,
+          "h": 1.352,
+          "kind": "shape",
+          "color": "905BF4",
+          "bold": false,
+          "name": "Freeform 7"
+        },
+        {
+          "x": 0,
+          "y": 0,
+          "w": 0.889,
+          "h": 1.352,
+          "kind": "shape",
+          "bold": false,
+          "name": "TextBox 8"
+        },
+        {
+          "x": 0,
+          "y": 0,
+          "w": 0.889,
+          "h": 1.659,
+          "kind": "shape",
+          "color": "905BF4",
+          "bold": false,
+          "name": "Freeform 10"
+        },
+        {
+          "x": 0,
+          "y": 0,
+          "w": 0.889,
+          "h": 1.659,
+          "kind": "shape",
+          "bold": false,
+          "name": "TextBox 11"
+        },
+        {
+          "x": 0,
+          "y": 0,
+          "w": 0.889,
+          "h": 1.659,
+          "kind": "shape",
+          "color": "905BF4",
+          "bold": false,
+          "name": "Freeform 13"
+        },
+        {
+          "x": 0,
+          "y": 0,
+          "w": 0.889,
+          "h": 1.659,
+          "kind": "shape",
+          "bold": false,
+          "name": "TextBox 14"
+        },
+        {
+          "x": 0,
+          "y": 0,
+          "w": 0.889,
+          "h": 1.989,
+          "kind": "shape",
+          "color": "905BF4",
+          "bold": false,
+          "name": "Freeform 16"
+        },
+        {
+          "x": 0,
+          "y": 0,
+          "w": 0.889,
+          "h": 1.989,
+          "kind": "shape",
+          "bold": false,
+          "name": "TextBox 17"
+        },
+        {
+          "x": 0,
+          "y": 0,
+          "w": 0.889,
+          "h": 1.989,
+          "kind": "shape",
+          "color": "905BF4",
+          "bold": false,
+          "name": "Freeform 19"
+        },
+        {
+          "x": 0,
+          "y": 0,
+          "w": 0.889,
+          "h": 1.989,
+          "kind": "shape",
+          "bold": false,
+          "name": "TextBox 20"
+        },
+        {
+          "x": 0,
+          "y": 0,
+          "w": 0.889,
+          "h": 2.458,
+          "kind": "shape",
+          "color": "905BF4",
+          "bold": false,
+          "name": "Freeform 22"
+        },
+        {
+          "x": 0,
+          "y": 0,
+          "w": 0.889,
+          "h": 2.458,
+          "kind": "shape",
+          "bold": false,
+          "name": "TextBox 23"
+        },
+        {
+          "x": 0,
+          "y": 0,
+          "w": 2.688,
+          "h": 0.444,
+          "kind": "shape",
+          "color": "0F042D",
+          "bold": false,
+          "name": "Freeform 25"
+        },
+        {
+          "x": 0,
+          "y": 0,
+          "w": 2.688,
+          "h": 0.444,
+          "kind": "shape",
+          "bold": false,
+          "name": "TextBox 26"
+        },
+        {
+          "x": 0,
+          "y": 0,
+          "w": 3.782,
+          "h": 0.444,
+          "kind": "shape",
+          "color": "0F042D",
+          "bold": false,
+          "name": "Freeform 28"
+        },
+        {
+          "x": 0,
+          "y": 0,
+          "w": 3.782,
+          "h": 0.444,
+          "kind": "shape",
+          "bold": false,
+          "name": "TextBox 29"
+        },
+        {
+          "x": 0,
+          "y": 0,
+          "w": 2.415,
+          "h": 0.444,
+          "kind": "shape",
+          "color": "0F042D",
+          "bold": false,
+          "name": "Freeform 31"
+        },
+        {
+          "x": 0,
+          "y": 0,
+          "w": 2.415,
+          "h": 0.444,
+          "kind": "shape",
+          "bold": false,
+          "name": "TextBox 32"
+        },
+        {
+          "x": 0,
+          "y": 0,
+          "w": 3.205,
+          "h": 0.444,
+          "kind": "shape",
+          "color": "0F042D",
+          "bold": false,
+          "name": "Freeform 34"
+        },
+        {
+          "x": 0,
+          "y": 0,
+          "w": 3.205,
+          "h": 0.444,
+          "kind": "shape",
+          "bold": false,
+          "name": "TextBox 35"
+        },
+        {
+          "x": 1.192,
+          "y": 0.612,
+          "w": 0.462,
+          "h": 0.399,
+          "kind": "shape",
+          "bold": false,
+          "name": "Freeform 36"
+        },
+        {
+          "x": 0,
+          "y": 0,
+          "w": 0.739,
+          "h": 0.812,
+          "kind": "shape",
+          "color": "0F042D",
+          "bold": false,
+          "name": "Freeform 38"
+        },
+        {
+          "x": 0,
+          "y": 0,
+          "w": 1.995,
+          "h": 1.369,
+          "kind": "shape",
+          "color": "573F9D",
+          "bold": false,
+          "name": "Freeform 40"
+        },
+        {
+          "x": 0,
+          "y": 0,
+          "w": 1.995,
+          "h": 1.369,
+          "kind": "shape",
+          "bold": false,
+          "name": "TextBox 41"
+        },
+        {
+          "x": 0,
+          "y": 0,
+          "w": 0.652,
+          "h": 0.419,
+          "kind": "shape",
+          "color": "0F042D",
+          "bold": false,
+          "name": "Freeform 43"
+        },
+        {
+          "x": 0,
+          "y": 0,
+          "w": 0.652,
+          "h": 0.419,
+          "kind": "shape",
+          "bold": false,
+          "name": "TextBox 44"
+        },
+        {
+          "x": 1.91,
+          "y": 0.705,
+          "w": 4.087,
+          "h": 0.285,
+          "kind": "text",
+          "text": "Salford & Co.",
+          "fontSize": 21.99,
+          "color": "0F042D",
+          "bold": false,
+          "name": "TextBox 45"
+        },
+        {
+          "x": 15.772,
+          "y": 0.741,
+          "w": 3.206,
+          "h": 0.236,
+          "kind": "text",
+          "text": "September 23, 2027",
+          "fontSize": 18,
+          "color": "0F042D",
+          "bold": false,
+          "name": "TextBox 46"
+        },
+        {
+          "x": 5.187,
+          "y": 0.741,
+          "w": 2.565,
+          "h": 0.236,
+          "kind": "text",
+          "text": "Startup Pitch Deck",
+          "fontSize": 18,
+          "color": "0F042D",
+          "bold": false,
+          "name": "TextBox 47"
+        },
+        {
+          "x": 10.886,
+          "y": 0.741,
+          "w": 4.68,
+          "h": 0.236,
+          "kind": "text",
+          "text": "Presented by : Daniel Gallego",
+          "fontSize": 18,
+          "color": "EFEFEF",
+          "bold": false,
+          "name": "TextBox 48"
+        },
+        {
+          "x": 7.814,
+          "y": 0.741,
+          "w": 2.925,
+          "h": 0.236,
+          "kind": "text",
+          "text": "Business Presentation",
+          "fontSize": 18,
+          "color": "EFEFEF",
+          "bold": false,
+          "name": "TextBox 49"
+        },
+        {
+          "x": -0.861,
+          "y": 5.434,
+          "w": 6.592,
+          "h": 2.789,
+          "kind": "text",
+          "text": "Ma\nrket Analysis",
+          "fontSize": 96,
+          "color": "0F042D",
+          "bold": false,
+          "name": "TextBox 50"
+        },
+        {
+          "x": 1.437,
+          "y": 2.594,
+          "w": 2.321,
+          "h": 0.623,
+          "kind": "text",
+          "text": "+240K",
+          "fontSize": 42.01,
+          "color": "0F042D",
+          "bold": false,
+          "name": "TextBox 51"
+        },
+        {
+          "x": 13.225,
+          "y": 1.789,
+          "w": 5.65,
+          "h": 1.61,
+          "kind": "text",
+          "text": "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Quisque molestie nisl eu sem tristique, sit amet convallis ex aliquam. Maecenas varius lectus hendrerit augue blandit, ut posuere erat aliquam. Praesent auctor tellus eget nisl blandit, at varius purus elementum.",
+          "fontSize": 18,
+          "color": "0F042D",
+          "bold": false,
+          "name": "TextBox 52"
+        },
+        {
+          "x": 1.582,
+          "y": 3.263,
+          "w": 1.693,
+          "h": 0.28,
+          "kind": "text",
+          "text": "User Acquired",
+          "fontSize": 15.99,
+          "color": "696969",
+          "bold": false,
+          "name": "TextBox 53"
+        },
+        {
+          "x": 11.2,
+          "y": 4.24,
+          "w": 7.859,
+          "h": 5.581,
+          "kind": "picture",
+          "bold": false,
+          "name": "Picture 54"
+        }
+      ],
+      "description": {
+        "looksLike": "Modern startup pitch deck slide for market analysis featuring vertical rotated typography on the left, a center photograph, a callout metric badge, narrative text, and an overlapping purple bar chart.",
+        "title": "Market Analysis",
+        "layout": "title-and-two-columns",
+        "background": {
+          "scope": "slide",
+          "kind": "solid"
+        },
+        "contentPlacement": "Large vertically rotated section title and KPI badge on the left margin, photo in the middle, and narrative paragraph with a dark purple bar chart on the right.",
+        "images": [
+          {
+            "kind": "picture",
+            "what": "photograph",
+            "x": 11.2,
+            "y": 4.24,
+            "w": 7.859,
+            "h": 5.581
+          }
+        ],
+        "boxes": [
+          {
+            "role": "body",
+            "text": "",
+            "x": 1.91,
+            "y": 0.705,
+            "w": 4.087,
+            "h": 0.285
+          },
+          {
+            "role": "body",
+            "text": "",
+            "x": 15.772,
+            "y": 0.741,
+            "w": 3.206,
+            "h": 0.236
+          },
+          {
+            "role": "body",
+            "text": "",
+            "x": 5.187,
+            "y": 0.741,
+            "w": 2.565,
+            "h": 0.236
+          },
+          {
+            "role": "body",
+            "text": "",
+            "x": 10.886,
+            "y": 0.741,
+            "w": 4.68,
+            "h": 0.236
+          },
+          {
+            "role": "body",
+            "text": "",
+            "x": 7.814,
+            "y": 0.741,
+            "w": 2.925,
+            "h": 0.236
+          },
+          {
+            "role": "body",
+            "text": "",
+            "x": -0.861,
+            "y": 5.434,
+            "w": 6.592,
+            "h": 2.789
+          },
+          {
+            "role": "body",
+            "text": "",
+            "x": 1.437,
+            "y": 2.594,
+            "w": 2.321,
+            "h": 0.623
+          },
+          {
+            "role": "body",
+            "text": "",
+            "x": 13.225,
+            "y": 1.789,
+            "w": 5.65,
+            "h": 1.61
+          },
+          {
+            "role": "body",
+            "text": "",
+            "x": 1.582,
+            "y": 3.263,
+            "w": 1.693,
+            "h": 0.28
+          }
+        ]
+      },
+      "gcsUri": "gs://alltheway-rinegan-slide-designs-prod/catalog/purple-and-white-modern-startup-pitch-deck/slide-08.png"
+    },
+    "slide-09": {
+      "index": 8,
+      "prev": "slide-08",
+      "next": "slide-10",
+      "image": "purple-and-white-modern-startup-pitch-deck/slide-09.png",
+      "coordinates": [
+        {
+          "x": 0,
+          "y": 0,
+          "w": 2.688,
+          "h": 0.444,
+          "kind": "shape",
+          "color": "0F042D",
+          "bold": false,
+          "name": "Freeform 3"
+        },
+        {
+          "x": 0,
+          "y": 0,
+          "w": 2.688,
+          "h": 0.444,
+          "kind": "shape",
+          "bold": false,
+          "name": "TextBox 4"
+        },
+        {
+          "x": 0,
+          "y": 0,
+          "w": 3.782,
+          "h": 0.444,
+          "kind": "shape",
+          "color": "0F042D",
+          "bold": false,
+          "name": "Freeform 6"
+        },
+        {
+          "x": 0,
+          "y": 0,
+          "w": 3.782,
+          "h": 0.444,
+          "kind": "shape",
+          "bold": false,
+          "name": "TextBox 7"
+        },
+        {
+          "x": 0,
+          "y": 0,
+          "w": 2.415,
+          "h": 0.444,
+          "kind": "shape",
+          "color": "0F042D",
+          "bold": false,
+          "name": "Freeform 9"
+        },
+        {
+          "x": 0,
+          "y": 0,
+          "w": 2.415,
+          "h": 0.444,
+          "kind": "shape",
+          "bold": false,
+          "name": "TextBox 10"
+        },
+        {
+          "x": 0,
+          "y": 0,
+          "w": 3.205,
+          "h": 0.444,
+          "kind": "shape",
+          "color": "0F042D",
+          "bold": false,
+          "name": "Freeform 12"
+        },
+        {
+          "x": 0,
+          "y": 0,
+          "w": 3.205,
+          "h": 0.444,
+          "kind": "shape",
+          "bold": false,
+          "name": "TextBox 13"
+        },
+        {
+          "x": 1.192,
+          "y": 0.612,
+          "w": 0.462,
+          "h": 0.399,
+          "kind": "shape",
+          "bold": false,
+          "name": "Freeform 14"
+        },
+        {
+          "x": 0,
+          "y": 0,
+          "w": 0.889,
+          "h": 1.463,
+          "kind": "shape",
+          "color": "EFEFEF",
+          "bold": false,
+          "name": "Freeform 16"
+        },
+        {
+          "x": 0,
+          "y": 0,
+          "w": 0.889,
+          "h": 1.463,
+          "kind": "shape",
+          "bold": false,
+          "name": "TextBox 17"
+        },
+        {
+          "x": 0,
+          "y": 0,
+          "w": 0.889,
+          "h": 1.352,
+          "kind": "shape",
+          "color": "905BF4",
+          "bold": false,
+          "name": "Freeform 20"
+        },
+        {
+          "x": 0,
+          "y": 0,
+          "w": 0.889,
+          "h": 1.352,
+          "kind": "shape",
+          "bold": false,
+          "name": "TextBox 21"
+        },
+        {
+          "x": 0,
+          "y": 0,
+          "w": 0.889,
+          "h": 1.352,
+          "kind": "shape",
+          "color": "905BF4",
+          "bold": false,
+          "name": "Freeform 23"
+        },
+        {
+          "x": 0,
+          "y": 0,
+          "w": 0.889,
+          "h": 1.352,
+          "kind": "shape",
+          "bold": false,
+          "name": "TextBox 24"
+        },
+        {
+          "x": 0,
+          "y": 0,
+          "w": 0.889,
+          "h": 1.659,
+          "kind": "shape",
+          "color": "905BF4",
+          "bold": false,
+          "name": "Freeform 26"
+        },
+        {
+          "x": 0,
+          "y": 0,
+          "w": 0.889,
+          "h": 1.659,
+          "kind": "shape",
+          "bold": false,
+          "name": "TextBox 27"
+        },
+        {
+          "x": 0,
+          "y": 0,
+          "w": 0.889,
+          "h": 1.659,
+          "kind": "shape",
+          "color": "905BF4",
+          "bold": false,
+          "name": "Freeform 29"
+        },
+        {
+          "x": 0,
+          "y": 0,
+          "w": 0.889,
+          "h": 1.659,
+          "kind": "shape",
+          "bold": false,
+          "name": "TextBox 30"
+        },
+        {
+          "x": 0,
+          "y": 0,
+          "w": 0.889,
+          "h": 1.989,
+          "kind": "shape",
+          "color": "905BF4",
+          "bold": false,
+          "name": "Freeform 32"
+        },
+        {
+          "x": 0,
+          "y": 0,
+          "w": 0.889,
+          "h": 1.989,
+          "kind": "shape",
+          "bold": false,
+          "name": "TextBox 33"
+        },
+        {
+          "x": 0,
+          "y": 0,
+          "w": 0.889,
+          "h": 1.989,
+          "kind": "shape",
+          "color": "905BF4",
+          "bold": false,
+          "name": "Freeform 35"
+        },
+        {
+          "x": 0,
+          "y": 0,
+          "w": 0.889,
+          "h": 1.989,
+          "kind": "shape",
+          "bold": false,
+          "name": "TextBox 36"
+        },
+        {
+          "x": 0,
+          "y": 0,
+          "w": 0.889,
+          "h": 2.458,
+          "kind": "shape",
+          "color": "905BF4",
+          "bold": false,
+          "name": "Freeform 38"
+        },
+        {
+          "x": 0,
+          "y": 0,
+          "w": 0.889,
+          "h": 2.458,
+          "kind": "shape",
+          "bold": false,
+          "name": "TextBox 39"
+        },
+        {
+          "x": 0,
+          "y": 0,
+          "w": 1.533,
+          "h": 1.463,
+          "kind": "shape",
+          "color": "FFFFFF",
+          "bold": false,
+          "name": "Freeform 41"
+        },
+        {
+          "x": 0,
+          "y": 0,
+          "w": 1.533,
+          "h": 1.463,
+          "kind": "shape",
+          "bold": false,
+          "name": "TextBox 42"
+        },
+        {
+          "x": 0,
+          "y": 0,
+          "w": 0.831,
+          "h": 0.549,
+          "kind": "shape",
+          "color": "0F042D",
+          "bold": false,
+          "name": "Freeform 44"
+        },
+        {
+          "x": 0,
+          "y": 0,
+          "w": 1.533,
+          "h": 1.463,
+          "kind": "shape",
+          "color": "FFFFFF",
+          "bold": false,
+          "name": "Freeform 46"
+        },
+        {
+          "x": 0,
+          "y": 0,
+          "w": 1.533,
+          "h": 1.463,
+          "kind": "shape",
+          "bold": false,
+          "name": "TextBox 47"
+        },
+        {
+          "x": 0,
+          "y": 0,
+          "w": 0.831,
+          "h": 0.549,
+          "kind": "shape",
+          "color": "0F042D",
+          "bold": false,
+          "name": "Freeform 49"
+        },
+        {
+          "x": 0,
+          "y": 0,
+          "w": 0.889,
+          "h": 1.463,
+          "kind": "shape",
+          "color": "EFEFEF",
+          "bold": false,
+          "name": "Freeform 51"
+        },
+        {
+          "x": 0,
+          "y": 0,
+          "w": 0.889,
+          "h": 1.463,
+          "kind": "shape",
+          "bold": false,
+          "name": "TextBox 52"
+        },
+        {
+          "x": 0,
+          "y": 0,
+          "w": 0.889,
+          "h": 1.463,
+          "kind": "shape",
+          "color": "EFEFEF",
+          "bold": false,
+          "name": "Freeform 54"
+        },
+        {
+          "x": 0,
+          "y": 0,
+          "w": 0.889,
+          "h": 1.463,
+          "kind": "shape",
+          "bold": false,
+          "name": "TextBox 55"
+        },
+        {
+          "x": 0,
+          "y": 0,
+          "w": 0.739,
+          "h": 0.839,
+          "kind": "shape",
+          "color": "0F042D",
+          "bold": false,
+          "name": "Freeform 57"
+        },
+        {
+          "x": 1.91,
+          "y": 0.705,
+          "w": 4.087,
+          "h": 0.285,
+          "kind": "text",
+          "text": "Salford & Co.",
+          "fontSize": 21.99,
+          "color": "0F042D",
+          "bold": false,
+          "name": "TextBox 58"
+        },
+        {
+          "x": 15.772,
+          "y": 0.741,
+          "w": 3.206,
+          "h": 0.236,
+          "kind": "text",
+          "text": "September 23, 2027",
+          "fontSize": 18,
+          "color": "0F042D",
+          "bold": false,
+          "name": "TextBox 59"
+        },
+        {
+          "x": 5.187,
+          "y": 0.741,
+          "w": 2.565,
+          "h": 0.236,
+          "kind": "text",
+          "text": "Startup Pitch Deck",
+          "fontSize": 18,
+          "color": "0F042D",
+          "bold": false,
+          "name": "TextBox 60"
+        },
+        {
+          "x": 10.886,
+          "y": 0.741,
+          "w": 4.68,
+          "h": 0.236,
+          "kind": "text",
+          "text": "Presented by : Daniel Gallego",
+          "fontSize": 18,
+          "color": "EFEFEF",
+          "bold": false,
+          "name": "TextBox 61"
+        },
+        {
+          "x": 7.814,
+          "y": 0.741,
+          "w": 2.925,
+          "h": 0.236,
+          "kind": "text",
+          "text": "Business Presentation",
+          "fontSize": 18,
+          "color": "EFEFEF",
+          "bold": false,
+          "name": "TextBox 62"
+        },
+        {
+          "x": 1.125,
+          "y": 1.973,
+          "w": 8.875,
+          "h": 1.425,
+          "kind": "text",
+          "text": "Our Team",
+          "fontSize": 96,
+          "color": "0F042D",
+          "bold": false,
+          "name": "TextBox 63"
+        },
+        {
+          "x": 9.524,
+          "y": 2.11,
+          "w": 9.351,
+          "h": 0.965,
+          "kind": "text",
+          "text": "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Quisque molestie nisl eu sem tristique, sit amet convallis ex aliquam. Maecenas varius lectus hendrerit augue blandit, ut posuere erat aliquam. Praesent auctor tellus eget nisl blandit, at varius purus elementum.",
+          "fontSize": 18,
+          "color": "0F042D",
+          "bold": false,
+          "name": "TextBox 64"
+        },
+        {
+          "x": 0,
+          "y": 0,
+          "w": 1.286,
+          "h": 0.401,
+          "kind": "shape",
+          "color": "573F9D",
+          "bold": false,
+          "name": "Freeform 66"
+        },
+        {
+          "x": 0,
+          "y": 0,
+          "w": 1.286,
+          "h": 0.401,
+          "kind": "shape",
+          "bold": false,
+          "name": "TextBox 67"
+        },
+        {
+          "x": 7.763,
+          "y": 8.921,
+          "w": 4.473,
+          "h": 0.507,
+          "kind": "text",
+          "text": "Daniel Gallego",
+          "fontSize": 33.99,
+          "color": "EFEFEF",
+          "bold": false,
+          "name": "TextBox 68"
+        },
+        {
+          "x": 2.409,
+          "y": 8.921,
+          "w": 4.473,
+          "h": 0.507,
+          "kind": "text",
+          "text": "Samira Hadid",
+          "fontSize": 33.99,
+          "color": "0F042D",
+          "bold": false,
+          "name": "TextBox 69"
+        },
+        {
+          "x": 13.173,
+          "y": 8.921,
+          "w": 4.473,
+          "h": 0.507,
+          "kind": "text",
+          "text": "Avery Davis",
+          "fontSize": 33.99,
+          "color": "0F042D",
+          "bold": false,
+          "name": "TextBox 70"
+        },
+        {
+          "x": 7.777,
+          "y": 9.543,
+          "w": 4.446,
+          "h": 0.28,
+          "kind": "text",
+          "text": "CEO",
+          "fontSize": 15.99,
+          "color": "B8B8B8",
+          "bold": false,
+          "name": "TextBox 71"
+        },
+        {
+          "x": 2.423,
+          "y": 9.543,
+          "w": 4.446,
+          "h": 0.28,
+          "kind": "text",
+          "text": "CTO",
+          "fontSize": 15.99,
+          "color": "696969",
+          "bold": false,
+          "name": "TextBox 72"
+        },
+        {
+          "x": 13.187,
+          "y": 9.543,
+          "w": 4.446,
+          "h": 0.28,
+          "kind": "text",
+          "text": "General Manager",
+          "fontSize": 15.99,
+          "color": "696969",
+          "bold": false,
+          "name": "TextBox 73"
+        }
+      ],
+      "description": {
+        "looksLike": "A clean light grey startup pitch deck team slide showcasing three team member photo cards side by side, with the center CEO profile card elevated and accented in deep purple.",
+        "title": "Our Team",
+        "layout": "title-and-two-columns",
+        "background": {
+          "scope": "slide",
+          "kind": "solid"
+        },
+        "contentPlacement": "Header metadata pills along the top edge; bold 'Our Team' heading on the upper left paired with an introductory paragraph on the upper right; three rounded profile portrait cards horizontally arranged across the lower half with names and role captions.",
+        "images": [],
+        "boxes": [
+          {
+            "role": "body",
+            "text": "",
+            "x": 1.192,
+            "y": 0.612,
+            "w": 0.462,
+            "h": 0.399
+          },
+          {
+            "role": "body",
+            "text": "",
+            "x": 1.91,
+            "y": 0.705,
+            "w": 4.087,
+            "h": 0.285
+          },
+          {
+            "role": "body",
+            "text": "",
+            "x": 5.187,
+            "y": 0.741,
+            "w": 2.565,
+            "h": 0.236
+          },
+          {
+            "role": "body",
+            "text": "",
+            "x": 7.814,
+            "y": 0.741,
+            "w": 2.925,
+            "h": 0.236
+          },
+          {
+            "role": "body",
+            "text": "",
+            "x": 10.886,
+            "y": 0.741,
+            "w": 4.68,
+            "h": 0.236
+          },
+          {
+            "role": "body",
+            "text": "",
+            "x": 15.772,
+            "y": 0.741,
+            "w": 3.206,
+            "h": 0.236
+          },
+          {
+            "role": "body",
+            "text": "",
+            "x": 1.125,
+            "y": 1.973,
+            "w": 8.875,
+            "h": 1.425
+          },
+          {
+            "role": "body",
+            "text": "",
+            "x": 9.524,
+            "y": 2.11,
+            "w": 9.351,
+            "h": 0.965
+          },
+          {
+            "role": "body",
+            "text": "",
+            "x": 2.409,
+            "y": 8.921,
+            "w": 4.473,
+            "h": 0.507
+          },
+          {
+            "role": "body",
+            "text": "",
+            "x": 7.763,
+            "y": 8.921,
+            "w": 4.473,
+            "h": 0.507
+          },
+          {
+            "role": "body",
+            "text": "",
+            "x": 13.173,
+            "y": 8.921,
+            "w": 4.473,
+            "h": 0.507
+          },
+          {
+            "role": "body",
+            "text": "",
+            "x": 2.423,
+            "y": 9.543,
+            "w": 4.446,
+            "h": 0.28
+          },
+          {
+            "role": "body",
+            "text": "",
+            "x": 7.777,
+            "y": 9.543,
+            "w": 4.446,
+            "h": 0.28
+          },
+          {
+            "role": "body",
+            "text": "",
+            "x": 13.187,
+            "y": 9.543,
+            "w": 4.446,
+            "h": 0.28
+          }
+        ]
+      },
+      "gcsUri": "gs://alltheway-rinegan-slide-designs-prod/catalog/purple-and-white-modern-startup-pitch-deck/slide-09.png"
+    },
+    "slide-10": {
+      "index": 9,
+      "prev": "slide-09",
+      "next": null,
+      "image": "purple-and-white-modern-startup-pitch-deck/slide-10.png",
+      "coordinates": [
+        {
+          "x": 0,
+          "y": 0,
+          "w": 0.889,
+          "h": 1.352,
+          "kind": "shape",
+          "color": "905BF4",
+          "bold": false,
+          "name": "Freeform 4"
+        },
+        {
+          "x": 0,
+          "y": 0,
+          "w": 0.889,
+          "h": 1.352,
+          "kind": "shape",
+          "bold": false,
+          "name": "TextBox 5"
+        },
+        {
+          "x": 0,
+          "y": 0,
+          "w": 0.889,
+          "h": 1.352,
+          "kind": "shape",
+          "color": "905BF4",
+          "bold": false,
+          "name": "Freeform 7"
+        },
+        {
+          "x": 0,
+          "y": 0,
+          "w": 0.889,
+          "h": 1.352,
+          "kind": "shape",
+          "bold": false,
+          "name": "TextBox 8"
+        },
+        {
+          "x": 0,
+          "y": 0,
+          "w": 0.889,
+          "h": 1.659,
+          "kind": "shape",
+          "color": "905BF4",
+          "bold": false,
+          "name": "Freeform 10"
+        },
+        {
+          "x": 0,
+          "y": 0,
+          "w": 0.889,
+          "h": 1.659,
+          "kind": "shape",
+          "bold": false,
+          "name": "TextBox 11"
+        },
+        {
+          "x": 0,
+          "y": 0,
+          "w": 0.889,
+          "h": 1.659,
+          "kind": "shape",
+          "color": "905BF4",
+          "bold": false,
+          "name": "Freeform 13"
+        },
+        {
+          "x": 0,
+          "y": 0,
+          "w": 0.889,
+          "h": 1.659,
+          "kind": "shape",
+          "bold": false,
+          "name": "TextBox 14"
+        },
+        {
+          "x": 0,
+          "y": 0,
+          "w": 0.889,
+          "h": 1.989,
+          "kind": "shape",
+          "color": "905BF4",
+          "bold": false,
+          "name": "Freeform 16"
+        },
+        {
+          "x": 0,
+          "y": 0,
+          "w": 0.889,
+          "h": 1.989,
+          "kind": "shape",
+          "bold": false,
+          "name": "TextBox 17"
+        },
+        {
+          "x": 0,
+          "y": 0,
+          "w": 0.889,
+          "h": 1.989,
+          "kind": "shape",
+          "color": "905BF4",
+          "bold": false,
+          "name": "Freeform 19"
+        },
+        {
+          "x": 0,
+          "y": 0,
+          "w": 0.889,
+          "h": 1.989,
+          "kind": "shape",
+          "bold": false,
+          "name": "TextBox 20"
+        },
+        {
+          "x": 0,
+          "y": 0,
+          "w": 0.889,
+          "h": 2.458,
+          "kind": "shape",
+          "color": "905BF4",
+          "bold": false,
+          "name": "Freeform 22"
+        },
+        {
+          "x": 0,
+          "y": 0,
+          "w": 0.889,
+          "h": 2.458,
+          "kind": "shape",
+          "bold": false,
+          "name": "TextBox 23"
+        },
+        {
+          "x": 0,
+          "y": 0,
+          "w": 2.688,
+          "h": 0.444,
+          "kind": "shape",
+          "color": "0F042D",
+          "bold": false,
+          "name": "Freeform 25"
+        },
+        {
+          "x": 0,
+          "y": 0,
+          "w": 2.688,
+          "h": 0.444,
+          "kind": "shape",
+          "bold": false,
+          "name": "TextBox 26"
+        },
+        {
+          "x": 0,
+          "y": 0,
+          "w": 2.415,
+          "h": 0.444,
+          "kind": "shape",
+          "color": "0F042D",
+          "bold": false,
+          "name": "Freeform 28"
+        },
+        {
+          "x": 0,
+          "y": 0,
+          "w": 2.415,
+          "h": 0.444,
+          "kind": "shape",
+          "bold": false,
+          "name": "TextBox 29"
+        },
+        {
+          "x": 0,
+          "y": 0,
+          "w": 3.205,
+          "h": 0.444,
+          "kind": "shape",
+          "color": "0F042D",
+          "bold": false,
+          "name": "Freeform 31"
+        },
+        {
+          "x": 0,
+          "y": 0,
+          "w": 3.205,
+          "h": 0.444,
+          "kind": "shape",
+          "bold": false,
+          "name": "TextBox 32"
+        },
+        {
+          "x": 1.192,
+          "y": 0.612,
+          "w": 0.462,
+          "h": 0.399,
+          "kind": "shape",
+          "bold": false,
+          "name": "Freeform 33"
+        },
+        {
+          "x": 1.91,
+          "y": 0.705,
+          "w": 4.087,
+          "h": 0.285,
+          "kind": "text",
+          "text": "Salford & Co.",
+          "fontSize": 21.99,
+          "color": "0F042D",
+          "bold": false,
+          "name": "TextBox 34"
+        },
+        {
+          "x": 15.772,
+          "y": 0.741,
+          "w": 3.206,
+          "h": 0.236,
+          "kind": "text",
+          "text": "September 23, 2027",
+          "fontSize": 18,
+          "color": "0F042D",
+          "bold": false,
+          "name": "TextBox 35"
+        },
+        {
+          "x": 10.013,
+          "y": 0.741,
+          "w": 2.565,
+          "h": 0.236,
+          "kind": "text",
+          "text": "Startup Pitch Deck",
+          "fontSize": 18,
+          "color": "0F042D",
+          "bold": false,
+          "name": "TextBox 36"
+        },
+        {
+          "x": 12.641,
+          "y": 0.741,
+          "w": 2.925,
+          "h": 0.236,
+          "kind": "text",
+          "text": "Business Presentation",
+          "fontSize": 18,
+          "color": "EFEFEF",
+          "bold": false,
+          "name": "TextBox 37"
+        },
+        {
+          "x": 0,
+          "y": 0,
+          "w": 2.395,
+          "h": 0.621,
+          "kind": "shape",
+          "color": "0F042D",
+          "bold": false,
+          "name": "Freeform 39"
+        },
+        {
+          "x": 1.125,
+          "y": 1.973,
+          "w": 17.75,
+          "h": 1.425,
+          "kind": "text",
+          "text": "Get in touch with Us",
+          "fontSize": 96,
+          "color": "0F042D",
+          "bold": false,
+          "name": "TextBox 40"
+        },
+        {
+          "x": 0,
+          "y": 0,
+          "w": 3.954,
+          "h": 0.226,
+          "kind": "shape",
+          "color": "0F042D",
+          "bold": false,
+          "name": "Freeform 42"
+        },
+        {
+          "x": 0,
+          "y": 0,
+          "w": 3.954,
+          "h": 0.226,
+          "kind": "shape",
+          "bold": false,
+          "name": "TextBox 43"
+        },
+        {
+          "x": 3.544,
+          "y": 9.513,
+          "w": 0.388,
+          "h": 0.388,
+          "kind": "shape",
+          "bold": false,
+          "name": "Freeform 44"
+        },
+        {
+          "x": 4.169,
+          "y": 9.519,
+          "w": 2.823,
+          "h": 0.335,
+          "kind": "text",
+          "text": "+123-456-7890",
+          "fontSize": 18,
+          "color": "0F042D",
+          "bold": false,
+          "name": "TextBox 45"
+        },
+        {
+          "x": 7.781,
+          "y": 9.512,
+          "w": 0.392,
+          "h": 0.392,
+          "kind": "shape",
+          "bold": false,
+          "name": "Freeform 46"
+        },
+        {
+          "x": 8.408,
+          "y": 9.508,
+          "w": 3.606,
+          "h": 0.335,
+          "kind": "text",
+          "text": "www.reallygreatsite.com",
+          "fontSize": 18,
+          "color": "0F042D",
+          "bold": false,
+          "name": "TextBox 47"
+        },
+        {
+          "x": 13.153,
+          "y": 9.522,
+          "w": 0.393,
+          "h": 0.393,
+          "kind": "shape",
+          "bold": false,
+          "name": "Freeform 48"
+        },
+        {
+          "x": 13.782,
+          "y": 9.529,
+          "w": 3.885,
+          "h": 0.335,
+          "kind": "text",
+          "text": "hello@reallygreatsite.com",
+          "fontSize": 18,
+          "color": "0F042D",
+          "bold": false,
+          "name": "TextBox 49"
+        }
+      ],
+      "description": {
+        "looksLike": "A contact and closing slide with a prominent centered headline, a wide architectural photo banner across the middle, and contact details aligned in a bottom container.",
+        "title": "Get in touch with Us",
+        "layout": "main-point",
+        "background": {
+          "scope": "slide",
+          "kind": "solid"
+        },
+        "contentPlacement": "Header bar at the top displays the brand name and pill tags; the massive headline is centered in the upper third, followed by a wide horizontal building photograph across the center, and a boxed three-column contact bar at the bottom.",
+        "images": [],
+        "boxes": [
+          {
+            "role": "body",
+            "text": "",
+            "x": 1.192,
+            "y": 0.612,
+            "w": 0.462,
+            "h": 0.399
+          },
+          {
+            "role": "body",
+            "text": "Salford & Co.",
+            "x": 1.91,
+            "y": 0.705,
+            "w": 4.087,
+            "h": 0.285,
+            "fontSize": 21.99
+          },
+          {
+            "role": "body",
+            "text": "Startup Pitch Deck",
+            "x": 10.013,
+            "y": 0.741,
+            "w": 2.565,
+            "h": 0.236,
+            "fontSize": 18
+          },
+          {
+            "role": "body",
+            "text": "Business Presentation",
+            "x": 12.641,
+            "y": 0.741,
+            "w": 2.925,
+            "h": 0.236,
+            "fontSize": 18
+          },
+          {
+            "role": "body",
+            "text": "September 23, 2027",
+            "x": 15.772,
+            "y": 0.741,
+            "w": 3.206,
+            "h": 0.236,
+            "fontSize": 18
+          },
+          {
+            "role": "body",
+            "text": "Get in touch with Us",
+            "x": 1.125,
+            "y": 1.973,
+            "w": 17.75,
+            "h": 1.425,
+            "fontSize": 96
+          },
+          {
+            "role": "body",
+            "text": "",
+            "x": 3.544,
+            "y": 9.513,
+            "w": 0.388,
+            "h": 0.388
+          },
+          {
+            "role": "body",
+            "text": "+123-456-7890",
+            "x": 4.169,
+            "y": 9.519,
+            "w": 2.823,
+            "h": 0.335,
+            "fontSize": 18
+          },
+          {
+            "role": "body",
+            "text": "",
+            "x": 7.781,
+            "y": 9.512,
+            "w": 0.392,
+            "h": 0.392
+          },
+          {
+            "role": "body",
+            "text": "www.reallygreatsite.com",
+            "x": 8.408,
+            "y": 9.508,
+            "w": 3.606,
+            "h": 0.335,
+            "fontSize": 18
+          },
+          {
+            "role": "body",
+            "text": "",
+            "x": 13.153,
+            "y": 9.522,
+            "w": 0.393,
+            "h": 0.393
+          },
+          {
+            "role": "body",
+            "text": "hello@reallygreatsite.com",
+            "x": 13.782,
+            "y": 9.529,
+            "w": 3.885,
+            "h": 0.335,
+            "fontSize": 18
+          }
+        ]
+      },
+      "gcsUri": "gs://alltheway-rinegan-slide-designs-prod/catalog/purple-and-white-modern-startup-pitch-deck/slide-10.png"
+    }
+  }
+}

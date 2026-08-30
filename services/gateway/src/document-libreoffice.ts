@@ -40,11 +40,15 @@ export function isLibreOfficeAvailable(): boolean {
   return resolveSoffice() !== null;
 }
 
-export async function renderPptxPages(pptx: Buffer): Promise<Buffer[]> {
+export async function renderPptxPages(
+  pptx: Buffer,
+  opts?: { sofficeTimeoutMs?: number },
+): Promise<Buffer[]> {
   const soffice = resolveSoffice();
   if (!soffice) {
     throw new Error("LibreOffice is not installed (set LIBREOFFICE_BIN)");
   }
+  const sofficeMs = opts?.sofficeTimeoutMs ?? SOFFICE_TIMEOUT_MS;
   const root = await mkdtemp(path.join(tmpdir(), "atw-lo-"));
   const profile = path.join(root, "profile");
   const pagesDir = path.join(root, "pages");
@@ -55,7 +59,7 @@ export async function renderPptxPages(pptx: Buffer): Promise<Buffer[]> {
       soffice,
       profile,
       ["--convert-to", "pdf", "--outdir", root, pptxPath],
-      SOFFICE_TIMEOUT_MS,
+      sofficeMs,
     );
     const pdfPath = path.join(root, "deck.pdf");
     if (!existsSync(pdfPath)) {
@@ -78,7 +82,7 @@ export async function renderPptxPages(pptx: Buffer): Promise<Buffer[]> {
       soffice,
       profile,
       ["--convert-to", "png", "--outdir", pagesDir, ...pagePdfs],
-      SOFFICE_TIMEOUT_MS,
+      sofficeMs,
     );
     const pngs = (await readdir(pagesDir))
       .filter((name) => name.toLowerCase().endsWith(".png"))

@@ -1,6 +1,5 @@
 /**
- * Local visual QA: compile a board deck, screenshot it in LibreOffice, score
- * with Gemini 3.7 Flash, redo below 95, max 6 turns.
+ * Local e2e: planner → worker (stills + PPTX + LibreOffice) → independent judge.
  *
  *   npx tsx scripts/visual-qa-local.ts
  *
@@ -13,10 +12,11 @@ import { fileURLToPath } from "node:url";
 import { generateStill } from "../src/document-images.js";
 import { renderPptxPagesOrThrow } from "../src/document-libreoffice.js";
 import { critiqueDeck, vertexVision } from "../src/document-critic.js";
+import { vertexPlanner } from "../src/document-planner.js";
 import { runDocumentQuality } from "../src/document-quality.js";
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "../../..");
-const OUT = path.join(ROOT, ".local-artifacts", "qa-lo-95");
+const OUT = path.join(ROOT, ".local-artifacts", "qa-adversarial");
 
 const DECK = {
   ir: "deck.v1",
@@ -25,7 +25,7 @@ const DECK = {
   date: "29 August 2026",
   slides: [
     {
-      layout: "title",
+      layout: "title-slide",
       title: "Hold the Q4 GTM overspend; product stays on plan",
       kicker: "Board decision",
       subtitle: "Prepared for the Board · 29 August 2026",
@@ -36,7 +36,7 @@ const DECK = {
       },
     },
     {
-      layout: "two-card",
+      layout: "title-and-two-columns",
       title: "SSO ships 15 Nov; marketplace waits until identity is staffed",
       cards: [
         { title: "Ships", body: "SSO and billing freeze on 15 Nov. Elena owns the cut. No new GTM campaigns after 30 Sep." },
@@ -44,7 +44,7 @@ const DECK = {
       ],
     },
     {
-      layout: "metric-row",
+      layout: "big-number",
       title: "Product held 112% of ARR; GTM is 18 points over its cost envelope",
       metrics: [
         { label: "ARR", value: "£6.4m", owner: "Elena", detail: "112% of plan · Finance close" },
@@ -53,7 +53,7 @@ const DECK = {
       ],
     },
     {
-      layout: "split-visual",
+      layout: "section-title-and-description",
       title: "The launch floor is at capacity; more ads will not convert",
       bullets: [
         "Implementation slots are full through November",
@@ -67,7 +67,7 @@ const DECK = {
       },
     },
     {
-      layout: "chart",
+      layout: "title-and-body",
       title: "GTM overspent; product and G&A held the envelope",
       chart: {
         type: "bar",
@@ -76,7 +76,7 @@ const DECK = {
       },
     },
     {
-      layout: "photo-story",
+      layout: "section-header",
       title: "Customers already in onboarding will feel a pause more than a new campaign",
       bullets: [
         "Twelve enterprise logos are in implementation now",
@@ -89,7 +89,7 @@ const DECK = {
       },
     },
     {
-      layout: "closing-ask",
+      layout: "title-and-two-columns",
       title: "Vote to freeze GTM spend at £1.6m for Q4 and keep the 15 Nov SSO date",
       asks: [
         "Approve the GTM freeze at £1.6m — Priya, this week",
@@ -107,6 +107,7 @@ async function main(): Promise<void> {
     tool: "create_slides",
     args: DECK,
     imagesRemaining: 8,
+    planner: vertexPlanner,
     generateImage: generateStill,
     critic: async (deck, pages) => critiqueDeck(deck, pages, vertexVision),
     renderPages: async (pptx) => {

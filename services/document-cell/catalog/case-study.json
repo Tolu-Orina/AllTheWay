@@ -1,0 +1,2159 @@
+{
+  "id": "case-study",
+  "title": "Case study",
+  "source": "Case study.pptx",
+  "width": 10,
+  "height": 5.625,
+  "overall_deck_description": "This 8-slide corporate case study deck is built on a bold, tech-forward palette dominated by deep royal blue, accented with periwinkle/slate blue geometric facets, crisp white, and sharp magenta/coral highlights for data points. Typography is clean and modern, set in a clean humanist sans-serif with strong hierarchy (large white headings on dark backgrounds and deep blue headings on light surfaces). The visual identity is anchored by a sharp, multi-toned triangular geometric graphic consistently positioned in the upper right corner of full-bleed dark slides. The presentation flows structurally from a bold title slide (index 0) into content-rich two-column analyses (indices 1–2), transitioning through immersive full-bleed blue section dividers and callout slides (indices 3–4), and concluding with split-pane data visualizations, implementation frameworks, and summary slides (indices 5–7).",
+  "slides": {
+    "slide-01": {
+      "index": 0,
+      "prev": null,
+      "next": "slide-02",
+      "image": "case-study/slide-01.png",
+      "coordinates": [
+        {
+          "x": 0.654,
+          "y": 1.941,
+          "w": 8.992,
+          "h": 0.917,
+          "kind": "text",
+          "text": "20XX Case Study",
+          "bold": false,
+          "placeholder": "ctrTitle",
+          "name": "Google Shape;85;p13"
+        },
+        {
+          "x": 0.654,
+          "y": 2.97,
+          "w": 8.992,
+          "h": 0.473,
+          "kind": "text",
+          "text": "How Company Name increased sales by XX%",
+          "bold": false,
+          "placeholder": "subTitle",
+          "name": "Google Shape;86;p13"
+        }
+      ],
+      "description": {
+        "looksLike": "A minimalist navy blue title slide with left-aligned white text and geometric corner accents.",
+        "title": "20XX Case Study",
+        "layout": "title-slide",
+        "background": {
+          "scope": "deck",
+          "kind": "solid"
+        },
+        "contentPlacement": "Left-aligned title and subtitle centered vertically on the left half of the slide.",
+        "images": [],
+        "boxes": [
+          {
+            "role": "body",
+            "text": "20XX Case Study",
+            "x": 0.654,
+            "y": 1.941,
+            "w": 8.992,
+            "h": 0.917
+          },
+          {
+            "role": "body",
+            "text": "How Company Name increased sales by XX%",
+            "x": 0.654,
+            "y": 2.97,
+            "w": 8.992,
+            "h": 0.473
+          }
+        ]
+      },
+      "gcsUri": "gs://alltheway-rinegan-slide-designs-prod/catalog/case-study/slide-01.png"
+    },
+    "slide-02": {
+      "index": 1,
+      "prev": "slide-01",
+      "next": "slide-03",
+      "image": "case-study/slide-02.png",
+      "coordinates": [
+        {
+          "x": 0.341,
+          "y": 0.448,
+          "w": 9.318,
+          "h": 0.665,
+          "kind": "text",
+          "text": "The problem",
+          "bold": false,
+          "placeholder": "title",
+          "name": "Google Shape;91;p14"
+        },
+        {
+          "x": 0.472,
+          "y": 1.427,
+          "w": 2.875,
+          "h": 0.508,
+          "kind": "shape",
+          "bold": false,
+          "name": "Google Shape;93;p14"
+        },
+        {
+          "x": 0.472,
+          "y": 1.427,
+          "w": 2.875,
+          "h": 3.736,
+          "kind": "shape",
+          "bold": false,
+          "placeholder": "none",
+          "name": "Google Shape;94;p14"
+        },
+        {
+          "x": 0.554,
+          "y": 1.427,
+          "w": 2.728,
+          "h": 0.505,
+          "kind": "text",
+          "text": "Company",
+          "bold": false,
+          "placeholder": "body",
+          "name": "Google Shape;95;p14"
+        },
+        {
+          "x": 0.556,
+          "y": 2.024,
+          "w": 2.711,
+          "h": 3.056,
+          "kind": "text",
+          "text": "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.\nUt enim ad minim veniam, quis nostrud",
+          "fontSize": 16,
+          "bold": false,
+          "placeholder": "body",
+          "name": "Google Shape;96;p14"
+        },
+        {
+          "x": 3.635,
+          "y": 1.427,
+          "w": 2.875,
+          "h": 0.508,
+          "kind": "shape",
+          "bold": false,
+          "name": "Google Shape;98;p14"
+        },
+        {
+          "x": 3.631,
+          "y": 1.427,
+          "w": 2.875,
+          "h": 3.736,
+          "kind": "shape",
+          "bold": false,
+          "placeholder": "none",
+          "name": "Google Shape;99;p14"
+        },
+        {
+          "x": 3.707,
+          "y": 1.427,
+          "w": 2.728,
+          "h": 0.505,
+          "kind": "text",
+          "text": "Context",
+          "bold": false,
+          "placeholder": "body",
+          "name": "Google Shape;100;p14"
+        },
+        {
+          "x": 3.715,
+          "y": 2.024,
+          "w": 2.711,
+          "h": 3.056,
+          "kind": "text",
+          "text": "Ut enim ad minim veniam, quis nostrud exercitation\nDuis aute irure dolor in reprehenderit in voluptate velit",
+          "fontSize": 16,
+          "bold": false,
+          "placeholder": "body",
+          "name": "Google Shape;101;p14"
+        },
+        {
+          "x": 6.797,
+          "y": 1.427,
+          "w": 2.875,
+          "h": 3.736,
+          "kind": "shape",
+          "bold": false,
+          "placeholder": "none",
+          "name": "Google Shape;103;p14"
+        },
+        {
+          "x": 6.794,
+          "y": 1.427,
+          "w": 2.879,
+          "h": 0.508,
+          "kind": "shape",
+          "bold": false,
+          "name": "Google Shape;104;p14"
+        },
+        {
+          "x": 6.86,
+          "y": 1.427,
+          "w": 2.728,
+          "h": 0.505,
+          "kind": "text",
+          "text": "Problem statement",
+          "bold": false,
+          "placeholder": "body",
+          "name": "Google Shape;105;p14"
+        },
+        {
+          "x": 6.875,
+          "y": 2.024,
+          "w": 2.711,
+          "h": 3.056,
+          "kind": "text",
+          "text": "Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.",
+          "fontSize": 16,
+          "bold": false,
+          "placeholder": "body",
+          "name": "Google Shape;106;p14"
+        }
+      ],
+      "description": {
+        "looksLike": "A clean three-column problem breakdown layout featuring a top header title and three bordered vertical cards with solid navy blue header banners.",
+        "title": "The problem",
+        "layout": "title-and-two-columns",
+        "background": {
+          "scope": "deck",
+          "kind": "solid"
+        },
+        "contentPlacement": "Left-aligned top title above three evenly spaced vertical column cards spanning across the lower slide area, each featuring a solid dark blue header bar with white text and a bordered text container below.",
+        "images": [],
+        "boxes": [
+          {
+            "role": "body",
+            "text": "The problem",
+            "x": 0.341,
+            "y": 0.448,
+            "w": 9.318,
+            "h": 0.665
+          },
+          {
+            "role": "body",
+            "text": "",
+            "x": 0.472,
+            "y": 1.427,
+            "w": 2.875,
+            "h": 0.508
+          },
+          {
+            "role": "body",
+            "text": "",
+            "x": 0.472,
+            "y": 1.427,
+            "w": 2.875,
+            "h": 3.736
+          },
+          {
+            "role": "body",
+            "text": "Company",
+            "x": 0.554,
+            "y": 1.427,
+            "w": 2.728,
+            "h": 0.505
+          },
+          {
+            "role": "body",
+            "text": "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.\nUt enim ad minim veniam, quis nostrud",
+            "x": 0.556,
+            "y": 2.024,
+            "w": 2.711,
+            "h": 3.056,
+            "fontSize": 16
+          },
+          {
+            "role": "body",
+            "text": "",
+            "x": 3.635,
+            "y": 1.427,
+            "w": 2.875,
+            "h": 0.508
+          },
+          {
+            "role": "body",
+            "text": "",
+            "x": 3.631,
+            "y": 1.427,
+            "w": 2.875,
+            "h": 3.736
+          },
+          {
+            "role": "body",
+            "text": "Context",
+            "x": 3.707,
+            "y": 1.427,
+            "w": 2.728,
+            "h": 0.505
+          },
+          {
+            "role": "body",
+            "text": "Ut enim ad minim veniam, quis nostrud exercitation\nDuis aute irure dolor in reprehenderit in voluptate velit",
+            "x": 3.715,
+            "y": 2.024,
+            "w": 2.711,
+            "h": 3.056,
+            "fontSize": 16
+          },
+          {
+            "role": "body",
+            "text": "",
+            "x": 6.797,
+            "y": 1.427,
+            "w": 2.875,
+            "h": 3.736
+          },
+          {
+            "role": "body",
+            "text": "",
+            "x": 6.794,
+            "y": 1.427,
+            "w": 2.879,
+            "h": 0.508
+          },
+          {
+            "role": "body",
+            "text": "Problem statement",
+            "x": 6.86,
+            "y": 1.427,
+            "w": 2.728,
+            "h": 0.505
+          },
+          {
+            "role": "body",
+            "text": "Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.",
+            "x": 6.875,
+            "y": 2.024,
+            "w": 2.711,
+            "h": 3.056,
+            "fontSize": 16
+          }
+        ]
+      },
+      "gcsUri": "gs://alltheway-rinegan-slide-designs-prod/catalog/case-study/slide-02.png"
+    },
+    "slide-03": {
+      "index": 2,
+      "prev": "slide-02",
+      "next": "slide-04",
+      "image": "case-study/slide-03.png",
+      "coordinates": [
+        {
+          "x": 0.341,
+          "y": 0.448,
+          "w": 9.318,
+          "h": 0.665,
+          "kind": "text",
+          "text": "Challenges deep-dive",
+          "bold": false,
+          "placeholder": "title",
+          "name": "Google Shape;111;p15"
+        },
+        {
+          "x": 0.473,
+          "y": 1.427,
+          "w": 2.7,
+          "h": 0.665,
+          "kind": "shape",
+          "bold": false,
+          "name": "Google Shape;112;p15"
+        },
+        {
+          "x": 0.473,
+          "y": 1.587,
+          "w": 2.469,
+          "h": 0.344,
+          "kind": "text",
+          "text": "Challenge 1",
+          "bold": false,
+          "placeholder": "body",
+          "name": "Google Shape;113;p15"
+        },
+        {
+          "x": 0.473,
+          "y": 2.264,
+          "w": 2.703,
+          "h": 2.899,
+          "kind": "text",
+          "text": "Expand audience\nLorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.",
+          "fontSize": 16,
+          "bold": true,
+          "placeholder": "body",
+          "name": "Google Shape;114;p15"
+        },
+        {
+          "x": 3.33,
+          "y": 1.427,
+          "w": 3.019,
+          "h": 0.665,
+          "kind": "shape",
+          "bold": false,
+          "name": "Google Shape;115;p15"
+        },
+        {
+          "x": 3.648,
+          "y": 1.587,
+          "w": 2.469,
+          "h": 0.344,
+          "kind": "text",
+          "text": "Challenge 2",
+          "bold": false,
+          "placeholder": "body",
+          "name": "Google Shape;116;p15"
+        },
+        {
+          "x": 3.648,
+          "y": 2.264,
+          "w": 2.703,
+          "h": 2.899,
+          "kind": "text",
+          "text": "Up 30-day actives\nUt enim ad minim veniam, quis nostrud exercitation\nDuis aute irure dolor in reprehenderit in voluptate velit",
+          "fontSize": 16,
+          "bold": true,
+          "placeholder": "body",
+          "name": "Google Shape;117;p15"
+        },
+        {
+          "x": 6.505,
+          "y": 1.427,
+          "w": 3.019,
+          "h": 0.665,
+          "kind": "shape",
+          "bold": false,
+          "name": "Google Shape;118;p15"
+        },
+        {
+          "x": 6.84,
+          "y": 1.587,
+          "w": 2.469,
+          "h": 0.344,
+          "kind": "text",
+          "text": "Challenge 3",
+          "bold": false,
+          "placeholder": "body",
+          "name": "Google Shape;119;p15"
+        },
+        {
+          "x": 6.84,
+          "y": 2.264,
+          "w": 2.703,
+          "h": 2.899,
+          "kind": "text",
+          "text": "Increase conversion\nExcepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.",
+          "fontSize": 16,
+          "bold": true,
+          "placeholder": "body",
+          "name": "Google Shape;120;p15"
+        }
+      ],
+      "description": {
+        "looksLike": "A three-column challenge breakdown slide featuring a prominent dark blue title, three horizontal chevron banner headers across the middle, and structured text sections beneath each chevron.",
+        "title": "Challenges deep-dive",
+        "layout": "title-and-two-columns",
+        "background": {
+          "scope": "deck",
+          "kind": "solid"
+        },
+        "contentPlacement": "Top-aligned blue slide title spanning the header area, with a three-step horizontal arrow process flow in the center and corresponding detailed text columns underneath.",
+        "images": [],
+        "boxes": [
+          {
+            "role": "body",
+            "text": "",
+            "x": 0.341,
+            "y": 0.448,
+            "w": 9.318,
+            "h": 0.665
+          },
+          {
+            "role": "body",
+            "text": "",
+            "x": 0.473,
+            "y": 1.427,
+            "w": 2.7,
+            "h": 0.665
+          },
+          {
+            "role": "body",
+            "text": "",
+            "x": 0.473,
+            "y": 1.587,
+            "w": 2.469,
+            "h": 0.344
+          },
+          {
+            "role": "body",
+            "text": "",
+            "x": 0.473,
+            "y": 2.264,
+            "w": 2.703,
+            "h": 2.899
+          },
+          {
+            "role": "body",
+            "text": "",
+            "x": 3.33,
+            "y": 1.427,
+            "w": 3.019,
+            "h": 0.665
+          },
+          {
+            "role": "body",
+            "text": "",
+            "x": 3.648,
+            "y": 1.587,
+            "w": 2.469,
+            "h": 0.344
+          },
+          {
+            "role": "body",
+            "text": "",
+            "x": 3.648,
+            "y": 2.264,
+            "w": 2.703,
+            "h": 2.899
+          },
+          {
+            "role": "body",
+            "text": "",
+            "x": 6.505,
+            "y": 1.427,
+            "w": 3.019,
+            "h": 0.665
+          },
+          {
+            "role": "body",
+            "text": "",
+            "x": 6.84,
+            "y": 1.587,
+            "w": 2.469,
+            "h": 0.344
+          },
+          {
+            "role": "body",
+            "text": "",
+            "x": 6.84,
+            "y": 2.264,
+            "w": 2.703,
+            "h": 2.899
+          }
+        ]
+      },
+      "gcsUri": "gs://alltheway-rinegan-slide-designs-prod/catalog/case-study/slide-03.png"
+    },
+    "slide-04": {
+      "index": 3,
+      "prev": "slide-03",
+      "next": "slide-05",
+      "image": "case-study/slide-04.png",
+      "coordinates": [
+        {
+          "x": 0.29,
+          "y": 1.259,
+          "w": 4.424,
+          "h": 1.711,
+          "kind": "text",
+          "text": "Solution",
+          "bold": false,
+          "placeholder": "title",
+          "name": "Google Shape;125;p16"
+        },
+        {
+          "x": 0.29,
+          "y": 3.028,
+          "w": 4.424,
+          "h": 1.388,
+          "kind": "text",
+          "text": "More premium subscribers",
+          "bold": false,
+          "placeholder": "subTitle",
+          "name": "Google Shape;126;p16"
+        },
+        {
+          "x": 5.402,
+          "y": 0.792,
+          "w": 4.196,
+          "h": 4.041,
+          "kind": "text",
+          "text": "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.",
+          "bold": false,
+          "placeholder": "body",
+          "name": "Google Shape;127;p16"
+        }
+      ],
+      "description": {
+        "looksLike": "Split-screen slide with a white left column holding the section header and subtitle, and a solid dark blue right block with explanatory text.",
+        "title": "Solution",
+        "layout": "section-title-and-description",
+        "background": {
+          "scope": "slide",
+          "kind": "solid"
+        },
+        "contentPlacement": "Section title and subtitle are vertically stacked on the left white panel; descriptive body paragraph is vertically centered within the right blue half.",
+        "images": [],
+        "boxes": [
+          {
+            "role": "body",
+            "text": "Solution",
+            "x": 0.29,
+            "y": 1.259,
+            "w": 4.424,
+            "h": 1.711
+          },
+          {
+            "role": "body",
+            "text": "More premium subscribers",
+            "x": 0.29,
+            "y": 3.028,
+            "w": 4.424,
+            "h": 1.388
+          },
+          {
+            "role": "body",
+            "text": "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.",
+            "x": 5.402,
+            "y": 0.792,
+            "w": 4.196,
+            "h": 4.041
+          }
+        ]
+      },
+      "gcsUri": "gs://alltheway-rinegan-slide-designs-prod/catalog/case-study/slide-04.png"
+    },
+    "slide-05": {
+      "index": 4,
+      "prev": "slide-04",
+      "next": "slide-06",
+      "image": "case-study/slide-05.png",
+      "coordinates": [
+        {
+          "x": 0.654,
+          "y": 2.354,
+          "w": 8.992,
+          "h": 0.917,
+          "kind": "text",
+          "text": "Implementation",
+          "bold": false,
+          "placeholder": "title",
+          "name": "Google Shape;132;p17"
+        }
+      ],
+      "description": {
+        "looksLike": "A dark blue section header slide with a single white title placed at mid-height on the left side and geometric triangular corner accents in the upper right.",
+        "title": "Implementation",
+        "layout": "section-header",
+        "background": {
+          "scope": "slide",
+          "kind": "solid"
+        },
+        "contentPlacement": "Left-aligned section title situated vertically around the upper-middle section of the slide with ample negative space.",
+        "images": [],
+        "boxes": [
+          {
+            "role": "title",
+            "text": "",
+            "x": 0.654,
+            "y": 2.354,
+            "w": 8.992,
+            "h": 0.917
+          }
+        ]
+      },
+      "gcsUri": "gs://alltheway-rinegan-slide-designs-prod/catalog/case-study/slide-05.png"
+    },
+    "slide-06": {
+      "index": 5,
+      "prev": "slide-05",
+      "next": "slide-07",
+      "image": "case-study/slide-06.png",
+      "coordinates": [
+        {
+          "x": 0.373,
+          "y": 2.405,
+          "w": 2.048,
+          "h": 0.815,
+          "kind": "shape",
+          "bold": false,
+          "placeholder": "none",
+          "name": "Google Shape;137;p18"
+        },
+        {
+          "x": 0.373,
+          "y": 2.555,
+          "w": 1.592,
+          "h": 0.514,
+          "kind": "text",
+          "text": "09.05.XX",
+          "fontSize": 16,
+          "bold": false,
+          "placeholder": "body",
+          "name": "Google Shape;138;p18"
+        },
+        {
+          "x": 0.85,
+          "y": 1.761,
+          "w": 0.218,
+          "h": 0.218,
+          "kind": "shape",
+          "bold": false,
+          "name": "Google Shape;141;p18"
+        },
+        {
+          "x": 0.348,
+          "y": 0.422,
+          "w": 2.453,
+          "h": 0.991,
+          "kind": "text",
+          "text": "Lorem ipsum dolor sit amet, consectetur adipiscing elit",
+          "fontSize": 16,
+          "bold": false,
+          "placeholder": "body",
+          "name": "Google Shape;142;p18"
+        },
+        {
+          "x": 1.987,
+          "y": 2.405,
+          "w": 2.243,
+          "h": 0.815,
+          "kind": "shape",
+          "bold": false,
+          "placeholder": "none",
+          "name": "Google Shape;143;p18"
+        },
+        {
+          "x": 2.325,
+          "y": 2.555,
+          "w": 1.439,
+          "h": 0.514,
+          "kind": "text",
+          "text": "09.17.XX",
+          "fontSize": 16,
+          "bold": false,
+          "placeholder": "body",
+          "name": "Google Shape;144;p18"
+        },
+        {
+          "x": 2.432,
+          "y": 3.646,
+          "w": 0.218,
+          "h": 0.218,
+          "kind": "shape",
+          "bold": false,
+          "name": "Google Shape;147;p18"
+        },
+        {
+          "x": 1.361,
+          "y": 4.109,
+          "w": 2.453,
+          "h": 0.991,
+          "kind": "text",
+          "text": "Lorem ipsum dolor sit amet, consectetur adipiscing elit",
+          "fontSize": 16,
+          "bold": false,
+          "placeholder": "body",
+          "name": "Google Shape;148;p18"
+        },
+        {
+          "x": 3.797,
+          "y": 2.405,
+          "w": 2.243,
+          "h": 0.815,
+          "kind": "shape",
+          "bold": false,
+          "placeholder": "none",
+          "name": "Google Shape;149;p18"
+        },
+        {
+          "x": 4.12,
+          "y": 2.555,
+          "w": 1.439,
+          "h": 0.514,
+          "kind": "text",
+          "text": "10.13.XX",
+          "fontSize": 16,
+          "bold": false,
+          "placeholder": "body",
+          "name": "Google Shape;150;p18"
+        },
+        {
+          "x": 4.285,
+          "y": 1.761,
+          "w": 0.218,
+          "h": 0.218,
+          "kind": "shape",
+          "bold": false,
+          "name": "Google Shape;153;p18"
+        },
+        {
+          "x": 3.613,
+          "y": 0.422,
+          "w": 2.453,
+          "h": 0.991,
+          "kind": "text",
+          "text": "Lorem ipsum dolor sit amet, consectetur adipiscing elit",
+          "fontSize": 16,
+          "bold": false,
+          "placeholder": "body",
+          "name": "Google Shape;154;p18"
+        },
+        {
+          "x": 5.607,
+          "y": 2.405,
+          "w": 2.243,
+          "h": 0.815,
+          "kind": "shape",
+          "bold": false,
+          "placeholder": "none",
+          "name": "Google Shape;155;p18"
+        },
+        {
+          "x": 5.924,
+          "y": 2.555,
+          "w": 1.439,
+          "h": 0.514,
+          "kind": "text",
+          "text": "10.20.XX",
+          "fontSize": 16,
+          "bold": false,
+          "placeholder": "body",
+          "name": "Google Shape;156;p18"
+        },
+        {
+          "x": 6.517,
+          "y": 3.646,
+          "w": 0.218,
+          "h": 0.218,
+          "kind": "shape",
+          "bold": false,
+          "name": "Google Shape;159;p18"
+        },
+        {
+          "x": 5.607,
+          "y": 4.109,
+          "w": 2.453,
+          "h": 0.991,
+          "kind": "text",
+          "text": "Lorem ipsum dolor sit amet, consectetur adipiscing elit",
+          "fontSize": 16,
+          "bold": false,
+          "placeholder": "body",
+          "name": "Google Shape;160;p18"
+        },
+        {
+          "x": 7.417,
+          "y": 2.405,
+          "w": 2.243,
+          "h": 0.815,
+          "kind": "shape",
+          "bold": false,
+          "placeholder": "none",
+          "name": "Google Shape;161;p18"
+        },
+        {
+          "x": 7.777,
+          "y": 2.555,
+          "w": 1.439,
+          "h": 0.514,
+          "kind": "text",
+          "text": "11.01.XX",
+          "fontSize": 16,
+          "bold": false,
+          "placeholder": "body",
+          "name": "Google Shape;162;p18"
+        },
+        {
+          "x": 4.285,
+          "y": 1.761,
+          "w": 0.218,
+          "h": 0.218,
+          "kind": "shape",
+          "bold": false,
+          "name": "Google Shape;165;p18"
+        },
+        {
+          "x": 7.312,
+          "y": 0.422,
+          "w": 2.453,
+          "h": 0.991,
+          "kind": "text",
+          "text": "Lorem ipsum dolor sit amet, consectetur adipiscing elit",
+          "fontSize": 16,
+          "bold": false,
+          "placeholder": "body",
+          "name": "Google Shape;166;p18"
+        }
+      ],
+      "description": {
+        "looksLike": "A five-step horizontal chevron timeline diagram across the center with alternating text descriptions above and below each milestone.",
+        "title": "09.05.XX",
+        "layout": "blank",
+        "background": {
+          "scope": "deck",
+          "kind": "solid"
+        },
+        "contentPlacement": "A continuous horizontal chevron banner runs across the center containing milestone dates, with three description blocks placed above and two placed below.",
+        "images": [],
+        "boxes": [
+          {
+            "role": "body",
+            "text": "",
+            "x": 0.373,
+            "y": 2.405,
+            "w": 2.048,
+            "h": 0.815
+          },
+          {
+            "role": "body",
+            "text": "",
+            "x": 0.373,
+            "y": 2.555,
+            "w": 1.592,
+            "h": 0.514
+          },
+          {
+            "role": "body",
+            "text": "",
+            "x": 0.85,
+            "y": 1.761,
+            "w": 0.218,
+            "h": 0.218
+          },
+          {
+            "role": "body",
+            "text": "",
+            "x": 0.348,
+            "y": 0.422,
+            "w": 2.453,
+            "h": 0.991
+          },
+          {
+            "role": "body",
+            "text": "",
+            "x": 1.987,
+            "y": 2.405,
+            "w": 2.243,
+            "h": 0.815
+          },
+          {
+            "role": "body",
+            "text": "",
+            "x": 2.325,
+            "y": 2.555,
+            "w": 1.439,
+            "h": 0.514
+          },
+          {
+            "role": "body",
+            "text": "",
+            "x": 2.432,
+            "y": 3.646,
+            "w": 0.218,
+            "h": 0.218
+          },
+          {
+            "role": "body",
+            "text": "",
+            "x": 1.361,
+            "y": 4.109,
+            "w": 2.453,
+            "h": 0.991
+          },
+          {
+            "role": "body",
+            "text": "",
+            "x": 3.797,
+            "y": 2.405,
+            "w": 2.243,
+            "h": 0.815
+          },
+          {
+            "role": "body",
+            "text": "",
+            "x": 4.12,
+            "y": 2.555,
+            "w": 1.439,
+            "h": 0.514
+          },
+          {
+            "role": "body",
+            "text": "",
+            "x": 4.285,
+            "y": 1.761,
+            "w": 0.218,
+            "h": 0.218
+          },
+          {
+            "role": "body",
+            "text": "",
+            "x": 3.613,
+            "y": 0.422,
+            "w": 2.453,
+            "h": 0.991
+          },
+          {
+            "role": "body",
+            "text": "",
+            "x": 5.607,
+            "y": 2.405,
+            "w": 2.243,
+            "h": 0.815
+          },
+          {
+            "role": "body",
+            "text": "",
+            "x": 5.924,
+            "y": 2.555,
+            "w": 1.439,
+            "h": 0.514
+          },
+          {
+            "role": "body",
+            "text": "",
+            "x": 6.517,
+            "y": 3.646,
+            "w": 0.218,
+            "h": 0.218
+          },
+          {
+            "role": "body",
+            "text": "",
+            "x": 5.607,
+            "y": 4.109,
+            "w": 2.453,
+            "h": 0.991
+          },
+          {
+            "role": "body",
+            "text": "",
+            "x": 7.417,
+            "y": 2.405,
+            "w": 2.243,
+            "h": 0.815
+          },
+          {
+            "role": "body",
+            "text": "",
+            "x": 7.777,
+            "y": 2.555,
+            "w": 1.439,
+            "h": 0.514
+          },
+          {
+            "role": "body",
+            "text": "",
+            "x": 4.285,
+            "y": 1.761,
+            "w": 0.218,
+            "h": 0.218
+          },
+          {
+            "role": "body",
+            "text": "",
+            "x": 7.312,
+            "y": 0.422,
+            "w": 2.453,
+            "h": 0.991
+          }
+        ]
+      },
+      "gcsUri": "gs://alltheway-rinegan-slide-designs-prod/catalog/case-study/slide-06.png"
+    },
+    "slide-07": {
+      "index": 6,
+      "prev": "slide-06",
+      "next": "slide-08",
+      "image": "case-study/slide-07.png",
+      "coordinates": [
+        {
+          "x": 0.341,
+          "y": 0.448,
+          "w": 9.318,
+          "h": 0.665,
+          "kind": "text",
+          "text": "The team",
+          "bold": false,
+          "placeholder": "title",
+          "name": "Google Shape;171;p19"
+        },
+        {
+          "x": 4.535,
+          "y": 1.147,
+          "w": 1.585,
+          "h": 0.763,
+          "kind": "shape",
+          "bold": false,
+          "placeholder": "none",
+          "name": "Google Shape;172;p19"
+        },
+        {
+          "x": 4.535,
+          "y": 1.147,
+          "w": 1.585,
+          "h": 0.337,
+          "kind": "shape",
+          "bold": false,
+          "name": "Google Shape;173;p19"
+        },
+        {
+          "x": 4.535,
+          "y": 1.212,
+          "w": 1.585,
+          "h": 0.208,
+          "kind": "text",
+          "text": "CEO",
+          "fontSize": 11,
+          "bold": false,
+          "placeholder": "body",
+          "name": "Google Shape;174;p19"
+        },
+        {
+          "x": 4.535,
+          "y": 1.594,
+          "w": 1.585,
+          "h": 0.208,
+          "kind": "text",
+          "text": "Wendy Writer",
+          "fontSize": 13,
+          "bold": false,
+          "placeholder": "body",
+          "name": "Google Shape;175;p19"
+        },
+        {
+          "x": 2.4,
+          "y": 2.492,
+          "w": 1.585,
+          "h": 0.762,
+          "kind": "shape",
+          "bold": false,
+          "placeholder": "none",
+          "name": "Google Shape;181;p19"
+        },
+        {
+          "x": 2.399,
+          "y": 2.492,
+          "w": 1.585,
+          "h": 0.337,
+          "kind": "shape",
+          "bold": false,
+          "name": "Google Shape;178;p19"
+        },
+        {
+          "x": 2.399,
+          "y": 2.557,
+          "w": 1.585,
+          "h": 0.208,
+          "kind": "text",
+          "text": "Dir. of Sales",
+          "fontSize": 11,
+          "bold": false,
+          "placeholder": "body",
+          "name": "Google Shape;182;p19"
+        },
+        {
+          "x": 2.399,
+          "y": 2.938,
+          "w": 1.585,
+          "h": 0.208,
+          "kind": "text",
+          "text": "Ronny Reader",
+          "fontSize": 13,
+          "bold": false,
+          "placeholder": "body",
+          "name": "Google Shape;183;p19"
+        },
+        {
+          "x": 0.581,
+          "y": 3.836,
+          "w": 1.585,
+          "h": 0.763,
+          "kind": "shape",
+          "bold": false,
+          "placeholder": "none",
+          "name": "Google Shape;191;p19"
+        },
+        {
+          "x": 0.581,
+          "y": 3.836,
+          "w": 1.585,
+          "h": 0.337,
+          "kind": "shape",
+          "bold": false,
+          "name": "Google Shape;188;p19"
+        },
+        {
+          "x": 0.582,
+          "y": 3.901,
+          "w": 1.585,
+          "h": 0.208,
+          "kind": "text",
+          "text": "North America Lead",
+          "fontSize": 11,
+          "bold": false,
+          "placeholder": "body",
+          "name": "Google Shape;192;p19"
+        },
+        {
+          "x": 0.582,
+          "y": 4.284,
+          "w": 1.585,
+          "h": 0.208,
+          "kind": "text",
+          "text": "Perry Presenter",
+          "fontSize": 13,
+          "bold": false,
+          "placeholder": "body",
+          "name": "Google Shape;193;p19"
+        },
+        {
+          "x": 2.4,
+          "y": 3.836,
+          "w": 1.585,
+          "h": 0.763,
+          "kind": "shape",
+          "bold": false,
+          "placeholder": "none",
+          "name": "Google Shape;194;p19"
+        },
+        {
+          "x": 2.4,
+          "y": 3.836,
+          "w": 1.585,
+          "h": 0.337,
+          "kind": "shape",
+          "bold": false,
+          "name": "Google Shape;186;p19"
+        },
+        {
+          "x": 2.401,
+          "y": 3.901,
+          "w": 1.585,
+          "h": 0.208,
+          "kind": "text",
+          "text": "Asia Lead",
+          "fontSize": 11,
+          "bold": false,
+          "placeholder": "body",
+          "name": "Google Shape;195;p19"
+        },
+        {
+          "x": 2.401,
+          "y": 4.284,
+          "w": 1.585,
+          "h": 0.208,
+          "kind": "text",
+          "text": "Vinny Viewer",
+          "fontSize": 13,
+          "bold": false,
+          "placeholder": "body",
+          "name": "Google Shape;196;p19"
+        },
+        {
+          "x": 4.22,
+          "y": 3.836,
+          "w": 1.585,
+          "h": 0.763,
+          "kind": "shape",
+          "bold": false,
+          "placeholder": "none",
+          "name": "Google Shape;197;p19"
+        },
+        {
+          "x": 4.22,
+          "y": 3.836,
+          "w": 1.585,
+          "h": 0.337,
+          "kind": "shape",
+          "bold": false,
+          "name": "Google Shape;190;p19"
+        },
+        {
+          "x": 4.22,
+          "y": 3.901,
+          "w": 1.585,
+          "h": 0.208,
+          "kind": "text",
+          "text": "Europe Lead",
+          "fontSize": 11,
+          "bold": false,
+          "placeholder": "body",
+          "name": "Google Shape;198;p19"
+        },
+        {
+          "x": 4.22,
+          "y": 4.284,
+          "w": 1.585,
+          "h": 0.208,
+          "kind": "text",
+          "text": "Molly Maker",
+          "fontSize": 13,
+          "bold": false,
+          "placeholder": "body",
+          "name": "Google Shape;199;p19"
+        },
+        {
+          "x": 6.948,
+          "y": 2.492,
+          "w": 1.585,
+          "h": 0.762,
+          "kind": "shape",
+          "bold": false,
+          "placeholder": "none",
+          "name": "Google Shape;200;p19"
+        },
+        {
+          "x": 6.948,
+          "y": 2.492,
+          "w": 1.585,
+          "h": 0.337,
+          "kind": "shape",
+          "bold": false,
+          "name": "Google Shape;180;p19"
+        },
+        {
+          "x": 6.949,
+          "y": 2.557,
+          "w": 1.585,
+          "h": 0.208,
+          "kind": "text",
+          "text": "Dir. of Engineering",
+          "fontSize": 11,
+          "bold": false,
+          "placeholder": "body",
+          "name": "Google Shape;201;p19"
+        },
+        {
+          "x": 6.947,
+          "y": 2.938,
+          "w": 1.585,
+          "h": 0.208,
+          "kind": "text",
+          "text": "Abby Author",
+          "fontSize": 13,
+          "bold": false,
+          "placeholder": "body",
+          "name": "Google Shape;202;p19"
+        },
+        {
+          "x": 6.039,
+          "y": 3.836,
+          "w": 1.585,
+          "h": 0.762,
+          "kind": "shape",
+          "bold": false,
+          "placeholder": "none",
+          "name": "Google Shape;208;p19"
+        },
+        {
+          "x": 6.039,
+          "y": 3.836,
+          "w": 1.585,
+          "h": 0.337,
+          "kind": "shape",
+          "bold": false,
+          "name": "Google Shape;205;p19"
+        },
+        {
+          "x": 6.039,
+          "y": 3.901,
+          "w": 1.585,
+          "h": 0.208,
+          "kind": "text",
+          "text": "Front End Lead",
+          "fontSize": 11,
+          "bold": false,
+          "placeholder": "body",
+          "name": "Google Shape;209;p19"
+        },
+        {
+          "x": 6.039,
+          "y": 4.284,
+          "w": 1.585,
+          "h": 0.208,
+          "kind": "text",
+          "text": "Casey Creator",
+          "fontSize": 13,
+          "bold": false,
+          "placeholder": "body",
+          "name": "Google Shape;210;p19"
+        },
+        {
+          "x": 7.858,
+          "y": 3.836,
+          "w": 1.585,
+          "h": 0.762,
+          "kind": "shape",
+          "bold": false,
+          "placeholder": "none",
+          "name": "Google Shape;211;p19"
+        },
+        {
+          "x": 7.858,
+          "y": 3.836,
+          "w": 1.585,
+          "h": 0.337,
+          "kind": "shape",
+          "bold": false,
+          "name": "Google Shape;207;p19"
+        },
+        {
+          "x": 7.858,
+          "y": 3.901,
+          "w": 1.585,
+          "h": 0.208,
+          "kind": "text",
+          "text": "Back End Lead",
+          "fontSize": 11,
+          "bold": false,
+          "placeholder": "body",
+          "name": "Google Shape;212;p19"
+        },
+        {
+          "x": 7.858,
+          "y": 4.284,
+          "w": 1.585,
+          "h": 0.208,
+          "kind": "text",
+          "text": "Berry Books",
+          "fontSize": 13,
+          "bold": false,
+          "placeholder": "body",
+          "name": "Google Shape;213;p19"
+        }
+      ],
+      "description": {
+        "looksLike": "An organizational hierarchy chart with boxed role titles and person names across three levels under a top-left slide title.",
+        "title": "The team",
+        "layout": "title-only",
+        "background": {
+          "scope": "slide",
+          "kind": "solid"
+        },
+        "contentPlacement": "The slide title sits in the upper left, while a structured three-tier organizational tree diagram occupies the center and lower half of the slide.",
+        "images": [],
+        "boxes": [
+          {
+            "role": "body",
+            "text": "The team",
+            "x": 0.341,
+            "y": 0.448,
+            "w": 9.318,
+            "h": 0.665
+          },
+          {
+            "role": "body",
+            "text": "",
+            "x": 4.535,
+            "y": 1.147,
+            "w": 1.585,
+            "h": 0.763
+          },
+          {
+            "role": "body",
+            "text": "",
+            "x": 4.535,
+            "y": 1.147,
+            "w": 1.585,
+            "h": 0.337
+          },
+          {
+            "role": "body",
+            "text": "CEO",
+            "x": 4.535,
+            "y": 1.212,
+            "w": 1.585,
+            "h": 0.208,
+            "fontSize": 11
+          },
+          {
+            "role": "body",
+            "text": "Wendy Writer",
+            "x": 4.535,
+            "y": 1.594,
+            "w": 1.585,
+            "h": 0.208,
+            "fontSize": 13
+          },
+          {
+            "role": "body",
+            "text": "",
+            "x": 2.4,
+            "y": 2.492,
+            "w": 1.585,
+            "h": 0.762
+          },
+          {
+            "role": "body",
+            "text": "",
+            "x": 2.399,
+            "y": 2.492,
+            "w": 1.585,
+            "h": 0.337
+          },
+          {
+            "role": "body",
+            "text": "Dir. of Sales",
+            "x": 2.399,
+            "y": 2.557,
+            "w": 1.585,
+            "h": 0.208,
+            "fontSize": 11
+          },
+          {
+            "role": "body",
+            "text": "Ronny Reader",
+            "x": 2.399,
+            "y": 2.938,
+            "w": 1.585,
+            "h": 0.208,
+            "fontSize": 13
+          },
+          {
+            "role": "body",
+            "text": "",
+            "x": 0.581,
+            "y": 3.836,
+            "w": 1.585,
+            "h": 0.763
+          },
+          {
+            "role": "body",
+            "text": "",
+            "x": 0.581,
+            "y": 3.836,
+            "w": 1.585,
+            "h": 0.337
+          },
+          {
+            "role": "body",
+            "text": "North America Lead",
+            "x": 0.582,
+            "y": 3.901,
+            "w": 1.585,
+            "h": 0.208,
+            "fontSize": 11
+          },
+          {
+            "role": "body",
+            "text": "Perry Presenter",
+            "x": 0.582,
+            "y": 4.284,
+            "w": 1.585,
+            "h": 0.208,
+            "fontSize": 13
+          },
+          {
+            "role": "body",
+            "text": "",
+            "x": 2.4,
+            "y": 3.836,
+            "w": 1.585,
+            "h": 0.763
+          },
+          {
+            "role": "body",
+            "text": "",
+            "x": 2.4,
+            "y": 3.836,
+            "w": 1.585,
+            "h": 0.337
+          },
+          {
+            "role": "body",
+            "text": "Asia Lead",
+            "x": 2.401,
+            "y": 3.901,
+            "w": 1.585,
+            "h": 0.208,
+            "fontSize": 11
+          },
+          {
+            "role": "body",
+            "text": "Vinny Viewer",
+            "x": 2.401,
+            "y": 4.284,
+            "w": 1.585,
+            "h": 0.208,
+            "fontSize": 13
+          },
+          {
+            "role": "body",
+            "text": "",
+            "x": 4.22,
+            "y": 3.836,
+            "w": 1.585,
+            "h": 0.763
+          },
+          {
+            "role": "body",
+            "text": "",
+            "x": 4.22,
+            "y": 3.836,
+            "w": 1.585,
+            "h": 0.337
+          },
+          {
+            "role": "body",
+            "text": "Europe Lead",
+            "x": 4.22,
+            "y": 3.901,
+            "w": 1.585,
+            "h": 0.208,
+            "fontSize": 11
+          },
+          {
+            "role": "body",
+            "text": "Molly Maker",
+            "x": 4.22,
+            "y": 4.284,
+            "w": 1.585,
+            "h": 0.208,
+            "fontSize": 13
+          },
+          {
+            "role": "body",
+            "text": "",
+            "x": 6.948,
+            "y": 2.492,
+            "w": 1.585,
+            "h": 0.762
+          },
+          {
+            "role": "body",
+            "text": "",
+            "x": 6.948,
+            "y": 2.492,
+            "w": 1.585,
+            "h": 0.337
+          },
+          {
+            "role": "body",
+            "text": "Dir. of Engineering",
+            "x": 6.949,
+            "y": 2.557,
+            "w": 1.585,
+            "h": 0.208,
+            "fontSize": 11
+          },
+          {
+            "role": "body",
+            "text": "Abby Author",
+            "x": 6.947,
+            "y": 2.938,
+            "w": 1.585,
+            "h": 0.208,
+            "fontSize": 13
+          },
+          {
+            "role": "body",
+            "text": "",
+            "x": 6.039,
+            "y": 3.836,
+            "w": 1.585,
+            "h": 0.762
+          },
+          {
+            "role": "body",
+            "text": "",
+            "x": 6.039,
+            "y": 3.836,
+            "w": 1.585,
+            "h": 0.337
+          },
+          {
+            "role": "body",
+            "text": "Front End Lead",
+            "x": 6.039,
+            "y": 3.901,
+            "w": 1.585,
+            "h": 0.208,
+            "fontSize": 11
+          },
+          {
+            "role": "body",
+            "text": "Casey Creator",
+            "x": 6.039,
+            "y": 4.284,
+            "w": 1.585,
+            "h": 0.208,
+            "fontSize": 13
+          },
+          {
+            "role": "body",
+            "text": "",
+            "x": 7.858,
+            "y": 3.836,
+            "w": 1.585,
+            "h": 0.762
+          },
+          {
+            "role": "body",
+            "text": "",
+            "x": 7.858,
+            "y": 3.836,
+            "w": 1.585,
+            "h": 0.337
+          },
+          {
+            "role": "body",
+            "text": "Back End Lead",
+            "x": 7.858,
+            "y": 3.901,
+            "w": 1.585,
+            "h": 0.208,
+            "fontSize": 11
+          },
+          {
+            "role": "body",
+            "text": "Berry Books",
+            "x": 7.858,
+            "y": 4.284,
+            "w": 1.585,
+            "h": 0.208,
+            "fontSize": 13
+          }
+        ]
+      },
+      "gcsUri": "gs://alltheway-rinegan-slide-designs-prod/catalog/case-study/slide-07.png"
+    },
+    "slide-08": {
+      "index": 7,
+      "prev": "slide-07",
+      "next": null,
+      "image": "case-study/slide-08.png",
+      "coordinates": [
+        {
+          "x": 7.672,
+          "y": 2.333,
+          "w": 0.313,
+          "h": 0.313,
+          "kind": "shape",
+          "bold": false,
+          "placeholder": "none",
+          "name": "Google Shape;229;p20"
+        },
+        {
+          "x": 0.29,
+          "y": 1.259,
+          "w": 4.424,
+          "h": 1.711,
+          "kind": "text",
+          "text": "Impact",
+          "bold": false,
+          "placeholder": "title",
+          "name": "Google Shape;230;p20"
+        },
+        {
+          "x": 0.29,
+          "y": 3.028,
+          "w": 4.424,
+          "h": 1.388,
+          "kind": "text",
+          "text": "XX% sales increase",
+          "bold": false,
+          "placeholder": "subTitle",
+          "name": "Google Shape;231;p20"
+        },
+        {
+          "x": 1.094,
+          "y": 2.668,
+          "w": 4.532,
+          "h": 1.784,
+          "kind": "shape",
+          "bold": false,
+          "placeholder": "oval",
+          "name": "Google Shape;233;p20"
+        },
+        {
+          "x": 5.094,
+          "y": 4.39,
+          "w": 0.093,
+          "h": 0.093,
+          "kind": "shape",
+          "bold": false,
+          "placeholder": "none",
+          "name": "Google Shape;234;p20"
+        },
+        {
+          "x": 4.588,
+          "y": 3.442,
+          "w": 0.093,
+          "h": 0.093,
+          "kind": "shape",
+          "bold": false,
+          "placeholder": "none",
+          "name": "Google Shape;235;p20"
+        },
+        {
+          "x": 4.156,
+          "y": 4.231,
+          "w": 0.093,
+          "h": 0.093,
+          "kind": "shape",
+          "bold": false,
+          "placeholder": "none",
+          "name": "Google Shape;236;p20"
+        },
+        {
+          "x": 3.673,
+          "y": 2.885,
+          "w": 0.093,
+          "h": 0.093,
+          "kind": "shape",
+          "bold": false,
+          "placeholder": "none",
+          "name": "Google Shape;237;p20"
+        },
+        {
+          "x": 3.182,
+          "y": 3.273,
+          "w": 0.093,
+          "h": 0.093,
+          "kind": "shape",
+          "bold": false,
+          "placeholder": "none",
+          "name": "Google Shape;238;p20"
+        },
+        {
+          "x": 2.666,
+          "y": 2.618,
+          "w": 0.093,
+          "h": 0.093,
+          "kind": "shape",
+          "bold": false,
+          "placeholder": "none",
+          "name": "Google Shape;239;p20"
+        },
+        {
+          "x": 2.159,
+          "y": 3.514,
+          "w": 0.093,
+          "h": 0.093,
+          "kind": "shape",
+          "bold": false,
+          "placeholder": "none",
+          "name": "Google Shape;240;p20"
+        },
+        {
+          "x": 1.64,
+          "y": 2.792,
+          "w": 0.093,
+          "h": 0.093,
+          "kind": "shape",
+          "bold": false,
+          "placeholder": "none",
+          "name": "Google Shape;241;p20"
+        },
+        {
+          "x": 7.488,
+          "y": 1.725,
+          "w": 1.29,
+          "h": 0.376,
+          "kind": "shape",
+          "bold": false,
+          "name": "Google Shape;242;p20"
+        },
+        {
+          "x": 1.094,
+          "y": 2.279,
+          "w": 4.546,
+          "h": 1.725,
+          "kind": "shape",
+          "bold": false,
+          "placeholder": "oval",
+          "name": "Google Shape;244;p20"
+        },
+        {
+          "x": 1.64,
+          "y": 2.252,
+          "w": 0.093,
+          "h": 0.093,
+          "kind": "shape",
+          "bold": false,
+          "placeholder": "none",
+          "name": "Google Shape;245;p20"
+        },
+        {
+          "x": 2.159,
+          "y": 2.994,
+          "w": 0.093,
+          "h": 0.093,
+          "kind": "shape",
+          "bold": false,
+          "placeholder": "none",
+          "name": "Google Shape;246;p20"
+        },
+        {
+          "x": 2.666,
+          "y": 2.901,
+          "w": 0.093,
+          "h": 0.093,
+          "kind": "shape",
+          "bold": false,
+          "placeholder": "none",
+          "name": "Google Shape;247;p20"
+        },
+        {
+          "x": 3.182,
+          "y": 3.941,
+          "w": 0.093,
+          "h": 0.093,
+          "kind": "shape",
+          "bold": false,
+          "placeholder": "none",
+          "name": "Google Shape;248;p20"
+        },
+        {
+          "x": 3.673,
+          "y": 3.273,
+          "w": 0.093,
+          "h": 0.093,
+          "kind": "shape",
+          "bold": false,
+          "placeholder": "none",
+          "name": "Google Shape;249;p20"
+        },
+        {
+          "x": 4.135,
+          "y": 3.626,
+          "w": 0.093,
+          "h": 0.093,
+          "kind": "shape",
+          "bold": false,
+          "placeholder": "none",
+          "name": "Google Shape;250;p20"
+        },
+        {
+          "x": 4.611,
+          "y": 2.638,
+          "w": 0.093,
+          "h": 0.093,
+          "kind": "shape",
+          "bold": false,
+          "placeholder": "none",
+          "name": "Google Shape;251;p20"
+        },
+        {
+          "x": 5.094,
+          "y": 3.065,
+          "w": 0.093,
+          "h": 0.093,
+          "kind": "shape",
+          "bold": false,
+          "placeholder": "none",
+          "name": "Google Shape;252;p20"
+        },
+        {
+          "x": 7.488,
+          "y": 1.757,
+          "w": 1.29,
+          "h": 0.313,
+          "kind": "text",
+          "text": "max growth",
+          "fontSize": 13,
+          "bold": false,
+          "placeholder": "body",
+          "name": "Google Shape;253;p20"
+        }
+      ],
+      "description": {
+        "looksLike": "A split-screen slide featuring a clean white left pane with a bold title and subtitle, paired with a dark blue right pane illustrating line charts and a callout tag.",
+        "title": "Impact",
+        "layout": "title-slide",
+        "background": {
+          "scope": "slide",
+          "kind": "solid"
+        },
+        "contentPlacement": "Left half contains the primary title and subtitle centered vertically; right half features a deep blue panel with a multi-series line chart graphic and a tooltip annotation.",
+        "images": [],
+        "boxes": [
+          {
+            "role": "body",
+            "text": "",
+            "x": 7.672,
+            "y": 2.333,
+            "w": 0.313,
+            "h": 0.313
+          },
+          {
+            "role": "body",
+            "text": "Impact",
+            "x": 0.29,
+            "y": 1.259,
+            "w": 4.424,
+            "h": 1.711
+          },
+          {
+            "role": "body",
+            "text": "XX% sales increase",
+            "x": 0.29,
+            "y": 3.028,
+            "w": 4.424,
+            "h": 1.388
+          },
+          {
+            "role": "body",
+            "text": "",
+            "x": 1.094,
+            "y": 2.668,
+            "w": 4.532,
+            "h": 1.784
+          },
+          {
+            "role": "body",
+            "text": "",
+            "x": 5.094,
+            "y": 4.39,
+            "w": 0.093,
+            "h": 0.093
+          },
+          {
+            "role": "body",
+            "text": "",
+            "x": 4.588,
+            "y": 3.442,
+            "w": 0.093,
+            "h": 0.093
+          },
+          {
+            "role": "body",
+            "text": "",
+            "x": 4.156,
+            "y": 4.231,
+            "w": 0.093,
+            "h": 0.093
+          },
+          {
+            "role": "body",
+            "text": "",
+            "x": 3.673,
+            "y": 2.885,
+            "w": 0.093,
+            "h": 0.093
+          },
+          {
+            "role": "body",
+            "text": "",
+            "x": 3.182,
+            "y": 3.273,
+            "w": 0.093,
+            "h": 0.093
+          },
+          {
+            "role": "body",
+            "text": "",
+            "x": 2.666,
+            "y": 2.618,
+            "w": 0.093,
+            "h": 0.093
+          },
+          {
+            "role": "body",
+            "text": "",
+            "x": 2.159,
+            "y": 3.514,
+            "w": 0.093,
+            "h": 0.093
+          },
+          {
+            "role": "body",
+            "text": "",
+            "x": 1.64,
+            "y": 2.792,
+            "w": 0.093,
+            "h": 0.093
+          },
+          {
+            "role": "body",
+            "text": "",
+            "x": 7.488,
+            "y": 1.725,
+            "w": 1.29,
+            "h": 0.376
+          },
+          {
+            "role": "body",
+            "text": "",
+            "x": 1.094,
+            "y": 2.279,
+            "w": 4.546,
+            "h": 1.725
+          },
+          {
+            "role": "body",
+            "text": "",
+            "x": 1.64,
+            "y": 2.252,
+            "w": 0.093,
+            "h": 0.093
+          },
+          {
+            "role": "body",
+            "text": "",
+            "x": 2.159,
+            "y": 2.994,
+            "w": 0.093,
+            "h": 0.093
+          },
+          {
+            "role": "body",
+            "text": "",
+            "x": 2.666,
+            "y": 2.901,
+            "w": 0.093,
+            "h": 0.093
+          },
+          {
+            "role": "body",
+            "text": "",
+            "x": 3.182,
+            "y": 3.941,
+            "w": 0.093,
+            "h": 0.093
+          },
+          {
+            "role": "body",
+            "text": "",
+            "x": 3.673,
+            "y": 3.273,
+            "w": 0.093,
+            "h": 0.093
+          },
+          {
+            "role": "body",
+            "text": "",
+            "x": 4.135,
+            "y": 3.626,
+            "w": 0.093,
+            "h": 0.093
+          },
+          {
+            "role": "body",
+            "text": "",
+            "x": 4.611,
+            "y": 2.638,
+            "w": 0.093,
+            "h": 0.093
+          },
+          {
+            "role": "body",
+            "text": "",
+            "x": 5.094,
+            "y": 3.065,
+            "w": 0.093,
+            "h": 0.093
+          },
+          {
+            "role": "body",
+            "text": "max growth",
+            "x": 7.488,
+            "y": 1.757,
+            "w": 1.29,
+            "h": 0.313,
+            "fontSize": 13
+          }
+        ]
+      },
+      "gcsUri": "gs://alltheway-rinegan-slide-designs-prod/catalog/case-study/slide-08.png"
+    }
+  }
+}

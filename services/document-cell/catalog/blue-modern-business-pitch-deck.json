@@ -1,0 +1,3203 @@
+{
+  "id": "blue-modern-business-pitch-deck",
+  "title": "blue modern business pitch deck",
+  "source": "Blue Modern Business Pitch Deck Presentation.pptx",
+  "width": 20,
+  "height": 11.25,
+  "overall_deck_description": "This 10-slide modern business pitch deck follows a cohesive, dark-mode corporate design anchored by a deep black and glowing electric-blue radial gradient background. The presentation is structured with a high-impact title cover (slide 0), sequential multi-column body slides featuring numbered points, lists, and inset photography (slides 1–8), and a symmetrical closing slide mirroring the title layout (slide 9). Recurring design motifs establish unity throughout, including a rounded pill badge in the upper-left corner for company branding, persistent metadata anchors (website URL, year stamp, and presenter credentials) along the outer perimeter, and ultra-bold geometric sans-serif display typography paired with clean, crisp white body text and circular outlined step indicators.",
+  "slides": {
+    "slide-01": {
+      "index": 0,
+      "prev": null,
+      "next": "slide-02",
+      "image": "blue-modern-business-pitch-deck/slide-01.png",
+      "coordinates": [
+        {
+          "x": 0,
+          "y": 0,
+          "w": 20,
+          "h": 11.25,
+          "kind": "shape",
+          "bold": false,
+          "name": "Freeform 2"
+        },
+        {
+          "x": 0,
+          "y": 0,
+          "w": 1.136,
+          "h": 0.234,
+          "kind": "shape",
+          "color": "FFFFFF",
+          "bold": false,
+          "name": "Freeform 4"
+        },
+        {
+          "x": 0,
+          "y": -0.052,
+          "w": 1.136,
+          "h": 0.286,
+          "kind": "text",
+          "text": "Warner & Spencer",
+          "fontSize": 23,
+          "color": "FFFFFF",
+          "bold": false,
+          "name": "TextBox 5"
+        },
+        {
+          "x": 1.125,
+          "y": 5.594,
+          "w": 14.549,
+          "h": 2.96,
+          "kind": "text",
+          "text": "Pitch Deck",
+          "fontSize": 202.66,
+          "color": "FFFFFF",
+          "bold": false,
+          "name": "TextBox 6"
+        },
+        {
+          "x": 1.125,
+          "y": 4.838,
+          "w": 6.222,
+          "h": 0.669,
+          "kind": "text",
+          "text": "Business Presentation",
+          "fontSize": 45.95,
+          "color": "FFFFFF",
+          "bold": false,
+          "name": "TextBox 7"
+        },
+        {
+          "x": 1.125,
+          "y": 9.454,
+          "w": 3.817,
+          "h": 0.426,
+          "kind": "text",
+          "text": "Presented by :",
+          "fontSize": 23,
+          "color": "FFFFFF",
+          "bold": false,
+          "name": "TextBox 8"
+        },
+        {
+          "x": 1.125,
+          "y": 9.888,
+          "w": 3.817,
+          "h": 0.426,
+          "kind": "text",
+          "text": "Bartholomew Henderson",
+          "fontSize": 23,
+          "color": "FFFFFF",
+          "bold": false,
+          "name": "TextBox 9"
+        },
+        {
+          "x": 5.278,
+          "y": 9.454,
+          "w": 2.623,
+          "h": 0.426,
+          "kind": "text",
+          "text": "Email Address :",
+          "fontSize": 23,
+          "color": "FFFFFF",
+          "bold": false,
+          "name": "TextBox 10"
+        },
+        {
+          "x": 5.278,
+          "y": 9.888,
+          "w": 4.137,
+          "h": 0.426,
+          "kind": "text",
+          "text": "hello@reallygreatsite.com",
+          "fontSize": 23,
+          "color": "FFFFFF",
+          "bold": false,
+          "name": "TextBox 11"
+        },
+        {
+          "x": 17.515,
+          "y": 9.888,
+          "w": 1.36,
+          "h": 0.426,
+          "kind": "text",
+          "text": "2030",
+          "fontSize": 23,
+          "color": "FFFFFF",
+          "bold": false,
+          "name": "TextBox 12"
+        },
+        {
+          "x": 15.199,
+          "y": 0.699,
+          "w": 3.676,
+          "h": 0.382,
+          "kind": "text",
+          "text": "www.reallygreatsite.com",
+          "fontSize": 20,
+          "color": "FFFFFF",
+          "bold": false,
+          "name": "TextBox 13"
+        }
+      ],
+      "description": {
+        "looksLike": "Modern dark blue abstract glowing title slide featuring an oversized bold presentation title, subtitle, header badge, and presenter contact details along the bottom.",
+        "title": "Pitch Deck",
+        "layout": "title-slide",
+        "background": {
+          "scope": "slide",
+          "kind": "photograph"
+        },
+        "contentPlacement": "Logo pill at top left, URL at top right, subtitle above a massive bold title in the lower-middle half, and presenter contact columns along the bottom left with date at bottom right.",
+        "images": [],
+        "boxes": [
+          {
+            "role": "body",
+            "text": "",
+            "x": 0,
+            "y": 0,
+            "w": 20,
+            "h": 11.25
+          },
+          {
+            "role": "body",
+            "text": "",
+            "x": 0,
+            "y": 0,
+            "w": 1.136,
+            "h": 0.234
+          },
+          {
+            "role": "body",
+            "text": "Warner & Spencer",
+            "x": 0,
+            "y": -0.052,
+            "w": 1.136,
+            "h": 0.286,
+            "fontSize": 23
+          },
+          {
+            "role": "body",
+            "text": "Pitch Deck",
+            "x": 1.125,
+            "y": 5.594,
+            "w": 14.549,
+            "h": 2.96,
+            "fontSize": 202.66
+          },
+          {
+            "role": "body",
+            "text": "Business Presentation",
+            "x": 1.125,
+            "y": 4.838,
+            "w": 6.222,
+            "h": 0.669,
+            "fontSize": 45.95
+          },
+          {
+            "role": "body",
+            "text": "Presented by :",
+            "x": 1.125,
+            "y": 9.454,
+            "w": 3.817,
+            "h": 0.426,
+            "fontSize": 23
+          },
+          {
+            "role": "body",
+            "text": "Bartholomew Henderson",
+            "x": 1.125,
+            "y": 9.888,
+            "w": 3.817,
+            "h": 0.426,
+            "fontSize": 23
+          },
+          {
+            "role": "body",
+            "text": "Email Address :",
+            "x": 5.278,
+            "y": 9.454,
+            "w": 2.623,
+            "h": 0.426,
+            "fontSize": 23
+          },
+          {
+            "role": "body",
+            "text": "hello@reallygreatsite.com",
+            "x": 5.278,
+            "y": 9.888,
+            "w": 4.137,
+            "h": 0.426,
+            "fontSize": 23
+          },
+          {
+            "role": "body",
+            "text": "2030",
+            "x": 17.515,
+            "y": 9.888,
+            "w": 1.36,
+            "h": 0.426,
+            "fontSize": 23
+          },
+          {
+            "role": "body",
+            "text": "www.reallygreatsite.com",
+            "x": 15.199,
+            "y": 0.699,
+            "w": 3.676,
+            "h": 0.382,
+            "fontSize": 20
+          }
+        ]
+      },
+      "gcsUri": "gs://alltheway-rinegan-slide-designs-prod/catalog/blue-modern-business-pitch-deck/slide-01.png"
+    },
+    "slide-02": {
+      "index": 1,
+      "prev": "slide-01",
+      "next": "slide-03",
+      "image": "blue-modern-business-pitch-deck/slide-02.png",
+      "coordinates": [
+        {
+          "x": 0,
+          "y": 0,
+          "w": 20,
+          "h": 11.25,
+          "kind": "shape",
+          "bold": false,
+          "name": "Freeform 2"
+        },
+        {
+          "x": 0,
+          "y": 0,
+          "w": 1.136,
+          "h": 0.234,
+          "kind": "shape",
+          "color": "FFFFFF",
+          "bold": false,
+          "name": "Freeform 4"
+        },
+        {
+          "x": 0,
+          "y": -0.052,
+          "w": 1.136,
+          "h": 0.286,
+          "kind": "text",
+          "text": "Warner & Spencer",
+          "fontSize": 23,
+          "color": "FFFFFF",
+          "bold": false,
+          "name": "TextBox 5"
+        },
+        {
+          "x": 0,
+          "y": 0,
+          "w": 1.591,
+          "h": 0.796,
+          "kind": "shape",
+          "bold": false,
+          "name": "Freeform 7"
+        },
+        {
+          "x": 0,
+          "y": 0,
+          "w": 0.889,
+          "h": 0.889,
+          "kind": "shape",
+          "color": "FFFFFF",
+          "bold": false,
+          "name": "Freeform 9"
+        },
+        {
+          "x": 0.083,
+          "y": 0.031,
+          "w": 0.722,
+          "h": 0.774,
+          "kind": "text",
+          "text": "01",
+          "fontSize": 23,
+          "color": "FFFFFF",
+          "bold": false,
+          "name": "TextBox 10"
+        },
+        {
+          "x": 0,
+          "y": 0,
+          "w": 0.889,
+          "h": 0.889,
+          "kind": "shape",
+          "color": "FFFFFF",
+          "bold": false,
+          "name": "Freeform 12"
+        },
+        {
+          "x": 0.083,
+          "y": 0.031,
+          "w": 0.722,
+          "h": 0.774,
+          "kind": "text",
+          "text": "02",
+          "fontSize": 23,
+          "color": "FFFFFF",
+          "bold": false,
+          "name": "TextBox 13"
+        },
+        {
+          "x": 1.125,
+          "y": 3.334,
+          "w": 6.623,
+          "h": 2.065,
+          "kind": "text",
+          "text": "Problem Statement",
+          "fontSize": 72,
+          "color": "FFFFFF",
+          "bold": false,
+          "name": "TextBox 14"
+        },
+        {
+          "x": 17.515,
+          "y": 9.888,
+          "w": 1.36,
+          "h": 0.426,
+          "kind": "text",
+          "text": "2030",
+          "fontSize": 23,
+          "color": "FFFFFF",
+          "bold": false,
+          "name": "TextBox 15"
+        },
+        {
+          "x": 1.125,
+          "y": 9.888,
+          "w": 3.676,
+          "h": 0.382,
+          "kind": "text",
+          "text": "www.reallygreatsite.com",
+          "fontSize": 20,
+          "color": "FFFFFF",
+          "bold": false,
+          "name": "TextBox 16"
+        },
+        {
+          "x": 1.125,
+          "y": 5.742,
+          "w": 6.623,
+          "h": 2.309,
+          "kind": "text",
+          "text": "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Quisque molestie nisl eu sem tristique, sit amet convallis ex aliquam. Maecenas varius lectus hendrerit augue blandit, ut posuere erat aliquam. Praesent auctor tellus eget nisl blandit, at varius purus elementum.",
+          "fontSize": 20,
+          "color": "FFFFFF",
+          "bold": false,
+          "name": "TextBox 17"
+        },
+        {
+          "x": 11.474,
+          "y": 5.629,
+          "w": 6.332,
+          "h": 0.462,
+          "kind": "text",
+          "text": "The Financial Challenge",
+          "fontSize": 24.99,
+          "color": "FFFFFF",
+          "bold": false,
+          "name": "TextBox 18"
+        },
+        {
+          "x": 11.474,
+          "y": 8.064,
+          "w": 6.332,
+          "h": 0.941,
+          "kind": "text",
+          "text": "Lack of accessible and reliable financial advisory services.",
+          "fontSize": 24.99,
+          "color": "FFFFFF",
+          "bold": false,
+          "name": "TextBox 19"
+        },
+        {
+          "x": 11.474,
+          "y": 6.265,
+          "w": 6.332,
+          "h": 1.153,
+          "kind": "text",
+          "text": "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Quisque molestie nisl eu sem tristique, sit amet convallis ex aliquam nunc.",
+          "fontSize": 20,
+          "color": "FFFFFF",
+          "bold": false,
+          "name": "TextBox 20"
+        },
+        {
+          "x": 11.474,
+          "y": 9.117,
+          "w": 6.332,
+          "h": 1.153,
+          "kind": "text",
+          "text": "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Quisque molestie nisl eu sem tristique, sit amet convallis ex aliquam nunc.",
+          "fontSize": 20,
+          "color": "FFFFFF",
+          "bold": false,
+          "name": "TextBox 21"
+        }
+      ],
+      "description": {
+        "looksLike": "A dark blue modern pitch deck slide with a bold left-aligned title, intro paragraph, and a right column featuring an architectural photo above two numbered problem points.",
+        "title": "Problem Statement",
+        "layout": "title-and-two-columns",
+        "background": {
+          "scope": "slide",
+          "kind": "solid"
+        },
+        "contentPlacement": "Left column holds a brand tag at the top, a large white problem statement title, and an intro description paragraph. The right column contains an architectural photo at the top and two numbered callout items below it.",
+        "images": [],
+        "boxes": [
+          {
+            "role": "body",
+            "text": "",
+            "x": 0,
+            "y": 0,
+            "w": 20,
+            "h": 11.25
+          },
+          {
+            "role": "body",
+            "text": "Problem Statement",
+            "x": 1.125,
+            "y": 3.334,
+            "w": 6.623,
+            "h": 2.065,
+            "fontSize": 72
+          },
+          {
+            "role": "body",
+            "text": "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Quisque molestie nisl eu sem tristique, sit amet convallis ex aliquam. Maecenas varius lectus hendrerit augue blandit, ut posuere erat aliquam. Praesent auctor tellus eget nisl blandit, at varius purus elementum.",
+            "x": 1.125,
+            "y": 5.742,
+            "w": 6.623,
+            "h": 2.309,
+            "fontSize": 20
+          },
+          {
+            "role": "body",
+            "text": "The Financial Challenge",
+            "x": 11.474,
+            "y": 5.629,
+            "w": 6.332,
+            "h": 0.462,
+            "fontSize": 24.99
+          },
+          {
+            "role": "body",
+            "text": "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Quisque molestie nisl eu sem tristique, sit amet convallis ex aliquam nunc.",
+            "x": 11.474,
+            "y": 6.265,
+            "w": 6.332,
+            "h": 1.153,
+            "fontSize": 20
+          },
+          {
+            "role": "body",
+            "text": "Lack of accessible and reliable financial advisory services.",
+            "x": 11.474,
+            "y": 8.064,
+            "w": 6.332,
+            "h": 0.941,
+            "fontSize": 24.99
+          },
+          {
+            "role": "body",
+            "text": "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Quisque molestie nisl eu sem tristique, sit amet convallis ex aliquam nunc.",
+            "x": 11.474,
+            "y": 9.117,
+            "w": 6.332,
+            "h": 1.153,
+            "fontSize": 20
+          },
+          {
+            "role": "body",
+            "text": "www.reallygreatsite.com",
+            "x": 1.125,
+            "y": 9.888,
+            "w": 3.676,
+            "h": 0.382,
+            "fontSize": 20
+          },
+          {
+            "role": "body",
+            "text": "2030",
+            "x": 17.515,
+            "y": 9.888,
+            "w": 1.36,
+            "h": 0.426,
+            "fontSize": 23
+          }
+        ]
+      },
+      "gcsUri": "gs://alltheway-rinegan-slide-designs-prod/catalog/blue-modern-business-pitch-deck/slide-02.png"
+    },
+    "slide-03": {
+      "index": 2,
+      "prev": "slide-02",
+      "next": "slide-04",
+      "image": "blue-modern-business-pitch-deck/slide-03.png",
+      "coordinates": [
+        {
+          "x": 0,
+          "y": 0,
+          "w": 20,
+          "h": 11.25,
+          "kind": "shape",
+          "bold": false,
+          "name": "Freeform 2"
+        },
+        {
+          "x": 0,
+          "y": 0,
+          "w": 1.136,
+          "h": 0.234,
+          "kind": "shape",
+          "color": "FFFFFF",
+          "bold": false,
+          "name": "Freeform 4"
+        },
+        {
+          "x": 0,
+          "y": -0.052,
+          "w": 1.136,
+          "h": 0.286,
+          "kind": "text",
+          "text": "Warner & Spencer",
+          "fontSize": 23,
+          "color": "FFFFFF",
+          "bold": false,
+          "name": "TextBox 5"
+        },
+        {
+          "x": 0,
+          "y": 0,
+          "w": 1.121,
+          "h": 0.831,
+          "kind": "shape",
+          "bold": false,
+          "name": "Freeform 7"
+        },
+        {
+          "x": 0,
+          "y": 0,
+          "w": 0.825,
+          "h": 0.831,
+          "kind": "shape",
+          "bold": false,
+          "name": "Freeform 9"
+        },
+        {
+          "x": 0,
+          "y": 0,
+          "w": 0.889,
+          "h": 0.889,
+          "kind": "shape",
+          "color": "FFFFFF",
+          "bold": false,
+          "name": "Freeform 11"
+        },
+        {
+          "x": 0.083,
+          "y": 0.031,
+          "w": 0.722,
+          "h": 0.774,
+          "kind": "text",
+          "text": "01",
+          "fontSize": 23,
+          "color": "FFFFFF",
+          "bold": false,
+          "name": "TextBox 12"
+        },
+        {
+          "x": 0,
+          "y": 0,
+          "w": 0.889,
+          "h": 0.889,
+          "kind": "shape",
+          "color": "FFFFFF",
+          "bold": false,
+          "name": "Freeform 14"
+        },
+        {
+          "x": 0.083,
+          "y": 0.031,
+          "w": 0.722,
+          "h": 0.774,
+          "kind": "text",
+          "text": "02",
+          "fontSize": 23,
+          "color": "FFFFFF",
+          "bold": false,
+          "name": "TextBox 15"
+        },
+        {
+          "x": 1.125,
+          "y": 3.413,
+          "w": 6.623,
+          "h": 1.065,
+          "kind": "text",
+          "text": "Ou\nr Solution",
+          "fontSize": 72,
+          "color": "FFFFFF",
+          "bold": false,
+          "name": "TextBox 16"
+        },
+        {
+          "x": 17.515,
+          "y": 9.888,
+          "w": 1.36,
+          "h": 0.426,
+          "kind": "text",
+          "text": "2030",
+          "fontSize": 23,
+          "color": "FFFFFF",
+          "bold": false,
+          "name": "TextBox 17"
+        },
+        {
+          "x": 1.125,
+          "y": 9.888,
+          "w": 3.676,
+          "h": 0.382,
+          "kind": "text",
+          "text": "www.reallygreatsite.com",
+          "fontSize": 20,
+          "color": "FFFFFF",
+          "bold": false,
+          "name": "TextBox 18"
+        },
+        {
+          "x": 12.573,
+          "y": 6.602,
+          "w": 5.473,
+          "h": 2.694,
+          "kind": "text",
+          "text": "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Quisque molestie nisl eu sem tristique, sit amet convallis ex aliquam. Maecenas varius lectus hendrerit augue blandit, ut posuere erat aliquam. Praesent auctor tellus eget nisl blandit, at varius purus elementum.",
+          "fontSize": 20,
+          "color": "FFFFFF",
+          "bold": false,
+          "name": "TextBox 19"
+        },
+        {
+          "x": 1.125,
+          "y": 6.602,
+          "w": 4.775,
+          "h": 0.462,
+          "kind": "text",
+          "text": "Strategic financial planning",
+          "fontSize": 24.99,
+          "color": "FFFFFF",
+          "bold": false,
+          "name": "TextBox 20"
+        },
+        {
+          "x": 6.683,
+          "y": 6.602,
+          "w": 4.775,
+          "h": 0.462,
+          "kind": "text",
+          "text": "Cash flow optimization",
+          "fontSize": 24.99,
+          "color": "FFFFFF",
+          "bold": false,
+          "name": "TextBox 21"
+        },
+        {
+          "x": 1.125,
+          "y": 7.238,
+          "w": 4.775,
+          "h": 1.538,
+          "kind": "text",
+          "text": "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Quisque molestie nisl eu sem tristique, sit amet convallis ex aliquam nunc.",
+          "fontSize": 20,
+          "color": "FFFFFF",
+          "bold": false,
+          "name": "TextBox 22"
+        },
+        {
+          "x": 6.683,
+          "y": 7.238,
+          "w": 4.775,
+          "h": 1.538,
+          "kind": "text",
+          "text": "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Quisque molestie nisl eu sem tristique, sit amet convallis ex aliquam nunc.",
+          "fontSize": 20,
+          "color": "FFFFFF",
+          "bold": false,
+          "name": "TextBox 23"
+        }
+      ],
+      "description": {
+        "looksLike": "A modern dark-blue corporate slide featuring a bold section title on the left, two team collaboration photos on the top right, and three structured content columns across the bottom with numbered badges and descriptions.",
+        "title": "Our Solution",
+        "layout": "title-and-two-columns",
+        "background": {
+          "scope": "slide",
+          "kind": "photograph"
+        },
+        "contentPlacement": "[object Object]",
+        "images": [],
+        "boxes": [
+          {
+            "role": "body",
+            "text": "",
+            "x": 0,
+            "y": 0,
+            "w": 20,
+            "h": 11.25
+          },
+          {
+            "role": "body",
+            "text": "",
+            "x": 0,
+            "y": 0,
+            "w": 1.136,
+            "h": 0.234
+          },
+          {
+            "role": "body",
+            "text": "Warner & Spencer",
+            "x": 0,
+            "y": -0.052,
+            "w": 1.136,
+            "h": 0.286,
+            "fontSize": 23
+          },
+          {
+            "role": "body",
+            "text": "",
+            "x": 0,
+            "y": 0,
+            "w": 1.121,
+            "h": 0.831
+          },
+          {
+            "role": "body",
+            "text": "",
+            "x": 0,
+            "y": 0,
+            "w": 0.825,
+            "h": 0.831
+          },
+          {
+            "role": "body",
+            "text": "",
+            "x": 0,
+            "y": 0,
+            "w": 0.889,
+            "h": 0.889
+          },
+          {
+            "role": "body",
+            "text": "01",
+            "x": 0.083,
+            "y": 0.031,
+            "w": 0.722,
+            "h": 0.774,
+            "fontSize": 23
+          },
+          {
+            "role": "body",
+            "text": "",
+            "x": 0,
+            "y": 0,
+            "w": 0.889,
+            "h": 0.889
+          },
+          {
+            "role": "body",
+            "text": "02",
+            "x": 0.083,
+            "y": 0.031,
+            "w": 0.722,
+            "h": 0.774,
+            "fontSize": 23
+          },
+          {
+            "role": "body",
+            "text": "Ou\nr Solution",
+            "x": 1.125,
+            "y": 3.413,
+            "w": 6.623,
+            "h": 1.065,
+            "fontSize": 72
+          },
+          {
+            "role": "body",
+            "text": "2030",
+            "x": 17.515,
+            "y": 9.888,
+            "w": 1.36,
+            "h": 0.426,
+            "fontSize": 23
+          },
+          {
+            "role": "body",
+            "text": "www.reallygreatsite.com",
+            "x": 1.125,
+            "y": 9.888,
+            "w": 3.676,
+            "h": 0.382,
+            "fontSize": 20
+          },
+          {
+            "role": "body",
+            "text": "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Quisque molestie nisl eu sem tristique, sit amet convallis ex aliquam. Maecenas varius lectus hendrerit augue blandit, ut posuere erat aliquam. Praesent auctor tellus eget nisl blandit, at varius purus elementum.",
+            "x": 12.573,
+            "y": 6.602,
+            "w": 5.473,
+            "h": 2.694,
+            "fontSize": 20
+          },
+          {
+            "role": "body",
+            "text": "Strategic financial planning",
+            "x": 1.125,
+            "y": 6.602,
+            "w": 4.775,
+            "h": 0.462,
+            "fontSize": 24.99
+          },
+          {
+            "role": "body",
+            "text": "Cash flow optimization",
+            "x": 6.683,
+            "y": 6.602,
+            "w": 4.775,
+            "h": 0.462,
+            "fontSize": 24.99
+          },
+          {
+            "role": "body",
+            "text": "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Quisque molestie nisl eu sem tristique, sit amet convallis ex aliquam nunc.",
+            "x": 1.125,
+            "y": 7.238,
+            "w": 4.775,
+            "h": 1.538,
+            "fontSize": 20
+          },
+          {
+            "role": "body",
+            "text": "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Quisque molestie nisl eu sem tristique, sit amet convallis ex aliquam nunc.",
+            "x": 6.683,
+            "y": 7.238,
+            "w": 4.775,
+            "h": 1.538,
+            "fontSize": 20
+          }
+        ]
+      },
+      "gcsUri": "gs://alltheway-rinegan-slide-designs-prod/catalog/blue-modern-business-pitch-deck/slide-03.png"
+    },
+    "slide-04": {
+      "index": 3,
+      "prev": "slide-03",
+      "next": "slide-05",
+      "image": "blue-modern-business-pitch-deck/slide-04.png",
+      "coordinates": [
+        {
+          "x": 0,
+          "y": 0,
+          "w": 20,
+          "h": 11.25,
+          "kind": "shape",
+          "bold": false,
+          "name": "Freeform 2"
+        },
+        {
+          "x": 0,
+          "y": 0,
+          "w": 1.136,
+          "h": 0.234,
+          "kind": "shape",
+          "color": "FFFFFF",
+          "bold": false,
+          "name": "Freeform 4"
+        },
+        {
+          "x": 0,
+          "y": -0.052,
+          "w": 1.136,
+          "h": 0.286,
+          "kind": "text",
+          "text": "Warner & Spencer",
+          "fontSize": 23,
+          "color": "FFFFFF",
+          "bold": false,
+          "name": "TextBox 5"
+        },
+        {
+          "x": 1.125,
+          "y": 3.258,
+          "w": 6.623,
+          "h": 2.065,
+          "kind": "text",
+          "text": "Ma\nrket Opportunity",
+          "fontSize": 72,
+          "color": "FFFFFF",
+          "bold": false,
+          "name": "TextBox 6"
+        },
+        {
+          "x": 17.515,
+          "y": 9.888,
+          "w": 1.36,
+          "h": 0.426,
+          "kind": "text",
+          "text": "2030",
+          "fontSize": 23,
+          "color": "FFFFFF",
+          "bold": false,
+          "name": "TextBox 7"
+        },
+        {
+          "x": 1.125,
+          "y": 9.888,
+          "w": 3.676,
+          "h": 0.382,
+          "kind": "text",
+          "text": "www.reallygreatsite.com",
+          "fontSize": 20,
+          "color": "FFFFFF",
+          "bold": false,
+          "name": "TextBox 8"
+        },
+        {
+          "x": 1.125,
+          "y": 6.521,
+          "w": 6.253,
+          "h": 2.309,
+          "kind": "text",
+          "text": "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Quisque molestie nisl eu sem tristique, sit amet convallis ex aliquam. Maecenas varius lectus hendrerit augue blandit, ut posuere erat aliquam. Praesent auctor tellus eget nisl blandit, at varius purus elementum.",
+          "fontSize": 20,
+          "color": "FFFFFF",
+          "bold": false,
+          "name": "TextBox 9"
+        },
+        {
+          "x": 1.125,
+          "y": 5.934,
+          "w": 6.253,
+          "h": 0.462,
+          "kind": "text",
+          "text": "Expanding Market Potential",
+          "fontSize": 24.99,
+          "color": "FFFFFF",
+          "bold": false,
+          "name": "TextBox 10"
+        },
+        {
+          "x": 9.158,
+          "y": 0.283,
+          "w": 10.099,
+          "h": 9.984,
+          "kind": "picture",
+          "bold": false,
+          "name": "Picture 11"
+        }
+      ],
+      "description": {
+        "looksLike": "A modern dark pitch deck slide featuring a left-aligned bold title and narrative description beside a large stacked bar chart visualization on the right over an abstract glowing blue background.",
+        "title": "Market Opportunity",
+        "layout": "title-and-two-columns",
+        "background": {
+          "scope": "deck",
+          "kind": "photograph"
+        },
+        "contentPlacement": "Left side holds a pill-shaped brand badge, large headline, bold subheader, descriptive body paragraph, and footer URL; right side hosts a stacked bar chart graphic with series legend and year timestamp at the bottom right.",
+        "images": [
+          {
+            "kind": "picture",
+            "what": "photograph",
+            "x": 9.158,
+            "y": 0.283,
+            "w": 10.099,
+            "h": 9.984
+          }
+        ],
+        "boxes": [
+          {
+            "role": "body",
+            "text": "",
+            "x": 0,
+            "y": 0,
+            "w": 20,
+            "h": 11.25
+          },
+          {
+            "role": "body",
+            "text": "",
+            "x": 0,
+            "y": 0,
+            "w": 1.136,
+            "h": 0.234
+          },
+          {
+            "role": "body",
+            "text": "Warner & Spencer",
+            "x": 0,
+            "y": -0.052,
+            "w": 1.136,
+            "h": 0.286,
+            "fontSize": 23
+          },
+          {
+            "role": "body",
+            "text": "Market Opportunity",
+            "x": 1.125,
+            "y": 3.258,
+            "w": 6.623,
+            "h": 2.065,
+            "fontSize": 72
+          },
+          {
+            "role": "body",
+            "text": "Expanding Market Potential",
+            "x": 1.125,
+            "y": 5.934,
+            "w": 6.253,
+            "h": 0.462,
+            "fontSize": 24.99
+          },
+          {
+            "role": "body",
+            "text": "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Quisque molestie nisl eu sem tristique, sit amet convallis ex aliquam. Maecenas varius lectus hendrerit augue blandit, ut posuere erat aliquam. Praesent auctor tellus eget nisl blandit, at varius purus elementum.",
+            "x": 1.125,
+            "y": 6.521,
+            "w": 6.253,
+            "h": 2.309,
+            "fontSize": 20
+          },
+          {
+            "role": "body",
+            "text": "www.reallygreatsite.com",
+            "x": 1.125,
+            "y": 9.888,
+            "w": 3.676,
+            "h": 0.382,
+            "fontSize": 20
+          },
+          {
+            "role": "body",
+            "text": "2030",
+            "x": 17.515,
+            "y": 9.888,
+            "w": 1.36,
+            "h": 0.426,
+            "fontSize": 23
+          }
+        ]
+      },
+      "gcsUri": "gs://alltheway-rinegan-slide-designs-prod/catalog/blue-modern-business-pitch-deck/slide-04.png"
+    },
+    "slide-05": {
+      "index": 4,
+      "prev": "slide-04",
+      "next": "slide-06",
+      "image": "blue-modern-business-pitch-deck/slide-05.png",
+      "coordinates": [
+        {
+          "x": 0,
+          "y": 0,
+          "w": 20,
+          "h": 11.25,
+          "kind": "shape",
+          "bold": false,
+          "name": "Freeform 2"
+        },
+        {
+          "x": 0,
+          "y": 0,
+          "w": 1.136,
+          "h": 0.234,
+          "kind": "shape",
+          "color": "FFFFFF",
+          "bold": false,
+          "name": "Freeform 4"
+        },
+        {
+          "x": 0,
+          "y": -0.052,
+          "w": 1.136,
+          "h": 0.286,
+          "kind": "text",
+          "text": "Warner & Spencer",
+          "fontSize": 23,
+          "color": "FFFFFF",
+          "bold": false,
+          "name": "TextBox 5"
+        },
+        {
+          "x": 1.125,
+          "y": 3.258,
+          "w": 7.841,
+          "h": 1.065,
+          "kind": "text",
+          "text": "Busin\ness Model",
+          "fontSize": 72,
+          "color": "FFFFFF",
+          "bold": false,
+          "name": "TextBox 6"
+        },
+        {
+          "x": 17.515,
+          "y": 9.888,
+          "w": 1.36,
+          "h": 0.426,
+          "kind": "text",
+          "text": "2030",
+          "fontSize": 23,
+          "color": "FFFFFF",
+          "bold": false,
+          "name": "TextBox 7"
+        },
+        {
+          "x": 1.125,
+          "y": 9.888,
+          "w": 3.676,
+          "h": 0.382,
+          "kind": "text",
+          "text": "www.reallygreatsite.com",
+          "fontSize": 20,
+          "color": "FFFFFF",
+          "bold": false,
+          "name": "TextBox 8"
+        },
+        {
+          "x": 1.125,
+          "y": 4.796,
+          "w": 7.159,
+          "h": 3.465,
+          "kind": "text",
+          "text": "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Quisque molestie nisl eu sem tristique, sit amet convallis ex aliquam. Maecenas varius lectus hendrerit augue blandit, ut posuere erat aliquam. Praesent auctor tellus eget nisl blandit, at varius purus elementum. Lorem ipsum dolor sit amet, consectetur adipiscing elit. Quisque molestie nisl eu sem tristique, sit amet convallis ex aliquam. Maecenas varius lectus hendrerit augue blandit, ut posuere erat aliquam.",
+          "fontSize": 20,
+          "color": "FFFFFF",
+          "bold": false,
+          "name": "TextBox 9"
+        },
+        {
+          "x": 0,
+          "y": 0,
+          "w": 0.889,
+          "h": 0.889,
+          "kind": "shape",
+          "color": "FFFFFF",
+          "bold": false,
+          "name": "Freeform 11"
+        },
+        {
+          "x": 0.083,
+          "y": 0.031,
+          "w": 0.722,
+          "h": 0.774,
+          "kind": "shape",
+          "bold": false,
+          "name": "TextBox 12"
+        },
+        {
+          "x": 0,
+          "y": 0,
+          "w": 0.889,
+          "h": 0.889,
+          "kind": "shape",
+          "color": "FFFFFF",
+          "bold": false,
+          "name": "Freeform 14"
+        },
+        {
+          "x": 0.083,
+          "y": 0.031,
+          "w": 0.722,
+          "h": 0.774,
+          "kind": "shape",
+          "bold": false,
+          "name": "TextBox 15"
+        },
+        {
+          "x": 0,
+          "y": 0,
+          "w": 0.889,
+          "h": 0.889,
+          "kind": "shape",
+          "color": "FFFFFF",
+          "bold": false,
+          "name": "Freeform 17"
+        },
+        {
+          "x": 0.083,
+          "y": 0.031,
+          "w": 0.722,
+          "h": 0.774,
+          "kind": "shape",
+          "bold": false,
+          "name": "TextBox 18"
+        },
+        {
+          "x": 11.863,
+          "y": 2.165,
+          "w": 6.332,
+          "h": 0.462,
+          "kind": "text",
+          "text": "Revenue Streams",
+          "fontSize": 24.99,
+          "color": "FFFFFF",
+          "bold": false,
+          "name": "TextBox 19"
+        },
+        {
+          "x": 11.863,
+          "y": 4.705,
+          "w": 6.332,
+          "h": 0.462,
+          "kind": "text",
+          "text": "Pricing Strategy",
+          "fontSize": 24.99,
+          "color": "FFFFFF",
+          "bold": false,
+          "name": "TextBox 20"
+        },
+        {
+          "x": 11.863,
+          "y": 2.801,
+          "w": 6.332,
+          "h": 1.153,
+          "kind": "text",
+          "text": "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Quisque molestie nisl eu sem tristique, sit amet convallis ex aliquam nunc.",
+          "fontSize": 20,
+          "color": "FFFFFF",
+          "bold": false,
+          "name": "TextBox 21"
+        },
+        {
+          "x": 11.863,
+          "y": 5.341,
+          "w": 6.332,
+          "h": 1.153,
+          "kind": "text",
+          "text": "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Quisque molestie nisl eu sem tristique, sit amet convallis ex aliquam nunc.",
+          "fontSize": 20,
+          "color": "FFFFFF",
+          "bold": false,
+          "name": "TextBox 22"
+        },
+        {
+          "x": 11.863,
+          "y": 7.244,
+          "w": 6.332,
+          "h": 0.462,
+          "kind": "text",
+          "text": "Customer Retention",
+          "fontSize": 24.99,
+          "color": "FFFFFF",
+          "bold": false,
+          "name": "TextBox 23"
+        },
+        {
+          "x": 11.863,
+          "y": 7.88,
+          "w": 6.332,
+          "h": 1.153,
+          "kind": "text",
+          "text": "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Quisque molestie nisl eu sem tristique, sit amet convallis ex aliquam nunc.",
+          "fontSize": 20,
+          "color": "FFFFFF",
+          "bold": false,
+          "name": "TextBox 24"
+        },
+        {
+          "x": 10.547,
+          "y": 2.627,
+          "w": 0.609,
+          "h": 0.67,
+          "kind": "shape",
+          "bold": false,
+          "name": "Freeform 25"
+        },
+        {
+          "x": 10.578,
+          "y": 5.111,
+          "w": 0.578,
+          "h": 0.781,
+          "kind": "shape",
+          "bold": false,
+          "name": "Freeform 26"
+        },
+        {
+          "x": 10.526,
+          "y": 7.686,
+          "w": 0.728,
+          "h": 0.667,
+          "kind": "shape",
+          "bold": false,
+          "name": "Freeform 27"
+        }
+      ],
+      "description": {
+        "looksLike": "A modern dark pitch deck slide with a large title and overview paragraph on the left, paired with three icon-bulleted feature blocks on the right against a glowing blue abstract background.",
+        "title": "Business Model",
+        "layout": "title-and-two-columns",
+        "background": {
+          "scope": "slide",
+          "kind": "solid"
+        },
+        "contentPlacement": "Header badge at top-left; left column contains the primary title and descriptive body paragraph; right column features three vertically stacked key points with outlined circular icons.",
+        "images": [],
+        "boxes": [
+          {
+            "role": "body",
+            "text": "",
+            "x": 0,
+            "y": 0,
+            "w": 20,
+            "h": 11.25
+          },
+          {
+            "role": "body",
+            "text": "",
+            "x": 0,
+            "y": 0,
+            "w": 1.136,
+            "h": 0.234
+          },
+          {
+            "role": "body",
+            "text": "Warner & Spencer",
+            "x": 0,
+            "y": -0.052,
+            "w": 1.136,
+            "h": 0.286,
+            "fontSize": 23
+          },
+          {
+            "role": "body",
+            "text": "Busin\ness Model",
+            "x": 1.125,
+            "y": 3.258,
+            "w": 7.841,
+            "h": 1.065,
+            "fontSize": 72
+          },
+          {
+            "role": "body",
+            "text": "2030",
+            "x": 17.515,
+            "y": 9.888,
+            "w": 1.36,
+            "h": 0.426,
+            "fontSize": 23
+          },
+          {
+            "role": "body",
+            "text": "www.reallygreatsite.com",
+            "x": 1.125,
+            "y": 9.888,
+            "w": 3.676,
+            "h": 0.382,
+            "fontSize": 20
+          },
+          {
+            "role": "body",
+            "text": "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Quisque molestie nisl eu sem tristique, sit amet convallis ex aliquam. Maecenas varius lectus hendrerit augue blandit, ut posuere erat aliquam. Praesent auctor tellus eget nisl blandit, at varius purus elementum. Lorem ipsum dolor sit amet, consectetur adipiscing elit. Quisque molestie nisl eu sem tristique, sit amet convallis ex aliquam. Maecenas varius lectus hendrerit augue blandit, ut posuere erat aliquam.",
+            "x": 1.125,
+            "y": 4.796,
+            "w": 7.159,
+            "h": 3.465,
+            "fontSize": 20
+          },
+          {
+            "role": "body",
+            "text": "",
+            "x": 0,
+            "y": 0,
+            "w": 0.889,
+            "h": 0.889
+          },
+          {
+            "role": "body",
+            "text": "",
+            "x": 0.083,
+            "y": 0.031,
+            "w": 0.722,
+            "h": 0.774
+          },
+          {
+            "role": "body",
+            "text": "",
+            "x": 0,
+            "y": 0,
+            "w": 0.889,
+            "h": 0.889
+          },
+          {
+            "role": "body",
+            "text": "",
+            "x": 0.083,
+            "y": 0.031,
+            "w": 0.722,
+            "h": 0.774
+          },
+          {
+            "role": "body",
+            "text": "",
+            "x": 0,
+            "y": 0,
+            "w": 0.889,
+            "h": 0.889
+          },
+          {
+            "role": "body",
+            "text": "",
+            "x": 0.083,
+            "y": 0.031,
+            "w": 0.722,
+            "h": 0.774
+          },
+          {
+            "role": "body",
+            "text": "Revenue Streams",
+            "x": 11.863,
+            "y": 2.165,
+            "w": 6.332,
+            "h": 0.462,
+            "fontSize": 24.99
+          },
+          {
+            "role": "body",
+            "text": "Pricing Strategy",
+            "x": 11.863,
+            "y": 4.705,
+            "w": 6.332,
+            "h": 0.462,
+            "fontSize": 24.99
+          },
+          {
+            "role": "body",
+            "text": "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Quisque molestie nisl eu sem tristique, sit amet convallis ex aliquam nunc.",
+            "x": 11.863,
+            "y": 2.801,
+            "w": 6.332,
+            "h": 1.153,
+            "fontSize": 20
+          },
+          {
+            "role": "body",
+            "text": "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Quisque molestie nisl eu sem tristique, sit amet convallis ex aliquam nunc.",
+            "x": 11.863,
+            "y": 5.341,
+            "w": 6.332,
+            "h": 1.153,
+            "fontSize": 20
+          },
+          {
+            "role": "body",
+            "text": "Customer Retention",
+            "x": 11.863,
+            "y": 7.244,
+            "w": 6.332,
+            "h": 0.462,
+            "fontSize": 24.99
+          },
+          {
+            "role": "body",
+            "text": "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Quisque molestie nisl eu sem tristique, sit amet convallis ex aliquam nunc.",
+            "x": 11.863,
+            "y": 7.88,
+            "w": 6.332,
+            "h": 1.153,
+            "fontSize": 20
+          },
+          {
+            "role": "body",
+            "text": "",
+            "x": 10.547,
+            "y": 2.627,
+            "w": 0.609,
+            "h": 0.67
+          },
+          {
+            "role": "body",
+            "text": "",
+            "x": 10.578,
+            "y": 5.111,
+            "w": 0.578,
+            "h": 0.781
+          },
+          {
+            "role": "body",
+            "text": "",
+            "x": 10.526,
+            "y": 7.686,
+            "w": 0.728,
+            "h": 0.667
+          }
+        ]
+      },
+      "gcsUri": "gs://alltheway-rinegan-slide-designs-prod/catalog/blue-modern-business-pitch-deck/slide-05.png"
+    },
+    "slide-06": {
+      "index": 5,
+      "prev": "slide-05",
+      "next": "slide-07",
+      "image": "blue-modern-business-pitch-deck/slide-06.png",
+      "coordinates": [
+        {
+          "x": 0,
+          "y": 0,
+          "w": 20,
+          "h": 11.25,
+          "kind": "shape",
+          "bold": false,
+          "name": "Freeform 2"
+        },
+        {
+          "x": 0,
+          "y": 0,
+          "w": 1.136,
+          "h": 0.234,
+          "kind": "shape",
+          "color": "FFFFFF",
+          "bold": false,
+          "name": "Freeform 4"
+        },
+        {
+          "x": 0,
+          "y": -0.052,
+          "w": 1.136,
+          "h": 0.286,
+          "kind": "text",
+          "text": "Warner & Spencer",
+          "fontSize": 23,
+          "color": "FFFFFF",
+          "bold": false,
+          "name": "TextBox 5"
+        },
+        {
+          "x": 1.125,
+          "y": 3.258,
+          "w": 10.452,
+          "h": 1.065,
+          "kind": "text",
+          "text": "Competitiv\ne Analysis",
+          "fontSize": 72,
+          "color": "FFFFFF",
+          "bold": false,
+          "name": "TextBox 6"
+        },
+        {
+          "x": 0,
+          "y": 0,
+          "w": 0.889,
+          "h": 0.889,
+          "kind": "shape",
+          "color": "FFFFFF",
+          "bold": false,
+          "name": "Freeform 8"
+        },
+        {
+          "x": 0.083,
+          "y": 0.031,
+          "w": 0.722,
+          "h": 0.774,
+          "kind": "text",
+          "text": "01",
+          "fontSize": 23,
+          "color": "FFFFFF",
+          "bold": false,
+          "name": "TextBox 9"
+        },
+        {
+          "x": 0,
+          "y": 0,
+          "w": 0.889,
+          "h": 0.889,
+          "kind": "shape",
+          "color": "FFFFFF",
+          "bold": false,
+          "name": "Freeform 11"
+        },
+        {
+          "x": 0.083,
+          "y": 0.031,
+          "w": 0.722,
+          "h": 0.774,
+          "kind": "text",
+          "text": "03",
+          "fontSize": 23,
+          "color": "FFFFFF",
+          "bold": false,
+          "name": "TextBox 12"
+        },
+        {
+          "x": 0,
+          "y": 0,
+          "w": 0.889,
+          "h": 0.889,
+          "kind": "shape",
+          "color": "FFFFFF",
+          "bold": false,
+          "name": "Freeform 14"
+        },
+        {
+          "x": 0.083,
+          "y": 0.031,
+          "w": 0.722,
+          "h": 0.774,
+          "kind": "text",
+          "text": "02",
+          "fontSize": 23,
+          "color": "FFFFFF",
+          "bold": false,
+          "name": "TextBox 15"
+        },
+        {
+          "x": 0,
+          "y": 0,
+          "w": 0.889,
+          "h": 0.889,
+          "kind": "shape",
+          "color": "FFFFFF",
+          "bold": false,
+          "name": "Freeform 17"
+        },
+        {
+          "x": 0.083,
+          "y": 0.031,
+          "w": 0.722,
+          "h": 0.774,
+          "kind": "text",
+          "text": "04",
+          "fontSize": 23,
+          "color": "FFFFFF",
+          "bold": false,
+          "name": "TextBox 18"
+        },
+        {
+          "x": 0,
+          "y": 0,
+          "w": 0.831,
+          "h": 0.613,
+          "kind": "shape",
+          "bold": false,
+          "name": "Freeform 20"
+        },
+        {
+          "x": 0,
+          "y": 0,
+          "w": 0.6,
+          "h": 0.613,
+          "kind": "shape",
+          "bold": false,
+          "name": "Freeform 22"
+        },
+        {
+          "x": 17.515,
+          "y": 9.888,
+          "w": 1.36,
+          "h": 0.426,
+          "kind": "text",
+          "text": "2030",
+          "fontSize": 23,
+          "color": "FFFFFF",
+          "bold": false,
+          "name": "TextBox 23"
+        },
+        {
+          "x": 1.125,
+          "y": 9.888,
+          "w": 3.676,
+          "h": 0.382,
+          "kind": "text",
+          "text": "www.reallygreatsite.com",
+          "fontSize": 20,
+          "color": "FFFFFF",
+          "bold": false,
+          "name": "TextBox 24"
+        },
+        {
+          "x": 2.599,
+          "y": 5.066,
+          "w": 6.332,
+          "h": 0.462,
+          "kind": "text",
+          "text": "Personalized Services",
+          "fontSize": 24.99,
+          "color": "FFFFFF",
+          "bold": false,
+          "name": "TextBox 25"
+        },
+        {
+          "x": 11.474,
+          "y": 5.066,
+          "w": 6.332,
+          "h": 0.462,
+          "kind": "text",
+          "text": "Customer Approach",
+          "fontSize": 24.99,
+          "color": "FFFFFF",
+          "bold": false,
+          "name": "TextBox 26"
+        },
+        {
+          "x": 2.599,
+          "y": 7.355,
+          "w": 6.332,
+          "h": 0.462,
+          "kind": "text",
+          "text": "Technology Integration",
+          "fontSize": 24.99,
+          "color": "FFFFFF",
+          "bold": false,
+          "name": "TextBox 27"
+        },
+        {
+          "x": 11.474,
+          "y": 7.355,
+          "w": 6.332,
+          "h": 0.462,
+          "kind": "text",
+          "text": "Unique Selling",
+          "fontSize": 24.99,
+          "color": "FFFFFF",
+          "bold": false,
+          "name": "TextBox 28"
+        },
+        {
+          "x": 2.599,
+          "y": 5.702,
+          "w": 6.332,
+          "h": 1.153,
+          "kind": "text",
+          "text": "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Quisque molestie nisl eu sem tristique, sit amet convallis ex aliquam nunc.",
+          "fontSize": 20,
+          "color": "FFFFFF",
+          "bold": false,
+          "name": "TextBox 29"
+        },
+        {
+          "x": 11.474,
+          "y": 5.702,
+          "w": 6.332,
+          "h": 1.153,
+          "kind": "text",
+          "text": "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Quisque molestie nisl eu sem tristique, sit amet convallis ex aliquam nunc.",
+          "fontSize": 20,
+          "color": "FFFFFF",
+          "bold": false,
+          "name": "TextBox 30"
+        },
+        {
+          "x": 2.599,
+          "y": 7.991,
+          "w": 6.332,
+          "h": 1.153,
+          "kind": "text",
+          "text": "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Quisque molestie nisl eu sem tristique, sit amet convallis ex aliquam nunc.",
+          "fontSize": 20,
+          "color": "FFFFFF",
+          "bold": false,
+          "name": "TextBox 31"
+        },
+        {
+          "x": 11.474,
+          "y": 7.991,
+          "w": 6.332,
+          "h": 1.153,
+          "kind": "text",
+          "text": "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Quisque molestie nisl eu sem tristique, sit amet convallis ex aliquam nunc.",
+          "fontSize": 20,
+          "color": "FFFFFF",
+          "bold": false,
+          "name": "TextBox 32"
+        }
+      ],
+      "description": {
+        "looksLike": "Dark glowing blue presentation slide featuring a large section headline on the left, two business photos in the upper right, and four numbered items arranged in two columns across the bottom half.",
+        "title": "Competitive Analysis",
+        "layout": "title-and-two-columns",
+        "background": {
+          "scope": "deck",
+          "kind": "photograph"
+        },
+        "contentPlacement": "Header badge in the upper left, large title in the upper-mid left, two business images side-by-side in the upper right, followed by a two-column 2x2 grid of numbered text blocks across the lower half with footer metadata at the bottom.",
+        "images": [],
+        "boxes": [
+          {
+            "role": "body",
+            "text": "",
+            "x": 0,
+            "y": 0,
+            "w": 20,
+            "h": 11.25
+          },
+          {
+            "role": "body",
+            "text": "",
+            "x": 0,
+            "y": 0,
+            "w": 1.136,
+            "h": 0.234
+          },
+          {
+            "role": "body",
+            "text": "Warner & Spencer",
+            "x": 0,
+            "y": -0.052,
+            "w": 1.136,
+            "h": 0.286,
+            "fontSize": 23
+          },
+          {
+            "role": "body",
+            "text": "Competitiv\ne Analysis",
+            "x": 1.125,
+            "y": 3.258,
+            "w": 10.452,
+            "h": 1.065,
+            "fontSize": 72
+          },
+          {
+            "role": "body",
+            "text": "",
+            "x": 0,
+            "y": 0,
+            "w": 0.889,
+            "h": 0.889
+          },
+          {
+            "role": "body",
+            "text": "01",
+            "x": 0.083,
+            "y": 0.031,
+            "w": 0.722,
+            "h": 0.774,
+            "fontSize": 23
+          },
+          {
+            "role": "body",
+            "text": "",
+            "x": 0,
+            "y": 0,
+            "w": 0.889,
+            "h": 0.889
+          },
+          {
+            "role": "body",
+            "text": "03",
+            "x": 0.083,
+            "y": 0.031,
+            "w": 0.722,
+            "h": 0.774,
+            "fontSize": 23
+          },
+          {
+            "role": "body",
+            "text": "",
+            "x": 0,
+            "y": 0,
+            "w": 0.889,
+            "h": 0.889
+          },
+          {
+            "role": "body",
+            "text": "02",
+            "x": 0.083,
+            "y": 0.031,
+            "w": 0.722,
+            "h": 0.774,
+            "fontSize": 23
+          },
+          {
+            "role": "body",
+            "text": "",
+            "x": 0,
+            "y": 0,
+            "w": 0.889,
+            "h": 0.889
+          },
+          {
+            "role": "body",
+            "text": "04",
+            "x": 0.083,
+            "y": 0.031,
+            "w": 0.722,
+            "h": 0.774,
+            "fontSize": 23
+          },
+          {
+            "role": "body",
+            "text": "",
+            "x": 0,
+            "y": 0,
+            "w": 0.831,
+            "h": 0.613
+          },
+          {
+            "role": "body",
+            "text": "",
+            "x": 0,
+            "y": 0,
+            "w": 0.6,
+            "h": 0.613
+          },
+          {
+            "role": "body",
+            "text": "2030",
+            "x": 17.515,
+            "y": 9.888,
+            "w": 1.36,
+            "h": 0.426,
+            "fontSize": 23
+          },
+          {
+            "role": "body",
+            "text": "www.reallygreatsite.com",
+            "x": 1.125,
+            "y": 9.888,
+            "w": 3.676,
+            "h": 0.382,
+            "fontSize": 20
+          },
+          {
+            "role": "body",
+            "text": "Personalized Services",
+            "x": 2.599,
+            "y": 5.066,
+            "w": 6.332,
+            "h": 0.462,
+            "fontSize": 24.99
+          },
+          {
+            "role": "body",
+            "text": "Customer Approach",
+            "x": 11.474,
+            "y": 5.066,
+            "w": 6.332,
+            "h": 0.462,
+            "fontSize": 24.99
+          },
+          {
+            "role": "body",
+            "text": "Technology Integration",
+            "x": 2.599,
+            "y": 7.355,
+            "w": 6.332,
+            "h": 0.462,
+            "fontSize": 24.99
+          },
+          {
+            "role": "body",
+            "text": "Unique Selling",
+            "x": 11.474,
+            "y": 7.355,
+            "w": 6.332,
+            "h": 0.462,
+            "fontSize": 24.99
+          },
+          {
+            "role": "body",
+            "text": "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Quisque molestie nisl eu sem tristique, sit amet convallis ex aliquam nunc.",
+            "x": 2.599,
+            "y": 5.702,
+            "w": 6.332,
+            "h": 1.153,
+            "fontSize": 20
+          },
+          {
+            "role": "body",
+            "text": "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Quisque molestie nisl eu sem tristique, sit amet convallis ex aliquam nunc.",
+            "x": 11.474,
+            "y": 5.702,
+            "w": 6.332,
+            "h": 1.153,
+            "fontSize": 20
+          },
+          {
+            "role": "body",
+            "text": "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Quisque molestie nisl eu sem tristique, sit amet convallis ex aliquam nunc.",
+            "x": 2.599,
+            "y": 7.991,
+            "w": 6.332,
+            "h": 1.153,
+            "fontSize": 20
+          },
+          {
+            "role": "body",
+            "text": "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Quisque molestie nisl eu sem tristique, sit amet convallis ex aliquam nunc.",
+            "x": 11.474,
+            "y": 7.991,
+            "w": 6.332,
+            "h": 1.153,
+            "fontSize": 20
+          }
+        ]
+      },
+      "gcsUri": "gs://alltheway-rinegan-slide-designs-prod/catalog/blue-modern-business-pitch-deck/slide-06.png"
+    },
+    "slide-07": {
+      "index": 6,
+      "prev": "slide-06",
+      "next": "slide-08",
+      "image": "blue-modern-business-pitch-deck/slide-07.png",
+      "coordinates": [
+        {
+          "x": 0,
+          "y": 0,
+          "w": 20,
+          "h": 11.25,
+          "kind": "shape",
+          "bold": false,
+          "name": "Freeform 2"
+        },
+        {
+          "x": 0,
+          "y": 0,
+          "w": 1.136,
+          "h": 0.234,
+          "kind": "shape",
+          "color": "FFFFFF",
+          "bold": false,
+          "name": "Freeform 4"
+        },
+        {
+          "x": 0,
+          "y": -0.052,
+          "w": 1.136,
+          "h": 0.286,
+          "kind": "text",
+          "text": "Warner & Spencer",
+          "fontSize": 23,
+          "color": "FFFFFF",
+          "bold": false,
+          "name": "TextBox 5"
+        },
+        {
+          "x": 0,
+          "y": 0,
+          "w": 1.591,
+          "h": 0.796,
+          "kind": "shape",
+          "bold": false,
+          "name": "Freeform 7"
+        },
+        {
+          "x": 0,
+          "y": 0,
+          "w": 0.889,
+          "h": 0.889,
+          "kind": "shape",
+          "color": "FFFFFF",
+          "bold": false,
+          "name": "Freeform 9"
+        },
+        {
+          "x": 0.083,
+          "y": 0.031,
+          "w": 0.722,
+          "h": 0.774,
+          "kind": "text",
+          "text": "01",
+          "fontSize": 23,
+          "color": "FFFFFF",
+          "bold": false,
+          "name": "TextBox 10"
+        },
+        {
+          "x": 0,
+          "y": 0,
+          "w": 0.889,
+          "h": 0.889,
+          "kind": "shape",
+          "color": "FFFFFF",
+          "bold": false,
+          "name": "Freeform 12"
+        },
+        {
+          "x": 0.083,
+          "y": 0.031,
+          "w": 0.722,
+          "h": 0.774,
+          "kind": "text",
+          "text": "02",
+          "fontSize": 23,
+          "color": "FFFFFF",
+          "bold": false,
+          "name": "TextBox 13"
+        },
+        {
+          "x": 1.125,
+          "y": 3.334,
+          "w": 6.623,
+          "h": 2.065,
+          "kind": "text",
+          "text": "Ma\nrket Strategy",
+          "fontSize": 72,
+          "color": "FFFFFF",
+          "bold": false,
+          "name": "TextBox 14"
+        },
+        {
+          "x": 17.515,
+          "y": 9.888,
+          "w": 1.36,
+          "h": 0.426,
+          "kind": "text",
+          "text": "2030",
+          "fontSize": 23,
+          "color": "FFFFFF",
+          "bold": false,
+          "name": "TextBox 15"
+        },
+        {
+          "x": 1.125,
+          "y": 9.888,
+          "w": 3.676,
+          "h": 0.382,
+          "kind": "text",
+          "text": "www.reallygreatsite.com",
+          "fontSize": 20,
+          "color": "FFFFFF",
+          "bold": false,
+          "name": "TextBox 16"
+        },
+        {
+          "x": 1.125,
+          "y": 5.742,
+          "w": 6.623,
+          "h": 2.309,
+          "kind": "text",
+          "text": "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Quisque molestie nisl eu sem tristique, sit amet convallis ex aliquam. Maecenas varius lectus hendrerit augue blandit, ut posuere erat aliquam. Praesent auctor tellus eget nisl blandit, at varius purus elementum.",
+          "fontSize": 20,
+          "color": "FFFFFF",
+          "bold": false,
+          "name": "TextBox 17"
+        },
+        {
+          "x": 11.002,
+          "y": 6.046,
+          "w": 6.332,
+          "h": 0.462,
+          "kind": "text",
+          "text": "Marketing Channels",
+          "fontSize": 24.99,
+          "color": "FFFFFF",
+          "bold": false,
+          "name": "TextBox 18"
+        },
+        {
+          "x": 11.002,
+          "y": 8.481,
+          "w": 6.332,
+          "h": 0.462,
+          "kind": "text",
+          "text": "Customer Acquisition",
+          "fontSize": 24.99,
+          "color": "FFFFFF",
+          "bold": false,
+          "name": "TextBox 19"
+        },
+        {
+          "x": 11.002,
+          "y": 6.682,
+          "w": 6.332,
+          "h": 1.153,
+          "kind": "text",
+          "text": "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Quisque molestie nisl eu sem tristique, sit amet convallis ex aliquam nunc.",
+          "fontSize": 20,
+          "color": "FFFFFF",
+          "bold": false,
+          "name": "TextBox 20"
+        },
+        {
+          "x": 11.002,
+          "y": 9.117,
+          "w": 6.332,
+          "h": 1.153,
+          "kind": "text",
+          "text": "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Quisque molestie nisl eu sem tristique, sit amet convallis ex aliquam nunc.",
+          "fontSize": 20,
+          "color": "FFFFFF",
+          "bold": false,
+          "name": "TextBox 21"
+        }
+      ],
+      "description": {
+        "looksLike": "A modern dark blue business strategy slide featuring a large bold title on the left above descriptive text, an image of a business handshake on the top right, and two numbered callout points on the bottom right.",
+        "title": "Market Strategy",
+        "layout": "title-and-two-columns",
+        "background": {
+          "scope": "deck",
+          "kind": "photograph"
+        },
+        "contentPlacement": "The slide title sits on the middle-left with introductory text below it; the top right contains a rectangular photo of business partners shaking hands, while the bottom right features two numbered circular badges with corresponding titles and descriptions.",
+        "images": [],
+        "boxes": [
+          {
+            "role": "body",
+            "text": "",
+            "x": 0,
+            "y": 0,
+            "w": 20,
+            "h": 11.25
+          },
+          {
+            "role": "body",
+            "text": "",
+            "x": 0,
+            "y": 0,
+            "w": 1.136,
+            "h": 0.234
+          },
+          {
+            "role": "body",
+            "text": "Warner & Spencer",
+            "x": 0,
+            "y": -0.052,
+            "w": 1.136,
+            "h": 0.286,
+            "fontSize": 23
+          },
+          {
+            "role": "body",
+            "text": "",
+            "x": 0,
+            "y": 0,
+            "w": 1.591,
+            "h": 0.796
+          },
+          {
+            "role": "body",
+            "text": "",
+            "x": 0,
+            "y": 0,
+            "w": 0.889,
+            "h": 0.889
+          },
+          {
+            "role": "body",
+            "text": "01",
+            "x": 0.083,
+            "y": 0.031,
+            "w": 0.722,
+            "h": 0.774,
+            "fontSize": 23
+          },
+          {
+            "role": "body",
+            "text": "",
+            "x": 0,
+            "y": 0,
+            "w": 0.889,
+            "h": 0.889
+          },
+          {
+            "role": "body",
+            "text": "02",
+            "x": 0.083,
+            "y": 0.031,
+            "w": 0.722,
+            "h": 0.774,
+            "fontSize": 23
+          },
+          {
+            "role": "body",
+            "text": "Market Strategy",
+            "x": 1.125,
+            "y": 3.334,
+            "w": 6.623,
+            "h": 2.065,
+            "fontSize": 72
+          },
+          {
+            "role": "body",
+            "text": "2030",
+            "x": 17.515,
+            "y": 9.888,
+            "w": 1.36,
+            "h": 0.426,
+            "fontSize": 23
+          },
+          {
+            "role": "body",
+            "text": "www.reallygreatsite.com",
+            "x": 1.125,
+            "y": 9.888,
+            "w": 3.676,
+            "h": 0.382,
+            "fontSize": 20
+          },
+          {
+            "role": "body",
+            "text": "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Quisque molestie nisl eu sem tristique, sit amet convallis ex aliquam. Maecenas varius lectus hendrerit augue blandit, ut posuere erat aliquam. Praesent auctor tellus eget nisl blandit, at varius purus elementum.",
+            "x": 1.125,
+            "y": 5.742,
+            "w": 6.623,
+            "h": 2.309,
+            "fontSize": 20
+          },
+          {
+            "role": "body",
+            "text": "Marketing Channels",
+            "x": 11.002,
+            "y": 6.046,
+            "w": 6.332,
+            "h": 0.462,
+            "fontSize": 24.99
+          },
+          {
+            "role": "body",
+            "text": "Customer Acquisition",
+            "x": 11.002,
+            "y": 8.481,
+            "w": 6.332,
+            "h": 0.462,
+            "fontSize": 24.99
+          },
+          {
+            "role": "body",
+            "text": "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Quisque molestie nisl eu sem tristique, sit amet convallis ex aliquam nunc.",
+            "x": 11.002,
+            "y": 6.682,
+            "w": 6.332,
+            "h": 1.153,
+            "fontSize": 20
+          },
+          {
+            "role": "body",
+            "text": "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Quisque molestie nisl eu sem tristique, sit amet convallis ex aliquam nunc.",
+            "x": 11.002,
+            "y": 9.117,
+            "w": 6.332,
+            "h": 1.153,
+            "fontSize": 20
+          }
+        ]
+      },
+      "gcsUri": "gs://alltheway-rinegan-slide-designs-prod/catalog/blue-modern-business-pitch-deck/slide-07.png"
+    },
+    "slide-08": {
+      "index": 7,
+      "prev": "slide-07",
+      "next": "slide-09",
+      "image": "blue-modern-business-pitch-deck/slide-08.png",
+      "coordinates": [
+        {
+          "x": 0,
+          "y": 0,
+          "w": 20,
+          "h": 11.25,
+          "kind": "shape",
+          "bold": false,
+          "name": "Freeform 2"
+        },
+        {
+          "x": 0,
+          "y": 0,
+          "w": 1.136,
+          "h": 0.234,
+          "kind": "shape",
+          "color": "FFFFFF",
+          "bold": false,
+          "name": "Freeform 4"
+        },
+        {
+          "x": 0,
+          "y": -0.052,
+          "w": 1.136,
+          "h": 0.286,
+          "kind": "text",
+          "text": "Warner & Spencer",
+          "fontSize": 23,
+          "color": "FFFFFF",
+          "bold": false,
+          "name": "TextBox 5"
+        },
+        {
+          "x": 6.814,
+          "y": 2.917,
+          "w": 6.371,
+          "h": 1.065,
+          "kind": "text",
+          "text": "Ou\nr Team",
+          "fontSize": 72,
+          "color": "FFFFFF",
+          "bold": false,
+          "name": "TextBox 6"
+        },
+        {
+          "x": 17.515,
+          "y": 9.888,
+          "w": 1.36,
+          "h": 0.426,
+          "kind": "text",
+          "text": "2030",
+          "fontSize": 23,
+          "color": "FFFFFF",
+          "bold": false,
+          "name": "TextBox 7"
+        },
+        {
+          "x": 14.829,
+          "y": 1.143,
+          "w": 4.046,
+          "h": 0.426,
+          "kind": "text",
+          "text": "www.reallygreatsite.com",
+          "fontSize": 23,
+          "color": "FFFFFF",
+          "bold": false,
+          "name": "TextBox 8"
+        },
+        {
+          "x": 0,
+          "y": 0,
+          "w": 0.889,
+          "h": 0.889,
+          "kind": "shape",
+          "color": "FFFFFF",
+          "bold": false,
+          "name": "Freeform 10"
+        },
+        {
+          "x": 0,
+          "y": 0,
+          "w": 0.889,
+          "h": 0.889,
+          "kind": "shape",
+          "color": "FFFFFF",
+          "bold": false,
+          "name": "Freeform 12"
+        },
+        {
+          "x": 0,
+          "y": 0,
+          "w": 0.889,
+          "h": 0.889,
+          "kind": "shape",
+          "color": "FFFFFF",
+          "bold": false,
+          "name": "Freeform 14"
+        },
+        {
+          "x": 0,
+          "y": 0,
+          "w": 0.889,
+          "h": 0.889,
+          "kind": "shape",
+          "color": "FFFFFF",
+          "bold": false,
+          "name": "Freeform 16"
+        },
+        {
+          "x": 1.394,
+          "y": 7.87,
+          "w": 4.103,
+          "h": 0.472,
+          "kind": "text",
+          "text": "Donna Stroupe",
+          "fontSize": 24.99,
+          "color": "FFFFFF",
+          "bold": false,
+          "name": "TextBox 17"
+        },
+        {
+          "x": 10.125,
+          "y": 7.87,
+          "w": 4.103,
+          "h": 0.472,
+          "kind": "text",
+          "text": "Juliana Silva",
+          "fontSize": 24.99,
+          "color": "FFFFFF",
+          "bold": false,
+          "name": "TextBox 18"
+        },
+        {
+          "x": 1.394,
+          "y": 8.412,
+          "w": 4.103,
+          "h": 0.382,
+          "kind": "text",
+          "text": "Ceo & Founder",
+          "fontSize": 20,
+          "color": "FFFFFF",
+          "bold": false,
+          "name": "TextBox 19"
+        },
+        {
+          "x": 10.125,
+          "y": 8.412,
+          "w": 4.103,
+          "h": 0.382,
+          "kind": "text",
+          "text": "Co-Founder",
+          "fontSize": 20,
+          "color": "FFFFFF",
+          "bold": false,
+          "name": "TextBox 20"
+        },
+        {
+          "x": 5.747,
+          "y": 7.87,
+          "w": 4.103,
+          "h": 0.472,
+          "kind": "text",
+          "text": "Jonathan Patterson",
+          "fontSize": 24.99,
+          "color": "FFFFFF",
+          "bold": false,
+          "name": "TextBox 21"
+        },
+        {
+          "x": 14.503,
+          "y": 7.87,
+          "w": 4.103,
+          "h": 0.472,
+          "kind": "text",
+          "text": "Avery Davis",
+          "fontSize": 24.99,
+          "color": "FFFFFF",
+          "bold": false,
+          "name": "TextBox 22"
+        },
+        {
+          "x": 5.747,
+          "y": 8.412,
+          "w": 4.103,
+          "h": 0.382,
+          "kind": "text",
+          "text": "Content Creator",
+          "fontSize": 20,
+          "color": "FFFFFF",
+          "bold": false,
+          "name": "TextBox 23"
+        },
+        {
+          "x": 14.503,
+          "y": 8.412,
+          "w": 4.103,
+          "h": 0.382,
+          "kind": "text",
+          "text": "Digital Marketing",
+          "fontSize": 20,
+          "color": "FFFFFF",
+          "bold": false,
+          "name": "TextBox 24"
+        }
+      ],
+      "description": {
+        "looksLike": "A modern team showcase slide with four headshot portraits in a horizontal row against an abstract dark blue glowing background, accompanied by names and job titles.",
+        "title": "Our Team",
+        "layout": "title-and-two-columns",
+        "background": {
+          "scope": "slide",
+          "kind": "photograph"
+        },
+        "contentPlacement": "Large centered title in the upper half with four team member portrait photos and text captions evenly spaced horizontally across the lower section.",
+        "images": [],
+        "boxes": [
+          {
+            "role": "body",
+            "text": "",
+            "x": 0,
+            "y": 0,
+            "w": 20,
+            "h": 11.25
+          },
+          {
+            "role": "body",
+            "text": "",
+            "x": 0,
+            "y": 0,
+            "w": 1.136,
+            "h": 0.234
+          },
+          {
+            "role": "body",
+            "text": "Warner & Spencer",
+            "x": 0,
+            "y": -0.052,
+            "w": 1.136,
+            "h": 0.286,
+            "fontSize": 23
+          },
+          {
+            "role": "body",
+            "text": "Our Team",
+            "x": 6.814,
+            "y": 2.917,
+            "w": 6.371,
+            "h": 1.065,
+            "fontSize": 72
+          },
+          {
+            "role": "body",
+            "text": "2030",
+            "x": 17.515,
+            "y": 9.888,
+            "w": 1.36,
+            "h": 0.426,
+            "fontSize": 23
+          },
+          {
+            "role": "body",
+            "text": "www.reallygreatsite.com",
+            "x": 14.829,
+            "y": 1.143,
+            "w": 4.046,
+            "h": 0.426,
+            "fontSize": 23
+          },
+          {
+            "role": "body",
+            "text": "",
+            "x": 0,
+            "y": 0,
+            "w": 0.889,
+            "h": 0.889
+          },
+          {
+            "role": "body",
+            "text": "",
+            "x": 0,
+            "y": 0,
+            "w": 0.889,
+            "h": 0.889
+          },
+          {
+            "role": "body",
+            "text": "",
+            "x": 0,
+            "y": 0,
+            "w": 0.889,
+            "h": 0.889
+          },
+          {
+            "role": "body",
+            "text": "",
+            "x": 0,
+            "y": 0,
+            "w": 0.889,
+            "h": 0.889
+          },
+          {
+            "role": "body",
+            "text": "Donna Stroupe",
+            "x": 1.394,
+            "y": 7.87,
+            "w": 4.103,
+            "h": 0.472,
+            "fontSize": 24.99
+          },
+          {
+            "role": "body",
+            "text": "Juliana Silva",
+            "x": 10.125,
+            "y": 7.87,
+            "w": 4.103,
+            "h": 0.472,
+            "fontSize": 24.99
+          },
+          {
+            "role": "body",
+            "text": "Ceo & Founder",
+            "x": 1.394,
+            "y": 8.412,
+            "w": 4.103,
+            "h": 0.382,
+            "fontSize": 20
+          },
+          {
+            "role": "body",
+            "text": "Co-Founder",
+            "x": 10.125,
+            "y": 8.412,
+            "w": 4.103,
+            "h": 0.382,
+            "fontSize": 20
+          },
+          {
+            "role": "body",
+            "text": "Jonathan Patterson",
+            "x": 5.747,
+            "y": 7.87,
+            "w": 4.103,
+            "h": 0.472,
+            "fontSize": 24.99
+          },
+          {
+            "role": "body",
+            "text": "Avery Davis",
+            "x": 14.503,
+            "y": 7.87,
+            "w": 4.103,
+            "h": 0.472,
+            "fontSize": 24.99
+          },
+          {
+            "role": "body",
+            "text": "Content Creator",
+            "x": 5.747,
+            "y": 8.412,
+            "w": 4.103,
+            "h": 0.382,
+            "fontSize": 20
+          },
+          {
+            "role": "body",
+            "text": "Digital Marketing",
+            "x": 14.503,
+            "y": 8.412,
+            "w": 4.103,
+            "h": 0.382,
+            "fontSize": 20
+          }
+        ]
+      },
+      "gcsUri": "gs://alltheway-rinegan-slide-designs-prod/catalog/blue-modern-business-pitch-deck/slide-08.png"
+    },
+    "slide-09": {
+      "index": 8,
+      "prev": "slide-08",
+      "next": "slide-10",
+      "image": "blue-modern-business-pitch-deck/slide-09.png",
+      "coordinates": [
+        {
+          "x": 0,
+          "y": 0,
+          "w": 20,
+          "h": 11.25,
+          "kind": "shape",
+          "bold": false,
+          "name": "Freeform 2"
+        },
+        {
+          "x": 0,
+          "y": 0,
+          "w": 1.136,
+          "h": 0.234,
+          "kind": "shape",
+          "color": "FFFFFF",
+          "bold": false,
+          "name": "Freeform 4"
+        },
+        {
+          "x": 0,
+          "y": -0.052,
+          "w": 1.136,
+          "h": 0.286,
+          "kind": "text",
+          "text": "Warner & Spencer",
+          "fontSize": 23,
+          "color": "FFFFFF",
+          "bold": false,
+          "name": "TextBox 5"
+        },
+        {
+          "x": 1.125,
+          "y": 3.258,
+          "w": 6.623,
+          "h": 2.065,
+          "kind": "text",
+          "text": "Financial P\nrojections",
+          "fontSize": 72,
+          "color": "FFFFFF",
+          "bold": false,
+          "name": "TextBox 6"
+        },
+        {
+          "x": 17.515,
+          "y": 9.888,
+          "w": 1.36,
+          "h": 0.426,
+          "kind": "text",
+          "text": "2030",
+          "fontSize": 23,
+          "color": "FFFFFF",
+          "bold": false,
+          "name": "TextBox 7"
+        },
+        {
+          "x": 1.125,
+          "y": 9.888,
+          "w": 3.676,
+          "h": 0.382,
+          "kind": "text",
+          "text": "www.reallygreatsite.com",
+          "fontSize": 20,
+          "color": "FFFFFF",
+          "bold": false,
+          "name": "TextBox 8"
+        },
+        {
+          "x": 1.125,
+          "y": 6.521,
+          "w": 6.253,
+          "h": 2.309,
+          "kind": "text",
+          "text": "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Quisque molestie nisl eu sem tristique, sit amet convallis ex aliquam. Maecenas varius lectus hendrerit augue blandit, ut posuere erat aliquam. Praesent auctor tellus eget nisl blandit, at varius purus elementum.",
+          "fontSize": 20,
+          "color": "FFFFFF",
+          "bold": false,
+          "name": "TextBox 9"
+        },
+        {
+          "x": 1.125,
+          "y": 5.934,
+          "w": 6.253,
+          "h": 0.462,
+          "kind": "text",
+          "text": "Projected Financial Performance",
+          "fontSize": 24.99,
+          "color": "FFFFFF",
+          "bold": false,
+          "name": "TextBox 10"
+        },
+        {
+          "x": 8.19,
+          "y": 0.238,
+          "w": 10.914,
+          "h": 10.252,
+          "kind": "picture",
+          "bold": false,
+          "name": "Picture 11"
+        }
+      ],
+      "description": {
+        "looksLike": "Dark abstract blue slide with prominent left-aligned section title and narrative description paired with a stylized stacked bar chart graphic on the right.",
+        "title": "Financial Projections",
+        "layout": "title-and-two-columns",
+        "background": {
+          "scope": "deck",
+          "kind": "photograph"
+        },
+        "contentPlacement": "Company logo badge rests at the top left, major title and descriptive text occupy the left half, a stacked bar chart graphic spans the right half, and website/year metadata frame the bottom corners.",
+        "images": [
+          {
+            "kind": "picture",
+            "what": "photograph",
+            "x": 8.19,
+            "y": 0.238,
+            "w": 10.914,
+            "h": 10.252
+          }
+        ],
+        "boxes": [
+          {
+            "role": "body",
+            "text": "",
+            "x": 0,
+            "y": 0,
+            "w": 20,
+            "h": 11.25
+          },
+          {
+            "role": "body",
+            "text": "",
+            "x": 0,
+            "y": 0,
+            "w": 1.136,
+            "h": 0.234
+          },
+          {
+            "role": "body",
+            "text": "",
+            "x": 0,
+            "y": -0.052,
+            "w": 1.136,
+            "h": 0.286
+          },
+          {
+            "role": "body",
+            "text": "",
+            "x": 1.125,
+            "y": 3.258,
+            "w": 6.623,
+            "h": 2.065
+          },
+          {
+            "role": "body",
+            "text": "",
+            "x": 1.125,
+            "y": 5.934,
+            "w": 6.253,
+            "h": 0.462
+          },
+          {
+            "role": "body",
+            "text": "",
+            "x": 1.125,
+            "y": 6.521,
+            "w": 6.253,
+            "h": 2.309
+          },
+          {
+            "role": "body",
+            "text": "",
+            "x": 1.125,
+            "y": 9.888,
+            "w": 3.676,
+            "h": 0.382
+          },
+          {
+            "role": "body",
+            "text": "",
+            "x": 17.515,
+            "y": 9.888,
+            "w": 1.36,
+            "h": 0.426
+          }
+        ]
+      },
+      "gcsUri": "gs://alltheway-rinegan-slide-designs-prod/catalog/blue-modern-business-pitch-deck/slide-09.png"
+    },
+    "slide-10": {
+      "index": 9,
+      "prev": "slide-09",
+      "next": null,
+      "image": "blue-modern-business-pitch-deck/slide-10.png",
+      "coordinates": [
+        {
+          "x": 0,
+          "y": 0,
+          "w": 20,
+          "h": 11.25,
+          "kind": "shape",
+          "bold": false,
+          "name": "Freeform 2"
+        },
+        {
+          "x": 0,
+          "y": 0,
+          "w": 1.136,
+          "h": 0.234,
+          "kind": "shape",
+          "color": "FFFFFF",
+          "bold": false,
+          "name": "Freeform 4"
+        },
+        {
+          "x": 0,
+          "y": -0.052,
+          "w": 1.136,
+          "h": 0.286,
+          "kind": "text",
+          "text": "Warner & Spencer",
+          "fontSize": 23,
+          "color": "FFFFFF",
+          "bold": false,
+          "name": "TextBox 5"
+        },
+        {
+          "x": 1.125,
+          "y": 5.594,
+          "w": 14.549,
+          "h": 2.96,
+          "kind": "text",
+          "text": "Big Thanks!",
+          "fontSize": 202.66,
+          "color": "FFFFFF",
+          "bold": false,
+          "name": "TextBox 6"
+        },
+        {
+          "x": 1.125,
+          "y": 4.838,
+          "w": 6.222,
+          "h": 0.669,
+          "kind": "text",
+          "text": "Business Presentation",
+          "fontSize": 45.95,
+          "color": "FFFFFF",
+          "bold": false,
+          "name": "TextBox 7"
+        },
+        {
+          "x": 1.125,
+          "y": 9.454,
+          "w": 3.817,
+          "h": 0.426,
+          "kind": "text",
+          "text": "Presented by :",
+          "fontSize": 23,
+          "color": "FFFFFF",
+          "bold": false,
+          "name": "TextBox 8"
+        },
+        {
+          "x": 1.125,
+          "y": 9.888,
+          "w": 3.817,
+          "h": 0.426,
+          "kind": "text",
+          "text": "Bartholomew Henderson",
+          "fontSize": 23,
+          "color": "FFFFFF",
+          "bold": false,
+          "name": "TextBox 9"
+        },
+        {
+          "x": 5.278,
+          "y": 9.454,
+          "w": 2.623,
+          "h": 0.426,
+          "kind": "text",
+          "text": "Email Address :",
+          "fontSize": 23,
+          "color": "FFFFFF",
+          "bold": false,
+          "name": "TextBox 10"
+        },
+        {
+          "x": 5.278,
+          "y": 9.888,
+          "w": 4.137,
+          "h": 0.426,
+          "kind": "text",
+          "text": "hello@reallygreatsite.com",
+          "fontSize": 23,
+          "color": "FFFFFF",
+          "bold": false,
+          "name": "TextBox 11"
+        },
+        {
+          "x": 17.515,
+          "y": 9.888,
+          "w": 1.36,
+          "h": 0.426,
+          "kind": "text",
+          "text": "2030",
+          "fontSize": 23,
+          "color": "FFFFFF",
+          "bold": false,
+          "name": "TextBox 12"
+        },
+        {
+          "x": 15.199,
+          "y": 0.699,
+          "w": 3.676,
+          "h": 0.382,
+          "kind": "text",
+          "text": "www.reallygreatsite.com",
+          "fontSize": 20,
+          "color": "FFFFFF",
+          "bold": false,
+          "name": "TextBox 13"
+        }
+      ],
+      "description": {
+        "looksLike": "Dark abstract closing slide featuring a massive bold 'Big Thanks!' headline with presenter contact details along the bottom.",
+        "title": "Big Thanks!",
+        "layout": "title-slide",
+        "background": {
+          "scope": "slide",
+          "kind": "photograph"
+        },
+        "contentPlacement": "Company pill badge in the top-left, website link in the top-right, subtitle and oversized main title stacked across the lower-center, with presenter info, contact email, and year anchored along the bottom.",
+        "images": [],
+        "boxes": [
+          {
+            "role": "body",
+            "text": "",
+            "x": 0,
+            "y": 0,
+            "w": 20,
+            "h": 11.25
+          },
+          {
+            "role": "body",
+            "text": "",
+            "x": 0,
+            "y": 0,
+            "w": 1.136,
+            "h": 0.234
+          },
+          {
+            "role": "body",
+            "text": "Warner & Spencer",
+            "x": 0,
+            "y": -0.052,
+            "w": 1.136,
+            "h": 0.286,
+            "fontSize": 23
+          },
+          {
+            "role": "body",
+            "text": "Big Thanks!",
+            "x": 1.125,
+            "y": 5.594,
+            "w": 14.549,
+            "h": 2.96,
+            "fontSize": 202.66
+          },
+          {
+            "role": "body",
+            "text": "Business Presentation",
+            "x": 1.125,
+            "y": 4.838,
+            "w": 6.222,
+            "h": 0.669,
+            "fontSize": 45.95
+          },
+          {
+            "role": "body",
+            "text": "Presented by :",
+            "x": 1.125,
+            "y": 9.454,
+            "w": 3.817,
+            "h": 0.426,
+            "fontSize": 23
+          },
+          {
+            "role": "body",
+            "text": "Bartholomew Henderson",
+            "x": 1.125,
+            "y": 9.888,
+            "w": 3.817,
+            "h": 0.426,
+            "fontSize": 23
+          },
+          {
+            "role": "body",
+            "text": "Email Address :",
+            "x": 5.278,
+            "y": 9.454,
+            "w": 2.623,
+            "h": 0.426,
+            "fontSize": 23
+          },
+          {
+            "role": "body",
+            "text": "hello@reallygreatsite.com",
+            "x": 5.278,
+            "y": 9.888,
+            "w": 4.137,
+            "h": 0.426,
+            "fontSize": 23
+          },
+          {
+            "role": "body",
+            "text": "2030",
+            "x": 17.515,
+            "y": 9.888,
+            "w": 1.36,
+            "h": 0.426,
+            "fontSize": 23
+          },
+          {
+            "role": "body",
+            "text": "www.reallygreatsite.com",
+            "x": 15.199,
+            "y": 0.699,
+            "w": 3.676,
+            "h": 0.382,
+            "fontSize": 20
+          }
+        ]
+      },
+      "gcsUri": "gs://alltheway-rinegan-slide-designs-prod/catalog/blue-modern-business-pitch-deck/slide-10.png"
+    }
+  }
+}

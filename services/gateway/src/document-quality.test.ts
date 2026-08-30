@@ -6,11 +6,11 @@ import {
   MAX_CRITIQUE_ROUNDS,
   MAX_SLIDES,
   MAX_SUPPORTS,
-  MIN_IMAGES,
+  OFFICE_LAYOUTS,
   VISUAL_PASS_SCORE,
   applyDeckPatch,
-  ensureDeckImages,
   imageSlots,
+  knownLayout,
   parseDeck,
 } from "./office-ir.js";
 import { compileWorkFile, runDocumentQuality } from "./document-quality.js";
@@ -45,6 +45,7 @@ const DECK = {
 };
 
 const stubPages = async (): Promise<Buffer[]> => [TINY_PNG, TINY_PNG, TINY_PNG];
+const identityPlanner = async () => parseDeck(DECK);
 
 function isZip(body: Buffer): boolean {
   return body.length > 4 && body[0] === 0x50 && body[1] === 0x4b;
@@ -55,13 +56,23 @@ test("unknown layouts fall back and extra slides are dropped", () => {
     ir: "deck.v1",
     title: "Cap",
     slides: Array.from({ length: 25 }, (_, i) => ({
-      layout: i === 0 ? "mystery" : "bullets",
+      layout: i === 0 ? "mystery" : "title-and-body",
       title: `S${i}`,
       bullets: ["One"],
     })),
   });
   assert.equal(deck.slides.length, MAX_SLIDES);
-  assert.equal(deck.slides[0]?.layout, "bullets");
+  assert.equal(deck.slides[0]?.layout, "title-and-body");
+});
+
+test("legacy layout names map onto the eleven Office layouts", () => {
+  assert.equal(knownLayout("title"), "title-slide");
+  assert.equal(knownLayout("two-card"), "title-and-two-columns");
+  assert.equal(knownLayout("metric-row"), "big-number");
+  assert.equal(knownLayout("split-visual"), "section-title-and-description");
+  assert.equal(knownLayout("photo-story"), "section-header");
+  assert.equal(knownLayout("title-slide"), "title-slide");
+  assert.equal(OFFICE_LAYOUTS.length, 11);
 });
 
 test("a slide cannot carry more than four supports", () => {
@@ -70,7 +81,7 @@ test("a slide cannot carry more than four supports", () => {
     title: "Cap",
     slides: [
       {
-        layout: "bullets",
+        layout: "title-and-body",
         title: "Launch needs four owners, not a dump",
         bullets: ["A", "B", "C", "D", "E", "F"],
       },
@@ -80,11 +91,12 @@ test("a slide cannot carry more than four supports", () => {
   assert.equal(deck.slides[0]?.bullets?.length, 4);
 });
 
-test("a healthy run compiles a deck and the critic can pass", async () => {
+test("a healthy run compiles a deck and the judge can pass", async () => {
   const result = await runDocumentQuality({
     tool: "create_slides",
     args: DECK,
     imagesRemaining: 8,
+    planner: identityPlanner,
     generateImage: async () => TINY_PNG,
     renderPages: stubPages,
     critic: async () => ({ score: 96, pass: true, issues: [] }),
@@ -92,29 +104,31 @@ test("a healthy run compiles a deck and the critic can pass", async () => {
   assert.equal(result.compiles, 1);
   assert.equal(result.criticPassed, true);
   assert.equal(result.criticScore, 96);
-  assert.equal(result.imagesGenerated, 3);
+  assert.equal(result.imagesGenerated, 1);
   assert.ok(isZip(result.body));
   assert.ok(result.trace.some((line) => /visual QA/i.test(line)));
+  assert.ok(result.trace.some((line) => /planner turn 1/i.test(line)));
 });
 
-test("a seventh critic turn is impossible", async () => {
+test("a seventh judge turn is impossible", async () => {
   let criticCalls = 0;
+  let plannerCalls = 0;
   const result = await runDocumentQuality({
     tool: "create_slides",
     args: DECK,
     imagesRemaining: 0,
+    planner: async () => {
+      plannerCalls += 1;
+      return parseDeck(DECK);
+    },
     renderPages: stubPages,
-    critic: async (deck) => {
+    critic: async () => {
       criticCalls += 1;
-      return {
-        score: 40,
-        pass: false,
-        issues: ["too much text"],
-        irPatch: { slides: deck.slides },
-      };
+      return { score: 40, pass: false, issues: ["too much text"] };
     },
   });
   assert.equal(MAX_CRITIQUE_ROUNDS, 6);
+  assert.equal(plannerCalls, 6);
   assert.equal(criticCalls, 6);
   assert.equal(result.compiles, 6);
   assert.equal(result.criticPassed, false);
@@ -122,18 +136,63 @@ test("a seventh critic turn is impossible", async () => {
   assert.ok(isZip(result.body));
 });
 
-test("score 94 never auto-passes even with three photographs", async () => {
+test("the judge cannot rewrite the plan", async () => {
+  const result = await runDocumentQuality({
+    tool: "create_slides",
+    args: DECK,
+    imagesRemaining: 8,
+    planner: identityPlanner,
+    generateImage: async () => TINY_PNG,
+    renderPages: stubPages,
+    critic: async () => ({
+      score: 96,
+      issues: [],
+      irPatch: { title: "HACKED", slides: [{ title: "HACKED" }] },
+    } as never),
+  });
+  assert.equal(result.criticPassed, true);
+  assert.equal(result.title, "Q4 launch");
+});
+
+test("a failing judge sends issues to a fresh planner, not a patch", async () => {
+  let plannerCalls = 0;
   const result = await runDocumentQuality({
     tool: "create_slides",
     args: DECK,
     imagesRemaining: 8,
     generateImage: async () => TINY_PNG,
     renderPages: stubPages,
+    planner: async (input) => {
+      plannerCalls += 1;
+      if (plannerCalls === 2) {
+        assert.ok(input.previous);
+        assert.ok((input.issues ?? []).some((issue) => /empty lower half/i.test(issue)));
+      }
+      return parseDeck(DECK);
+    },
+    critic: async () =>
+      plannerCalls === 1
+        ? { score: 40, issues: ["empty lower half"] }
+        : { score: 96, issues: [] },
+  });
+  assert.equal(plannerCalls, 2);
+  assert.equal(result.compiles, 2);
+  assert.equal(result.criticPassed, true);
+});
+
+test("score 94 never auto-passes even with a photograph", async () => {
+  const result = await runDocumentQuality({
+    tool: "create_slides",
+    args: DECK,
+    imagesRemaining: 8,
+    planner: identityPlanner,
+    generateImage: async () => TINY_PNG,
+    renderPages: stubPages,
     critic: async () => ({ score: 94, pass: true, issues: ["topic titles"] }),
   });
   assert.equal(result.criticPassed, false);
   assert.equal(result.criticScore, 94);
-  assert.equal(result.imagesGenerated, 3);
+  assert.equal(result.imagesGenerated, 1);
   assert.ok(isZip(result.body));
 });
 
@@ -142,13 +201,14 @@ test("invalid visual JSON never passes", async () => {
     tool: "create_slides",
     args: DECK,
     imagesRemaining: 8,
+    planner: identityPlanner,
     generateImage: async () => TINY_PNG,
     renderPages: stubPages,
     critic: async () => ({ pass: false, issues: ["visual QA returned invalid JSON"] }),
   });
   assert.equal(result.criticPassed, false);
   assert.equal(result.criticScore, 0);
-  assert.equal(result.imagesGenerated, 3);
+  assert.equal(result.imagesGenerated, 1);
   assert.ok(isZip(result.body));
 });
 
@@ -157,6 +217,7 @@ test("a hung critic returns the first compile", async () => {
     tool: "create_slides",
     args: DECK,
     imagesRemaining: 0,
+    planner: identityPlanner,
     renderPages: stubPages,
     budget: { criticTimeoutMs: 30, wallClockMs: 5_000, critiqueRounds: 6 },
     critic: () => new Promise(() => {}),
@@ -174,6 +235,7 @@ test("zero remaining images still produces a deck and never generates", async ()
     tool: "create_slides",
     args: DECK,
     imagesRemaining: 0,
+    planner: identityPlanner,
     generateImage: async () => {
       calls += 1;
       return TINY_PNG;
@@ -212,47 +274,40 @@ test("IR rasters to PNG pages", () => {
   }
 });
 
-test("a deck without pictures still gets three image slots", () => {
-  const deck = ensureDeckImages(
-    parseDeck({
-      ir: "deck.v1",
-      title: "Q4",
-      slides: [
-        { layout: "title", title: "Q4" },
-        {
-          layout: "chart",
-          title: "Budget",
-          chart: { type: "bar", categories: ["Ads"], series: [{ name: "GBP", values: [1] }] },
-        },
-      ],
-    }),
-  );
-  assert.ok(imageSlots(deck).length >= MIN_IMAGES);
-  const chart = deck.slides.find((s) => s.layout === "chart");
-  assert.ok(chart);
-  assert.notEqual(chart?.image?.kind, "generate");
+test("a deck without pictures has no generate slots forced onto it", () => {
+  const deck = parseDeck({
+    ir: "deck.v1",
+    title: "Q4",
+    slides: [
+      { layout: "title-slide", title: "Q4" },
+      {
+        layout: "title-and-body",
+        title: "Budget",
+        chart: { type: "bar", categories: ["Ads"], series: [{ name: "GBP", values: [1] }] },
+      },
+    ],
+  });
+  assert.equal(imageSlots(deck).length, 0);
 });
 
-test("a generate slot on a metric-row is stripped and three photos still exist", () => {
-  const deck = ensureDeckImages(
-    parseDeck({
-      ir: "deck.v1",
-      title: "Q4 held",
-      slides: [
-        { layout: "title", title: "Q4 held" },
-        {
-          layout: "metric-row",
-          title: "Revenue Performance",
-          metrics: [{ label: "ARR", value: "$4.2M", subtext: "112% of target" }],
-          image: { kind: "generate", prompt: "abstract growth" },
-        },
-        { layout: "split-visual", title: "Launch floor", bullets: ["Teams at capacity"] },
-      ],
-    }),
-  );
-  const metrics = deck.slides.find((s) => s.layout === "metric-row");
+test("a generate slot on a big-number is stripped", () => {
+  const deck = parseDeck({
+    ir: "deck.v1",
+    title: "Q4 held",
+    slides: [
+      { layout: "title", title: "Q4 held" },
+      {
+        layout: "metric-row",
+        title: "Revenue Performance",
+        metrics: [{ label: "ARR", value: "$4.2M", subtext: "112% of target" }],
+        image: { kind: "generate", prompt: "abstract growth" },
+      },
+      { layout: "split-visual", title: "Launch floor", bullets: ["Teams at capacity"] },
+    ],
+  });
+  const metrics = deck.slides.find((s) => s.layout === "big-number");
+  assert.ok(metrics);
   assert.notEqual(metrics?.image?.kind, "generate");
-  assert.ok(imageSlots(deck).length >= MIN_IMAGES);
   assert.equal(metrics?.metrics?.[0]?.detail, "112% of target");
 });
 
@@ -263,14 +318,15 @@ test("a short critic patch does not drop later slides", () => {
   });
   assert.equal(next.slides.length, deck.slides.length);
   assert.equal(next.slides[0]?.title, "SSO ships 15 Nov; marketplace waits");
-  assert.equal(next.slides[1]?.layout, "split-visual");
+  assert.equal(next.slides[1]?.layout, "section-title-and-description");
 });
 
-test("vision cannot pass a deck that is missing photographs", async () => {
+test("code caps a pass when a planned still is missing", async () => {
   const result = await runDocumentQuality({
     tool: "create_slides",
     args: DECK,
     imagesRemaining: 8,
+    planner: identityPlanner,
     generateImage: async () => null,
     renderPages: stubPages,
     critic: async () => ({ score: 96, pass: true, issues: [] }),
@@ -278,6 +334,57 @@ test("vision cannot pass a deck that is missing photographs", async () => {
   assert.equal(result.criticPassed, false);
   assert.ok(result.criticScore < VISUAL_PASS_SCORE);
   assert.ok(isZip(result.body));
+});
+
+test("a planner that retags a still keeps the generated bytes", async () => {
+  let imageCalls = 0;
+  const first = parseDeck({
+    ir: "deck.v1",
+    title: "Q4",
+    slides: [
+      {
+        layout: "title-slide",
+        title: "Q4",
+        pictures: [
+          { id: "cover-a", role: "picture", prompt: "war-room at dusk", x: 0, y: 3.55, w: 13.3, h: 3.95 },
+        ],
+      },
+    ],
+  });
+  const second = parseDeck({
+    ir: "deck.v1",
+    title: "Q4",
+    slides: [
+      {
+        layout: "title-slide",
+        title: "Q4",
+        pictures: [
+          { id: "cover-b", role: "picture", prompt: "war-room at dusk", x: 0, y: 3.55, w: 13.3, h: 3.95 },
+        ],
+      },
+    ],
+  });
+  let plannerCalls = 0;
+  const result = await runDocumentQuality({
+    tool: "create_slides",
+    args: first as unknown as Record<string, unknown>,
+    imagesRemaining: 8,
+    generateImage: async () => {
+      imageCalls += 1;
+      return TINY_PNG;
+    },
+    renderPages: stubPages,
+    planner: async () => {
+      plannerCalls += 1;
+      return plannerCalls === 1 ? first : second;
+    },
+    critic: async () =>
+      plannerCalls === 1 ? { score: 40, issues: ["empty lower half"] } : { score: 96, issues: [] },
+  });
+  assert.equal(imageCalls, 1);
+  assert.equal(result.imagesGenerated, 1);
+  assert.equal(result.compiles, 2);
+  assert.equal(result.criticPassed, true);
 });
 
 test("code, not the model boolean, decides pass at 95", () => {
