@@ -382,7 +382,7 @@ export const GREETING_KICK_TEXT =
   "Please greet me now with a short spoken hello, then wait for me to talk.";
 
 /** How long to keep the mic off Vertex while the hello is generated. */
-export const GREETING_HOLD_MS = 6_000;
+export const GREETING_HOLD_MS = 10_000;
 
 export function greetingKickText(g: VoiceGreeting = { resumed: false }): string {
   const name = speakable(g.firstName ?? "", 24);
@@ -419,16 +419,27 @@ export function isGreetingKickTranscript(text: string): boolean {
   return /they have not spoken|this line is not from them/i.test(t);
 }
 
+/**
+ * Native audio speaks from the realtime channel, not from history.
+ *
+ * `clientContent` is for seeding context. On this model it is often ingested
+ * with an empty turnComplete and no audio — which is why a kick that used it
+ * never became a hello. `realtimeInput.text` is the same path their speech
+ * takes, and is what Google's Live clients use for typed turns.
+ */
 export function greetingKickMessage(g: VoiceGreeting = { resumed: false }): Record<string, unknown> {
   return {
-    clientContent: {
-      turns: [
-        {
-          role: "user",
-          parts: [{ text: greetingKickText(g) }],
-        },
-      ],
-      turnComplete: true,
+    realtimeInput: {
+      text: greetingKickText(g),
+    },
+  };
+}
+
+/** Mic is held during the hello; this flushes Vertex so it does not wait for audio. */
+export function greetingKickFlush(): Record<string, unknown> {
+  return {
+    realtimeInput: {
+      audioStreamEnd: true,
     },
   };
 }

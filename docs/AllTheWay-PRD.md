@@ -125,7 +125,7 @@ Vertex AI Memory Bank is an **optional extractor** behind this ledger (`MEMORY_B
 
 | We will not | Why |
 |---|---|
-| A meeting bot that joins as a guest | Unannounced participant; contradicts the trust posture |
+| A meeting bot that joins as a guest | **Superseded in part by [ADR 0007](decisions/0007-guest-notetaker-until-meet-media.md) (2026-08-31).** An *unannounced* guest bot remains a Won’t. A labelled, mute, host-admitted notetaker is allowed as a stopgap until Meet Media enrolment. |
 | Claim the agent can speak in a meeting | Meet Media API is receive-only |
 | Live multiplayer co-editing / CRDTs | Deferred; share → comment is the honest step |
 | Native mobile or desktop apps | Voice and camera are the PWA; compose is desktop web |
@@ -690,7 +690,7 @@ The Memory Layer fitness function plus Today:
 | Watcher sends the wrong mail | M | Critical | Ceiling + server floor; pause for clarify; visible run. |
 | Video cost runaway | M | High | FR-M2; never watchers; Max as the honest tier. |
 | `global`-only image/video models vs EU residency | H | Medium | Recorded cost of the feature; residency is an open decision, not a silent promise. |
-| Meet Media API stays preview-constrained | H | Medium | Tier 1 (after-call) is sufficient. Never guest-bot. |
+| Meet Media API stays preview-constrained | H | Medium | Tier 1 + tab capture remain. Labelled mute bot is the stopgap ([ADR 0007](decisions/0007-guest-notetaker-until-meet-media.md)); unannounced join remains a Won’t. |
 | Plus churn from “it planned, it didn’t do” | H | Critical | Yes must act (calendar + artifact). Activation gate before paid ads. |
 | Locale / i18n half-translation | M | High | Guard; native review of machine catalogues before calling them shipped. |
 | Cold-start perceived as product-broken | H | Medium | Min instances where it matters; copy that does not lie. |

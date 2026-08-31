@@ -12,6 +12,7 @@ import {
   setupMessage,
   toolResponse,
   greetingKickMessage,
+  greetingKickFlush,
   isGreetingKickTranscript,
   startGreetingGate,
   spokenGreetingLine,
@@ -238,6 +239,7 @@ async function openVertexLive(opts: {
               if (closed || socket !== ws || !greeting?.holding()) return;
               try {
                 ws.send(JSON.stringify(greetingKickMessage(g)));
+                ws.send(JSON.stringify(greetingKickFlush()));
               } catch {
                 greeting?.noteModelTurn();
               }
@@ -265,7 +267,9 @@ async function openVertexLive(opts: {
       }
       if (msg.interrupted) events.onInterrupted();
       if (msg.turnComplete || msg.generationComplete) {
-        greeting?.noteModelTurn();
+        // Do not open the greeting gate here. A text kick is often ack'd with
+        // turnComplete and no audio; treating that as "hello done" is how the
+        // mic came back on before it had spoken.
         events.onTurnComplete?.();
       }
       for (const call of msg.toolCalls ?? []) events.onToolCall(call);

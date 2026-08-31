@@ -161,7 +161,7 @@ v3.5 is allowed to hide, regroup, and complete loops. It is not allowed to softe
 - Unrecognised / unreadable subscription → Free
 - Usage counted after success
 - Retrieval scoped by path, no collection-group queries
-- No meeting bot that joins as a guest
+- No **unannounced** meeting bot (labelled, mute, host-admitted notetaker is a time-boxed stopgap until Meet Media — [ADR 0007](decisions/0007-guest-notetaker-until-meet-media.md))
 - No model credential in the browser
 - Grounded or silent on documents
 - Video never available to a watcher
@@ -247,7 +247,9 @@ Granola, Otter, Fireflies, and Fathom sit at roughly the same individual price a
 - **Fireflies** is paid for *CRM*: HubSpot/Salesforce, sales analytics. Cheapest annual Pro in several comparisons (~$10/user). Individual users call it more system than they wanted.
 - **Fathom** is paid for *a free plan that is actually usable*, then Premium (~$20) for Ask-Fathom, templates, bot-free capture. The default bot is the most-cited complaint; bot-free is the upsell. Sales teams pay Business (~$34) for CRM fields. Everyone else is told to stay free.
 
-**Our position is already written and it is a commercial asset:** we will not join as a guest bot; Tier 1 reads the transcript after; live listen is host-only, receive-only, labelled. Granola proved people will pay *more* for the absence of a bot. Fathom proved the bot is what they resent. v3.5 should sell that absence in the UI, not hide meetings on Profile under a switch that forgets its state.
+**Our position was written as a commercial asset:** no guest bot; Tier 1 after the call; live listen host-only, receive-only, labelled. Granola proved people will pay *more* for the absence of a bot. Fathom proved the bot is what they resent.
+
+**Superseded in part (2026-08-31), [ADR 0007](decisions/0007-guest-notetaker-until-meet-media.md):** Meet Media still cannot serve a mixed room (preview + every participant enrolled + restricted CASA). Until `connectTier2` works, an **opt-in** labelled mute notetaker is allowed so we can take notes when they are not in Chrome and so we can get per-speaker streams. The **default** remains no extra participant (extension / after-call). Sell the absence as the default; do not make Fathom’s default-bot mistake. Hide-on-Profile is still wrong.
 
 ### 4.4 Why people pay for an AI executive assistant
 

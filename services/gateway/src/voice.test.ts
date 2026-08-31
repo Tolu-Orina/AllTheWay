@@ -17,6 +17,7 @@ import {
   foldTranscript,
   TranscriptAccumulator,
   greetingKickMessage,
+  greetingKickFlush,
   isGreetingKickTranscript,
   startGreetingGate,
   GREETING_KICK_TEXT,
@@ -276,15 +277,13 @@ test("the voice instruction greets first when a session starts", () => {
   assert.doesNotMatch(s, /wait for them to tell you what they want/);
 });
 
-test("a new live session sends a completed turn so the model can greet", () => {
+test("a new live session sends realtime text so the model can greet", () => {
   const msg = greetingKickMessage();
-  const content = msg.clientContent as {
-    turnComplete?: boolean;
-    turns?: { role: string; parts?: { text?: string }[] }[];
-  };
-  assert.equal(content.turnComplete, true);
-  assert.equal(content.turns?.[0]?.role, "user");
-  assert.equal(content.turns?.[0]?.parts?.[0]?.text, GREETING_KICK_TEXT);
+  const rt = msg.realtimeInput as { text?: string };
+  assert.equal(rt?.text, GREETING_KICK_TEXT);
+  assert.equal("clientContent" in msg, false);
+  const flush = greetingKickFlush();
+  assert.equal((flush.realtimeInput as { audioStreamEnd?: boolean }).audioStreamEnd, true);
   assert.equal(isGreetingKickTranscript(GREETING_KICK_TEXT), true);
   assert.equal(isGreetingKickTranscript("Please greet me now"), true);
   assert.equal(isGreetingKickTranscript("Please greet"), true);

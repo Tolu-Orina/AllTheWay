@@ -434,6 +434,7 @@ Insight passes follow the backing-off schedule and the plan table (0 / 0 / 300 /
 If the Meet API refuses, the product shall fall back or say no — not join as a guest (Won’t).
 
 - **Priority:** M · **Traces:** USR-25
+- **Superseded in part (2026-08-31):** [ADR 0007](decisions/0007-guest-notetaker-until-meet-media.md). Media refusals (underage / E2E / watermark / hardware) still must not be bypassed. A **labelled, host-admitted, mute** notetaker is a separate opt-in rung (Tier 2.5) until Meet Media works; it is retired on Meet when `connectTier2` completes. Unannounced join remains a Won’t. Full ladder: [AllTheWay-Meeting-Joiner-Plan.md](AllTheWay-Meeting-Joiner-Plan.md).
 
 ---
 

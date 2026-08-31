@@ -79,7 +79,9 @@ Two distinct Google APIs, and conflating them would produce a promise we cannot 
 
 **Meet REST API + Google Workspace Events API** — **GA**. Subscribe to meeting events; after a conference ends, retrieve conference records, participants, recordings and **transcripts**. No joining, no preview enrolment, no dialog.
 
-**The design that follows:** AllTheWay does not pretend to attend your meeting. It reads the transcript the moment the call ends and turns it into a plan through the same Clarify Gate and Confirm Gate as everything else. "It was across the whole call" without being in the room — and without a bot silently sitting in your client's meeting, which is a trust cost we should not pay by default.
+**The design that follows (live listen):** AllTheWay does not pretend it can talk in your meeting. It listens when a sanctioned path exists, or it reads the transcript when the call ends.
+
+**Superseded in part (2026-08-31):** the sentence “does not pretend to attend” and “without a bot silently sitting in your client's meeting” still forbid a *silent* extra participant. A labelled, mute, host-admitted notetaker is a temporary capture rung until Meet Media enrolment — [ADR 0007](decisions/0007-guest-notetaker-until-meet-media.md). Default capture remains tab capture / after-call (nothing extra in the list).
 
 Live listening (Media API) is scoped as an **opt-in preview** for meetings the user themselves hosts.
 
