@@ -112,7 +112,9 @@ SYSTEM = (
     "document title once — do not also start body with that same # heading. "
     "body is markdown: a short Executive Summary paragraph, then ## sections, "
     "| tables | for milestones and asks, and - **Label:** sentences for goals "
-    "and risks. kind is briefing, memo, proposal, or report when known; "
+    "and risks. Fill body with the actual draft, not a one-line description of "
+    "the file — title and body appear as an editable outline in chat before Yes "
+    "writes anything. kind is briefing, memo, proposal, or report when known; "
     "audience is who it is for (the Board, the exec team). Prefer specific "
     "numbers, dates, and named owners. headers is column names, rows is a "
     "list of lists (or csv). Prefer numbers, not quoted numeric strings, and "
@@ -290,6 +292,23 @@ def _struggles_block(request: TurnRequest) -> str:
     return chr(10).join(lines)
 
 
+def _files_block(request: TurnRequest) -> str:
+    """Names of files attached on this turn.
+
+    The bytes travel as multimodal parts, not as this text. This block
+    exists so the planner knows it can see them — a model that is not told
+    it has a PDF will claim it cannot read attachments.
+    """
+    if not request.files:
+        return ""
+    names = ", ".join(f.name or "document" for f in request.files)
+    return (
+        "ATTACHED FILES on this turn (also present as multimodal parts — read them): "
+        + names
+        + ". Answer from those files. They are not yet in retrieved passages."
+    )
+
+
 def _clock_block(request: TurnRequest) -> str:
     """The instant this turn was planned, so 'tomorrow 10am' is not guessed."""
     clock = (request.clock or "").strip()
@@ -325,6 +344,9 @@ def _system_for(request: TurnRequest) -> tuple[str, bool]:
     struggles = _struggles_block(request)
     if struggles:
         system += "\n\n" + struggles
+    attached = _files_block(request)
+    if attached:
+        system += "\n\n" + attached
 
     if not prefs:
         return system, False
@@ -380,8 +402,14 @@ class _Pass:
     without the parsing being duplicated at each call site.
     """
 
-    def __init__(self, provider: ModelProvider, system: str, user: str) -> None:
-        self._chunks = iter_text(provider, system, user, SCHEMA_HINT)
+    def __init__(
+        self,
+        provider: ModelProvider,
+        system: str,
+        user: str,
+        files: list | None = None,
+    ) -> None:
+        self._chunks = iter_text(provider, system, user, SCHEMA_HINT, files)
         self.buffer = ""
         self.released = 0
 
@@ -430,9 +458,11 @@ class _Pass:
         return out
 
 
-def _plan_only(provider: ModelProvider, system: str, user: str) -> Iterator[TurnEvent]:
+def _plan_only(
+    provider: ModelProvider, system: str, user: str, files: list | None = None
+) -> Iterator[TurnEvent]:
     """A second pass that only plans — the gate has already ruled."""
-    pass_ = _Pass(provider, system, user)
+    pass_ = _Pass(provider, system, user, files)
     for partial in pass_:
         for step in pass_.new_steps(partial):
             yield TurnEvent(kind="step", step=step)
@@ -716,7 +746,7 @@ def run_turn_stream(
         yield TurnEvent(kind="clarify", clarify=ClarifyQuestion(question=UNCLEAR))
         return
 
-    first = _Pass(provider, system, request.message)
+    first = _Pass(provider, system, request.message, request.files)
     decision: str | None = None
     needs_research: bool | None = None
     held: list[PlanStep] = []
@@ -811,7 +841,7 @@ def run_turn_stream(
             )
             second = 0
             note = finding.answer
-            for event in _plan_only(provider, informed, request.message):
+            for event in _plan_only(provider, informed, request.message, request.files):
                 if event.kind == "step" and event.step:
                     if _skip_streamed_step(event.step, request.lookups):
                         continue

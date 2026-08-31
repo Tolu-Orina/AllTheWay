@@ -1,32 +1,35 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import { Link, useLocation, useNavigate } from "react-router";
-import { Camera, Folder, Loader2, Paperclip, ArrowUp } from "lucide-react";
+import { ArrowUp, Camera, Loader2, Mic, Paperclip } from "lucide-react";
 import { motion, useReducedMotion } from "motion/react";
+import type { ThreadAttachment, ThreadMessage, ActOutcome } from "@alltheway/contracts";
+import { failureKindFrom } from "@alltheway/contracts";
 
 import { CitationChip } from "@/app/CitationChip";
-import { ChatStatus, ChatTurn, ProposedActionCard } from "@/app/ChatTurn";
+import { ChatStatus, ChatTurn, FilePills, GroundedIn, ProposedActionCard } from "@/app/ChatTurn";
 import { ConfirmGate, pendingConfirmId } from "@/app/ConfirmGate";
 import { PlanStack } from "@/app/PlanStack";
 import { Recovery } from "@/app/Recovery";
 import { SessionTranscript } from "@/app/VoiceTranscripts";
-import { askAboutAdded } from "@/app/Documents";
 import { api, type SessionDetail } from "@/app/data";
-import { failureKindFrom, type ThreadMessage } from "@alltheway/contracts";
 import { useAsync } from "@/app/use-async";
 import { useDecision } from "@/app/use-decision";
 import { useTurn, type ProposedAction, type TurnPhase } from "@/app/use-turn";
 import { useStartWork } from "@/app/use-start-work";
+import { useVoice } from "@/app/use-voice";
 import { useT } from "@/app/i18n";
-import { composeKind, composeSources } from "@/app/compose-fields";
+import { composeSources, isComposeReview } from "@/app/compose-fields";
 import { isPendingConfirmReply } from "@/lib/spoken-confirm";
-import {
-  DOCUMENT_ACCEPT,
-  DOCUMENT_CAMERA_ACCEPT,
-  DOCUMENT_MAX_BYTES,
-  prepareDocumentUpload,
-} from "@/lib/document-file";
+import { DOCUMENT_ACCEPT, DOCUMENT_CAMERA_ACCEPT } from "@/lib/document-file";
 import { Markdown } from "@/app/Markdown";
 import { cn } from "@/lib/utils";
+import {
+  addStagedFiles,
+  commitStaged,
+  takeCommitted,
+  type StageIssue,
+  type StagedFile,
+} from "@/lib/work-attach";
 
 type ChatMessage = {
   id: number;
@@ -38,6 +41,7 @@ type ChatMessage = {
   actions?: ProposedAction[];
   citations?: ThreadMessage["citations"];
   steps?: ThreadMessage["steps"];
+  attachments?: ThreadAttachment[];
 };
 
 function fromStored(thread: ThreadMessage[]): ChatMessage[] {
@@ -51,6 +55,7 @@ function fromStored(thread: ThreadMessage[]): ChatMessage[] {
     actions: m.actions,
     citations: m.citations,
     steps: m.steps,
+    attachments: m.attachments,
   }));
   const last = mapped[mapped.length - 1];
   // A write plan that later stored as `done` still carries the calls Yes
@@ -59,7 +64,8 @@ function fromStored(thread: ThreadMessage[]): ChatMessage[] {
     last?.role === "agent" &&
     last.actions?.length &&
     last.phase !== "clarify" &&
-    last.phase !== "error"
+    last.phase !== "error" &&
+    last.phase !== "done"
   ) {
     last.phase = "confirm";
   }
@@ -105,6 +111,15 @@ function clearWorkSeed(sessionId: string) {
   }
 }
 
+function stageNote(
+  t: (key: string, vars?: Record<string, unknown>) => string,
+  issue: StageIssue,
+): string {
+  if (issue.code === "tooMany") return t("work.tooManyFiles");
+  if (issue.code === "tooLarge") return t("work.fileTooLarge", { name: issue.name });
+  return t("work.fileEmpty", { name: issue.name });
+}
+
 export function WorkChat({
   sessionId,
   onSettled,
@@ -121,14 +136,27 @@ function NewWorkChat() {
   const { startWork, starting } = useStartWork();
   const [draft, setDraft] = useState("");
   const [note, setNote] = useState<string | null>(null);
+  const [staged, setStaged] = useState<StagedFile[]>([]);
+  const [attaching, setAttaching] = useState(false);
   const fileRef = useRef<HTMLInputElement>(null);
   const cameraRef = useRef<HTMLInputElement>(null);
+  const busy = starting || attaching;
 
   const send = (text: string) => {
-    const trimmed = text.trim();
-    if (!trimmed || starting) return;
+    const trimmed = text.trim() || (staged.length ? t("work.lookAtAttached") : "");
+    if (!trimmed || busy) return;
     setDraft("");
-    void startWork({ seed: trimmed });
+    if (!staged.length) {
+      void startWork({ seed: trimmed });
+      return;
+    }
+    setAttaching(true);
+    setNote(t("work.attaching"));
+    void startWork({ seed: trimmed, files: staged })
+      .catch((err) => {
+        setNote((err as { message?: string }).message || t("work.attaching"));
+        setAttaching(false);
+      });
   };
 
   return (
@@ -144,29 +172,17 @@ function NewWorkChat() {
       <WorkComposer
         draft={draft}
         setDraft={setDraft}
-        working={starting}
+        working={busy}
         onSend={send}
         fileRef={fileRef}
         cameraRef={cameraRef}
         note={note}
-        onFiles={async (files) => {
-          const file = Array.from(files)[0];
-          if (!file) return;
-          if (file.size > DOCUMENT_MAX_BYTES) {
-            setNote(
-              `${file.name || "That file"} is larger than ${Math.round(DOCUMENT_MAX_BYTES / 1024 / 1024)}MB.`,
-            );
-            return;
-          }
-          setNote(t("documents.reading", { name: file.name || "photo" }));
-          try {
-            const prepared = await prepareDocumentUpload(file);
-            await api.uploadDocument(prepared.title, prepared.content, prepared.mimeType);
-            setNote(null);
-            void startWork({ seed: askAboutAdded(prepared.title) });
-          } catch (err) {
-            setNote((err as { message?: string }).message || `${file.name || "That file"} could not be added.`);
-          }
+        staged={staged}
+        onRemoveFile={(id) => setStaged((prev) => prev.filter((f) => f.id !== id))}
+        onFiles={(files) => {
+          const { next, issue } = addStagedFiles(staged, Array.from(files));
+          setStaged(next);
+          setNote(issue ? stageNote(t, issue) : null);
         }}
       />
     </section>
@@ -185,10 +201,19 @@ function SessionWorkChat({
   const location = useLocation();
   const { state, reload } = useAsync<SessionDetail | null>(() => api.session(sessionId), [sessionId]);
   const { turn, send: runTurn } = useTurn(sessionId);
-  const { decide, reset: resetDecision, status: decisionStatus } = useDecision(sessionId);
+  const {
+    decide,
+    reset: resetDecision,
+    status: decisionStatus,
+    recorded,
+    decision,
+    did,
+  } = useDecision(sessionId);
   const seedState = location.state as { seed?: string; promptOnly?: boolean } | null;
   const [draft, setDraft] = useState("");
   const [history, setHistory] = useState<ChatMessage[]>([]);
+  const [staged, setStaged] = useState<StagedFile[]>([]);
+  const [attaching, setAttaching] = useState(false);
   const settled = useRef("");
   const hadTurn = useRef(false);
   const ended = useRef(false);
@@ -199,7 +224,7 @@ function SessionWorkChat({
   const fileRef = useRef<HTMLInputElement>(null);
   const cameraRef = useRef<HTMLInputElement>(null);
   const [note, setNote] = useState<string | null>(null);
-  const working = turn.phase === "working";
+  const working = turn.phase === "working" || attaching;
 
   useEffect(() => {
     hadTurn.current = false;
@@ -227,13 +252,23 @@ function SessionWorkChat({
       clearWorkSeed(sessionId);
       return;
     }
+    const attachments = takeCommitted(sessionId);
     hadTurn.current = true;
-        setHistory((prev) =>
-          prev.some((m) => m.role === "user" && m.text === found.seed)
-            ? prev
-            : [...prev, { id: prev.length + 1, role: "user", text: found.seed, at: new Date().toISOString() }],
-        );
-    void runTurn(found.seed);
+    setHistory((prev) =>
+      prev.some((m) => m.role === "user" && m.text === found.seed)
+        ? prev
+        : [
+            ...prev,
+            {
+              id: prev.length + 1,
+              role: "user",
+              text: found.seed,
+              at: new Date().toISOString(),
+              attachments: attachments.length ? attachments : undefined,
+            },
+          ],
+    );
+    void runTurn(found.seed, attachments.length ? { attachments } : undefined);
   }, [sessionId, seedState?.seed, seedState?.promptOnly, runTurn, navigate]);
 
   useEffect(() => {
@@ -296,46 +331,78 @@ function SessionWorkChat({
 
   const send = useCallback(
     (text: string) => {
-      let trimmed = text.trim();
-      if (!trimmed) return;
-      if (working) {
-        pending.current.push(trimmed);
-        return;
-      }
-      const lastAgent =
-        history.find((m) => m.id === pendingConfirmId(history)) ??
-        [...history].reverse().find((m) => m.role === "agent");
-      if (lastAgent?.actions?.length && isPendingConfirmReply(trimmed, lastAgent)) {
+      void (async () => {
+        let trimmed = text.trim();
+        const files = staged;
+        if (!trimmed && files.length) trimmed = t("work.lookAtAttached");
+        if (!trimmed) return;
+        if (turn.phase === "working" || attaching) {
+          pending.current.push(trimmed);
+          return;
+        }
+
+        let attachments: ThreadAttachment[] | undefined;
+        if (files.length) {
+          setAttaching(true);
+          setNote(t("work.attaching"));
+          try {
+            attachments = await commitStaged(sessionId, files);
+            setStaged([]);
+            setNote(null);
+            onSettled?.();
+          } catch (err) {
+            setNote((err as { message?: string }).message || t("work.attaching"));
+            setAttaching(false);
+            return;
+          }
+          setAttaching(false);
+        }
+
+        const lastAgent =
+          history.find((m) => m.id === pendingConfirmId(history)) ??
+          [...history].reverse().find((m) => m.role === "agent");
+        if (lastAgent?.actions?.length && isPendingConfirmReply(trimmed, lastAgent)) {
+          hadTurn.current = true;
+          setHistory((prev) => [
+            ...prev,
+            { id: prev.length + 1, role: "user", text: trimmed, at: new Date().toISOString(), attachments },
+          ]);
+          setDraft("");
+          void decide("confirmed", { summary: lastAgent.text, actions: lastAgent.actions }).then(() =>
+            onSettled?.(),
+          );
+          return;
+        }
         hadTurn.current = true;
-        setHistory((prev) => [...prev, { id: prev.length + 1, role: "user", text: trimmed, at: new Date().toISOString() }]);
+        setHistory((prev) => [
+          ...prev,
+          {
+            id: prev.length + 1,
+            role: "user",
+            text: trimmed,
+            at: new Date().toISOString(),
+            attachments,
+          },
+        ]);
         setDraft("");
-        void decide("confirmed", { summary: lastAgent.text, actions: lastAgent.actions }).then(() =>
-          onSettled?.(),
-        );
-        return;
-      }
-      hadTurn.current = true;
-      setHistory((prev) => [...prev, { id: prev.length + 1, role: "user", text: trimmed, at: new Date().toISOString() }]);
-      setDraft("");
-      if (
-        lastAgent?.actions?.some((a) => a.connector && a.tool) &&
-        composeKind(composeSources(lastAgent.steps, lastAgent.actions)) !== "email"
-      ) {
-        void (async () => {
+        if (
+          lastAgent?.actions?.some((a) => a.connector && a.tool) &&
+          !isComposeReview(composeSources(lastAgent.steps, lastAgent.actions))
+        ) {
           await decide("corrected", {
             summary: lastAgent.text,
             actions: lastAgent.actions ?? [],
             now: trimmed,
           });
           resetDecision();
-          void runTurn(trimmed);
-        })();
-        return;
-      }
-      resetDecision();
-      void runTurn(trimmed);
+          void runTurn(trimmed, attachments ? { attachments } : undefined);
+          return;
+        }
+        resetDecision();
+        void runTurn(trimmed, attachments ? { attachments } : undefined);
+      })();
     },
-    [working, history, decide, resetDecision, runTurn, onSettled],
+    [staged, attaching, turn.phase, t, sessionId, history, decide, resetDecision, runTurn, onSettled],
   );
 
   useEffect(() => {
@@ -370,13 +437,17 @@ function SessionWorkChat({
       </header>
 
       <div className="min-h-0 flex-1 space-y-8 overflow-y-auto px-6 py-4 sm:px-8">
-        {history.map((m) => (
+        {history.map((m, i) => (
           <ChatBubble
             key={m.id}
             message={m}
+            previousAttachments={m.role === "agent" ? history[i - 1]?.attachments : undefined}
             confirming={m.id === confirmId}
             working={working}
             decisionStatus={decisionStatus}
+            recorded={recorded}
+            decision={decision}
+            did={did}
             threadId={sessionId}
             onSend={send}
             onConfirm={() => {
@@ -397,7 +468,7 @@ function SessionWorkChat({
         ))}
 
         {last?.role === "agent" && last.phase === "clarify" && last.options?.length ? (
-          <div className="pl-8">
+          <div className="pl-11">
             {last.options.map((option) => (
               <button
                 key={option}
@@ -413,15 +484,15 @@ function SessionWorkChat({
         ) : null}
 
         {working ? (
-          <div className="pl-8">
-            {turn.steps.length > 0 ? (
+          <div className="pl-11">
+            {turn.steps.length > 0 && !attaching ? (
               <div className="max-w-[36rem]">
                 <PlanStack steps={turn.steps} live />
               </div>
             ) : (
               <ChatStatus className="flex items-center gap-2">
                 <Loader2 className="size-3.5 animate-spin motion-reduce:animate-none" aria-hidden="true" />
-                {t("work.thinking")}
+                {attaching ? t("work.attaching") : t("work.thinking")}
               </ChatStatus>
             )}
           </div>
@@ -437,28 +508,17 @@ function SessionWorkChat({
         fileRef={fileRef}
         cameraRef={cameraRef}
         note={note}
-        contextLabel={
-          session && session.title && session.title !== "New work" ? session.title : null
+        staged={staged}
+        onRemoveFile={(id) => setStaged((prev) => prev.filter((f) => f.id !== id))}
+        confirmPending={
+          (turn.phase === "confirm" || confirmId !== null) &&
+          !(decision && recorded === "ok")
         }
-        confirmPending={turn.phase === "confirm" || confirmId !== null}
-        onFiles={async (files) => {
-          const file = Array.from(files)[0];
-          if (!file || working) return;
-          if (file.size > DOCUMENT_MAX_BYTES) {
-            setNote(
-              `${file.name || "That file"} is larger than ${Math.round(DOCUMENT_MAX_BYTES / 1024 / 1024)}MB.`,
-            );
-            return;
-          }
-          setNote(t("documents.reading", { name: file.name || "photo" }));
-          try {
-            const prepared = await prepareDocumentUpload(file);
-            await api.uploadDocument(prepared.title, prepared.content, prepared.mimeType);
-            setNote(null);
-            send(askAboutAdded(prepared.title));
-          } catch (err) {
-            setNote((err as { message?: string }).message || `${file.name || "That file"} could not be added.`);
-          }
+        onFiles={(files) => {
+          if (working) return;
+          const { next, issue } = addStagedFiles(staged, Array.from(files));
+          setStaged(next);
+          setNote(issue ? stageNote(t, issue) : null);
         }}
       />
       <SessionTranscript sessionId={sessionId} />
@@ -468,27 +528,46 @@ function SessionWorkChat({
 
 function ChatBubble({
   message: m,
+  previousAttachments,
   confirming,
   working,
   decisionStatus,
+  recorded,
+  decision,
+  did,
   threadId,
   onSend,
   onConfirm,
   onDecline,
 }: {
   message: ChatMessage;
+  previousAttachments?: ThreadAttachment[];
   confirming: boolean;
   working: boolean;
   decisionStatus: string | null;
+  recorded?: "pending" | "ok" | "failed";
+  decision?: "confirmed" | "declined" | "corrected" | null;
+  did?: ActOutcome[];
   threadId: string;
   onSend: (text: string) => void;
   onConfirm: () => void;
   onDecline: () => void;
 }) {
   const reduced = useReducedMotion();
+  const docs = m.citations?.filter((c) => c.kind !== "web") ?? [];
+  const webs = m.citations?.filter((c) => c.kind === "web") ?? [];
   const extras = (
     <>
-      {m.steps?.length && !confirming ? <PlanStack steps={m.steps} /> : null}
+      {m.steps?.length && !confirming ? (
+        <PlanStack
+          steps={m.steps}
+          onSend={
+            working || m.actions?.length || isComposeReview(m.steps)
+              ? undefined
+              : onSend
+          }
+        />
+      ) : null}
       {!confirming && m.actions?.length
         ? m.actions.map((a) => <ProposedActionCard key={a.label} action={a} />)
         : null}
@@ -500,6 +579,9 @@ function ChatBubble({
           declineLabel={m.options?.[1] ?? "No, stop"}
           busy={working || Boolean(decisionStatus)}
           status={decisionStatus}
+          recorded={recorded}
+          decision={decision}
+          did={did}
           sessionId={threadId}
           steps={m.steps}
           onConfirm={onConfirm}
@@ -515,9 +597,12 @@ function ChatBubble({
           onRetry={() => onSend(m.text)}
         />
       ) : null}
-      {m.citations?.length ? (
+      {m.role === "agent" && !confirming && m.phase !== "error" ? (
+        <GroundedIn citations={docs} attachments={previousAttachments} />
+      ) : null}
+      {webs.length ? (
         <div className="flex flex-wrap gap-1.5">
-          {m.citations.map((c) => (
+          {webs.map((c) => (
             <CitationChip key={c.chunkId} citation={c} />
           ))}
         </div>
@@ -529,7 +614,9 @@ function ChatBubble({
       (!confirming && m.actions?.length) ||
       confirming ||
       m.phase === "error" ||
-      m.citations?.length,
+      docs.length ||
+      webs.length ||
+      (m.role === "agent" && previousAttachments?.length && !confirming),
   );
 
   return (
@@ -546,7 +633,19 @@ function ChatBubble({
         <ChatTurn
           side={m.role === "user" ? "user" : "agent"}
           at={m.at}
-          footer={m.role === "agent" && hasExtras ? extras : undefined}
+          footer={
+            m.role === "user" && m.attachments?.length ? (
+              <FilePills
+                files={m.attachments.map((file, i) => ({
+                  id: file.documentId || file.artifactId || `${file.name}-${i}`,
+                  name: file.name,
+                  mime: file.mime,
+                }))}
+              />
+            ) : m.role === "agent" && hasExtras ? (
+              extras
+            ) : undefined
+          }
         >
           {m.role === "agent" ? <Markdown className="md-compact">{m.text}</Markdown> : m.text}
         </ChatTurn>
@@ -564,8 +663,9 @@ function WorkComposer({
   cameraRef,
   note,
   onFiles,
+  staged,
+  onRemoveFile,
   confirmPending = false,
-  contextLabel = null,
 }: {
   draft: string;
   setDraft: (value: string) => void;
@@ -574,12 +674,15 @@ function WorkComposer({
   fileRef: React.RefObject<HTMLInputElement | null>;
   cameraRef: React.RefObject<HTMLInputElement | null>;
   note: string | null;
-  onFiles: (files: FileList) => void | Promise<void>;
+  onFiles: (files: FileList) => void;
+  staged: StagedFile[];
+  onRemoveFile: (id: string) => void;
   confirmPending?: boolean;
-  contextLabel?: string | null;
 }) {
   const t = useT();
+  const voice = useVoice();
   const [dropping, setDropping] = useState(false);
+  const canSend = Boolean(draft.trim() || staged.length) && !working;
 
   return (
     <div className="px-6 pb-4 sm:px-8">
@@ -601,7 +704,7 @@ function WorkComposer({
         onDrop={(e) => {
           e.preventDefault();
           setDropping(false);
-          if (e.dataTransfer.files.length) void onFiles(e.dataTransfer.files);
+          if (e.dataTransfer.files.length) onFiles(e.dataTransfer.files);
         }}
         onSubmit={(e) => {
           e.preventDefault();
@@ -615,10 +718,11 @@ function WorkComposer({
           ref={fileRef}
           type="file"
           accept={DOCUMENT_ACCEPT}
+          multiple
           className="sr-only"
           disabled={working}
           onChange={(e) => {
-            if (e.target.files) void onFiles(e.target.files);
+            if (e.target.files) onFiles(e.target.files);
             e.target.value = "";
           }}
         />
@@ -630,7 +734,7 @@ function WorkComposer({
           className="sr-only"
           disabled={working}
           onChange={(e) => {
-            if (e.target.files) void onFiles(e.target.files);
+            if (e.target.files) onFiles(e.target.files);
             e.target.value = "";
           }}
         />
@@ -647,7 +751,9 @@ function WorkComposer({
                 ? t("work.working")
                 : confirmPending
                   ? t("work.answerOrType")
-                  : t("work.askAnything")
+                  : staged.length
+                    ? t("work.askAboutAttached")
+                    : t("work.askAnything")
           }
           onKeyDown={(e) => {
             if (e.key === "Enter" && !e.shiftKey) {
@@ -657,7 +763,16 @@ function WorkComposer({
           }}
           className="min-h-16 w-full resize-none bg-transparent text-[14px] leading-relaxed outline-none placeholder:text-muted-foreground disabled:opacity-60"
         />
-        <div className="mt-3 flex items-center gap-2">
+        {staged.length ? (
+          <div className="mt-2">
+            <FilePills
+              files={staged.map((file) => ({ id: file.id, name: file.name, mime: file.mime }))}
+              onRemove={working ? undefined : onRemoveFile}
+              align="start"
+            />
+          </div>
+        ) : null}
+        <div className="mt-3 flex items-center gap-1">
           <button
             type="button"
             aria-label={t("documents.choose")}
@@ -676,20 +791,24 @@ function WorkComposer({
           >
             <Camera className="size-4" aria-hidden="true" />
           </button>
-          {contextLabel ? (
-            <span className="inline-flex min-w-0 items-center gap-1.5 rounded-full bg-card px-2.5 py-1 font-mono text-[11px] text-muted-foreground">
-              <Folder className="size-4 shrink-0" aria-hidden="true" />
-              <span className="truncate">{contextLabel}</span>
-            </span>
-          ) : null}
+          <button
+            type="button"
+            aria-label={t("voice.startSession")}
+            disabled={working}
+            onClick={() => voice.start()}
+            className="grid size-8 shrink-0 place-items-center rounded-full text-muted-foreground transition-colors hover:bg-background/80 hover:text-foreground disabled:opacity-40"
+          >
+            <Mic className="size-4" aria-hidden="true" />
+          </button>
           <span className="flex-1" />
           <button
             type="submit"
-            aria-label={t("work.send")}
-            disabled={!draft.trim() || working}
-            className="grid size-10 shrink-0 place-items-center rounded-full bg-navy-deep text-white transition-opacity hover:opacity-90 disabled:opacity-40"
+            aria-label={t("work.ask")}
+            disabled={!canSend}
+            className="inline-flex h-9 shrink-0 items-center gap-1.5 rounded-xl bg-navy-deep px-3.5 text-[13px] font-medium text-white transition-opacity hover:opacity-90 disabled:opacity-40"
           >
-            <ArrowUp className="size-5" aria-hidden="true" />
+            {t("work.ask")}
+            <ArrowUp className="size-4" aria-hidden="true" />
           </button>
         </div>
       </form>

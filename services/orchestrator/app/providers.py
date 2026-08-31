@@ -16,9 +16,13 @@ import os
 import time
 from typing import Iterator, Protocol
 
+from .models import TurnFile
+
 
 class ModelProvider(Protocol):
-    def structured(self, system: str, user: str, schema_hint: str) -> dict: ...
+    def structured(
+        self, system: str, user: str, schema_hint: str, files: list[TurnFile] | None = None
+    ) -> dict: ...
 
     # `stream` is deliberately NOT part of the protocol. A provider that cannot
     # stream is still a valid provider, and `iter_text` below degrades for it —
@@ -26,7 +30,11 @@ class ModelProvider(Protocol):
 
 
 def iter_text(
-    provider: ModelProvider, system: str, user: str, schema_hint: str
+    provider: ModelProvider,
+    system: str,
+    user: str,
+    schema_hint: str,
+    files: list[TurnFile] | None = None,
 ) -> Iterator[str]:
     """Text deltas from a provider, streaming if it can and in one piece if not.
 
@@ -37,9 +45,15 @@ def iter_text(
     """
     stream = getattr(provider, "stream", None)
     if callable(stream):
-        yield from stream(system, user, schema_hint)
+        try:
+            yield from stream(system, user, schema_hint, files)
+        except TypeError:
+            yield from stream(system, user, schema_hint)
         return
-    yield json.dumps(provider.structured(system, user, schema_hint))
+    try:
+        yield json.dumps(provider.structured(system, user, schema_hint, files))
+    except TypeError:
+        yield json.dumps(provider.structured(system, user, schema_hint))
 
 
 class FakeProvider:
@@ -85,7 +99,9 @@ class FakeProvider:
     #: a chunk boundary hide behind a tidy split.
     CHUNK_WIDTHS = (7, 3, 19, 1, 11, 5, 29, 2, 13)
 
-    def stream(self, system: str, user: str, schema_hint: str) -> Iterator[str]:
+    def stream(
+        self, system: str, user: str, schema_hint: str, files: list[TurnFile] | None = None
+    ) -> Iterator[str]:
         # A latency simulator, off by default. The fake answers in about two
         # milliseconds, which is too fast to see a plan panel fill in -- the
         # same reason browsers ship network throttling. It slows delivery of a
@@ -93,7 +109,7 @@ class FakeProvider:
         # cannot engage in a deployed service because FakeProvider is not used
         # there.
         delay = float(os.environ.get("FAKE_STREAM_DELAY_MS", "0")) / 1000
-        text = json.dumps(self.structured(system, user, schema_hint))
+        text = json.dumps(self.structured(system, user, schema_hint, files))
         i = 0
         for width in _cycle(self.CHUNK_WIDTHS):
             if i >= len(text):
@@ -103,7 +119,9 @@ class FakeProvider:
             yield text[i : i + width]
             i += width
 
-    def structured(self, system: str, user: str, schema_hint: str) -> dict:
+    def structured(
+        self, system: str, user: str, schema_hint: str, files: list[TurnFile] | None = None
+    ) -> dict:
         lowered = user.lower()
 
         if self.FINDING_MARKER in system:
@@ -126,6 +144,8 @@ class FakeProvider:
         # three-word "anime character illustration" is why image generation used
         # to interview forever when the planner saw only the latest bubble.
         if self.THREAD_MARKER in system:
+            too_vague = False
+        if files or "ATTACHED FILES" in system:
             too_vague = False
 
         thread_tail = (
@@ -248,25 +268,66 @@ class VertexProvider:
             )
         return self._client
 
-    def structured(self, system: str, user: str, schema_hint: str) -> dict:
+    def structured(
+        self, system: str, user: str, schema_hint: str, files: list[TurnFile] | None = None
+    ) -> dict:
         client = self._client_or_init()
         response = client.models.generate_content(
             model=self.model,
-            contents=f"{system}\n\nSchema: {schema_hint}\n\nUser: {user}",
-            config={"response_mime_type": "application/json"},
+            **_generate_kwargs(system, user, schema_hint, files),
         )
         return json.loads(response.text)
 
-    def stream(self, system: str, user: str, schema_hint: str) -> Iterator[str]:
+    def stream(
+        self, system: str, user: str, schema_hint: str, files: list[TurnFile] | None = None
+    ) -> Iterator[str]:
         client = self._client_or_init()
         for chunk in client.models.generate_content_stream(
             model=self.model,
-            contents=f"{system}\n\nSchema: {schema_hint}\n\nUser: {user}",
-            config={"response_mime_type": "application/json"},
+            **_generate_kwargs(system, user, schema_hint, files),
         ):
             # A chunk can carry no text (a safety verdict, a usage-only frame).
             if chunk.text:
                 yield chunk.text
+
+
+def _generate_kwargs(
+    system: str, user: str, schema_hint: str, files: list[TurnFile] | None
+) -> dict:
+    """Vertex `generate_content` arguments.
+
+    With no files this is still one string, which is what every existing call
+    does. With files, the PDF or image is a Part — the same shape as the
+    Vertex `fileData` / `gs://` sample — and the system prompt stays out of
+    the user contents so the model can tell the document from the question.
+    """
+    config: dict = {"response_mime_type": "application/json"}
+    if not files:
+        return {
+            "contents": f"{system}\n\nSchema: {schema_hint}\n\nUser: {user}",
+            "config": config,
+        }
+    from google.genai import types
+
+    parts = []
+    for attached in files:
+        mime = attached.mime or "application/octet-stream"
+        if attached.file_uri.startswith("gs://"):
+            try:
+                parts.append(types.Part.from_uri(file_uri=attached.file_uri, mime_type=mime))
+            except AttributeError:
+                parts.append(
+                    types.Part(file_data=types.FileData(file_uri=attached.file_uri, mime_type=mime))
+                )
+        elif attached.data:
+            import base64
+
+            parts.append(
+                types.Part.from_bytes(data=base64.b64decode(attached.data), mime_type=mime)
+            )
+    parts.append(types.Part.from_text(text=f"Schema: {schema_hint}\n\nUser: {user}"))
+    config["system_instruction"] = system
+    return {"contents": parts, "config": config}
 
 
 def _office_call(lowered: str, user: str) -> dict | None:

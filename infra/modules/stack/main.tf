@@ -671,6 +671,7 @@ locals {
     "digest-due",
     "watcher-due",
     "reminder-due",
+    "index-due",
   ])
 
   # Which service consumes which topic, and at what path.
@@ -694,6 +695,10 @@ locals {
     # is the preferred path once Tasks IAM is in place. A missed pickup is
     # worse than a missed digest, so this tick is tighter than watcher-due.
     "reminder-due" = { topic = "reminder-due", service = "watcher-runtime", path = "/events/reminders" }
+    # Overnight librarian ingest of files attached in chat. The turn already
+    # sent them to Gemini as parts; this is for later retrieval and preference
+    # context, not for the conversation that just happened.
+    "index-due" = { topic = "index-due", service = "gateway", path = "/events/index" }
   }
 }
 
@@ -789,6 +794,23 @@ resource "google_cloud_scheduler_job" "digest" {
     # An empty sweep message. A userId here would mean the scheduler knew the
     # user list, which is exactly what it must not need to know.
     data = base64encode(jsonencode({ sweep = true }))
+  }
+
+  depends_on = [google_pubsub_topic.events]
+}
+
+resource "google_cloud_scheduler_job" "index_due" {
+  project   = var.project_id
+  region    = var.region
+  name      = "index-due-${var.env}"
+  schedule  = "0 2 * * *"
+  time_zone = var.digest_time_zone
+
+  description = "Publishes the overnight artifact-index sweep. The gateway fans it out per user."
+
+  pubsub_target {
+    topic_name = google_pubsub_topic.events["index-due"].id
+    data       = base64encode(jsonencode({ sweep = true }))
   }
 
   depends_on = [google_pubsub_topic.events]

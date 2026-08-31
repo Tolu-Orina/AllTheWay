@@ -125,7 +125,7 @@ export function VoiceCaptions({
 }) {
   const t = useT();
   const voice = useVoice();
-  const { decide, status: decisionStatus } = useDecision(voice.sessionId);
+  const { decide, status: decisionStatus, recorded, decision, did } = useDecision(voice.sessionId);
   const logRef = useRef<HTMLDivElement>(null);
 
   const open = voice.lines.filter((l) => !l.finished);
@@ -224,6 +224,9 @@ export function VoiceCaptions({
                 confirmLabel={voice.turn?.options?.[0] ?? "Yes, go ahead"}
                 declineLabel={voice.turn?.options?.[1] ?? "No, stop"}
                 status={decisionStatus}
+                recorded={recorded}
+                decision={decision}
+                did={did}
                 sessionId={voice.sessionId}
                 steps={voice.turn?.plan}
                 onConfirm={() =>

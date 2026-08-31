@@ -85,6 +85,21 @@ class TurnRequest(BaseModel):
     #: are resolved from this, not from the model's training cutoff.
     clock: str = ""
 
+    #: Files attached on this turn. The model reads them as multimodal parts.
+    #: Not retrieved passages — those are indexed overnight, after the turn.
+    files: list["TurnFile"] = Field(default_factory=list)
+
+
+class TurnFile(BaseModel):
+    """One attached file, as Vertex should see it."""
+
+    name: str = ""
+    mime: str = ""
+    #: gs:// URI. Preferred: Vertex fetches the object; bytes do not ride A2A.
+    file_uri: str = ""
+    #: Base64, only when there is no URI (local disk / emulator).
+    data: str = ""
+
 
 class Passage(BaseModel):
     """One retrieved chunk. `chunk_id` is what a citation points at."""

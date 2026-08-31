@@ -50,11 +50,12 @@ export async function loadTurnContext(
   uid: string,
   sessionId: string,
   message: string,
+  opts: { documentIds?: string[] } = {},
 ): Promise<TurnInput> {
   const hat = await getActiveHat(uid);
   const [prefs, passages, lookups, session, struggles, clock] = await Promise.all([
     listPreferences(uid, { hat, forTurn: true }),
-    retrieve(uid, message, { hat }),
+    retrieve(uid, message, { hat, documentIds: opts.documentIds }),
     connectedLookups(uid, message),
     getSession(uid, sessionId),
     listConcepts(uid),

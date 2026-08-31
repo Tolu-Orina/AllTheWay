@@ -13,6 +13,7 @@ import {
 import type { PlanStep } from "@alltheway/contracts";
 
 import { ACTION_LABEL, describeCall, isFetchedRead, isSevere } from "@/app/plan-copy";
+import { documentBodyFromArgs, isWorkFileTool } from "@/app/compose-fields";
 import { cn } from "@/lib/utils";
 
 /**
@@ -84,6 +85,7 @@ function PlanCard({
 }) {
   const reduced = useReducedMotion();
   const call = describeCall(step);
+  const outline = isWorkFileTool(step.tool) ? documentBodyFromArgs(step.arguments) : "";
   const clickable = Boolean(onSend) && !step.done;
 
   const inner = (
@@ -117,6 +119,11 @@ function PlanCard({
             <span>{call}</span>
           </p>
         ) : null}
+        {outline ? (
+          <p className="mt-2 line-clamp-6 whitespace-pre-wrap text-[13px] leading-relaxed text-foreground">
+            {outline}
+          </p>
+        ) : null}
       </div>
     </div>
   );
@@ -136,7 +143,7 @@ function PlanCard({
         <button
           type="button"
           onClick={() => onSend!(step.label)}
-          className="w-full px-4 py-3 text-left transition-colors hover:border-primary/40 hover:bg-muted/40"
+          className="w-full cursor-pointer px-4 py-3 text-left transition-colors hover:border-primary/40 hover:bg-muted/40"
         >
           {inner}
         </button>

@@ -71,3 +71,12 @@ resource "google_storage_bucket_iam_member" "gateway_artifacts" {
   role   = "roles/storage.objectAdmin"
   member = "serviceAccount:${local.runtime_sa["gateway-${var.env}"]}"
 }
+
+# Vertex on the orchestrator reads attached PDFs via gs:// fileData. The
+# orchestrator still has no Firestore. Paths are {uid}/{artifactId}/{n};
+# only URIs the gateway just wrote are sent on that turn.
+resource "google_storage_bucket_iam_member" "orchestrator_artifacts_read" {
+  bucket = google_storage_bucket.artifacts.name
+  role   = "roles/storage.objectViewer"
+  member = "serviceAccount:${local.runtime_sa["orchestrator-${var.env}"]}"
+}

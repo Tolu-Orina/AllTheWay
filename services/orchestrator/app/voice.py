@@ -114,6 +114,16 @@ def _verb(action: Action, tool: str = "") -> str:
         return "save a Gmail draft"
     if tool == "create_event":
         return "put something on your calendar"
+    if tool == "create_document":
+        return "create a Word document in this session"
+    if tool == "create_markdown":
+        return "save a note in this session"
+    if tool == "create_pdf":
+        return "create a PDF in this session"
+    if tool == "create_spreadsheet":
+        return "create a spreadsheet in this session"
+    if tool == "create_slides":
+        return "create a PowerPoint in this session"
     return {
         Action.SEND_EXTERNAL: "send something out of your account",
         Action.MAKE_PAYMENT: "move money",
@@ -163,6 +173,11 @@ def _summarise(actions: list[ProposedAction], readback: str | None) -> str:
         parts.append(draft_summary(drafts[0].arguments))
         return " ".join(parts)
 
+    files = [a for a in actions if a.tool in _WORK_FILE_TOOLS]
+    if len(files) == 1:
+        parts.append(document_summary(files[0].tool, files[0].arguments))
+        return " ".join(parts)
+
     if len(actions) == 1:
         parts.append(f"This will {_verb(actions[0].action, actions[0].tool)} — {actions[0].label}.")
     else:
@@ -173,12 +188,41 @@ def _summarise(actions: list[ProposedAction], readback: str | None) -> str:
     return " ".join(parts)
 
 
+def document_summary(tool: str, arguments: dict | None) -> str:
+    """The outline is the review — same idea as the Gmail compose form."""
+    args = arguments or {}
+    title = str(args.get("title") or "").strip() or "a document"
+    named = f"“{title}”"
+    if tool == "create_spreadsheet":
+        lead = f"This will create the spreadsheet {named} in this session."
+    elif tool == "create_slides":
+        lead = f"This will create the slides {named} in this session."
+    elif tool == "create_pdf":
+        lead = f"This will create the PDF {named} in this session."
+    elif tool == "create_markdown":
+        lead = f"This will save the note {named} in this session."
+    else:
+        lead = f"This will create the Word document {named} in this session."
+    return f"{lead} Check the outline, then say if I should write the file."
+
+
 def needs_readback(confidence: float) -> bool:
     return transcript_verdict(confidence) == "readback"
 
 
+_WORK_FILE_TOOLS = frozenset(
+    {
+        "create_document",
+        "create_markdown",
+        "create_pdf",
+        "create_spreadsheet",
+        "create_slides",
+    }
+)
+
+
 def _is_compose_review(step: PlanStep) -> bool:
-    """Gmail compose and calendar create always stop so the form can appear.
+    """Gmail, calendar, and session files always stop so the form can appear.
 
     Other DRAFT steps (a watcher, 'draft the proposal' with no Gmail call) stay
     auto-note. This is a product review, not a weakening of the send floor.
@@ -187,6 +231,8 @@ def _is_compose_review(step: PlanStep) -> bool:
     if step.tool == "create_draft" and connector in ("google_gmail", "gmail", ""):
         return True
     if step.tool == "create_event" and connector in ("google_calendar", "calendar", ""):
+        return True
+    if step.tool in _WORK_FILE_TOOLS and connector in ("work_files", ""):
         return True
     return False
 
@@ -197,6 +243,17 @@ def _options(actions: list[ProposedAction]) -> list[str]:
         return ["Save draft", "No, stop"]
     if tools == {"create_event"}:
         return ["Put on calendar", "No, stop"]
+    if tools <= _WORK_FILE_TOOLS and len(tools) == 1:
+        tool = next(iter(tools))
+        if tool == "create_spreadsheet":
+            return ["Create spreadsheet", "No, stop"]
+        if tool == "create_slides":
+            return ["Create slides", "No, stop"]
+        if tool == "create_pdf":
+            return ["Create PDF", "No, stop"]
+        if tool == "create_markdown":
+            return ["Save note", "No, stop"]
+        return ["Create document", "No, stop"]
     return ["Yes, go ahead", "No, stop"]
 
 

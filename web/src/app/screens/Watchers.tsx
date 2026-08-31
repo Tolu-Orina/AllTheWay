@@ -132,7 +132,7 @@ export default function Watchers() {
             {t("nav.watchers")}
           </h1>
           <p className="mt-1 text-[14px] leading-relaxed text-muted-foreground">
-            {t("common.standingInstructionsThatRunWithout")}
+            {t("watchers.empty")}
           </p>
         </div>
         {step === "list" ? (

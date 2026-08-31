@@ -306,7 +306,11 @@ export const api = {
     apiPost(
       "/documents",
       { title, content, mimeType, hat: hat ?? null },
-      z.object({ documentId: z.string().optional() }),
+      z.object({
+        documentId: z.string().optional(),
+        pages: z.number().int().nonnegative().optional(),
+        chunks: z.number().int().nonnegative().optional(),
+      }),
     ),
 
   deleteDocument: (id: string) =>
@@ -340,6 +344,31 @@ export const api = {
         sessionId: input.sessionId,
         content: btoa(unescape(encodeURIComponent(input.content))),
         mimeType: input.mimeType ?? "text/markdown",
+      },
+      ArtifactDetailSchema,
+    ),
+
+  /**
+   * A file the person attached in this session. Content is already base64
+   * (the same bytes sent to the librarian). `producedBy: user` so the rail
+   * does not treat it as something the companion made.
+   */
+  attachToSession: (input: {
+    sessionId: string;
+    kind: "doc" | "image";
+    title: string;
+    content: string;
+    mimeType: string;
+  }) =>
+    apiPost(
+      "/artifacts",
+      {
+        kind: input.kind,
+        title: input.title,
+        sessionId: input.sessionId,
+        content: input.content,
+        mimeType: input.mimeType,
+        producedBy: "user",
       },
       ArtifactDetailSchema,
     ),

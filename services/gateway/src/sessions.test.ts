@@ -83,6 +83,19 @@ test("the legacy companion id is a companion chat, not work", () => {
   assert.equal(sessionSurface("abc-uuid", { surface: "voice" }), "voice");
 });
 
+test("conversationContext names attached files so a follow-up still sees them", () => {
+  const lines = conversationContext([
+    {
+      role: "user",
+      text: "What is the indemnity cap?",
+      at: "2026-01-01T00:00:00.000Z",
+      attachments: [{ name: "Supply.pdf", mime: "application/pdf", size: 1200 }],
+    },
+  ]);
+  assert.equal(lines[0], "user: What is the indemnity cap?");
+  assert.equal(lines[1], "attached: Supply.pdf");
+});
+
 test("conversationContext keeps role, text, and options for the planner", () => {
   const lines = conversationContext([
     { role: "user", text: "I want to generate an image.", at: "2026-01-01T00:00:00.000Z" },

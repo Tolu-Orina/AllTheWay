@@ -1,4 +1,4 @@
-import { TurnEventSchema, type TurnEvent } from "@alltheway/contracts";
+import { TurnEventSchema, type ThreadAttachment, type TurnEvent } from "@alltheway/contracts";
 
 import { authHeader } from "@/lib/api";
 
@@ -30,6 +30,7 @@ const STREAM_ORIGIN = import.meta.env.VITE_STREAM_ORIGIN ?? "";
 export type TurnStreamOptions = {
   signal?: AbortSignal;
   onEvent: (event: TurnEvent) => void;
+  attachments?: ThreadAttachment[];
 };
 
 /** Splits an SSE buffer into complete frames, returning the unconsumed tail. */
@@ -46,11 +47,11 @@ function drainFrames(buffer: string, emit: (frame: string) => void): string {
 export async function streamTurn(
   sessionId: string,
   message: string,
-  { signal, onEvent }: TurnStreamOptions,
+  { signal, onEvent, attachments }: TurnStreamOptions,
 ): Promise<void> {
-  const url =
-    `${STREAM_ORIGIN}/api/sessions/${encodeURIComponent(sessionId)}/turn/stream` +
-    `?message=${encodeURIComponent(message)}`;
+  const params = new URLSearchParams({ message });
+  if (attachments?.length) params.set("attachments", JSON.stringify(attachments));
+  const url = `${STREAM_ORIGIN}/api/sessions/${encodeURIComponent(sessionId)}/turn/stream?${params}`;
 
   try {
     const res = await fetch(url, {

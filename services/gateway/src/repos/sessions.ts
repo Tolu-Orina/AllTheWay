@@ -140,8 +140,16 @@ export function conversationContext(thread: ThreadMessage[]): string[] {
   const lines: string[] = [];
   for (const m of thread.slice(-PLANNER_THREAD)) {
     const text = m.text.trim();
-    if (!text) continue;
-    lines.push(`${m.role}: ${text.length <= LINE_CAP ? text : `${text.slice(0, LINE_CAP).trimEnd()}…`}`);
+    if (text) {
+      lines.push(`${m.role}: ${text.length <= LINE_CAP ? text : `${text.slice(0, LINE_CAP).trimEnd()}…`}`);
+    } else if (m.attachments?.length) {
+      lines.push(`${m.role}: (attached ${m.attachments.map((a) => a.name).join(", ")})`);
+    } else {
+      continue;
+    }
+    if (m.attachments?.length && text) {
+      lines.push(`attached: ${m.attachments.map((a) => a.name).join(", ")}`);
+    }
     if (m.options?.length) {
       lines.push(`options: ${m.options.join(" | ")}`);
     }

@@ -55,13 +55,14 @@ export const retrievalConfigured = (): boolean =>
 export async function retrieve(
   uid: string,
   query: string,
-  opts: { limit?: number; hat?: ActiveHat } = {},
+  opts: { limit?: number; hat?: ActiveHat; documentIds?: string[] } = {},
 ): Promise<Passage[]> {
   const limit = opts.limit ?? DEFAULT_LIMIT;
   if (!retrievalConfigured() || !query.trim()) return [];
 
   try {
     const fetchImpl = authenticatingFetch(env.librarianUrl);
+    const documentIds = (opts.documentIds ?? []).filter(Boolean).slice(0, 5);
     const response = await fetchImpl(`${env.librarianUrl}/retrieve`, {
       method: "POST",
       headers: {
@@ -74,6 +75,7 @@ export async function retrieve(
         query,
         limit,
         ...(opts.hat ? { hat: opts.hat } : {}),
+        ...(documentIds.length ? { documentIds } : {}),
       }),
       signal: AbortSignal.timeout(TIMEOUT_MS),
     });

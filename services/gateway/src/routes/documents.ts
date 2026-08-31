@@ -256,3 +256,47 @@ documentRoutes.post("/search", requireUser, async (req, res) => {
     res.status(502).json({ code: "upstream_error", message: "That search could not run." });
   }
 });
+
+/**
+ * Overnight ingest. Same librarian path as an upload, without an HTTP
+ * caller waiting. Screening still runs. Failures stay pending for the next
+ * sweep rather than blocking a chat turn that already happened.
+ */
+export async function ingestUserDocument(
+  uid: string,
+  input: { title: string; mimeType: string; content: string; hat?: "work" | "home" | "church" | null },
+): Promise<string> {
+  if (!env.librarianUrl || !scopeTokenConfigured()) {
+    throw new Error("Documents are not available in this environment.");
+  }
+  const upstream = await callLibrarian(
+    uid,
+    "/documents",
+    {
+      method: "POST",
+      body: JSON.stringify({
+        title: input.title,
+        content: input.content,
+        mimeType: input.mimeType,
+        hat: input.hat ?? "work",
+      }),
+    },
+    INGEST_TIMEOUT_MS,
+  );
+  const text = await upstream.text();
+  if (!upstream.ok) {
+    throw new Error(text.slice(0, 240) || `ingest ${upstream.status}`);
+  }
+  try {
+    const parsed = JSON.parse(text) as { documentId?: string };
+    const documentId = typeof parsed.documentId === "string" ? parsed.documentId : "";
+    if (documentId) {
+      void onDocumentReady(uid, documentId, input.title).catch((err) => {
+        console.warn(`[documents] propose after overnight ingest: ${(err as Error).message}`);
+      });
+    }
+    return documentId;
+  } catch {
+    return "";
+  }
+}

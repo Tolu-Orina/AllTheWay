@@ -184,7 +184,14 @@
     "attendees": "Àwọn alábàápẹ̀",
     "attendeesHint": "Àwọn ímeèlì tí a pín pẹ̀lú ààmì ìpínyà",
     "saveDraft": "Fi àkọsílẹ̀ pamọ́",
-    "putOnCalendar": "Fi sórí kàlẹ́ńdà"
+    "putOnCalendar": "Fi sórí kàlẹ́ńdà",
+    "createDocument": "Ṣẹ̀dá ìwé",
+    "createSpreadsheet": "Ṣẹ̀dá spreadsheet",
+    "createSlides": "Ṣẹ̀dá àwọn slides",
+    "createPdf": "Ṣẹ̀dá PDF",
+    "createNote": "Fi àkọsílẹ̀ pamọ́",
+    "outline": "Àlàyé",
+    "outlineHint": "Àkọsílẹ̀ náà, gẹ́gẹ́ bí a ṣe yé e. Ṣàtúnṣe ohun tí o fẹ́ kí a tó kọ ọ́."
   },
   "account": {
     "signOut": "Jáde"
@@ -392,7 +399,7 @@
     "heading": "Ètò"
   },
   "watchers": {
-    "empty": "It watches something and stops before anything irreversible.",
+    "empty": "Àwọn olùṣọ́ ń tẹ̀lé àwọn asopọ̀ rẹ, wọ́n sì ń rán ọ létí àwọn iṣẹ́ tó ń bọ̀ kí o má bàa sọ ohun pàtàkì nù. Ṣẹ̀dá olùṣọ́ tuntun, sọ fún un ohun tí o fẹ́ kó máa ṣọ́.",
     "create": "Create a watcher",
     "instructionLabel": "What should it do?",
     "instructionPlaceholder": "When the morning arrives, draft what needs me…",
@@ -476,6 +483,18 @@
     "privacyNote": "A ń ṣe àwọn èsì ní ààbò.",
     "learnPrivacy": "Kẹ́kọ̀ọ́ nípa ìkọ̀kọ̀.",
     "send": "Firánṣẹ́",
+    "ask": "Béèrè",
+    "askAboutAttached": "Béèrè nípa àwọn ìwé tí o fi kún…",
+    "lookAtAttached": "Wo àwọn fáìlì tí a so mọ́.",
+    "tooManyFiles": "Fáìlì márùn-ún ló pọ̀ jù ní ẹ̀ẹ̀kan.",
+    "fileTooLarge": "{{name}} tóbi ju 5MB lọ.",
+    "fileEmpty": "{{name}} ò ní nǹkan nínú.",
+    "removeFile": "Yọ {{name}}",
+    "attaching": "Ń so fáìlì mọ́…",
+    "groundedIn": "Ó dá lórí",
+    "indexed": "A ti ṣe àtòjọ rẹ̀",
+    "kindVisual": "Àwòrán",
+    "pageCount": "Ojú ìwé {{count}}",
     "thinking": "Ń ronú…",
     "officeEditHint": "A kò ṣe àtúnṣe irú èyí nínú ìwòye. Ṣe ìgbàsílẹ̀ rẹ̀ kí o ṣí i nínú Word, Excel, PowerPoint tàbí PDF — tàbí béèrè nínú ìjíròrò fún ẹ̀yà tuntun.",
     "kindDocument": "Ìwé",

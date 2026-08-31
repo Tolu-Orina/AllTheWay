@@ -134,3 +134,43 @@ export function decisionCopy(
   if (did.length === 0) return "Recorded. Nothing needed to run.";
   return did.map(outcomeLine).join(" ");
 }
+
+/** Past tense of the plan label shown on the closed-up confirmation. */
+export function pastTenseLabel(label: string): string {
+  const rules: [RegExp, string][] = [
+    [/^Add /i, "Added "],
+    [/^Create /i, "Created "],
+    [/^Send /i, "Sent "],
+    [/^Put /i, "Put "],
+    [/^Draft /i, "Drafted "],
+    [/^Save /i, "Saved "],
+    [/^Delete /i, "Deleted "],
+    [/^Move /i, "Moved "],
+    [/^Update /i, "Updated "],
+  ];
+  for (const [from, to] of rules) {
+    if (from.test(label)) return label.replace(from, to);
+  }
+  return label;
+}
+
+/**
+ * One line after Yes or No, specific enough that the form can disappear.
+ *
+ * "Added Arsenal game reminder to calendar" rather than "Success!" or "Done."
+ */
+export function settledHeadline(
+  kind: "confirmed" | "declined" | "corrected",
+  actions: { label: string }[],
+  did: ActOutcome[],
+): string {
+  if (kind === "declined") return "Nothing was done.";
+  if (kind === "corrected") return "Remembered. Nothing ran.";
+  if (did.length && !did.some((row) => row.did === "done")) {
+    return did.map(outcomeLine).join(" ");
+  }
+  const labels = actions.map((a) => a.label.trim()).filter(Boolean);
+  if (labels.length) return labels.map(pastTenseLabel).join(" ");
+  if (did.length) return did.map(outcomeLine).join(" ");
+  return "Done.";
+}

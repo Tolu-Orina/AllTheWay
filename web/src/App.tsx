@@ -39,6 +39,7 @@ import { RouteFallback } from "@/app/RouteFallback";
 const LandingPage = lazy(() => import("@/routes/landing"));
 const ContactPage = lazy(() => import("@/routes/contact"));
 const PrivacyPage = lazy(() => import("@/routes/privacy"));
+const TermsPage = lazy(() => import("@/routes/terms"));
 const OfflinePage = lazy(() => import("@/routes/offline"));
 
 const Login = lazy(() => import("@/routes/auth/Login"));
@@ -101,6 +102,7 @@ export default function App() {
         <Route path="/" element={<LandingPage />} />
         <Route path="/contact" element={<ContactPage />} />
         <Route path="/privacy" element={<PrivacyPage />} />
+        <Route path="/terms" element={<TermsPage />} />
         <Route path="/offline" element={<OfflinePage />} />
 
         {LEGACY_AUTH_REDIRECTS.map(([from, to]) => (

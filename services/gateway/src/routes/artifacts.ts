@@ -45,6 +45,7 @@ const CreateSchema = z.object({
   content: z.string(),
   mimeType: z.string().max(120).default("text/markdown"),
   prompt: z.string().max(4000).optional(),
+  producedBy: z.enum(["user", "agent"]).default("agent"),
 });
 
 const VersionSchema = z.object({
@@ -127,6 +128,7 @@ artifactRoutes.post("/", requireUser, async (req, res) => {
     body: bytes,
     mimeType: body.data.mimeType,
     prompt: body.data.prompt,
+    producedBy: body.data.producedBy,
     provenance: {
       agentId: "gateway",
       // The card version of the agent that produced it. Phase 7's attribution

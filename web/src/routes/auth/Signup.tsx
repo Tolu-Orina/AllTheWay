@@ -173,6 +173,23 @@ export default function Signup() {
         >
           {busy ? "Creating your account…" : "Create account"}
         </Button>
+        <p className="mt-4 text-center text-[12.5px] leading-relaxed text-muted-foreground">
+          By creating an account you agree to the{" "}
+          <Link
+            to="/terms"
+            className="font-medium text-blue-deep underline-offset-2 hover:underline dark:text-blue-bright"
+          >
+            Terms of Service
+          </Link>{" "}
+          and{" "}
+          <Link
+            to="/privacy"
+            className="font-medium text-blue-deep underline-offset-2 hover:underline dark:text-blue-bright"
+          >
+            Privacy Policy
+          </Link>
+          .
+        </p>
       </form>
     </AuthShell>
   );

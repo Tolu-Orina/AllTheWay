@@ -222,6 +222,27 @@ def test_creating_a_calendar_event_always_stops_for_the_form():
     assert confirmation.options[0] == "Put on calendar"
 
 
+def test_creating_a_session_document_always_stops_for_the_outline():
+    plan = [
+        PlanStep(
+            label="Draft instant messaging app product brief",
+            action="create_task",
+            connector="work_files",
+            tool="create_document",
+            arguments={
+                "title": "Product Brief: Next-Generation Instant Messaging Platform",
+                "body": "## Overview\nA messaging product for people who already live in chat.",
+            },
+        )
+    ]
+    confirmation = confirmation_for(plan, ceiling=Ceiling.SEND_AUTOMATICALLY, confidence=1.0)
+    assert confirmation is not None
+    assert confirmation.actions[0].tool == "create_document"
+    assert confirmation.options[0] == "Create document"
+    assert "Product Brief: Next-Generation Instant Messaging Platform" in confirmation.summary
+    assert "Check the outline" in confirmation.summary
+
+
 # ------------------------------------------------- the gates inside the graph
 
 from app.graph import run_turn  # noqa: E402

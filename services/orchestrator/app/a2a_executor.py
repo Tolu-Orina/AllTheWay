@@ -31,7 +31,7 @@ from google.protobuf import json_format, struct_pb2
 
 from .aio import iter_in_thread
 from .graph import run_turn_stream
-from .models import Citation, Passage, Struggle, TurnRequest
+from .models import Citation, Passage, Struggle, TurnFile, TurnRequest
 from .providers import ModelProvider
 
 #: Key under which the caller passes what the profile already knows.
@@ -44,6 +44,7 @@ LOOKUPS_KEY = "lookups"
 THREAD_KEY = "thread"
 STRUGGLES_KEY = "struggles"
 CLOCK_KEY = "clock"
+FILES_KEY = "files"
 
 #: Stable ids, so appended chunks land on one artifact rather than becoming
 #: N single-part artifacts. TaskUpdater mints a fresh uuid when not told one.
@@ -166,6 +167,41 @@ def _clock_from(context: RequestContext) -> str:
     return str(raw).strip() if raw else ""
 
 
+def _files_from(context: RequestContext) -> list[TurnFile]:
+    """Attached files from metadata. Names and URIs, never concatenated into the text."""
+    message = getattr(context, "message", None)
+    metadata = getattr(message, "metadata", None)
+    if metadata is None:
+        return []
+    try:
+        raw = json_format.MessageToDict(metadata).get(FILES_KEY, [])
+    except Exception:
+        return []
+    if not isinstance(raw, list):
+        return []
+    out: list[TurnFile] = []
+    for item in raw:
+        if not isinstance(item, dict):
+            continue
+        name = item.get("name")
+        if not isinstance(name, str) or not name.strip():
+            continue
+        mime = item.get("mime") if isinstance(item.get("mime"), str) else ""
+        file_uri = item.get("fileUri") or item.get("file_uri") or ""
+        data = item.get("data") if isinstance(item.get("data"), str) else ""
+        out.append(
+            TurnFile(
+                name=name.strip(),
+                mime=mime,
+                file_uri=str(file_uri) if file_uri else "",
+                data=data,
+            )
+        )
+        if len(out) >= 5:
+            break
+    return out
+
+
 def _struggles_from(context: RequestContext) -> list[Struggle]:
     """Struggle model from metadata. Empty until they reasked or missed."""
     message = getattr(context, "message", None)
@@ -241,6 +277,7 @@ class OrchestratorExecutor(AgentExecutor):
             recent_thread=_thread_from(context),
             struggles=_struggles_from(context),
             clock=_clock_from(context),
+            files=_files_from(context),
         )
 
         trace: list[str] = []

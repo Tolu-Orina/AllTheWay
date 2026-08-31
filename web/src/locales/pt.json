@@ -190,7 +190,14 @@
     "attendees": "Convidados",
     "attendeesHint": "E-mails separados por vírgulas",
     "saveDraft": "Guardar rascunho",
-    "putOnCalendar": "Colocar no calendário"
+    "putOnCalendar": "Colocar no calendário",
+    "createDocument": "Criar documento",
+    "createSpreadsheet": "Criar folha de cálculo",
+    "createSlides": "Criar diapositivos",
+    "createPdf": "Criar PDF",
+    "createNote": "Guardar nota",
+    "outline": "Esboço",
+    "outlineHint": "O rascunho, tal como foi entendido. Edite o que quiser antes de ser escrito."
   },
   "account": {
     "signOut": "Sair"
@@ -398,7 +405,7 @@
     "heading": "Plano"
   },
   "watchers": {
-    "empty": "Ele observa algo e para antes de qualquer coisa irreversível.",
+    "empty": "Os observadores acompanham os seus conectores e lembram você das atividades que se aproximam para que nada importante passe. Crie um observador e diga o que deve ser monitorado.",
     "create": "Criar um monitor",
     "instructionLabel": "O que ele deve fazer?",
     "instructionPlaceholder": "Quando o dia começar, rascunhe o que precisa de mim…",
@@ -482,6 +489,18 @@
     "privacyNote": "As respostas são geradas de forma segura.",
     "learnPrivacy": "Saber mais sobre privacidade.",
     "send": "Enviar",
+    "ask": "Perguntar",
+    "askAboutAttached": "Faz uma pergunta sobre os documentos carregados…",
+    "lookAtAttached": "Olha para os ficheiros anexados.",
+    "tooManyFiles": "Até 5 ficheiros de cada vez.",
+    "fileTooLarge": "{{name}} é maior do que 5 MB.",
+    "fileEmpty": "{{name}} estava vazio.",
+    "removeFile": "Remover {{name}}",
+    "attaching": "A anexar…",
+    "groundedIn": "Com base em",
+    "indexed": "Indexado",
+    "kindVisual": "Visual",
+    "pageCount": "{{count}} páginas",
     "thinking": "A pensar…",
     "officeEditHint": "Este formato não se edita no browser. Descarrega-o para abrir no Word, Excel, PowerPoint, ou como PDF — ou pede no chat uma versão nova.",
     "kindDocument": "Documento",

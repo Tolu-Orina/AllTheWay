@@ -1,7 +1,7 @@
 """The gate is the product's core promise, so it is what gets tested."""
 
 from app.graph import run_turn
-from app.models import Passage, TurnRequest
+from app.models import Passage, TurnFile, TurnRequest
 from app.providers import FakeProvider
 
 provider = FakeProvider()
@@ -23,6 +23,20 @@ def test_vague_request_is_stopped_at_the_gate():
     assert r.clarify is not None
     assert r.plan == []          # nothing planned from an ambiguous request
     assert any("Clarify gate" in t for t in r.trace)
+
+
+def test_an_attached_file_is_enough_to_plan():
+    r = run_turn(
+        TurnRequest(
+            session_id="s1",
+            user_id="u1",
+            message="Look at this",
+            files=[TurnFile(name="Supply.pdf", mime="application/pdf", file_uri="gs://bucket/u/a/1")],
+        ),
+        provider,
+    )
+    assert r.decision == "plan"
+    assert r.clarify is None
 
 
 def test_clear_request_produces_a_plan():

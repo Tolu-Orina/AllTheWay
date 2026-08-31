@@ -17,9 +17,9 @@ import { useTurn, type ProposedAction, type TurnPhase } from "@/app/use-turn";
 import { persistCompanionSessionId, readCompanionSessionId } from "@/app/work-id";
 import { ApiError } from "@/lib/api";
 import { pendingConfirmId } from "@/app/ConfirmGate";
-import { composeKind, composeSources } from "@/app/compose-fields";
+import { composeSources, isComposeReview } from "@/app/compose-fields";
 import { isPendingConfirmReply } from "@/lib/spoken-confirm";
-import type { Citation, OnboardingJob, PlanStep, ThreadMessage } from "@alltheway/contracts";
+import type { Citation, OnboardingJob, PlanStep, ThreadMessage, ActOutcome } from "@alltheway/contracts";
 
 export type CompanionMessage = {
   id: number;
@@ -61,6 +61,9 @@ type CompanionThread = {
     body: { summary: string; actions: ProposedAction[]; now?: string; modality?: "voice" | "text" },
   ) => Promise<void>;
   decisionStatus: string | null;
+  recorded: "pending" | "ok" | "failed";
+  decision: "confirmed" | "declined" | "corrected" | null;
+  did: ActOutcome[];
 };
 
 const Context = createContext<CompanionThread | null>(null);
@@ -89,7 +92,8 @@ function fromStored(thread: ThreadMessage[]): CompanionMessage[] {
     last?.role === "agent" &&
     last.actions?.length &&
     last.phase !== "clarify" &&
-    last.phase !== "error"
+    last.phase !== "error" &&
+    last.phase !== "done"
   ) {
     last.phase = "confirm";
   }
@@ -118,7 +122,8 @@ export function CompanionThreadProvider({ children }: { children: React.ReactNod
   const [startingNew, setStartingNew] = useState(false);
 
   const { turn, send: runTurn, reset: resetTurn } = useTurn(sessionId);
-  const { decide, reset: resetDecision, status: decisionStatus } = useDecision(sessionId);
+  const { decide, reset: resetDecision, status: decisionStatus, recorded, decision, did } =
+    useDecision(sessionId);
   const [history, setHistory] = useState<CompanionMessage[]>(() => [
     { id: 1, role: "agent", text: welcome },
   ]);
@@ -272,7 +277,7 @@ export function CompanionThreadProvider({ children }: { children: React.ReactNod
       setDraft("");
       if (
         lastAgent?.actions?.some((a) => a.connector && a.tool) &&
-        composeKind(composeSources(lastAgent.steps, lastAgent.actions)) !== "email"
+        !isComposeReview(composeSources(lastAgent.steps, lastAgent.actions))
       ) {
         void (async () => {
           await decide("corrected", {
@@ -361,8 +366,11 @@ export function CompanionThreadProvider({ children }: { children: React.ReactNod
       refreshOnboarding,
       decide,
       decisionStatus,
+      recorded,
+      decision,
+      did,
     }),
-    [sessionId, history, draft, send, startNewChat, openChat, chatsVersion, startingNew, recordSpoken, openCompanion, companionOpenNonce, turn.phase, turn.trace, turn.steps, job, refreshOnboarding, decide, decisionStatus],
+    [sessionId, history, draft, send, startNewChat, openChat, chatsVersion, startingNew, recordSpoken, openCompanion, companionOpenNonce, turn.phase, turn.trace, turn.steps, job, refreshOnboarding, decide, decisionStatus, recorded, decision, did],
   );
 
   return <Context.Provider value={value}>{children}</Context.Provider>;

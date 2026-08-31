@@ -184,6 +184,16 @@ export const CorrectionSchema = z.object({
   hat: HatSchema.nullable().optional(),
 });
 
+export const ThreadAttachmentSchema = z.object({
+  name: z.string().min(1).max(200),
+  mime: z.string().max(120).default(""),
+  size: z.number().int().nonnegative(),
+  documentId: z.string().optional(),
+  artifactId: z.string().optional(),
+  pages: z.number().int().nonnegative().optional(),
+});
+export type ThreadAttachment = z.infer<typeof ThreadAttachmentSchema>;
+
 /**
  * One bubble in a persisted companion thread.
  *
@@ -200,6 +210,7 @@ export const ThreadMessageSchema = z.object({
   actions: z.array(ProposedActionSchema).optional(),
   citations: z.array(CitationSchema).optional(),
   steps: z.array(PlanStepSchema).optional(),
+  attachments: z.array(ThreadAttachmentSchema).max(5).optional(),
 });
 export type ThreadMessage = z.infer<typeof ThreadMessageSchema>;
 

@@ -184,7 +184,14 @@
     "attendees": "参与者",
     "attendeesHint": "用逗号分隔的邮箱",
     "saveDraft": "保存草稿",
-    "putOnCalendar": "加入日历"
+    "putOnCalendar": "加入日历",
+    "createDocument": "创建文档",
+    "createSpreadsheet": "创建表格",
+    "createSlides": "创建幻灯片",
+    "createPdf": "创建 PDF",
+    "createNote": "保存笔记",
+    "outline": "大纲",
+    "outlineHint": "根据理解整理的草稿。写入文件前可直接修改。"
   },
   "account": {
     "signOut": "退出登录"
@@ -392,7 +399,7 @@
     "heading": "计划"
   },
   "watchers": {
-    "empty": "它会盯着某件事，并在任何不可逆操作前停下来。",
+    "empty": "守望会跟踪你的连接并提醒即将到来的事项，以免你错过重要的事情。新建一个守望，告诉它要监视什么。",
     "create": "创建监控器",
     "instructionLabel": "它应该做什么？",
     "instructionPlaceholder": "当一天开始时，起草需要我处理的事项…",
@@ -476,6 +483,18 @@
     "privacyNote": "回复在安全环境中生成。",
     "learnPrivacy": "了解隐私。",
     "send": "发送",
+    "ask": "提问",
+    "askAboutAttached": "就已上传的文档提问…",
+    "lookAtAttached": "请查看附件。",
+    "tooManyFiles": "一次最多 5 个文件。",
+    "fileTooLarge": "{{name}} 大于 5MB。",
+    "fileEmpty": "{{name}} 是空的。",
+    "removeFile": "移除 {{name}}",
+    "attaching": "正在添加附件…",
+    "groundedIn": "依据",
+    "indexed": "已索引",
+    "kindVisual": "图像",
+    "pageCount": "{{count}} 页",
     "thinking": "思考中…",
     "officeEditHint": "浏览器里不能编辑这种格式。下载后用 Word、Excel、PowerPoint 打开，或另存为 PDF，或在对话里要求生成新版本。",
     "kindDocument": "文档",

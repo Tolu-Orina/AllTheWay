@@ -190,7 +190,14 @@
     "attendees": "Participants",
     "attendeesHint": "Adresses séparées par des virgules",
     "saveDraft": "Enregistrer le brouillon",
-    "putOnCalendar": "Mettre au calendrier"
+    "putOnCalendar": "Mettre au calendrier",
+    "createDocument": "Créer le document",
+    "createSpreadsheet": "Créer le tableur",
+    "createSlides": "Créer les diapositives",
+    "createPdf": "Créer le PDF",
+    "createNote": "Enregistrer la note",
+    "outline": "Plan",
+    "outlineHint": "Le brouillon, tel qu'il a été compris. Modifiez ce que vous voulez avant qu'il soit écrit."
   },
   "account": {
     "signOut": "Se déconnecter"
@@ -398,7 +405,7 @@
     "heading": "Plan"
   },
   "watchers": {
-    "empty": "Il surveille quelque chose et s'arrête avant tout acte irréversible.",
+    "empty": "Les veilleurs suivent vos connecteurs et vous rappellent les activités à venir pour que vous ne manquiez rien d'important. Créez un veilleur et dites-lui ce qu'il doit surveiller.",
     "create": "Créer un watcher",
     "instructionLabel": "Que doit-il faire ?",
     "instructionPlaceholder": "Quand la journée commence, prépare ce qui a besoin de moi…",
@@ -482,6 +489,18 @@
     "privacyNote": "Les réponses sont générées de façon sécurisée.",
     "learnPrivacy": "En savoir plus sur la confidentialité.",
     "send": "Envoyer",
+    "ask": "Demander",
+    "askAboutAttached": "Posez une question sur les documents ajoutés…",
+    "lookAtAttached": "Regarde les fichiers joints.",
+    "tooManyFiles": "Jusqu’à 5 fichiers à la fois.",
+    "fileTooLarge": "{{name}} dépasse 5 Mo.",
+    "fileEmpty": "{{name}} était vide.",
+    "removeFile": "Retirer {{name}}",
+    "attaching": "Pièce jointe…",
+    "groundedIn": "Fondé sur",
+    "indexed": "Indexé",
+    "kindVisual": "Visuel",
+    "pageCount": "{{count}} pages",
     "thinking": "Réflexion…",
     "officeEditHint": "Ce format ne s’édite pas dans le navigateur. Téléchargez-le pour l’ouvrir dans Word, Excel, PowerPoint, ou en PDF — ou demandez dans le chat pour générer une nouvelle version.",
     "kindDocument": "Document",

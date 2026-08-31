@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useRef, useState } from "react";
-import type { Citation, PlanStep } from "@alltheway/contracts";
+import type { Citation, PlanStep, ThreadAttachment } from "@alltheway/contracts";
 
 import { streamTurn } from "@/lib/stream";
 
@@ -66,7 +66,7 @@ export function useTurn(sessionId: string) {
   }, [sessionId]);
 
   const send = useCallback(
-    async (message: string) => {
+    async (message: string, opts?: { attachments?: ThreadAttachment[] }) => {
       abort.current?.abort();
       const controller = new AbortController();
       abort.current = controller;
@@ -75,6 +75,7 @@ export function useTurn(sessionId: string) {
 
       await streamTurn(sessionId, message, {
         signal: controller.signal,
+        attachments: opts?.attachments,
         onEvent: (event) => {
           setState((prev) => {
             switch (event.kind) {

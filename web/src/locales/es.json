@@ -190,7 +190,14 @@
     "attendees": "Invitados",
     "attendeesHint": "Correos separados por comas",
     "saveDraft": "Guardar borrador",
-    "putOnCalendar": "Poner en el calendario"
+    "putOnCalendar": "Poner en el calendario",
+    "createDocument": "Crear documento",
+    "createSpreadsheet": "Crear hoja de cálculo",
+    "createSlides": "Crear diapositivas",
+    "createPdf": "Crear PDF",
+    "createNote": "Guardar nota",
+    "outline": "Esquema",
+    "outlineHint": "El borrador, tal como se entendió. Edita lo que quieras antes de que se escriba."
   },
   "account": {
     "signOut": "Cerrar sesión"
@@ -398,7 +405,7 @@
     "heading": "Plan"
   },
   "watchers": {
-    "empty": "Vigila algo y se detiene antes de cualquier cosa irreversible.",
+    "empty": "Los vigilantes siguen tus conectores y te recuerdan las actividades próximas para que no se te escape nada importante. Crea un vigilante y dile qué quieres que vigile.",
     "create": "Crear un observador",
     "instructionLabel": "¿Qué debe hacer?",
     "instructionPlaceholder": "Cuando empiece el día, prepara un borrador de lo que me necesita…",
@@ -482,6 +489,18 @@
     "privacyNote": "Las respuestas se generan de forma segura.",
     "learnPrivacy": "Más sobre privacidad.",
     "send": "Enviar",
+    "ask": "Preguntar",
+    "askAboutAttached": "Haz una pregunta sobre los documentos subidos…",
+    "lookAtAttached": "Mira los archivos adjuntos.",
+    "tooManyFiles": "Hasta 5 archivos a la vez.",
+    "fileTooLarge": "{{name}} supera los 5 MB.",
+    "fileEmpty": "{{name}} estaba vacío.",
+    "removeFile": "Quitar {{name}}",
+    "attaching": "Adjuntando…",
+    "groundedIn": "Basado en",
+    "indexed": "Indexado",
+    "kindVisual": "Visual",
+    "pageCount": "{{count}} páginas",
     "thinking": "Pensando…",
     "officeEditHint": "Este formato no se edita en el navegador. Descárgalo para abrirlo en Word, Excel, PowerPoint, o como PDF — o pide en el chat una versión nueva.",
     "kindDocument": "Documento",

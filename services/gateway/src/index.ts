@@ -65,7 +65,9 @@ import {
   LifeContextSchema,
   LocaleSchema,
   OnboardingJobSchema,
+  ThreadAttachmentSchema,
   type PlanStep,
+  type ThreadAttachment,
   type ThreadMessage,
 } from "@alltheway/contracts";
 import { getOnboarding, setOnboarding } from "./repos/onboarding.js";
@@ -77,6 +79,9 @@ import { openLiveTranscriber } from "./meetings/live-transcriber.js";
 import { captureToScribe } from "./meetings/capture-sink.js";
 import { runInsightPass } from "./meetings/insight-runner.js";
 import { applyCors, openStream } from "./sse.js";
+import { parseTurnAttachments } from "./attachments.js";
+import { filesForTurn } from "./turn-files.js";
+import { sweepPendingIndex } from "./index-pending.js";
 import { TOPICS, publish } from "./events.js";
 import { userDoc } from "./firestore.js";
 import { z } from "zod";
@@ -143,6 +148,42 @@ app.use(
 for (const path of ["/healthz", "/healthz/"]) {
   app.get(path, (_req, res) => res.json({ ok: true }));
 }
+
+/**
+ * Overnight artifact index. Pub/Sub push, not a browser. Mounted before
+ * requireUser because the scheduler has no Firebase ID token.
+ */
+app.post("/events/index", async (req, res) => {
+  if (!env.usingEmulator) {
+    const token = typeof req.headers.authorization === "string"
+      ? req.headers.authorization.replace(/^Bearer\s+/i, "")
+      : "";
+    if (!token) {
+      res.status(401).json({ message: "Not a scheduled sweep." });
+      return;
+    }
+    try {
+      const { OAuth2Client } = await import("google-auth-library");
+      const ticket = await new OAuth2Client().verifyIdToken({ idToken: token });
+      const email = ticket.getPayload()?.email ?? "";
+      if (!email.endsWith(".iam.gserviceaccount.com")) {
+        res.status(401).json({ message: "Not a scheduled sweep." });
+        return;
+      }
+    } catch {
+      res.status(401).json({ message: "Not a scheduled sweep." });
+      return;
+    }
+  }
+  try {
+    const result = await sweepPendingIndex();
+    res.json({ ok: true, ...result });
+  } catch (err) {
+    console.error("[index-pending]", err);
+    // 200 so a poison-pill user does not retry the whole sweep forever.
+    res.json({ ok: false });
+  }
+});
 
 // Auth routes mount before the blanket requireUser: password reset is
 // necessarily unauthenticated, and each route opts in individually.
@@ -211,6 +252,15 @@ async function rememberThread(uid: string, sessionId: string, entries: ThreadMes
 }
 
 const isoNow = () => new Date().toISOString();
+
+function userThreadEntry(message: string, attachments: ThreadAttachment[]): ThreadMessage {
+  return {
+    role: "user",
+    text: message,
+    at: isoNow(),
+    ...(attachments.length ? { attachments } : {}),
+  };
+}
 
 // Where the user stands this month.
 //
@@ -509,6 +559,7 @@ api.get(
         .json({ code: "invalid_request", message: "Expected a message of 1-4000 characters." });
       return;
     }
+    const attachments = parseTurnAttachments(req.query.attachments);
 
     // Preferences and passages are both context the orchestrator cannot fetch
     // for itself — it is stateless, and only this service can scope a request
@@ -526,9 +577,7 @@ api.get(
     try {
       if (follow) {
         await rememberWork(req.uid!, sessionId, { utterance: message });
-        await rememberThread(req.uid!, sessionId, [
-          { role: "user", text: message, at: isoNow() },
-        ]);
+        await rememberThread(req.uid!, sessionId, [userThreadEntry(message, attachments)]);
         for (const step of follow.plan) {
           steps.push(step);
           if (stream.closed()) break;
@@ -548,10 +597,11 @@ api.get(
         }
       } else {
         const context = await loadTurnContext(req.uid!, sessionId, message);
+        if (attachments.length) {
+          context.files = await filesForTurn(req.uid!, attachments);
+        }
         await rememberWork(req.uid!, sessionId, { utterance: message });
-        await rememberThread(req.uid!, sessionId, [
-          { role: "user", text: message, at: isoNow() },
-        ]);
+        await rememberThread(req.uid!, sessionId, [userThreadEntry(message, attachments)]);
         for await (const event of streamTurn(context)) {
           if (event.kind === "step") steps.push(event.step);
           if (event.kind === "done" && phase !== "confirm" && phase !== "clarify") {
@@ -619,11 +669,17 @@ api.get(
 api.post(
   "/sessions/:id/turn",
   handle(async (req, res) => {
-    const body = z.object({ message: z.string().min(1).max(4000) }).safeParse(req.body);
+    const body = z
+      .object({
+        message: z.string().min(1).max(4000),
+        attachments: z.array(ThreadAttachmentSchema).max(5).optional(),
+      })
+      .safeParse(req.body);
     if (!body.success) {
       res.status(400).json({ code: "invalid_request", message: "Expected { message: string }." });
       return;
     }
+    const attachments = body.data.attachments ?? [];
 
     // The profile is read here, not inside the orchestrator, so that service
     // stays stateless and can be tested without a database.
@@ -643,7 +699,7 @@ api.post(
         companionNote: follow.confirm.summary,
       });
       await rememberThread(req.uid!, sessionId, [
-        { role: "user", text: body.data.message, at: isoNow() },
+        userThreadEntry(body.data.message, attachments),
         {
           role: "agent",
           text: follow.confirm.summary,
@@ -666,11 +722,12 @@ api.post(
     }
 
     const context = await loadTurnContext(req.uid!, sessionId, body.data.message);
+    if (attachments.length) {
+      context.files = await filesForTurn(req.uid!, attachments);
+    }
 
     await rememberWork(req.uid!, sessionId, { utterance: body.data.message });
-    await rememberThread(req.uid!, sessionId, [
-      { role: "user", text: body.data.message, at: isoNow() },
-    ]);
+    await rememberThread(req.uid!, sessionId, [userThreadEntry(body.data.message, attachments)]);
 
     const result = await runTurn(context);
 

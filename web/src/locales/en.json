@@ -189,7 +189,14 @@
     "attendees": "Attendees",
     "attendeesHint": "Comma-separated emails",
     "saveDraft": "Save draft",
-    "putOnCalendar": "Put on calendar"
+    "putOnCalendar": "Put on calendar",
+    "createDocument": "Create document",
+    "createSpreadsheet": "Create spreadsheet",
+    "createSlides": "Create slides",
+    "createPdf": "Create PDF",
+    "createNote": "Save note",
+    "outline": "Outline",
+    "outlineHint": "The draft, as understood. Edit anything before it is written."
   },
   "account": {
     "signOut": "Sign out"
@@ -419,7 +426,7 @@
     "heading": "Plan"
   },
   "watchers": {
-    "empty": "It watches something and stops before anything irreversible.",
+    "empty": "Watchers track your connectors and remind you of upcoming activities so you don't miss anything important. Create a new watcher and tell it what you want monitored.",
     "create": "Create a watcher",
     "instructionLabel": "What should it do?",
     "instructionPlaceholder": "When the morning arrives, draft what needs me…",
@@ -503,6 +510,18 @@
     "privacyNote": "Responses are generated securely.",
     "learnPrivacy": "Learn about privacy.",
     "send": "Send",
+    "ask": "Ask",
+    "askAboutAttached": "Ask a question about the uploaded documents…",
+    "lookAtAttached": "Look at the attached files.",
+    "tooManyFiles": "Up to 5 files at a time.",
+    "fileTooLarge": "{{name}} is larger than 5MB.",
+    "fileEmpty": "{{name}} was empty.",
+    "removeFile": "Remove {{name}}",
+    "attaching": "Attaching…",
+    "groundedIn": "Grounded in",
+    "indexed": "Indexed",
+    "kindVisual": "Visual",
+    "pageCount": "{{count}} pages",
     "thinking": "Thinking…",
     "officeEditHint": "This format is not edited in the browser. Download it to open in Word, Excel, PowerPoint, or as a PDF — or ask in the chat and a new version will be generated.",
     "kindDocument": "Document",

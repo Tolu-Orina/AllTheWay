@@ -199,7 +199,14 @@
     "attendees": "Gwahoddedigion",
     "attendeesHint": "Cyfeiriadau e-bost wedi'u gwahanu gan goma",
     "saveDraft": "Cadw drafft",
-    "putOnCalendar": "Rhoi ar y calendr"
+    "putOnCalendar": "Rhoi ar y calendr",
+    "createDocument": "Creu dogfen",
+    "createSpreadsheet": "Creu taenlen",
+    "createSlides": "Creu sleidiau",
+    "createPdf": "Creu PDF",
+    "createNote": "Cadw nodyn",
+    "outline": "Amlinelliad",
+    "outlineHint": "Y drafft, fel y'i deallwyd. Golygu unrhyw beth cyn iddo gael ei ysgrifennu."
   },
   "account": {
     "signOut": "Allgofnodi"
@@ -407,7 +414,7 @@
     "heading": "Cynllun"
   },
   "watchers": {
-    "empty": "It watches something and stops before anything irreversible.",
+    "empty": "Mae gwylwyr yn dilyn eich cysylltiadau ac yn eich atgoffa o weithgareddau sydd ar ddod fel na fyddwch yn colli dim pwysig. Crëwch wylwr newydd a dywedwch wrtho beth i'w fonitro.",
     "create": "Create a watcher",
     "instructionLabel": "What should it do?",
     "instructionPlaceholder": "When the morning arrives, draft what needs me…",
@@ -491,6 +498,18 @@
     "privacyNote": "Mae ymatebion yn cael eu creu yn ddiogel.",
     "learnPrivacy": "Dysgu am breifatrwydd.",
     "send": "Anfon",
+    "ask": "Gofyn",
+    "askAboutAttached": "Gofynnwch gwestiwn am y dogfennau a lwythwyd i fyny…",
+    "lookAtAttached": "Edrychwch ar y ffeiliau atodol.",
+    "tooManyFiles": "Hyd at 5 ffeil ar y tro.",
+    "fileTooLarge": "Mae {{name}} yn fwy na 5MB.",
+    "fileEmpty": "Roedd {{name}} yn wag.",
+    "removeFile": "Tynnu {{name}}",
+    "attaching": "Yn atodi…",
+    "groundedIn": "Wedi’i seilio ar",
+    "indexed": "Wedi’i fynegeio",
+    "kindVisual": "Gweledol",
+    "pageCount": "{{count}} tudalen",
     "thinking": "Yn meddwl…",
     "officeEditHint": "Nid yw’r fformat hwn yn cael ei olygu yn y porwr. Llwythwch i lawr i’w agor yn Word, Excel, PowerPoint, neu fel PDF — neu gofynnwch yn y sgwrs am fersiwn newydd.",
     "kindDocument": "Dogfen",

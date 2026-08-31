@@ -2,12 +2,15 @@ import { useNavigate } from "react-router";
 import { useCallback, useRef, useState } from "react";
 
 import { api } from "@/app/data";
+import { commitStaged, stashCommitted, type StagedFile } from "@/lib/work-attach";
 
 export type StartWorkOptions = {
   /** First message, sent once the work item exists. */
   seed?: string;
   /** Put `seed` in the composer instead of sending it. Researcher stays a prompt. */
   promptOnly?: boolean;
+  /** Staged on the new-chat composer. Uploaded after the session exists, before navigate. */
+  files?: StagedFile[];
 };
 
 /**
@@ -28,6 +31,9 @@ export function useStartWork() {
       setStarting(true);
       try {
         const { id } = await api.createSession();
+        if (opts?.files?.length) {
+          stashCommitted(id, await commitStaged(id, opts.files));
+        }
         if (opts?.seed != null) {
           // Survive React Strict Mode remount: location.state is consumed on
           // the first mount, and that mount's in-flight turn is aborted.

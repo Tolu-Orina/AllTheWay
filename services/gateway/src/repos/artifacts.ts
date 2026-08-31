@@ -104,6 +104,7 @@ export type NewArtifact = {
   body: Buffer;
   mimeType: string;
   prompt?: string;
+  producedBy?: "user" | "agent";
 };
 
 /**
@@ -130,6 +131,9 @@ export async function createArtifact(
     currentVersion: 0,
     mimeType: input.mimeType,
     provenance: input.provenance,
+    // User-attached files are indexed overnight, not on this turn. The
+    // model reads the bytes now; the librarian learns from them later.
+    indexPending: input.producedBy === "user",
     createdAt: FieldValue.serverTimestamp(),
     updatedAt: FieldValue.serverTimestamp(),
   });
@@ -137,7 +141,7 @@ export async function createArtifact(
   await addVersion(uid, ref.id, {
     body: input.body,
     mimeType: input.mimeType,
-    producedBy: "agent",
+    producedBy: input.producedBy ?? "agent",
     prompt: input.prompt ?? "",
     correction: "",
   }, store);
@@ -230,4 +234,64 @@ export async function deleteArtifact(
 
   await store.deleteAll(uid, artifactId);
   return true;
+}
+
+export type TurnFile = {
+  name: string;
+  mime: string;
+  /** gs:// when Vertex can read the bucket. Empty locally. */
+  fileUri?: string;
+  /** Base64, only when there is no gs:// (emulator / disk store). */
+  data?: string;
+};
+
+/**
+ * How the planner should see a file on this turn: a GCS URI Vertex can
+ * fetch, or the bytes themselves when this is not GCS.
+ *
+ * The librarian is not involved. Indexing is overnight.
+ */
+export async function artifactFileRef(
+  uid: string,
+  artifactId: string,
+  title: string,
+  store: ByteStore = artifactStore,
+): Promise<TurnFile | null> {
+  const row = await artifacts(uid).doc(artifactId).get();
+  if (!row.exists) return null;
+  const n = Number(row.get("currentVersion") ?? 1);
+  const verSnap = await artifactVersions(uid, artifactId).doc(String(n)).get();
+  if (!verSnap.exists) return null;
+  const mime = String(verSnap.get("mimeType") ?? "application/octet-stream");
+  const storagePath = String(verSnap.get("storagePath") ?? "");
+  if (storagePath.startsWith("gs://")) {
+    return { name: title, mime, fileUri: storagePath };
+  }
+  try {
+    const body = await store.get(uid, artifactId, 1);
+    return { name: title, mime, data: body.toString("base64") };
+  } catch {
+    return { name: title, mime };
+  }
+}
+
+export async function listPendingIndex(
+  uid: string,
+  limit = 8,
+): Promise<{ id: string; title: string; mimeType: string; currentVersion: number }[]> {
+  const snap = await artifacts(uid).where("indexPending", "==", true).limit(limit).get();
+  return snap.docs.map((doc) => ({
+    id: doc.id,
+    title: String(doc.get("title") ?? "document"),
+    mimeType: String(doc.get("mimeType") ?? "application/octet-stream"),
+    currentVersion: Number(doc.get("currentVersion") ?? 1),
+  }));
+}
+
+export async function markIndexed(uid: string, artifactId: string, documentId: string): Promise<void> {
+  await artifacts(uid).doc(artifactId).update({
+    indexPending: false,
+    documentId,
+    updatedAt: FieldValue.serverTimestamp(),
+  });
 }

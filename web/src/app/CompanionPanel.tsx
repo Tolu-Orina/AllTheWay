@@ -30,6 +30,7 @@ import { Recovery } from "@/app/Recovery";
 import { failureKindFrom } from "@alltheway/contracts";
 import { CitationChip } from "@/app/CitationChip";
 import { ConfirmGate, pendingConfirmId } from "@/app/ConfirmGate";
+import { isComposeReview } from "@/app/compose-fields";
 import { PlanStack } from "@/app/PlanStack";
 import { useCompanionThread } from "@/app/companion-thread";
 import { Markdown } from "@/app/Markdown";
@@ -44,7 +45,7 @@ import { relativeTime } from "@/lib/format";
  * copy of this markup is how a docked column and a sheet used to drift.
  */
 export function CompanionConversation({ autoFocus = false }: { autoFocus?: boolean }) {
-  const { messages, send, working, steps, decide, decisionStatus, sessionId } = useCompanionThread();
+  const { messages, send, working, steps, decide, decisionStatus, recorded, decision, did, sessionId } = useCompanionThread();
   // Recovery rows are keyed by turn. Message ids are numbers and restart with
   // each thread, so they are scoped by the companion session — otherwise two
   // different chats would write recovery offers under the same id.
@@ -93,7 +94,11 @@ export function CompanionConversation({ autoFocus = false }: { autoFocus?: boole
                 <div className="mt-2">
                   <PlanStack
                     steps={m.steps}
-                    onSend={working || m.actions?.length ? undefined : send}
+                    onSend={
+                      working || m.actions?.length || isComposeReview(m.steps)
+                        ? undefined
+                        : send
+                    }
                   />
                 </div>
               ) : null}
@@ -107,6 +112,9 @@ export function CompanionConversation({ autoFocus = false }: { autoFocus?: boole
                     declineLabel={m.options?.[1] ?? "No, stop"}
                     busy={working || Boolean(decisionStatus)}
                     status={decisionStatus}
+                    recorded={recorded}
+                    decision={decision}
+                    did={did}
                     sessionId={sessionId}
                     steps={m.steps}
                     onConfirm={() =>

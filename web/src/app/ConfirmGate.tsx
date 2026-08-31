@@ -1,16 +1,20 @@
 import { useEffect, useRef, useState } from "react";
-import { ShieldAlert } from "lucide-react";
+import { Check, ShieldAlert } from "lucide-react";
+import type { ActOutcome } from "@alltheway/contracts";
 
 import { api } from "@/app/data";
 import { calendarZone } from "@/app/clock";
 import { useT } from "@/app/i18n";
+import { settledHeadline } from "@/app/plan-copy";
 import {
   argString,
   composeKind,
   composeSources,
   composeStep,
+  documentBodyFromArgs,
   fromDatetimeLocal,
   toDatetimeLocal,
+  type ComposeKind,
   type ComposeSource,
 } from "@/app/compose-fields";
 import { setComposeFlush } from "@/app/compose-flush";
@@ -42,10 +46,10 @@ export function pendingConfirmId(
  * Same shape for Watchers, meetings, and session Yes. A live region, because
  * the whole point is that a person notices before agreeing.
  *
- * Email and calendar writes are an editable compose on this same surface —
- * not a second dialog. Field tweaks persist onto the stored plan; Yes (spoken
- * or clicked) replays those arguments. `onCorrect` is optional: Watchers do
- * not pass it.
+ * Email, calendar, and session-file writes are an editable compose on this
+ * same surface — not a second dialog. Field tweaks persist onto the stored
+ * plan; Yes (spoken or clicked) replays those arguments. `onCorrect` is
+ * optional: Watchers do not pass it.
  */
 export function ConfirmGate({
   summary,
@@ -60,6 +64,9 @@ export function ConfirmGate({
   onConfirm,
   onDecline,
   onCorrect,
+  recorded,
+  decision,
+  did,
 }: {
   summary: string;
   actions: { label: string; reason: string; connector?: string; tool?: string; arguments?: Record<string, unknown> }[];
@@ -73,20 +80,55 @@ export function ConfirmGate({
   onConfirm: () => void;
   onDecline: () => void;
   onCorrect?: (now: string) => void;
+  recorded?: "pending" | "ok" | "failed";
+  decision?: "confirmed" | "declined" | "corrected" | null;
+  did?: ActOutcome[];
 }) {
   const t = useT();
   const [amending, setAmending] = useState(false);
   const [instead, setInstead] = useState("");
+  const closed =
+    recorded === "ok" &&
+    (decision === "confirmed" || decision === "declined" || decision === "corrected");
 
   const sources = composeSources(steps, actions);
   const kind = composeKind(sources);
+  const documentTool = kind === "document" ? composeStep(sources, "document")?.tool : undefined;
   const confirmText =
-    kind === "email" ? t("compose.saveDraft") : kind === "calendar" ? t("compose.putOnCalendar") : confirmLabel;
+    kind === "email"
+      ? t("compose.saveDraft")
+      : kind === "calendar"
+        ? t("compose.putOnCalendar")
+        : kind === "document"
+          ? documentConfirmLabel(documentTool, t, confirmLabel)
+          : confirmLabel;
 
   const compose = useComposeFields(sources, kind, sessionId);
   const emailReady =
     kind !== "email" ||
     (compose !== null && "to" in compose.fields && compose.fields.to.includes("@"));
+  const documentReady =
+    kind !== "document" ||
+    (compose !== null && "title" in compose.fields && compose.fields.title.trim().length > 0);
+  const ready = emailReady && documentReady;
+
+  if (closed && decision) {
+    return (
+      <div
+        role="status"
+        className="flex items-center gap-3 rounded-brand-lg border bg-card px-4 py-3"
+      >
+        <Check
+          className="size-4 shrink-0 text-navy-deep"
+          strokeWidth={2.5}
+          aria-hidden="true"
+        />
+        <p className="min-w-0 flex-1 text-[14px] leading-snug font-medium">
+          {settledHeadline(decision, actions, did ?? [])}
+        </p>
+      </div>
+    );
+  }
 
   return (
     <div
@@ -113,7 +155,7 @@ export function ConfirmGate({
             <ComposeForm
               kind={kind}
               fields={compose.fields}
-              onChange={compose.setFields as (next: EmailFields | CalendarFields) => void}
+              onChange={compose.setFields as (next: EmailFields | CalendarFields | DocumentFields) => void}
               disabled={busy}
             />
           ) : actions.length > 0 ? (
@@ -131,14 +173,14 @@ export function ConfirmGate({
           <div className="mt-3.5 flex flex-wrap gap-2">
             <button
               type="button"
-              disabled={busy || !emailReady}
+              disabled={busy || !ready}
               onClick={() => {
                 void (async () => {
                   await compose?.flush();
                   onConfirm();
                 })();
               }}
-              className="rounded-full bg-primary px-4 py-1.5 text-[13px] font-semibold text-primary-foreground disabled:opacity-50"
+              className="cursor-pointer rounded-full bg-primary px-4 py-1.5 text-[13px] font-semibold text-primary-foreground disabled:cursor-not-allowed disabled:opacity-50"
             >
               {confirmText}
             </button>
@@ -146,7 +188,7 @@ export function ConfirmGate({
               type="button"
               disabled={busy}
               onClick={onDecline}
-              className="rounded-full border px-4 py-1.5 text-[13px] font-medium transition-colors hover:bg-accent hover:text-accent-foreground disabled:opacity-50"
+              className="cursor-pointer rounded-full border px-4 py-1.5 text-[13px] font-medium transition-colors hover:bg-accent hover:text-accent-foreground disabled:cursor-not-allowed disabled:opacity-50"
             >
               {declineLabel}
             </button>
@@ -155,7 +197,7 @@ export function ConfirmGate({
                 type="button"
                 disabled={busy}
                 onClick={() => setAmending(true)}
-                className="rounded-full border px-4 py-1.5 text-[13px] font-medium transition-colors hover:bg-accent hover:text-accent-foreground disabled:opacity-50"
+                className="cursor-pointer rounded-full border px-4 py-1.5 text-[13px] font-medium transition-colors hover:bg-accent hover:text-accent-foreground disabled:cursor-not-allowed disabled:opacity-50"
               >
                 {t("common.notQuite")}
               </button>
@@ -188,7 +230,7 @@ export function ConfirmGate({
               <button
                 type="submit"
                 disabled={!instead.trim() || busy}
-                className="rounded-full bg-primary px-3 py-1.5 text-[13px] font-semibold text-primary-foreground disabled:opacity-50"
+                className="cursor-pointer rounded-full bg-primary px-3 py-1.5 text-[13px] font-semibold text-primary-foreground disabled:cursor-not-allowed disabled:opacity-50"
               >
                 {t("common.rememberThis")}
               </button>
@@ -208,10 +250,37 @@ export function ConfirmGate({
 
 type EmailFields = { to: string; subject: string; body: string };
 type CalendarFields = { title: string; starts: string; timeZone: string; attendees: string };
+type DocumentFields = { title: string; body: string };
+type ComposeFields = EmailFields | CalendarFields | DocumentFields;
+
+function documentConfirmLabel(
+  tool: string | undefined,
+  t: (key: string) => string,
+  fallback: string,
+): string {
+  if (tool === "create_spreadsheet") return t("compose.createSpreadsheet");
+  if (tool === "create_slides") return t("compose.createSlides");
+  if (tool === "create_pdf") return t("compose.createPdf");
+  if (tool === "create_markdown") return t("compose.createNote");
+  if (tool === "create_document") return t("compose.createDocument");
+  return fallback;
+}
+
+function documentPatch(step: ComposeSource, fields: DocumentFields) {
+  return {
+    connector: "work_files",
+    tool: step.tool || "create_document",
+    arguments: {
+      ...(step.arguments ?? {}),
+      title: fields.title,
+      body: fields.body,
+    },
+  };
+}
 
 function useComposeFields(
   sources: ComposeSource[],
-  kind: "email" | "calendar" | null,
+  kind: ComposeKind,
   sessionId: string | undefined,
 ) {
   const step = kind ? composeStep(sources, kind) : null;
@@ -226,8 +295,13 @@ function useComposeFields(
     timeZone: argString(step?.arguments, "time_zone") || calendarZone(),
     attendees: argString(step?.arguments, "attendees"),
   };
+  const incomingDocument: DocumentFields = {
+    title: argString(step?.arguments, "title"),
+    body: documentBodyFromArgs(step?.arguments),
+  };
   const [email, setEmail] = useState<EmailFields>(incomingEmail);
   const [calendar, setCalendar] = useState<CalendarFields>(incomingCalendar);
+  const [document, setDocument] = useState<DocumentFields>(incomingDocument);
 
   useEffect(() => {
     if (kind !== "email") return;
@@ -258,6 +332,15 @@ function useComposeFields(
     incomingCalendar.attendees,
   ]);
 
+  useEffect(() => {
+    if (kind !== "document") return;
+    setDocument((prev) =>
+      prev.title === incomingDocument.title && prev.body === incomingDocument.body
+        ? prev
+        : incomingDocument,
+    );
+  }, [kind, incomingDocument.title, incomingDocument.body]);
+
   const first = useRef(true);
   const pending = useRef(Promise.resolve());
   const gen = useRef(0);
@@ -280,7 +363,9 @@ function useComposeFields(
               attendees: calendar.attendees,
             },
           }
-        : null;
+        : kind === "document" && step
+          ? documentPatch(step, document)
+          : null;
 
   useEffect(() => {
     if (!sessionId || !kind) return;
@@ -295,16 +380,21 @@ function useComposeFields(
             tool: "create_draft",
             arguments: { to: email.to, subject: email.subject, body: email.body },
           }
-        : {
-            connector: "google_calendar",
-            tool: "create_event",
-            arguments: {
-              title: calendar.title,
-              starts_at: fromDatetimeLocal(calendar.starts),
-              time_zone: calendar.timeZone.trim() || calendarZone(),
-              attendees: calendar.attendees,
-            },
-          };
+        : kind === "calendar"
+          ? {
+              connector: "google_calendar",
+              tool: "create_event",
+              arguments: {
+                title: calendar.title,
+                starts_at: fromDatetimeLocal(calendar.starts),
+                time_zone: calendar.timeZone.trim() || calendarZone(),
+                attendees: calendar.attendees,
+              },
+            }
+          : step
+            ? documentPatch(step, document)
+            : null;
+    if (!next) return;
     const mine = ++gen.current;
     const handle = window.setTimeout(() => {
       if (mine !== gen.current) return;
@@ -324,6 +414,10 @@ function useComposeFields(
     calendar.starts,
     calendar.timeZone,
     calendar.attendees,
+    document.title,
+    document.body,
+    step?.tool,
+    step?.connector,
   ]);
 
   const flush = async () => {
@@ -346,12 +440,17 @@ function useComposeFields(
     calendar.starts,
     calendar.timeZone,
     calendar.attendees,
+    document.title,
+    document.body,
   ]);
 
   if (!kind || !step) return null;
 
   if (kind === "email") {
     return { fields: email, setFields: setEmail, flush };
+  }
+  if (kind === "document") {
+    return { fields: document, setFields: setDocument, flush };
   }
   return { fields: calendar, setFields: setCalendar, flush };
 }
@@ -362,9 +461,9 @@ function ComposeForm({
   onChange,
   disabled,
 }: {
-  kind: "email" | "calendar";
-  fields: EmailFields | CalendarFields;
-  onChange: (next: EmailFields | CalendarFields) => void;
+  kind: Exclude<ComposeKind, null>;
+  fields: ComposeFields;
+  onChange: (next: ComposeFields) => void;
   disabled: boolean;
 }) {
   const t = useT();
@@ -404,6 +503,35 @@ function ComposeForm({
             disabled={disabled}
             onChange={(e) => onChange({ ...email, body: e.target.value })}
             className="mt-1 w-full resize-y rounded-brand border bg-background px-3 py-2 text-[13px] outline-none placeholder:text-muted-foreground disabled:opacity-60"
+          />
+        </label>
+      </div>
+    );
+  }
+
+  if (kind === "document") {
+    const doc = fields as DocumentFields;
+    return (
+      <div className="mt-3 space-y-2.5">
+        <label className="block text-[12px] font-medium text-muted-foreground">
+          {t("compose.title")}
+          <input
+            type="text"
+            value={doc.title}
+            disabled={disabled}
+            onChange={(e) => onChange({ ...doc, title: e.target.value })}
+            className={fieldClass}
+          />
+        </label>
+        <label className="block text-[12px] font-medium text-muted-foreground">
+          {t("compose.outline")}
+          <textarea
+            rows={10}
+            value={doc.body}
+            disabled={disabled}
+            onChange={(e) => onChange({ ...doc, body: e.target.value })}
+            placeholder={t("compose.outlineHint")}
+            className="mt-1 w-full resize-y rounded-brand border bg-background px-3 py-2 text-[13px] leading-relaxed outline-none placeholder:text-muted-foreground disabled:opacity-60"
           />
         </label>
       </div>

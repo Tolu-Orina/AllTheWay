@@ -97,6 +97,18 @@ export type TurnInput = {
   }[];
   /** Instant this turn is planned, so relative times are not guessed. */
   clock?: string;
+  /**
+   * Files attached on this turn, for the model to read as parts.
+   *
+   * Not retrieved passages. Indexing is overnight; this is the PDF or
+   * image itself, as a gs:// URI Vertex can fetch, or inline bytes locally.
+   */
+  files?: {
+    name: string;
+    mime: string;
+    fileUri?: string;
+    data?: string;
+  }[];
 };
 
 /** Parts are a tagged union; pull out the structured `data` payloads. */
@@ -185,6 +197,7 @@ export function buildMessage(input: TurnInput): Message {
       thread: input.thread ?? [],
       struggles: input.struggles ?? [],
       clock: input.clock ?? "",
+      files: input.files ?? [],
     },
     extensions: [],
     referenceTaskIds: [],

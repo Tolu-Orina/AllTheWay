@@ -87,6 +87,10 @@ class RetrieveRequest(BaseModel):
     query: str = Field(min_length=1, max_length=4000)
     limit: int = Field(default=6, ge=1, le=20)
     hat: str | None = None
+    #: Documents just attached on this turn. Prefer their chunks over a
+    #: nearest-neighbour miss, so a question about a file that was just
+    #: indexed is answered from that file, not from an older neighbour.
+    documentIds: list[str] = Field(default_factory=list, max_length=5)
 
 
 @app.post("/documents")
@@ -179,7 +183,9 @@ def post_retrieve(
 
     vector = embed.embed_query(request.query)
     hat = request.hat if request.hat in {"work", "home", "church"} else None
-    passages = store.retrieve(user, vector, limit=request.limit, hat=hat)
+    focused = store.chunks_for_documents(user, request.documentIds)
+    searched = store.retrieve(user, vector, limit=request.limit, hat=hat)
+    passages = store.merge_passages(focused, searched, limit=request.limit)
 
     return {
         "passages": [

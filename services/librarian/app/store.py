@@ -239,6 +239,57 @@ def retrieve(
     return passages
 
 
+def chunks_for_documents(user: str, document_ids: list[str], *, per_doc: int = 2) -> list[Passage]:
+    """Chunks from named documents, still path-scoped to this user.
+
+    Used when the person just attached files: vector search on a brand-new
+    question can miss those chunks in favour of an older neighbour. Fetching
+    by documentId prefers what they actually handed over.
+    """
+    out: list[Passage] = []
+    seen: set[str] = set()
+    for document_id in document_ids[:5]:
+        if not document_id or document_id in seen:
+            continue
+        seen.add(document_id)
+        docs = (
+            chunks(user)
+            .where(filter=firestore.FieldFilter("documentId", "==", document_id))
+            .limit(per_doc)
+            .stream()
+        )
+        for doc in docs:
+            data = doc.to_dict() or {}
+            assert_owner(data, user, doc.id)
+            stored_hat = data.get("hat") or None
+            out.append(
+                Passage(
+                    chunk_id=doc.id,
+                    document_id=data.get("documentId", ""),
+                    title=data.get("title", ""),
+                    page=int(data.get("page", 0)),
+                    text=data.get("text", ""),
+                    distance=0.0,
+                    hat=stored_hat if isinstance(stored_hat, str) else None,
+                )
+            )
+    return out
+
+
+def merge_passages(focused: list[Passage], searched: list[Passage], *, limit: int) -> list[Passage]:
+    """Focused first, then nearest-neighbour, without duplicate chunks."""
+    out: list[Passage] = []
+    seen: set[str] = set()
+    for passage in (*focused, *searched):
+        if passage.chunk_id in seen:
+            continue
+        seen.add(passage.chunk_id)
+        out.append(passage)
+        if len(out) >= limit:
+            break
+    return out
+
+
 def assert_owner(data: dict, user: str, chunk_id: str) -> None:
     """Layer 5: the last thing between a chunk and a prompt.
 

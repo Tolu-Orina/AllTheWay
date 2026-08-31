@@ -12,7 +12,7 @@ import { api, type SessionDetail as Detail } from "@/app/data";
 import { SessionTranscript } from "@/app/VoiceTranscripts";
 import { CitationChip } from "@/app/CitationChip";
 import { ConfirmGate } from "@/app/ConfirmGate";
-import { composeKind } from "@/app/compose-fields";
+import { isComposeReview } from "@/app/compose-fields";
 import { PlanStack } from "@/app/PlanStack";
 
 function DetailSkeleton() {
@@ -41,7 +41,8 @@ export default function SessionDetailScreen() {
   const { id = "" } = useParams();
   const { state, reload } = useAsync<Detail | null>(() => api.session(id), [id]);
   const { turn, send } = useTurn(id);
-  const { decide, reset: resetDecision, status: decisionStatus } = useDecision(id);
+  const { decide, reset: resetDecision, status: decisionStatus, recorded, decision, did } =
+    useDecision(id);
   const location = useLocation();
   const seedState = location.state as { seed?: string; promptOnly?: boolean } | null;
   const [draft, setDraft] = useState("");
@@ -81,7 +82,7 @@ export default function SessionDetailScreen() {
     if (!trimmed || working) return;
     hadTurn.current = true;
     setDraft("");
-    if (turn.phase === "confirm" && turn.summary && composeKind(turn.actions) !== "email") {
+    if (turn.phase === "confirm" && turn.summary && !isComposeReview(turn.actions)) {
       void (async () => {
         await decide("corrected", {
           summary: turn.summary,
@@ -247,6 +248,9 @@ export default function SessionDetailScreen() {
                     confirmLabel={turn.options[0] ?? "Yes, go ahead"}
                     declineLabel={turn.options[1] ?? "No, stop"}
                     status={decisionStatus}
+                    recorded={recorded}
+                    decision={decision}
+                    did={did}
                     sessionId={id}
                     steps={turn.steps}
                     onConfirm={() => {
