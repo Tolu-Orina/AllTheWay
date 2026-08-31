@@ -18,7 +18,7 @@ import { useTurn, type ProposedAction, type TurnPhase } from "@/app/use-turn";
 import { useStartWork } from "@/app/use-start-work";
 import { useT } from "@/app/i18n";
 import { composeKind, composeSources } from "@/app/compose-fields";
-import { isSpokenYes } from "@/lib/spoken-confirm";
+import { isPendingConfirmReply } from "@/lib/spoken-confirm";
 import {
   DOCUMENT_ACCEPT,
   DOCUMENT_CAMERA_ACCEPT,
@@ -302,10 +302,7 @@ function SessionWorkChat({
       const lastAgent =
         history.find((m) => m.id === pendingConfirmId(history)) ??
         [...history].reverse().find((m) => m.role === "agent");
-      if (
-        lastAgent?.actions?.length &&
-        (trimmed === "1" || isSpokenYes(trimmed))
-      ) {
+      if (lastAgent?.actions?.length && isPendingConfirmReply(trimmed, lastAgent)) {
         hadTurn.current = true;
         setHistory((prev) => [...prev, { id: prev.length + 1, role: "user", text: trimmed }]);
         setDraft("");

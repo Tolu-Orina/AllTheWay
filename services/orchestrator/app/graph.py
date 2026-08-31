@@ -32,6 +32,7 @@ break the invariant the whole streaming design rests on: every event is final.
 
 from __future__ import annotations
 
+import json
 from typing import Iterator
 
 from alltheway_policy import Ceiling
@@ -149,7 +150,9 @@ SYSTEM = (
     "connected accounts, fetched this turn. Answer from it: name the events "
     "or files, or say there are none. Do not plan list_events or list_files "
     "when that block already answered them — a numbered step looks like a "
-    "button and does nothing. Still name connector, tool and "
+    "button and does nothing. Never set action to create_task to review, check, "
+    "or summarise the calendar or schedule; that is the note, with empty steps. "
+    "Still name connector, tool and "
     "arguments for anything that would write, send, delete, or create. "
     # Passages are the same shape as LOOKUPS: already fetched, already the
     # user's. A document question that then sets needsResearch is the model
@@ -467,6 +470,13 @@ def _claimed_citations(document: dict) -> list[Citation]:
 
 
 _FETCHED_READS = frozenset({"list_events", "list_files"})
+_CALENDAR_WRITE = frozenset({"create_event", "delete_event", "send_invite"})
+_CALENDAR_WORDS = ("calendar", "schedule", "agenda", "upcoming", "meetings")
+_WRITE_WORDS = ("create", "add", "book", "invite", "cancel", "delete", "move", "put")
+
+
+def _is_fetched_read(step: PlanStep) -> bool:
+    return (step.tool or "") in _FETCHED_READS
 
 
 def _without_fetched_reads(steps: list[PlanStep]) -> list[PlanStep]:
@@ -479,8 +489,77 @@ def _without_fetched_reads(steps: list[PlanStep]) -> list[PlanStep]:
     return [s for s in steps if not _is_fetched_read(s)]
 
 
-def _is_fetched_read(step: PlanStep) -> bool:
-    return (step.tool or "") in _FETCHED_READS
+def _skip_streamed_step(step: PlanStep, lookups: list[str]) -> bool:
+    return _is_fetched_read(step) or _is_answered_calendar_read(step, lookups)
+
+
+def _calendar_lookup_line(lookups: list[str]) -> str | None:
+    for line in lookups:
+        if line.startswith("whats_on_my_calendar:"):
+            return line.split(":", 1)[1].strip()
+    return None
+
+
+def _is_answered_calendar_read(step: PlanStep, lookups: list[str]) -> bool:
+    """A create_task 'review the schedule' is a read the lookup already did."""
+    if _is_fetched_read(step):
+        return True
+    if not _calendar_lookup_line(lookups):
+        return False
+    if (step.tool or "") in _CALENDAR_WRITE:
+        return False
+    if step.connector and (step.tool or "") not in _FETCHED_READS:
+        return False
+    label = (step.label or "").lower()
+    if any(w in label for w in _WRITE_WORDS):
+        return False
+    if not any(w in label for w in _CALENDAR_WORDS):
+        return False
+    if (step.action or "") not in ("", "create_task", "draft"):
+        return False
+    return True
+
+
+def _without_answered_reads(steps: list[PlanStep], lookups: list[str]) -> list[PlanStep]:
+    return [s for s in steps if not _is_answered_calendar_read(s, lookups)]
+
+
+def _looks_like_gate_note(note: str) -> bool:
+    n = (note or "").strip().lower()
+    if not n:
+        return True
+    return "should i go ahead" in n or "this will create a task" in n
+
+
+def _answer_from_calendar_lookup(lookups: list[str]) -> str:
+    body = _calendar_lookup_line(lookups)
+    if not body:
+        return ""
+    if body.startswith("{") or body.startswith("["):
+        try:
+            data = json.loads(body)
+        except json.JSONDecodeError:
+            return body[:800]
+        if isinstance(data, dict):
+            cannot = data.get("cannot")
+            if isinstance(cannot, str) and cannot.strip():
+                return cannot.strip()
+            events = data.get("events")
+            if isinstance(events, list) and events:
+                bits: list[str] = []
+                for event in events[:8]:
+                    if not isinstance(event, dict):
+                        continue
+                    title = str(event.get("title") or event.get("summary") or "Event")
+                    when = str(event.get("startsAt") or event.get("start") or "").strip()
+                    bits.append(f"{title} at {when}" if when else title)
+                if bits:
+                    return "On your calendar: " + "; ".join(bits) + "."
+            result = data.get("result")
+            if isinstance(result, str) and result.strip():
+                return result.strip()[:800]
+            return "Nothing on the calendar in that window."
+    return body[:800]
 
 
 def _finish(
@@ -523,6 +602,7 @@ def _finish(
         planned, request.message, request.recent_thread
     )
     planned = _without_fetched_reads(planned)
+    planned = _without_answered_reads(planned, request.lookups)
     emitted = len(planned)
     for correction in corrections + office_notes + invite_notes + draft_notes + fill_notes:
         yield TurnEvent(kind="trace", text=correction)
@@ -535,7 +615,10 @@ def _finish(
     )
 
     if confirmation is None:
-        yield TurnEvent(kind="note", text=note, citations=citations)
+        spoken = note
+        if _looks_like_gate_note(spoken):
+            spoken = _answer_from_calendar_lookup(request.lookups) or note or "Done."
+        yield TurnEvent(kind="note", text=spoken, citations=citations)
         return
 
     # FR-V2. The same protocol state as the Clarify Gate, reached for a
@@ -631,7 +714,7 @@ def run_turn_stream(
             held.extend(first.new_steps(partial))
             if needs_research is False:
                 for step in held:
-                    if _is_fetched_read(step):
+                    if _skip_streamed_step(step, request.lookups):
                         continue
                     emitted += 1
                     planned.append(step)
@@ -689,7 +772,7 @@ def run_turn_stream(
             note = finding.answer
             for event in _plan_only(provider, informed, request.message):
                 if event.kind == "step" and event.step:
-                    if _is_fetched_read(event.step):
+                    if _skip_streamed_step(event.step, request.lookups):
                         continue
                     second += 1
                     emitted += 1
@@ -712,7 +795,7 @@ def run_turn_stream(
             )
 
     for step in held:
-        if _is_fetched_read(step):
+        if _skip_streamed_step(step, request.lookups):
             continue
         emitted += 1
         planned.append(step)

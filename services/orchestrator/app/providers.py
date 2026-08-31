@@ -143,6 +143,19 @@ class FakeProvider:
                 "options": ["Just a rough draft", "Something I can send"],
             }
 
+        # LOOKUPS already answered a calendar read. "schedule" in ACTIONS would
+        # otherwise plan create_event for "what's on my schedule".
+        if "LOOKUPS: live data" in system and any(
+            w in lowered for w in ("calendar", "schedule", "agenda", "meetings")
+        ):
+            if not any(w in lowered for w in ("add ", "book ", "invite", "cancel", "delete ")):
+                return {
+                    "decision": "plan",
+                    "needsResearch": False,
+                    "steps": [],
+                    "note": "",
+                }
+
         researchy = any(word in lowered for word in self.RESEARCHY)
         act = next((a for word, a in self.ACTIONS if word in lowered), "")
         # A follow-up like "the message is about QA" is still the same Gmail

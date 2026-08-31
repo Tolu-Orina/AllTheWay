@@ -80,6 +80,7 @@ test("the legacy companion id is a companion chat, not work", () => {
   assert.equal(sessionSurface("companion"), "companion");
   assert.equal(sessionSurface("abc-uuid"), "work");
   assert.equal(sessionSurface("abc-uuid", { surface: "companion" }), "companion");
+  assert.equal(sessionSurface("abc-uuid", { surface: "voice" }), "voice");
 });
 
 test("conversationContext keeps role, text, and options for the planner", () => {
@@ -172,6 +173,19 @@ test("companion chats do not appear in the work list", emulated, async () => {
   assert.ok(!work.some((s) => s.id === chatId));
   assert.ok(chats.some((s) => s.id === chatId));
   assert.ok(!chats.some((s) => s.id === workId));
+});
+
+test("voice sessions do not appear in companion or work lists", emulated, async () => {
+  const voiceId = `voice-${Date.now()}`;
+  await ensureSession(UID, voiceId, { title: VOICE_TITLE, surface: "voice" });
+  await touchSession(UID, voiceId, { utterance: "What's on today" });
+
+  const work = await listSessions(UID, "work");
+  const chats = await listSessions(UID, "companion");
+  const spoken = await listSessions(UID, "voice");
+  assert.ok(spoken.some((s) => s.id === voiceId));
+  assert.ok(!work.some((s) => s.id === voiceId));
+  assert.ok(!chats.some((s) => s.id === voiceId));
 });
 
 test("a first turn materialises a parent the list query can see", emulated, async () => {

@@ -12,8 +12,7 @@ import { useLocation, useNavigate } from "react-router";
 import { PlanStepSchema, type PlanStep } from "@alltheway/contracts";
 import { openVoiceSocket, applyVoiceCaption, captionsFromThread, speakGreeting, cancelGreeting, spokenGreetingLine, cueVoiceStart, isGreetingEchoTranscript, type VoiceLine, type VoiceSocket } from "@/lib/voice";
 import { useT } from "@/app/i18n";
-import { resolveVoiceSessionId, workIdFromPath } from "@/app/work-id";
-import { useCompanionThread } from "@/app/companion-thread";
+import { resolveVoiceSessionId, workIdFromPath, readVoiceSessionId, persistVoiceSessionId } from "@/app/work-id";
 import { api } from "@/app/data";
 import { firstNameFor, useAppUser } from "@/app/user";
 
@@ -67,13 +66,8 @@ export function VoiceProvider({ children }: { children: ReactNode }) {
   const t = useT();
   const navigate = useNavigate();
   const { pathname } = useLocation();
-  const {
-    recordSpoken,
-    sessionId: companionSessionId,
-    openChat,
-    startNewChat,
-  } = useCompanionThread();
   const user = useAppUser();
+  const [voiceSessionId, setVoiceSessionId] = useState(readVoiceSessionId);
   const [status, setStatus] = useState<VoiceStatus>("idle");
   const [error, setError] = useState("");
   const [lines, setLines] = useState<VoiceLine[]>([]);
@@ -100,7 +94,7 @@ export function VoiceProvider({ children }: { children: ReactNode }) {
   const mutedRef = useRef(false);
   const hangingUp = useRef(false);
   const linesRef = useRef<VoiceLine[]>([]);
-  // Set of all texts already handed to recordSpoken this session. Not reset
+  // Set of all texts already persisted as captions this session. Not reset
   // on reconnect so the same utterance cannot be stored twice if the socket
   // drops and comes back with the same final transcript.
   const spokenTexts = useRef<Set<string>>(new Set());
@@ -149,14 +143,13 @@ export function VoiceProvider({ children }: { children: ReactNode }) {
     setLines(next);
     if (!spokenTexts.current.has(line)) {
       spokenTexts.current.add(line);
-      recordSpoken("agent", line);
     }
     void speakGreeting(line).then(() => {
       greetingFinished.current = true;
       socket.current?.sendGreetingDone();
       micHeld.current = false;
     });
-  }, [user, recordSpoken]);
+  }, [user]);
 
   useEffect(() => () => teardown(), [teardown]);
 
@@ -288,7 +281,6 @@ export function VoiceProvider({ children }: { children: ReactNode }) {
                   const spoken = last?.text.trim();
                   if (spoken && !spokenTexts.current.has(spoken)) {
                     spokenTexts.current.add(spoken);
-                    recordSpoken(side === "user" ? "user" : "agent", spoken);
                   }
                 }
               },
@@ -456,8 +448,13 @@ export function VoiceProvider({ children }: { children: ReactNode }) {
       }
       })();
     },
-    [teardown, t, recordSpoken, user, greetNow],
+    [teardown, t, user, greetNow],
   );
+
+  const rememberVoice = useCallback((id: string) => {
+    persistVoiceSessionId(id);
+    setVoiceSessionId(id);
+  }, []);
 
   const start = useCallback(() => {
     if (status === "connecting" || status === "live") {
@@ -466,21 +463,40 @@ export function VoiceProvider({ children }: { children: ReactNode }) {
     }
     const ctx = new AudioContext({ latencyHint: "interactive" });
     void ctx.resume();
-    begin(resolveVoiceSessionId(pathname, companionSessionId), ctx);
-  }, [status, stop, begin, pathname, companionSessionId]);
+    const workId = workIdFromPath(pathname);
+    if (workId) {
+      begin(workId, ctx);
+      return;
+    }
+    if (voiceSessionId) {
+      begin(voiceSessionId, ctx);
+      return;
+    }
+    void api
+      .createSession("voice")
+      .then((created) => {
+        rememberVoice(created.id);
+        begin(created.id, ctx);
+      })
+      .catch(() => {
+        void ctx.close();
+        setStatus("error");
+        setError(t("voice.unavailable"));
+      });
+  }, [status, stop, begin, pathname, voiceSessionId, rememberVoice, t]);
 
   const switchTo = useCallback(
     (sessionId: string) => {
       const next = sessionId.trim();
       if (!next) return;
-      if (next === resolveVoiceSessionId(pathname, companionSessionId)) return;
+      if (next === resolveVoiceSessionId(pathname, voiceSessionId)) return;
       // Gesture must construct (and resume) AudioContext before any await.
       const ctx = new AudioContext({ latencyHint: "interactive" });
       void ctx.resume();
       if (workIdFromPath(pathname)) {
         navigate(`/app/work/${next}`);
       } else {
-        openChat(next);
+        rememberVoice(next);
       }
       teardown();
       setMuted(false);
@@ -490,7 +506,7 @@ export function VoiceProvider({ children }: { children: ReactNode }) {
       setLines([]);
       begin(next, ctx);
     },
-    [pathname, companionSessionId, navigate, openChat, teardown, begin],
+    [pathname, voiceSessionId, navigate, rememberVoice, teardown, begin],
   );
 
   const startFresh = useCallback(async () => {
@@ -498,14 +514,13 @@ export function VoiceProvider({ children }: { children: ReactNode }) {
     void ctx.resume();
     try {
       const onWork = Boolean(workIdFromPath(pathname));
-      const created = onWork
-        ? await api.createSession("work")
-        : { id: (await startNewChat()) ?? "" };
+      const created = await api.createSession(onWork ? "work" : "voice");
       if (!created.id) {
         void ctx.close();
         return;
       }
       if (onWork) navigate(`/app/work/${created.id}`);
+      else rememberVoice(created.id);
       teardown();
       setMuted(false);
       setTurn(null);
@@ -516,7 +531,7 @@ export function VoiceProvider({ children }: { children: ReactNode }) {
     } catch {
       void ctx.close();
     }
-  }, [pathname, startNewChat, navigate, teardown, begin]);
+  }, [pathname, navigate, rememberVoice, teardown, begin]);
 
   return (
     <VoiceContext.Provider
@@ -527,7 +542,7 @@ export function VoiceProvider({ children }: { children: ReactNode }) {
         continued,
         fake,
         turn,
-        sessionId: resolveVoiceSessionId(pathname, companionSessionId),
+        sessionId: resolveVoiceSessionId(pathname, voiceSessionId),
         muted,
         start,
         stop,

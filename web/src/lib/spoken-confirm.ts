@@ -38,3 +38,23 @@ export function isSpokenNo(text: string): boolean {
   if (!t || t.length > 48) return false;
   return NO_WHOLE.test(t);
 }
+
+/** Clicking a numbered plan card sends the step label, not "yes". */
+export function isPendingConfirmReply(
+  text: string,
+  pending?: {
+    actions?: Array<{ label?: string }>;
+    steps?: Array<{ label?: string }>;
+  },
+): boolean {
+  const trimmed = text.trim();
+  if (!trimmed) return false;
+  if (trimmed === "1" || isSpokenYes(trimmed)) return true;
+  const norm = normalizeSpoken(trimmed);
+  if (!norm) return false;
+  const labels = [
+    ...(pending?.actions ?? []).map((a) => a.label),
+    ...(pending?.steps ?? []).map((s) => s.label),
+  ];
+  return labels.some((label) => label && normalizeSpoken(label) === norm);
+}

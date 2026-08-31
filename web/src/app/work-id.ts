@@ -1,13 +1,13 @@
 /**
- * Work threads and companion chats are different lists.
+ * Work threads, companion chats, and spoken sessions are different lists.
  *
  * Companion is session-bounded: plus starts a new chat, previous chats reopen
- * one. Voice talks to the work on screen when there is one, otherwise to the
- * companion chat that is currently open — never a disconnected `"live"` that
- * cannot appear in the list.
+ * one. Voice talks to the work on screen when there is one, otherwise to its
+ * own spoken session — never the typed companion thread.
  */
 export const COMPANION_SESSION_ID = "companion";
 export const COMPANION_SESSION_KEY = "atw:companion-session";
+export const VOICE_SESSION_KEY = "atw:voice-session";
 
 export function readCompanionSessionId(): string {
   try {
@@ -27,6 +27,22 @@ export function persistCompanionSessionId(id: string): void {
   }
 }
 
+export function readVoiceSessionId(): string {
+  try {
+    return localStorage.getItem(VOICE_SESSION_KEY)?.trim() ?? "";
+  } catch {
+    return "";
+  }
+}
+
+export function persistVoiceSessionId(id: string): void {
+  try {
+    localStorage.setItem(VOICE_SESSION_KEY, id);
+  } catch {
+    /* private windows */
+  }
+}
+
 export function workIdFromPath(pathname: string): string | null {
   const match = pathname.match(/^\/app\/(?:sessions|work)\/([^/]+)/);
   if (!match?.[1]) return null;
@@ -40,7 +56,7 @@ export function workIdFromPath(pathname: string): string | null {
 
 export function resolveVoiceSessionId(
   pathname: string,
-  companionId = COMPANION_SESSION_ID,
+  voiceId = "",
 ): string {
-  return workIdFromPath(pathname) ?? companionId;
+  return workIdFromPath(pathname) ?? voiceId;
 }

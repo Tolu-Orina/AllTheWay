@@ -35,6 +35,11 @@ test("the well-known endpoint serves the card as JSON", async () => {
     assert.equal(res.status, 200);
     const body = (await res.json()) as { name?: string };
     assert.equal(body.name, "AllTheWay Document Cell");
+
+    const health = await fetch(`http://127.0.0.1:${port}/healthz`);
+    assert.equal(health.status, 200);
+    const report = (await health.json()) as { cardSigned?: boolean };
+    assert.equal(report.cardSigned, false);
   } finally {
     await new Promise<void>((resolve, reject) =>
       server.close((err) => (err ? reject(err) : resolve())),

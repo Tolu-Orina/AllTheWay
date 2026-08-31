@@ -148,12 +148,13 @@ export const SessionSchema = z.object({
   done: z.number().int().nonnegative(),
   total: z.number().int().positive(),
   /**
-   * Work threads and companion chats are different lists.
+   * Work threads, companion chats, and spoken sessions are different lists.
    *
    * Absent on rows written before this field existed — those are work, except
-   * the legacy id `"companion"`.
+   * the legacy id `"companion"`. Voice is its own surface so a typed chat does
+   * not reopen inside the live overlay.
    */
-  surface: z.enum(["work", "companion"]).default("work"),
+  surface: z.enum(["work", "companion", "voice"]).default("work"),
 });
 
 /**

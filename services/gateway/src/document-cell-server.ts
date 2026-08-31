@@ -94,10 +94,12 @@ export function createDocumentCellApp() {
 }
 
 function health(_req: express.Request, res: express.Response): void {
+  const card = servedCard(agentCard as Record<string, unknown>);
   res.json({
     ok: true,
     agent: agentCard.name,
     cardVersion: agentCard.version,
+    cardSigned: Array.isArray((card as { signatures?: unknown }).signatures),
     budget: {
       critiqueRounds: MAX_CRITIQUE_ROUNDS,
       maxImages: MAX_IMAGES,
@@ -111,7 +113,12 @@ function health(_req: express.Request, res: express.Response): void {
 
 if (process.argv[1] && /document-cell-server/.test(process.argv[1])) {
   const app = createDocumentCellApp();
+  const card = servedCard(agentCard as Record<string, unknown>);
+  const signed = Array.isArray((card as { signatures?: unknown }).signatures);
+  console.log(
+    `[document-cell] ${PUBLIC_URL}  port ${PORT}  card ${signed ? "signed" : "unsigned"}`,
+  );
   app.listen(PORT, () => {
-    console.log(`[document-cell] ${PUBLIC_URL}  port ${PORT}`);
+    console.log(`[document-cell] listening`);
   });
 }

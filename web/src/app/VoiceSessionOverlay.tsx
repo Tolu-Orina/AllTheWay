@@ -22,11 +22,10 @@ import { cn } from "@/lib/utils";
 /**
  * The live voice session, on one thread at a time.
  *
- * Captions are the surface, and they belong on the session thread — opening
- * Speak again hydrates them rather than starting a blank overlay. Previous
- * conversations sit on a second pill, the same split companion uses, so a
- * new talk cannot bleed into an old one. Opening one hangs this live
- * session and starts on that thread.
+ * Spoken sessions are their own list. Opening Speak from Today must not
+ * hydrate the typed companion chat into the overlay. Previous conversations
+ * sit on a second pill so a new talk cannot bleed into an old one. Opening
+ * one hangs this live session and starts on that thread.
  *
  * Pause stops the room reaching the model without hanging up; Stop tears
  * the session down. Saying goodbye does the same as Stop once the farewell
@@ -228,7 +227,7 @@ function VoicePreviousSessions({
   const t = useT();
   const { pathname } = useLocation();
   const { chatsVersion } = useCompanionThread();
-  const surface = workIdFromPath(pathname) ? "work" : "companion";
+  const surface = workIdFromPath(pathname) ? "work" : "voice";
   const { state } = useAsync(() => api.sessions(surface), [chatsVersion, surface, currentId]);
   const sessions: Session[] = state.status === "ready" ? state.data : [];
 

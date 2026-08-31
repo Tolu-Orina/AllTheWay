@@ -159,10 +159,11 @@ function planFields(plan: PlanStep[]) {
   };
 }
 
-export type SessionSurface = "work" | "companion";
+export type SessionSurface = "work" | "companion" | "voice";
 
 export function sessionSurface(id: string, data: { surface?: unknown } = {}): SessionSurface {
   if (id === "companion" || data.surface === "companion") return "companion";
+  if (data.surface === "voice") return "voice";
   return "work";
 }
 
@@ -190,7 +191,9 @@ export async function ensureSession(
   if (snap.exists) return;
 
   const surface = opts.surface ?? sessionSurface(id);
-  const title = opts.title?.trim() || (surface === "companion" ? COMPANION_TITLE : DEFAULT_TITLE);
+  const title =
+    opts.title?.trim() ||
+    (surface === "companion" ? COMPANION_TITLE : surface === "voice" ? VOICE_TITLE : DEFAULT_TITLE);
   await ref.set({
     title,
     updatedAt: FieldValue.serverTimestamp(),
@@ -452,12 +455,14 @@ export async function listSessions(
   uid: string,
   surface: SessionSurface = "work",
 ): Promise<Session[]> {
-  if (surface === "companion") {
-    const snap = await sessions(uid).where("surface", "==", "companion").limit(50).get();
+  if (surface === "companion" || surface === "voice") {
+    const snap = await sessions(uid).where("surface", "==", surface).limit(50).get();
     const docs: DocumentSnapshot[] = [...snap.docs];
-    const legacy = await sessions(uid).doc("companion").get();
-    if (legacy.exists && !docs.some((d) => d.id === "companion")) {
-      docs.push(legacy);
+    if (surface === "companion") {
+      const legacy = await sessions(uid).doc("companion").get();
+      if (legacy.exists && !docs.some((d) => d.id === "companion")) {
+        docs.push(legacy);
+      }
     }
     return docs
       .map(asListedSession)

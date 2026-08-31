@@ -19,13 +19,16 @@ export function pendingConfirmId(
   messages: Array<{
     id: number;
     role: string;
+    phase?: string;
     actions?: Array<{ connector?: string; tool?: string }>;
   }>,
 ): number | null {
   for (let i = messages.length - 1; i >= 0; i--) {
     const m = messages[i];
     if (m.role === "user") return null;
-    if (m.role === "agent" && (m.actions ?? []).some((a) => a.connector && a.tool)) {
+    if (m.role !== "agent") continue;
+    if (m.phase === "confirm") return m.id;
+    if ((m.actions ?? []).some((a) => a.connector && a.tool)) {
       return m.id;
     }
   }

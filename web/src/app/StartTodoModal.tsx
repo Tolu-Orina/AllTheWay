@@ -23,7 +23,7 @@ export function StartTodoModal({
   onNeedAccounts: () => void;
 }) {
   const t = useT();
-  const { send } = useCompanionThread();
+  const { send, openCompanion } = useCompanionThread();
   const voice = useVoice();
   const connectors = useAsync(
     () => api.connectors(),
@@ -64,11 +64,13 @@ export function StartTodoModal({
   }
 
   function generate() {
+    if (connectors.state.status === "loading") return;
     if (!canGenerate) {
       onOpenChange(false);
       onNeedAccounts();
       return;
     }
+    openCompanion();
     send(t("todo.generatePrompt"));
     finish();
   }
@@ -159,7 +161,7 @@ export function StartTodoModal({
             <button
               type="button"
               onClick={generate}
-              disabled={connectors.state.status !== "ready"}
+              disabled={connectors.state.status === "loading"}
               className="mt-5 inline-flex w-full items-center justify-center gap-2 rounded-brand border px-3 py-2.5 text-[12px] font-semibold tracking-[0.08em] uppercase transition-colors hover:border-primary/40 disabled:opacity-50"
             >
               <Sparkles className="size-3.5" aria-hidden="true" />

@@ -32,6 +32,7 @@ import {
   correctionFields,
   patchPlanArguments,
   overlayConfirmOnPlan,
+  VOICE_TITLE,
 } from "./repos/sessions.js";
 import { composeFollowUpTurn } from "./compose-followup.js";
 import { listPreferences, revertPreference, acceptPreference } from "./repos/preferences.js";
@@ -264,7 +265,7 @@ api.get(
   "/sessions",
   handle(async (req, res) => {
     const raw = typeof req.query.surface === "string" ? req.query.surface : "";
-    const surface = raw === "companion" ? "companion" : "work";
+    const surface = raw === "companion" || raw === "voice" ? raw : "work";
     res.json(await listSessions(req.uid!, surface));
   }),
 );
@@ -278,12 +279,15 @@ api.post(
   "/sessions",
   handle(async (req, res) => {
     const body = z
-      .object({ surface: z.enum(["work", "companion"]).optional() })
+      .object({ surface: z.enum(["work", "companion", "voice"]).optional() })
       .safeParse(req.body ?? {});
-    const surface = body.success && body.data.surface === "companion" ? "companion" : "work";
+    const surface =
+      body.success && (body.data.surface === "companion" || body.data.surface === "voice")
+        ? body.data.surface
+        : "work";
     const id = crypto.randomUUID();
     await ensureSession(req.uid!, id, {
-      title: surface === "companion" ? "New chat" : "New work",
+      title: surface === "companion" ? "New chat" : surface === "voice" ? VOICE_TITLE : "New work",
       surface,
     });
     res.status(201).json({ id });

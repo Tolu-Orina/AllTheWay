@@ -414,6 +414,122 @@ def test_calendar_lookups_do_not_leave_a_list_events_step():
     assert "Standup" in r.note
 
 
+def test_a_calendar_review_task_is_not_a_confirm_when_lookups_already_answered():
+    """create_task + draft_only used to ask 'should I go ahead' to read a calendar."""
+
+    class ReviewPlanner:
+        def structured(self, system, user, schema_hint):
+            return {
+                "decision": "plan",
+                "needsResearch": False,
+                "steps": [
+                    {
+                        "label": "Review upcoming schedule from calendar",
+                        "action": "create_task",
+                    }
+                ],
+                "note": "This will create a task — Review upcoming schedule from calendar. Should I go ahead?",
+            }
+
+    r = run_turn(
+        TurnRequest(
+            session_id="s1",
+            user_id="u1",
+            message="What's on my calendar for the next twelve hours?",
+            lookups=['whats_on_my_calendar: {"events":[{"title":"Meeting with AWS","startsAt":"12:00"}]}'],
+            ceiling="draft_only",
+        ),
+        ReviewPlanner(),
+    )
+    assert r.confirm is None
+    assert r.plan == []
+    assert "Ceiling is draft only" not in (r.note or "")
+    assert "AWS" in r.note
+
+
+def test_a_calendar_summarise_task_is_also_answered_from_lookups():
+    class ReviewPlanner:
+        def structured(self, system, user, schema_hint):
+            return {
+                "decision": "plan",
+                "needsResearch": False,
+                "steps": [
+                    {
+                        "label": "Review and summarize the schedule for the next 12 hours",
+                        "action": "create_task",
+                    }
+                ],
+                "note": "This will create a task — Review and summarize the schedule for the next 12 hours. Should I go ahead?",
+            }
+
+    r = run_turn(
+        TurnRequest(
+            session_id="s1",
+            user_id="u1",
+            message="What's on my calendar for the next twelve hours?",
+            lookups=['whats_on_my_calendar: {"events":[{"title":"Meeting with AWS","startsAt":"12:00"}]}'],
+            ceiling="draft_only",
+        ),
+        ReviewPlanner(),
+    )
+    assert r.confirm is None
+    assert r.plan == []
+    assert "AWS" in r.note
+
+
+def test_a_calendar_write_still_confirms_when_lookups_are_present():
+    class WritePlanner:
+        def structured(self, system, user, schema_hint):
+            return {
+                "decision": "plan",
+                "needsResearch": False,
+                "steps": [
+                    {
+                        "label": "Add lunch to the calendar",
+                        "action": "create_task",
+                        "connector": "google_calendar",
+                        "tool": "create_event",
+                        "arguments": {
+                            "title": "Lunch",
+                            "starts_at": "2026-08-31T12:00:00+01:00",
+                            "time_zone": "Europe/London",
+                        },
+                    }
+                ],
+                "note": "This will put lunch on your calendar.",
+            }
+
+    r = run_turn(
+        TurnRequest(
+            session_id="s1",
+            user_id="u1",
+            message="Add lunch to my calendar at noon",
+            lookups=['whats_on_my_calendar: {"events":[{"title":"Standup","startsAt":"10:00"}]}'],
+            ceiling="draft_only",
+        ),
+        WritePlanner(),
+    )
+    assert r.confirm is not None
+    assert any(s.tool == "create_event" for s in r.plan)
+
+
+def test_fake_provider_answers_a_schedule_read_from_lookups():
+    r = run_turn(
+        TurnRequest(
+            session_id="s1",
+            user_id="u1",
+            message="What's on my schedule for the next twelve hours?",
+            lookups=['whats_on_my_calendar: {"events":[{"title":"Meeting with AWS","startsAt":"12:00"}]}'],
+            ceiling="draft_only",
+        ),
+        FakeProvider(),
+    )
+    assert r.confirm is None
+    assert r.plan == []
+    assert "AWS" in r.note
+    assert "Ceiling is draft only" not in (r.note or "")
+
+
 def test_three_words_without_a_thread_still_hit_the_clarify_gate():
     r = turn("Anime character illustration")
     assert r.decision == "clarify"

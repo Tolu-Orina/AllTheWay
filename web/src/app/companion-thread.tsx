@@ -18,7 +18,7 @@ import { persistCompanionSessionId, readCompanionSessionId } from "@/app/work-id
 import { ApiError } from "@/lib/api";
 import { pendingConfirmId } from "@/app/ConfirmGate";
 import { composeKind, composeSources } from "@/app/compose-fields";
-import { isSpokenYes } from "@/lib/spoken-confirm";
+import { isPendingConfirmReply } from "@/lib/spoken-confirm";
 import type { Citation, OnboardingJob, PlanStep, ThreadMessage } from "@alltheway/contracts";
 
 export type CompanionMessage = {
@@ -252,7 +252,7 @@ export function CompanionThreadProvider({ children }: { children: React.ReactNod
           if (picked) trimmed = picked;
         }
       }
-      if (lastAgent?.actions?.length && (trimmed === "1" || isSpokenYes(trimmed))) {
+      if (lastAgent?.actions?.length && isPendingConfirmReply(trimmed, lastAgent)) {
         setHistory((prev) => [
           ...prev,
           { id: prev.length + 1, role: "user", text: trimmed },

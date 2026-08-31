@@ -91,7 +91,10 @@ export function CompanionConversation({ autoFocus = false }: { autoFocus?: boole
 
               {m.steps?.length && m.id !== confirmId ? (
                 <div className="mt-2">
-                  <PlanStack steps={m.steps} onSend={working ? undefined : send} />
+                  <PlanStack
+                    steps={m.steps}
+                    onSend={working || m.actions?.length ? undefined : send}
+                  />
                 </div>
               ) : null}
 
