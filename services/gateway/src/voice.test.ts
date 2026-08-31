@@ -18,8 +18,12 @@ import {
   TranscriptAccumulator,
   greetingKickMessage,
   isGreetingKickTranscript,
+  startGreetingGate,
   GREETING_KICK_TEXT,
+  greetingKickText,
+  spokenGreetingLine,
 } from "./voice/protocol.js";
+import { firstNameFrom } from "./name.js";
 import { READ_TOOL_NAMES, SESSION_TOOL_NAMES, runReadTool } from "./voice/tools.js";
 import { END_THIS_CONVERSATION, setHangupDelaysForTests } from "./voice/hangup.js";
 
@@ -267,6 +271,8 @@ test("the voice instruction greets first when a session starts", () => {
   const s = SYSTEM_INSTRUCTION.toLowerCase();
   assert.match(s, /speak first/);
   assert.match(s, /do not wait for them to say hello/);
+  assert.match(s, /if you were given their name, use it/);
+  assert.match(s, /welcome them back to a named conversation/);
   assert.doesNotMatch(s, /wait for them to tell you what they want/);
 });
 
@@ -280,10 +286,60 @@ test("a new live session sends a completed turn so the model can greet", () => {
   assert.equal(content.turns?.[0]?.role, "user");
   assert.equal(content.turns?.[0]?.parts?.[0]?.text, GREETING_KICK_TEXT);
   assert.equal(isGreetingKickTranscript(GREETING_KICK_TEXT), true);
+  assert.equal(isGreetingKickTranscript("Please greet me now"), true);
+  assert.equal(isGreetingKickTranscript("Please greet"), true);
+  assert.equal(isGreetingKickTranscript("Please welcome Ada back"), true);
+  assert.equal(isGreetingKickTranscript("Please"), false);
   assert.equal(isGreetingKickTranscript("The session has just started"), true);
-  assert.equal(isGreetingKickTranscript("The session"), true);
-  assert.equal(isGreetingKickTranscript("The"), false);
   assert.equal(isGreetingKickTranscript("Draft an email to Ana"), false);
+});
+
+test("the greeting kick uses their first name, and names a resumed session", () => {
+  assert.match(greetingKickText({ firstName: "Ada", resumed: false }), /Ada/);
+  assert.doesNotMatch(greetingKickText({ firstName: "Ada", resumed: false }), /welcome/i);
+  const back = greetingKickText({
+    firstName: "Ada",
+    title: "Draft the nav",
+    resumed: true,
+  });
+  assert.match(back, /welcome/i);
+  assert.match(back, /Ada/);
+  assert.match(back, /Draft the nav/);
+  assert.equal(isGreetingKickTranscript(back), true);
+  assert.equal(
+    spokenGreetingLine({ firstName: "Ada", title: "Draft the nav", resumed: true }),
+    "Welcome back, Ada, to Draft the nav. What can I help with?",
+  );
+  assert.equal(
+    spokenGreetingLine({ firstName: "Ada", resumed: false }),
+    "Hi Ada — I'm here. What can I help with?",
+  );
+});
+
+test("a greeting name is a first name, never the email", () => {
+  assert.equal(firstNameFrom({ name: "Ada Okafor" }), "Ada");
+  assert.equal(firstNameFrom({ email: "ada.okafor@example.com" }), "Ada");
+  assert.equal(firstNameFrom({ name: "ada@example.com", email: "ada.okafor@example.com" }), "Ada");
+});
+
+test("the greeting gate keeps the mic off Vertex until the hello finishes", async () => {
+  let opened = 0;
+  const gate = startGreetingGate({ onOpen: () => opened++, timeoutMs: 50 });
+  assert.equal(gate.holding(), true);
+  assert.equal(opened, 0);
+  gate.noteModelTurn();
+  assert.equal(gate.holding(), false);
+  assert.equal(opened, 1);
+  gate.noteModelTurn();
+  assert.equal(opened, 1);
+});
+
+test("the greeting gate opens on timeout so they can still talk", async () => {
+  let opened = 0;
+  const gate = startGreetingGate({ onOpen: () => opened++, timeoutMs: 20 });
+  await new Promise((r) => setTimeout(r, 50));
+  assert.equal(opened, 1);
+  assert.equal(gate.holding(), false);
 });
 
 test("the voice instruction hangs up only when they are leaving the conversation", () => {

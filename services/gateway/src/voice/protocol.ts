@@ -1,4 +1,6 @@
 import { SESSION_TOOLS, READ_TOOLS } from "./tools.js";
+import { speakable } from "../name.js";
+
 /**
  * The Live API wire, and our thinner wire to the browser.
  *
@@ -150,9 +152,12 @@ export const SYSTEM_INSTRUCTION = [
   "",
   "When you join, speak first. A short greeting — that you are here, and how you",
   "can help — then wait. Do not wait for them to say hello. One or two sentences.",
+  "If you were given their name, use it in that greeting.",
+  "If you were asked to welcome them back to a named conversation, say welcome back",
+  "to that conversation by name. Do not recap what was said in it, do not assume",
+  "a task is still in progress, and do not ask if they want to continue anything",
+  "unless they bring it up.",
   "If they last spoke another language, greet in that language; otherwise English.",
-  "Do not recap what was said before, do not assume a task is still in progress,",
-  "and do not ask if they want to continue anything unless they bring it up.",
   "",
   "If they jump straight to a question or a task, skip the rest of the greeting",
   "and just answer or act.",
@@ -363,31 +368,96 @@ export function realtimePcm(base64: string): Record<string, unknown> {
 /**
  * Ask the live model to speak first, after setup, not after they talk.
  *
- * Native audio waits for a user turn unless one is completed here. This is
+ * Native audio waits for a completed user turn. This is that turn. It is
  * not something they said — captions must not show it.
  */
+export type VoiceGreeting = {
+  firstName?: string;
+  title?: string;
+  /** Coming back to a conversation that already has a real name. */
+  resumed: boolean;
+};
+
 export const GREETING_KICK_TEXT =
-  "The session has just started. They have not spoken. Greet them now " +
-  "in a short spoken hello, then wait. This line is not from them.";
+  "Please greet me now with a short spoken hello, then wait for me to talk.";
+
+/** How long to keep the mic off Vertex while the hello is generated. */
+export const GREETING_HOLD_MS = 6_000;
+
+export function greetingKickText(g: VoiceGreeting = { resumed: false }): string {
+  const name = speakable(g.firstName ?? "", 24);
+  const title = speakable(g.title ?? "", 40);
+  if (g.resumed && title) {
+    return name
+      ? `Please welcome ${name} back to ${title} with a short spoken hello that names that conversation, then wait for them to talk.`
+      : `Please welcome them back to ${title} with a short spoken hello that names that conversation, then wait for them to talk.`;
+  }
+  return name
+    ? `Please greet ${name} now with a short spoken hello that uses their name, then wait for them to talk.`
+    : GREETING_KICK_TEXT;
+}
+
+/** What the local fake session speaks, matching the kick. */
+export function spokenGreetingLine(g: VoiceGreeting = { resumed: false }): string {
+  const name = speakable(g.firstName ?? "", 24);
+  const title = speakable(g.title ?? "", 40);
+  if (g.resumed && title) {
+    return name
+      ? `Welcome back, ${name}, to ${title}. What can I help with?`
+      : `Welcome back to ${title}. What can I help with?`;
+  }
+  return name ? `Hi ${name} — I'm here. What can I help with?` : "Hi — I'm here. What can I help with?";
+}
 
 export function isGreetingKickTranscript(text: string): boolean {
   const t = text.trim();
   if (!t) return false;
+  if (/^please (greet|welcome)\b/i.test(t)) return true;
+  if (GREETING_KICK_TEXT.startsWith(t) && t.startsWith("Please greet")) return true;
+  // Older kick, still filtered if a session straddles a deploy.
   if (t.startsWith("The session has just started")) return true;
-  if (GREETING_KICK_TEXT.startsWith(t) && t.startsWith("The session")) return true;
   return /they have not spoken|this line is not from them/i.test(t);
 }
 
-export function greetingKickMessage(): Record<string, unknown> {
+export function greetingKickMessage(g: VoiceGreeting = { resumed: false }): Record<string, unknown> {
   return {
     clientContent: {
       turns: [
         {
           role: "user",
-          parts: [{ text: GREETING_KICK_TEXT }],
+          parts: [{ text: greetingKickText(g) }],
         },
       ],
       turnComplete: true,
+    },
+  };
+}
+
+/**
+ * Keep room audio off Vertex until the hello has played.
+ *
+ * The browser starts sending PCM the instant the socket is ready. Native
+ * audio treats that as barge-in, so the kick never becomes a spoken turn.
+ * Holding until the first spoken audio (or this timeout) is what lets it greet.
+ */
+export function startGreetingGate(opts: {
+  onOpen: () => void;
+  timeoutMs?: number;
+}): { holding(): boolean; noteModelTurn(): void; dispose(): void } {
+  let holding = true;
+  const timer = setTimeout(() => open(), opts.timeoutMs ?? GREETING_HOLD_MS);
+  const open = () => {
+    if (!holding) return;
+    holding = false;
+    clearTimeout(timer);
+    opts.onOpen();
+  };
+  return {
+    holding: () => holding,
+    noteModelTurn: open,
+    dispose() {
+      holding = false;
+      clearTimeout(timer);
     },
   };
 }

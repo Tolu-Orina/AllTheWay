@@ -54,7 +54,7 @@ function sentenceCase(value: string): string {
   return value.slice(0, i) + letter[0].toLocaleUpperCase() + value.slice(i + 1);
 }
 
-function isThinTitle(title: string): boolean {
+export function isThinTitle(title: string): boolean {
   const t = title.trim();
   if (!t) return true;
   if (UNLOCKED.has(t)) return true;

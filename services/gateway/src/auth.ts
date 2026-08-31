@@ -2,6 +2,7 @@ import type { NextFunction, Request, Response } from "express";
 import { getAuth } from "firebase-admin/auth";
 
 import { env } from "./env.js";
+import { firstNameFrom } from "./name.js";
 
 declare global {
   // eslint-disable-next-line @typescript-eslint/no-namespace
@@ -13,7 +14,7 @@ declare global {
 }
 
 /**
- * Resolves a uid from a Firebase ID token.
+ * Who is on the other end of this token, including a first name we can say.
  *
  * Shared by HTTP (`Authorization` header) and the voice socket (first
  * message). Browsers cannot set headers on `new WebSocket()`, so the socket
@@ -22,15 +23,27 @@ declare global {
  * This is the real security boundary. The client-side route guard is UX only.
  * Returns null rather than throwing: the caller chooses 401 vs close.
  */
-export async function uidFromToken(token: string | undefined): Promise<string | null> {
-  if (env.allowAnonymous) return env.devUserId;
+export type Caller = { uid: string; firstName: string };
+
+export async function callerFromToken(token: string | undefined): Promise<Caller | null> {
+  if (env.allowAnonymous) return { uid: env.devUserId, firstName: "" };
   if (!token) return null;
   try {
     const decoded = await getAuth().verifyIdToken(token);
-    return decoded.uid;
+    return {
+      uid: decoded.uid,
+      firstName: firstNameFrom({
+        name: typeof decoded.name === "string" ? decoded.name : undefined,
+        email: typeof decoded.email === "string" ? decoded.email : undefined,
+      }),
+    };
   } catch {
     return null;
   }
+}
+
+export async function uidFromToken(token: string | undefined): Promise<string | null> {
+  return (await callerFromToken(token))?.uid ?? null;
 }
 
 export async function requireUser(req: Request, res: Response, next: NextFunction) {

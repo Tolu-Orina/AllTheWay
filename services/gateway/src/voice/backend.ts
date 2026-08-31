@@ -13,7 +13,10 @@ import {
   toolResponse,
   greetingKickMessage,
   isGreetingKickTranscript,
+  startGreetingGate,
+  spokenGreetingLine,
   type ParsedServer,
+  type VoiceGreeting,
 } from "./protocol.js";
 
 export type LiveEvents = {
@@ -37,7 +40,11 @@ export type LiveSession = {
   handle(): string | undefined;
 };
 
-export type LiveOpener = (opts: { resumeHandle?: string; events: LiveEvents }) => Promise<LiveSession>;
+export type LiveOpener = (opts: {
+  resumeHandle?: string;
+  greeting?: VoiceGreeting | Promise<VoiceGreeting>;
+  events: LiveEvents;
+}) => Promise<LiveSession>;
 
 const OPEN_TIMEOUT_MS = 8_000;
 const RECONNECT_PAUSE_MS = 250;
@@ -59,7 +66,10 @@ function tonePcmBase64(hz = 440, ms = 280): string {
  * Local voice with no Vertex: enough audio and a spoken line that the
  * AudioWorklet path is real, and obviously not a model.
  */
-export function openFakeLive(opts: { events: LiveEvents }): Promise<LiveSession> {
+export function openFakeLive(opts: {
+  events: LiveEvents;
+  greeting?: VoiceGreeting | Promise<VoiceGreeting>;
+}): Promise<LiveSession> {
   const { events } = opts;
   let closed = false;
   let heard = 0;
@@ -67,10 +77,14 @@ export function openFakeLive(opts: { events: LiveEvents }): Promise<LiveSession>
   let askedToLeave = false;
 
   queueMicrotask(() => {
-    if (closed) return;
-    events.onReady();
-    events.onPcm(tonePcmBase64(523, 320));
-    events.onModelTranscript("Hi — I'm here. What can I help with?", true);
+    void (async () => {
+      if (closed) return;
+      events.onReady();
+      const g = await Promise.resolve(opts.greeting ?? { resumed: false });
+      if (closed) return;
+      events.onPcm(tonePcmBase64(523, 320));
+      events.onModelTranscript(spokenGreetingLine(g), true);
+    })();
   });
 
   return Promise.resolve({
@@ -121,7 +135,7 @@ export function openFakeLive(opts: { events: LiveEvents }): Promise<LiveSession>
 
 export function createLiveOpener(): LiveOpener {
   if (!env.production) {
-    return ({ events }) => openFakeLive({ events });
+    return (opts) => openFakeLive(opts);
   }
   return (opts) => openVertexLive(opts);
 }
@@ -157,6 +171,7 @@ function openSocket(url: string, token: string): Promise<WebSocket> {
 
 async function openVertexLive(opts: {
   resumeHandle?: string;
+  greeting?: VoiceGreeting | Promise<VoiceGreeting>;
   events: LiveEvents;
 }): Promise<LiveSession> {
   const events = opts.events;
@@ -170,6 +185,7 @@ async function openVertexLive(opts: {
   let closed = false;
   let ready = false;
   let socket: WebSocket | undefined;
+  let greeting: ReturnType<typeof startGreetingGate> | undefined;
   const pending: string[] = [];
   let pendingBytes = 0;
   let reconnecting = false;
@@ -207,20 +223,40 @@ async function openVertexLive(opts: {
         attempts = 0;
         if (!ready) {
           ready = true;
-          events.onReady();
-          // Native audio waits for a user turn. Completing one here is what
-          // lets it greet. A resumed Vertex session already has the conversation.
+          // Kick first, then tell the browser we are live. Mic PCM that
+          // arrives on `onReady` must not reach Vertex until the hello
+          // has finished — that barge-in is why it never greeted.
           if (!opts.resumeHandle) {
-            try {
-              ws.send(JSON.stringify(greetingKickMessage()));
-            } catch {
-              /* setup just completed; a send failure is onClose's problem */
-            }
+            greeting = startGreetingGate({
+              onOpen() {
+                // Room audio from during the hello is barge-in if replayed.
+                pending.length = 0;
+                pendingBytes = 0;
+              },
+            });
+            void Promise.resolve(opts.greeting ?? { resumed: false }).then((g) => {
+              if (closed || socket !== ws || !greeting?.holding()) return;
+              try {
+                ws.send(JSON.stringify(greetingKickMessage(g)));
+              } catch {
+                greeting?.noteModelTurn();
+              }
+            });
           }
+          events.onReady();
+          if (!greeting) flushPending(ws);
+        } else {
+          greeting?.dispose();
+          greeting = undefined;
+          flushPending(ws);
         }
-        flushPending(ws);
       }
-      for (const pcm of msg.pcm ?? []) events.onPcm(pcm);
+      for (const pcm of msg.pcm ?? []) {
+        // First spoken audio is the hello. Release the mic so they can
+        // barge in, but do not replay what we held — that is the room.
+        greeting?.noteModelTurn();
+        events.onPcm(pcm);
+      }
       if (msg.userTranscript && !isGreetingKickTranscript(msg.userTranscript.text)) {
         events.onUserTranscript(msg.userTranscript.text, msg.userTranscript.finished);
       }
@@ -228,7 +264,10 @@ async function openVertexLive(opts: {
         events.onModelTranscript(msg.modelTranscript.text, msg.modelTranscript.finished);
       }
       if (msg.interrupted) events.onInterrupted();
-      if (msg.turnComplete || msg.generationComplete) events.onTurnComplete?.();
+      if (msg.turnComplete || msg.generationComplete) {
+        greeting?.noteModelTurn();
+        events.onTurnComplete?.();
+      }
       for (const call of msg.toolCalls ?? []) events.onToolCall(call);
       if (msg.toolCallCancellations?.length) events.onToolCancel(msg.toolCallCancellations);
       if (msg.resumeHandle) {
@@ -257,6 +296,8 @@ async function openVertexLive(opts: {
     reconnecting = true;
     const previous = socket;
     socket = undefined;
+    greeting?.dispose();
+    greeting = undefined;
     try {
       previous?.close();
     } catch {
@@ -294,7 +335,12 @@ async function openVertexLive(opts: {
   return {
     sendPcm(base64: string) {
       if (closed) return;
-      if (!socket || socket.readyState !== WebSocket.OPEN || !ready) {
+      if (
+        !socket ||
+        socket.readyState !== WebSocket.OPEN ||
+        !ready ||
+        greeting?.holding()
+      ) {
         bufferPcm(base64);
         return;
       }
@@ -307,6 +353,8 @@ async function openVertexLive(opts: {
     close() {
       if (closed) return;
       closed = true;
+      greeting?.dispose();
+      greeting = undefined;
       try {
         socket?.close();
       } catch {
