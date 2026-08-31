@@ -1,11 +1,12 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import { useParams } from "react-router";
 import { useT } from "@/app/i18n";
-import { Check, Download, FileText, History, Loader2, Pencil, Eye } from "lucide-react";
+import { Check, Download, FileText, History, Loader2, Pencil, Eye, X } from "lucide-react";
 
 import { api, type ArtifactDetail, type ArtifactPreview, type ArtifactVersion } from "@/app/data";
 import { Comments } from "@/app/Comments";
 import { ShareControls } from "@/app/Share";
+import { FormatToolbar } from "@/app/FormatToolbar";
 import { extensionForMime, isOfficeMime, isTextEditableMime } from "@alltheway/contracts";
 import { Markdown } from "@/app/Markdown";
 import { cn } from "@/lib/utils";
@@ -37,26 +38,31 @@ import { cn } from "@/lib/utils";
  * image. Content is fetched with the token and turned into a blob URL, which
  * this component then owns and revokes.
  *
- * ## What a correction means before Phase C
+ * ## Edits persist without a second form
  *
- * The agent cannot yet regenerate — that arrives with image generation. Until
- * then a correction is a **user edit**: you change the text and say what
- * changed. The note is kept because it is the learning signal, and Phase C
- * turns the same note into a regeneration instruction without changing the
- * data model.
+ * Closing the canvas, exporting, or leaving the field writes the draft. A
+ * "what changed" note used to sit between the person and that save, so work
+ * disappeared when they walked away.
  */
 
-export function Canvas({ artifactId }: { artifactId: string }) {
+export function Canvas({ artifactId, onClose }: { artifactId: string; onClose?: () => void }) {
   const t = useT();
   const [artifact, setArtifact] = useState<ArtifactDetail | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [viewing, setViewing] = useState<number | null>(null);
   const [saving, setSaving] = useState(false);
+  const [title, setTitle] = useState("");
+  const draftRef = useRef<string | null>(null);
+  const originalRef = useRef("");
+  const mimeRef = useRef("text/markdown");
+  const savedTitle = useRef("");
 
   const load = useCallback(
     async (select?: "latest") => {
       const fresh = await api.artifact(artifactId);
       setArtifact(fresh);
+      setTitle(fresh.title);
+      savedTitle.current = fresh.title;
       setViewing((current) =>
         select === "latest" || current === null ? fresh.currentVersion : current,
       );
@@ -64,6 +70,29 @@ export function Canvas({ artifactId }: { artifactId: string }) {
     },
     [artifactId],
   );
+
+  const persist = useCallback(async (): Promise<number | undefined> => {
+    const text = draftRef.current;
+    if (text === null || text === originalRef.current) return viewing ?? undefined;
+    setSaving(true);
+    try {
+      const { n } = await api.editArtifact(artifactId, text, "", mimeRef.current);
+      originalRef.current = text;
+      return n;
+    } catch {
+      return undefined;
+    } finally {
+      setSaving(false);
+    }
+  }, [artifactId, viewing]);
+
+  useEffect(() => {
+    return () => {
+      const text = draftRef.current;
+      if (text === null || text === originalRef.current) return;
+      void api.editArtifact(artifactId, text, "", mimeRef.current).catch(() => undefined);
+    };
+  }, [artifactId]);
 
   useEffect(() => {
     let live = true;
@@ -110,10 +139,37 @@ export function Canvas({ artifactId }: { artifactId: string }) {
   const shown = artifact.versions.find((v) => v.n === viewing) ?? artifact.versions.at(-1);
 
   return (
-    <div className="flex h-full flex-col">
+    <div className="flex h-full min-h-0 flex-col">
       <header className="flex items-start justify-between gap-3 border-b px-4 py-3">
-        <div className="min-w-0">
-          <h2 className="truncate text-[14px] font-semibold">{artifact.title}</h2>
+        <div className="min-w-0 flex-1">
+          <label htmlFor="artifact-title" className="sr-only">
+            {t("canvas.title")}
+          </label>
+          <input
+            id="artifact-title"
+            value={title}
+            onChange={(e) => setTitle(e.target.value)}
+            onBlur={() => {
+              const next = title.trim();
+              if (!next) {
+                setTitle(savedTitle.current);
+                return;
+              }
+              if (next === savedTitle.current) return;
+              void api
+                .renameArtifact(artifact.id, next)
+                .then((row) => {
+                  savedTitle.current = row.title;
+                  setTitle(row.title);
+                  setArtifact((prev) => (prev ? { ...prev, title: row.title } : prev));
+                })
+                .catch(() => setTitle(savedTitle.current));
+            }}
+            onKeyDown={(e) => {
+              if (e.key === "Enter") e.currentTarget.blur();
+            }}
+            className="w-full bg-transparent text-[14px] font-semibold outline-none"
+          />
           <p className="mt-0.5 text-[12px] text-muted-foreground">
             {artifact.versions.length} version{artifact.versions.length === 1 ? "" : "s"}
             {/* Provenance is pixels, not prose. The card version is the
@@ -125,12 +181,36 @@ export function Canvas({ artifactId }: { artifactId: string }) {
           </p>
         </div>
 
-        <ExportButton
-          artifactId={artifact.id}
-          version={shown?.n}
-          title={artifact.title}
-          mimeType={shown?.mimeType}
-        />
+        <div className="flex shrink-0 items-center gap-2">
+          <ExportButton
+            artifactId={artifact.id}
+            version={shown?.n}
+            title={title.trim() || artifact.title}
+            mimeType={shown?.mimeType}
+            persist={persist}
+            draft={() => draftRef.current}
+            mime={() => mimeRef.current}
+          />
+          {onClose ? (
+            <button
+              type="button"
+              aria-label={t("canvas.close")}
+              onClick={() => {
+                void (async () => {
+                  await persist();
+                  if (draftRef.current !== null && draftRef.current !== originalRef.current) {
+                    setError("That did not save. Nothing changed.");
+                    return;
+                  }
+                  onClose();
+                })();
+              }}
+              className="grid size-8 shrink-0 cursor-pointer place-items-center rounded-full text-muted-foreground transition-colors hover:bg-muted hover:text-foreground"
+            >
+              <X className="size-4" aria-hidden="true" />
+            </button>
+          ) : null}
+        </div>
       </header>
 
       <VersionStrip
@@ -145,19 +225,10 @@ export function Canvas({ artifactId }: { artifactId: string }) {
         kind={artifact.kind}
         version={shown}
         saving={saving}
-        onSave={async (content, note) => {
-          setSaving(true);
-          try {
-            await api.editArtifact(artifact.id, content, note, shown?.mimeType);
-            // Re-read rather than assuming. An optimistic version number that
-            // turns out wrong is worse than a moment of latency.
-            await load("latest");
-          } catch {
-            setError("That did not save. Nothing changed.");
-          } finally {
-            setSaving(false);
-          }
-        }}
+        onSave={persist}
+        draftRef={draftRef}
+        originalRef={originalRef}
+        mimeRef={mimeRef}
       />
 
       {/* Sharing and discussion live with the artifact, under it, in the column
@@ -176,43 +247,60 @@ export function Canvas({ artifactId }: { artifactId: string }) {
   );
 }
 
+function downloadBlob(blob: Blob, title: string, version: number, mimeType?: string) {
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement("a");
+  a.href = url;
+  const ext = extensionForMime(mimeType ?? blob.type);
+  a.download = `${title.replace(/[^\w\d\-. ]+/g, "_") || "artifact"}-v${version}${ext}`;
+  a.click();
+  setTimeout(() => URL.revokeObjectURL(url), 0);
+}
+
 /** Export downloads through an authenticated fetch, then a transient link. */
 function ExportButton({
   artifactId,
   version,
   title,
   mimeType,
+  persist,
+  draft,
+  mime,
 }: {
   artifactId: string;
   version: number | undefined;
   title: string;
   mimeType?: string;
+  persist: () => Promise<number | undefined>;
+  draft: () => string | null;
+  mime: () => string;
 }) {
   const [busy, setBusy] = useState(false);
 
   return (
     <button
       type="button"
-      disabled={!version || busy}
+      disabled={busy}
       onClick={async () => {
-        if (!version) return;
         setBusy(true);
         try {
-          const blob = await api.artifactBytes(artifactId, version);
-          const url = URL.createObjectURL(blob);
-          const a = document.createElement("a");
-          a.href = url;
-          const ext = extensionForMime(mimeType ?? blob.type);
-          a.download = `${title.replace(/[^\w\d\-. ]+/g, "_") || "artifact"}-v${version}${ext}`;
-          a.click();
-          // Revoked on the next tick: revoking synchronously can cancel the
-          // download in some browsers before it has started reading.
-          setTimeout(() => URL.revokeObjectURL(url), 0);
+          const n = await persist();
+          const versionToGet = n ?? version;
+          try {
+            if (!versionToGet) throw new Error("no version");
+            const blob = await api.artifactBytes(artifactId, versionToGet);
+            downloadBlob(blob, title, versionToGet, mimeType ?? mime());
+          } catch {
+            const text = draft();
+            if (text == null) return;
+            const type = (mimeType ?? mime()) || "text/markdown";
+            downloadBlob(new Blob([text], { type }), title, versionToGet ?? 1, type);
+          }
         } finally {
           setBusy(false);
         }
       }}
-      className="inline-flex shrink-0 items-center gap-1.5 rounded-full border px-3 py-1.5 text-[12.5px] transition-colors hover:border-primary/40 disabled:opacity-50"
+      className="inline-flex shrink-0 cursor-pointer items-center gap-1.5 rounded-full border px-3 py-1.5 text-[12.5px] transition-colors hover:border-primary/40 disabled:cursor-not-allowed disabled:opacity-50"
     >
       {busy ? (
         <Loader2 className="size-3.5 animate-spin motion-reduce:animate-none" aria-hidden="true" />
@@ -275,24 +363,35 @@ function ArtifactBody({
   version,
   saving,
   onSave,
+  draftRef,
+  originalRef,
+  mimeRef,
 }: {
   artifactId: string;
   kind: ArtifactDetail["kind"];
   version: ArtifactVersion | undefined;
   saving: boolean;
-  onSave: (content: string, note: string) => void;
+  onSave: () => Promise<number | undefined>;
+  draftRef: { current: string | null };
+  originalRef: { current: string };
+  mimeRef: { current: string };
 }) {
   const t = useT();
   const [text, setText] = useState<string | null>(null);
   const [imageUrl, setImageUrl] = useState<string | null>(null);
-  const [note, setNote] = useState("");
-  const [editing, setEditing] = useState(false);
-  const original = useRef<string>("");
+  const [editing, setEditing] = useState(true);
+  const area = useRef<HTMLTextAreaElement>(null);
+
+  function write(next: string) {
+    draftRef.current = next;
+    setText(next);
+  }
 
   useEffect(() => {
     if (!version) return;
     let live = true;
     let created: string | null = null;
+    mimeRef.current = version.mimeType || "text/markdown";
 
     if (kind === "image" || kind === "video" || version.mimeType === "application/pdf") {
       api.artifactBytes(artifactId, version.n).then((blob) => {
@@ -303,18 +402,18 @@ function ArtifactBody({
     } else if (!isOfficeMime(version.mimeType)) {
       api.artifactText(artifactId, version.n).then((body) => {
         if (!live) return;
-        original.current = body;
+        originalRef.current = body;
+        draftRef.current = body;
         setText(body);
-        setEditing(false);
+        setEditing(!body.trim());
       });
     }
 
     return () => {
       live = false;
-      // This component created the URL, so this component revokes it.
       if (created) URL.revokeObjectURL(created);
     };
-  }, [artifactId, kind, version]);
+  }, [artifactId, kind, version, draftRef, originalRef, mimeRef]);
 
   if (!version) {
     return (
@@ -397,101 +496,74 @@ function ArtifactBody({
     );
   }
 
-  const changed = text !== null && text !== original.current;
   const markdown = isTextEditableMime(version.mimeType);
 
   return (
-    <>
-      <div className="flex-1 overflow-y-auto p-4">
-        {markdown && !editing ? (
-          <>
-            <div className="mb-3 flex justify-end">
-              <button
-                type="button"
-                onClick={() => setEditing(true)}
-                className="inline-flex items-center gap-1.5 rounded-full border px-3 py-1.5 text-[12.5px] text-muted-foreground transition-colors hover:border-primary/40 hover:text-foreground"
-              >
-                <Pencil className="size-3.5" aria-hidden="true" />
-                {t("canvas.edit")}
-              </button>
-            </div>
-            {text === null ? (
-              <Loader2
-                className="size-4 animate-spin text-muted-foreground motion-reduce:animate-none"
-                aria-label="Loading"
-              />
-            ) : (
-              <Markdown>{text}</Markdown>
-            )}
-          </>
+    <div className="flex min-h-0 flex-1 flex-col p-4">
+      <div className="mb-2 flex items-center justify-between gap-2">
+        {markdown && editing ? (
+          <FormatToolbar
+            value={text ?? ""}
+            onChange={write}
+            textarea={area}
+            disabled={text === null || saving}
+          />
         ) : (
-          <>
-            {markdown ? (
-              <div className="mb-3 flex justify-end">
-                <button
-                  type="button"
-                  onClick={() => setEditing(false)}
-                  disabled={changed}
-                  className="inline-flex items-center gap-1.5 rounded-full border px-3 py-1.5 text-[12.5px] text-muted-foreground transition-colors hover:border-primary/40 hover:text-foreground disabled:opacity-40"
-                >
-                  <Eye className="size-3.5" aria-hidden="true" />
-                  {t("canvas.preview")}
-                </button>
-              </div>
-            ) : null}
-            <label htmlFor="canvas-body" className="sr-only">
-              {t("canvas.artifactContent")}
-            </label>
-            <textarea
-              id="canvas-body"
-              value={text ?? ""}
-              disabled={text === null || saving}
-              onChange={(e) => setText(e.target.value)}
-              spellCheck
-              className="h-full min-h-[14rem] w-full resize-none rounded-brand border bg-background p-3 font-mono text-[13px] leading-relaxed outline-none disabled:opacity-60"
-            />
-          </>
+          <span />
         )}
-        {version.correction ? <Correction note={version.correction} /> : null}
+        {markdown ? (
+          <button
+            type="button"
+            onClick={() => {
+              if (editing) void onSave();
+              setEditing((v) => !v);
+            }}
+            className="inline-flex cursor-pointer items-center gap-1.5 rounded-full border px-3 py-1.5 text-[12.5px] text-muted-foreground transition-colors hover:border-primary/40 hover:text-foreground"
+          >
+            {editing ? (
+              <>
+                <Eye className="size-4" aria-hidden="true" />
+                {t("canvas.preview")}
+              </>
+            ) : (
+              <>
+                <Pencil className="size-4" aria-hidden="true" />
+                {t("canvas.edit")}
+              </>
+            )}
+          </button>
+        ) : null}
       </div>
 
-      {/* Correcting is the primary action, so it sits where the message
-          composer sits in the conversation view. The muscle memory transfers. */}
-      <form
-        className="flex items-center gap-2 border-t p-3"
-        style={{ paddingBottom: "max(env(safe-area-inset-bottom), 0.75rem)" }}
-        onSubmit={(e) => {
-          e.preventDefault();
-          if (!changed || saving || text === null) return;
-          onSave(text, note.trim());
-          setNote("");
-        }}
-      >
-        <label htmlFor="canvas-note" className="sr-only">
-          {t("canvas.whatChanged")}
-        </label>
-        <input
-          id="canvas-note"
-          value={note}
-          disabled={saving}
-          onChange={(e) => setNote(e.target.value)}
-          placeholder={changed ? "What changed?" : "Edit above, then say what changed"}
-          className="min-w-0 flex-1 rounded-full border bg-background px-3.5 py-2 text-[13.5px] outline-none placeholder:text-muted-foreground disabled:opacity-60"
-        />
-        <button
-          type="submit"
-          disabled={!changed || saving}
-          aria-label="Save a new version"
-          className="grid size-9 shrink-0 place-items-center rounded-full bg-primary text-primary-foreground transition-opacity disabled:opacity-40"
-        >
-          {saving ? (
-            <Loader2 className="size-4 animate-spin motion-reduce:animate-none" aria-hidden="true" />
-          ) : (
-            <Check className="size-4" aria-hidden="true" />
-          )}
-        </button>
-      </form>
-    </>
+      {markdown && !editing ? (
+        text === null ? (
+          <Loader2
+            className="size-4 animate-spin text-muted-foreground motion-reduce:animate-none"
+            aria-label="Loading"
+          />
+        ) : (
+          <div className="min-h-0 flex-1 overflow-y-auto rounded-brand border bg-background p-3">
+            <Markdown>{text}</Markdown>
+          </div>
+        )
+      ) : (
+        <>
+          <label htmlFor="canvas-body" className="sr-only">
+            {t("canvas.artifactContent")}
+          </label>
+          <textarea
+            ref={area}
+            id="canvas-body"
+            value={text ?? ""}
+            disabled={text === null || saving}
+            onChange={(e) => write(e.target.value)}
+            spellCheck
+            className="min-h-[14rem] w-full flex-1 resize-none rounded-brand border bg-background p-3 font-mono text-[13px] leading-relaxed outline-none disabled:opacity-60"
+          />
+        </>
+      )}
+      {version.correction ? <Correction note={version.correction} /> : null}
+    </div>
   );
 }
 

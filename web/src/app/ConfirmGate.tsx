@@ -13,6 +13,7 @@ import {
   composeStep,
   documentBodyFromArgs,
   fromDatetimeLocal,
+  isComposeReview,
   toDatetimeLocal,
   type ComposeKind,
   type ComposeSource,
@@ -26,14 +27,19 @@ export function pendingConfirmId(
     role: string;
     phase?: string;
     actions?: Array<{ connector?: string; tool?: string }>;
+    steps?: ComposeSource[];
   }>,
 ): number | null {
   for (let i = messages.length - 1; i >= 0; i--) {
     const m = messages[i];
     if (m.role === "user") return null;
     if (m.role !== "agent") continue;
+    if (m.phase === "done" || m.phase === "error" || m.phase === "clarify") return null;
     if (m.phase === "confirm") return m.id;
     if ((m.actions ?? []).some((a) => a.connector && a.tool)) {
+      return m.id;
+    }
+    if (isComposeReview(composeSources(m.steps, m.actions))) {
       return m.id;
     }
   }
@@ -67,6 +73,7 @@ export function ConfirmGate({
   recorded,
   decision,
   did,
+  showSummary = true,
 }: {
   summary: string;
   actions: { label: string; reason: string; connector?: string; tool?: string; arguments?: Record<string, unknown> }[];
@@ -83,6 +90,7 @@ export function ConfirmGate({
   recorded?: "pending" | "ok" | "failed";
   decision?: "confirmed" | "declined" | "corrected" | null;
   did?: ActOutcome[];
+  showSummary?: boolean;
 }) {
   const t = useT();
   const [amending, setAmending] = useState(false);
@@ -93,6 +101,7 @@ export function ConfirmGate({
 
   const sources = composeSources(steps, actions);
   const kind = composeKind(sources);
+  const formOnPlan = Boolean(kind && (steps?.length ?? 0) > 0);
   const documentTool = kind === "document" ? composeStep(sources, "document")?.tool : undefined;
   const confirmText =
     kind === "email"
@@ -103,14 +112,12 @@ export function ConfirmGate({
           ? documentConfirmLabel(documentTool, t, confirmLabel)
           : confirmLabel;
 
-  const compose = useComposeFields(sources, kind, sessionId);
-  const emailReady =
-    kind !== "email" ||
-    (compose !== null && "to" in compose.fields && compose.fields.to.includes("@"));
+  const compose = useComposeFields(sources, kind, formOnPlan ? undefined : sessionId);
   const documentReady =
     kind !== "document" ||
     (compose !== null && "title" in compose.fields && compose.fields.title.trim().length > 0);
-  const ready = emailReady && documentReady;
+  // A Gmail draft is not a send. Asking for an address is a prompt, not a lock.
+  const ready = formOnPlan || documentReady;
 
   if (closed && decision) {
     return (
@@ -124,7 +131,7 @@ export function ConfirmGate({
           aria-hidden="true"
         />
         <p className="min-w-0 flex-1 text-[14px] leading-snug font-medium">
-          {settledHeadline(decision, actions, did ?? [])}
+          {closedHeadline(decision, actions, did ?? [], t)}
         </p>
       </div>
     );
@@ -149,16 +156,18 @@ export function ConfirmGate({
           />
         )}
         <div className="min-w-0 flex-1">
-          <p className="text-[14px] leading-relaxed font-medium">{summary}</p>
+          {showSummary ? (
+            <p className="text-[14px] leading-relaxed font-medium">{summary}</p>
+          ) : null}
 
-          {kind && compose ? (
+          {kind && compose && !formOnPlan ? (
             <ComposeForm
               kind={kind}
               fields={compose.fields}
               onChange={compose.setFields as (next: EmailFields | CalendarFields | DocumentFields) => void}
               disabled={busy}
             />
-          ) : actions.length > 0 ? (
+          ) : !kind && actions.length > 0 ? (
             <ul className="mt-2.5 space-y-1.5">
               {actions.map((a) => (
                 <li key={a.label} className="text-[13px] text-muted-foreground">
@@ -248,10 +257,22 @@ export function ConfirmGate({
   );
 }
 
-type EmailFields = { to: string; subject: string; body: string };
-type CalendarFields = { title: string; starts: string; timeZone: string; attendees: string };
-type DocumentFields = { title: string; body: string };
-type ComposeFields = EmailFields | CalendarFields | DocumentFields;
+export type EmailFields = { to: string; subject: string; body: string };
+export type CalendarFields = { title: string; starts: string; timeZone: string; attendees: string };
+export type DocumentFields = { title: string; body: string };
+export type ComposeFields = EmailFields | CalendarFields | DocumentFields;
+
+function closedHeadline(
+  kind: "confirmed" | "declined" | "corrected",
+  actions: { label: string; tool?: string }[],
+  did: ActOutcome[],
+  t: (key: string) => string,
+): string {
+  if (kind === "confirmed" && actions.some((a) => a.tool === "create_event")) {
+    return t("compose.addedToCalendar");
+  }
+  return settledHeadline(kind, actions, did);
+}
 
 function documentConfirmLabel(
   tool: string | undefined,
@@ -278,7 +299,7 @@ function documentPatch(step: ComposeSource, fields: DocumentFields) {
   };
 }
 
-function useComposeFields(
+export function useComposeFields(
   sources: ComposeSource[],
   kind: ComposeKind,
   sessionId: string | undefined,
@@ -455,7 +476,7 @@ function useComposeFields(
   return { fields: calendar, setFields: setCalendar, flush };
 }
 
-function ComposeForm({
+export function ComposeForm({
   kind,
   fields,
   onChange,

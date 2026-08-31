@@ -32,6 +32,8 @@ from __future__ import annotations
 import io
 import logging
 import re
+import zipfile
+from xml.etree import ElementTree as ET
 
 from alltheway_screening import screen
 
@@ -65,6 +67,8 @@ class Blocked(RuntimeError):
 IMAGE_TYPES = frozenset(
     {"image/jpeg", "image/png", "image/webp", "image/heic", "image/heif"}
 )
+WORD_TYPE = "application/vnd.openxmlformats-officedocument.wordprocessingml.document"
+_W_NS = "{http://schemas.openxmlformats.org/wordprocessingml/2006/main}"
 
 _JPEG = b"\xff\xd8\xff"
 _PNG = b"\x89PNG\r\n\x1a\n"
@@ -77,6 +81,7 @@ _EXT = {
     ".txt": "text/plain",
     ".md": "text/markdown",
     ".markdown": "text/markdown",
+    ".docx": "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
     ".jpg": "image/jpeg",
     ".jpeg": "image/jpeg",
     ".png": "image/png",
@@ -144,6 +149,26 @@ def pages_from_transcription(text: str) -> list[tuple[int, str]]:
     return pages or [(1, text)]
 
 
+def extract_docx(body: bytes) -> tuple[list[tuple[int, str]], int]:
+    """Visible paragraphs from a .docx. Mechanical, no model."""
+    try:
+        with zipfile.ZipFile(io.BytesIO(body)) as archive:
+            xml = archive.read("word/document.xml")
+    except Exception as exc:
+        raise Blocked("That Word document could not be read.") from exc
+    try:
+        root = ET.fromstring(xml)
+    except ET.ParseError as exc:
+        raise Blocked("That Word document could not be read.") from exc
+    paragraphs: list[str] = []
+    for paragraph in root.iter(f"{_W_NS}p"):
+        line = "".join(node.text or "" for node in paragraph.iter(f"{_W_NS}t")).strip()
+        if line:
+            paragraphs.append(line)
+    text = "\n".join(paragraphs).strip()
+    return ([(1, text)] if text else []), 1
+
+
 def extract(body: bytes, mime_type: str, title: str = "") -> tuple[list[tuple[int, str]], int]:
     """(page number, text) pairs, and a page count.
 
@@ -166,6 +191,9 @@ def extract(body: bytes, mime_type: str, title: str = "") -> tuple[list[tuple[in
         # pages sends four files, and pretending otherwise would invent page
         # numbers that citations would then point at.
         return [(1, transcribe(body, mime_type))], 1
+
+    if mime_type == WORD_TYPE:
+        return extract_docx(body)
 
     if mime_type == "application/pdf":
         from pypdf import PdfReader

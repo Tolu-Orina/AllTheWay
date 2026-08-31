@@ -52,11 +52,16 @@ export async function previewBytes(mimeType: string, body: Buffer): Promise<Arti
   return { mimeType, format: "binary" };
 }
 
-async function wordParagraphs(body: Buffer): Promise<string[]> {
+export async function wordParagraphs(body: Buffer): Promise<string[]> {
   const zip = await JSZip.loadAsync(body);
   const xml = await zip.file("word/document.xml")?.async("string");
   if (!xml) return [];
   return xmlTexts(xml, "w:t").slice(0, 400);
+}
+
+/** Visible Word text, for the model. Gemini cannot read .docx as a file part. */
+export async function wordText(body: Buffer): Promise<string> {
+  return (await wordParagraphs(body)).join("\n\n");
 }
 
 async function sheetRows(body: Buffer): Promise<Array<{ name: string; rows: string[][] }>> {

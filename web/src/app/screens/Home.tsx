@@ -11,11 +11,10 @@ import {
   Image,
   ListTodo,
   Loader2,
-  Mail,
   MessageSquarePlus,
   MessagesSquare,
   Newspaper,
-  RefreshCw,
+  Waypoints,
 } from "lucide-react";
 import type { Day, Hat, Home as HomeData, LifeContext, OnboardingJob } from "@alltheway/contracts";
 
@@ -154,6 +153,7 @@ export default function Home() {
         onTodo={() => setTodoOpen(true)}
         onTodoList={() => setTodoListOpen(true)}
         onTemplates={() => setTemplatesOpen(true)}
+        calendarConnected={snapshot?.calendar === "connected"}
       />
 
       {home ? (
@@ -329,16 +329,14 @@ function EmptyTimeline({ onConnect, connected }: { onConnect: () => void; connec
       <p className="mt-2 max-w-md text-[13.5px] leading-relaxed text-muted-foreground">
         {connected ? t("life.nothingTimedEmpty") : t("life.timelineEmptyHint")}
       </p>
-      {connected ? null : (
-        <button
-          type="button"
-          onClick={onConnect}
-          className="mt-5 inline-flex items-center gap-2 rounded-brand bg-navy-deep px-4 py-2.5 text-[14px] font-semibold text-white transition-opacity hover:opacity-90"
-        >
-          <RefreshCw className="size-4" aria-hidden="true" />
-          {t("life.connectAccounts")}
-        </button>
-      )}
+      <button
+        type="button"
+        onClick={onConnect}
+        className="mt-5 inline-flex cursor-pointer items-center gap-2 rounded-brand bg-navy-deep px-4 py-2.5 text-[14px] font-semibold text-white transition-opacity hover:opacity-90"
+      >
+        <Waypoints className="size-4" aria-hidden="true" />
+        {connected ? t("connections.connectedAccounts") : t("life.connectAccounts")}
+      </button>
     </section>
   );
 }
@@ -348,31 +346,31 @@ function WaitingOnYou({
   onTodo,
   onTodoList,
   onTemplates,
+  calendarConnected,
 }: {
   onConnect: () => void;
   onTodo: () => void;
   onTodoList: () => void;
   onTemplates: () => void;
+  calendarConnected?: boolean;
 }) {
   const t = useT();
   const { state: tasksState } = useAsync(() => api.tasks());
+  const { state: connectorsState } = useAsync(() => api.connectors());
   const allTasks = tasksState.status === "ready" ? tasksState.data : [];
   const pending = allTasks.filter((task) => task.completedAt === null);
   const hasTasks = pending.length > 0;
+  const anyConnected =
+    connectorsState.status === "ready"
+      ? connectorsState.data.connectors.some((c) => c.connected)
+      : Boolean(calendarConnected);
 
   const cards = [
     {
-      key: "calendar",
-      icon: CalendarCheck2,
-      title: t("life.waitSyncCalendar"),
-      hint: t("life.waitSyncCalendarHint"),
-      onClick: onConnect,
-    },
-    {
-      key: "email",
-      icon: Mail,
-      title: t("life.waitConnectEmail"),
-      hint: t("life.waitConnectEmailHint"),
+      key: "accounts",
+      icon: Waypoints,
+      title: anyConnected ? t("connections.connectedAccounts") : t("life.connectAccounts"),
+      hint: anyConnected ? t("life.manageAccountsHint") : t("life.connectAccountsHint"),
       onClick: onConnect,
     },
     {
@@ -397,13 +395,13 @@ function WaitingOnYou({
         <CalendarCheck2 className="size-4 text-orange-light" aria-hidden="true" />
         {t("life.waitingOnYou")}
       </h2>
-      <ul className="grid grid-cols-2 gap-2 lg:grid-cols-4">
+      <ul className="grid grid-cols-2 gap-2 lg:grid-cols-3">
         {cards.map((card) => (
           <li key={card.key}>
             <button
               type="button"
               onClick={card.onClick}
-              className="flex h-full w-full flex-col items-start gap-2 rounded-brand border bg-card px-4 py-3.5 text-left shadow-e1 transition-colors hover:border-primary/40"
+              className="flex h-full w-full cursor-pointer flex-col items-start gap-2 rounded-brand border bg-card px-4 py-3.5 text-left shadow-e1 transition-colors hover:border-primary/40"
             >
               <card.icon className="size-4 shrink-0 text-muted-foreground" aria-hidden="true" />
               <span className="min-w-0">

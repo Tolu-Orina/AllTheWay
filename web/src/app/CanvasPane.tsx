@@ -58,7 +58,7 @@ export function CanvasPane({ sessionId }: { sessionId?: string }) {
           {t("canvas.allWork")}
         </button>
         <div className="min-h-0 flex-1">
-          <Canvas artifactId={openId} />
+          <Canvas key={openId} artifactId={openId} />
         </div>
       </div>
     );

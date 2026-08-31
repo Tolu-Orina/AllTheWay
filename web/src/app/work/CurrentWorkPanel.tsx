@@ -17,7 +17,7 @@ function isListedWork(session: Session): boolean {
 }
 
 /**
- * The 30% rail: previous work chats, and artifacts for the open session.
+ * The 30% rail: work chats, and artifacts for the open session.
  */
 export function CurrentWorkPanel({
   sessionId,
@@ -42,7 +42,7 @@ export function CurrentWorkPanel({
     <aside className="flex w-full flex-col gap-4 lg:w-[30%] lg:shrink-0">
       <section className="rounded-brand-lg border bg-card p-4 shadow-e1">
         <header className="mb-3">
-          <h2 className="text-[14px] font-semibold">{t("work.previousChats")}</h2>
+          <h2 className="text-[14px] font-semibold">{t("work.chats")}</h2>
         </header>
         <Async
           state={sessions.state}
@@ -50,7 +50,7 @@ export function CurrentWorkPanel({
           isEmpty={(rows) => rows.filter(isListedWork).length === 0}
           empty={
             <p className="py-4 text-center text-[13px] text-muted-foreground">
-              {t("work.noPrevious")}
+              {t("work.noChats")}
             </p>
           }
         >

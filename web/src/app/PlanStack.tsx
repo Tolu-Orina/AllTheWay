@@ -13,7 +13,13 @@ import {
 import type { PlanStep } from "@alltheway/contracts";
 
 import { ACTION_LABEL, describeCall, isFetchedRead, isSevere } from "@/app/plan-copy";
-import { documentBodyFromArgs, isWorkFileTool } from "@/app/compose-fields";
+import { ComposeForm, useComposeFields, type ComposeFields } from "@/app/ConfirmGate";
+import {
+  composeKind,
+  documentBodyFromArgs,
+  isWorkFileTool,
+  type ComposeKind,
+} from "@/app/compose-fields";
 import { cn } from "@/lib/utils";
 
 /**
@@ -76,17 +82,27 @@ function PlanCard({
   live,
   total,
   onSend,
+  form,
+  formKind,
+  locked,
 }: {
   step: PlanStep;
   index: number;
   live: boolean;
   total: number;
   onSend?: (label: string) => void;
+  form?: {
+    fields: ComposeFields;
+    setFields: (next: ComposeFields) => void;
+  } | null;
+  formKind?: Exclude<ComposeKind, null>;
+  locked?: boolean;
 }) {
   const reduced = useReducedMotion();
   const call = describeCall(step);
   const outline = isWorkFileTool(step.tool) ? documentBodyFromArgs(step.arguments) : "";
-  const clickable = Boolean(onSend) && !step.done;
+  const editing = Boolean(form && formKind);
+  const clickable = Boolean(onSend) && !step.done && !editing && !locked;
 
   const inner = (
     <div className="flex items-start gap-3">
@@ -94,36 +110,47 @@ function PlanCard({
         aria-hidden="true"
         className={cn(
           "mt-0.5 grid size-5 shrink-0 place-items-center rounded-[6px] border text-[11px] font-semibold tabular-nums",
-          step.done
+          step.done || locked
             ? "border-primary bg-primary text-primary-foreground"
             : "bg-background text-muted-foreground",
         )}
       >
-        {step.done ? <Check className="size-3" strokeWidth={3} /> : index + 1}
+        {step.done || locked ? <Check className="size-3" strokeWidth={3} /> : index + 1}
       </span>
       <div className="min-w-0 flex-1">
         <div className="flex flex-wrap items-center gap-2">
           <p
             className={cn(
               "text-[14px] leading-snug font-medium",
-              step.done && "text-muted-foreground line-through",
+              (step.done || locked) && "text-muted-foreground line-through",
             )}
           >
             {step.label}
           </p>
           {step.action ? <ActionBadge action={step.action} /> : null}
         </div>
-        {call ? (
-          <p className="mt-1 flex items-start gap-2 text-[13px] leading-relaxed text-muted-foreground">
-            <StepIcon step={step} />
-            <span>{call}</span>
-          </p>
-        ) : null}
-        {outline ? (
-          <p className="mt-2 line-clamp-6 whitespace-pre-wrap text-[13px] leading-relaxed text-foreground">
-            {outline}
-          </p>
-        ) : null}
+        {editing && form && formKind ? (
+          <ComposeForm
+            kind={formKind}
+            fields={form.fields}
+            onChange={form.setFields}
+            disabled={Boolean(locked)}
+          />
+        ) : (
+          <>
+            {call ? (
+              <p className="mt-1 flex items-start gap-2 text-[13px] leading-relaxed text-muted-foreground">
+                <StepIcon step={step} />
+                <span>{call}</span>
+              </p>
+            ) : null}
+            {outline ? (
+              <p className="mt-2 line-clamp-6 whitespace-pre-wrap text-[13px] leading-relaxed text-foreground">
+                {outline}
+              </p>
+            ) : null}
+          </>
+        )}
       </div>
     </div>
   );
@@ -163,12 +190,19 @@ export function PlanStack({
   steps,
   live = false,
   onSend,
+  sessionId,
+  locked = false,
 }: {
   steps: PlanStep[];
   live?: boolean;
   onSend?: (label: string) => void;
+  sessionId?: string;
+  locked?: boolean;
 }) {
   const shown = steps.filter((step) => !isFetchedRead(step));
+  const kind = composeKind(shown);
+  const compose = useComposeFields(shown, kind, live || locked ? undefined : sessionId);
+  const showForm = Boolean(kind && compose && !live);
   if (shown.length === 0) return null;
   return (
     <ol className="relative flex flex-col">
@@ -180,6 +214,13 @@ export function PlanStack({
           live={live}
           total={shown.length}
           onSend={onSend}
+          form={
+            showForm && compose && composeKind([step]) === kind
+              ? { fields: compose.fields, setFields: compose.setFields as (next: ComposeFields) => void }
+              : null
+          }
+          formKind={showForm && composeKind([step]) === kind ? kind : undefined}
+          locked={locked}
         />
       ))}
     </ol>

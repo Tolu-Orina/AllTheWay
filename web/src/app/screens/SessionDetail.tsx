@@ -170,7 +170,12 @@ export default function SessionDetailScreen() {
                   className="mt-1"
                   data-source={showLive ? "turn" : "session"}
                 >
-                  <PlanStack steps={steps} live={showLive} />
+                  <PlanStack
+                    steps={steps}
+                    live={showLive}
+                    sessionId={id}
+                    locked={recorded === "ok"}
+                  />
                 </div>
 
                 {turn.phase === "done" && turn.note ? (

@@ -373,6 +373,13 @@ export const api = {
       ArtifactDetailSchema,
     ),
 
+  renameArtifact: (id: string, title: string) =>
+    apiPatch(
+      `/artifacts/${encodeURIComponent(id)}`,
+      { title },
+      z.object({ title: z.string() }),
+    ),
+
   /**
    * A correction, which is the point of the whole feature.
    *

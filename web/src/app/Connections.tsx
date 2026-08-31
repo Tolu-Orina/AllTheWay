@@ -297,7 +297,7 @@ function ConnectorRow({
           type="button"
           onClick={onConnect}
           disabled={busy}
-          className="inline-flex shrink-0 items-center gap-1.5 rounded-full border px-3 py-1.5 text-[12.5px] transition-colors hover:border-primary/40 disabled:opacity-50"
+          className="inline-flex shrink-0 cursor-pointer items-center gap-1.5 rounded-full border px-3 py-1.5 text-[12.5px] transition-colors hover:border-primary/40 disabled:opacity-50"
         >
           {busy ? (
             <Loader2 className="size-3.5 animate-spin motion-reduce:animate-none" aria-hidden="true" />

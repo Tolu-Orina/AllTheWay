@@ -8,6 +8,7 @@ import {
   deleteArtifact,
   getArtifact,
   listArtifacts,
+  renameArtifact,
 } from "./repos/artifacts.js";
 import { inMemoryStore, objectPath } from "./storage.js";
 
@@ -179,6 +180,15 @@ test("one user cannot delete another user's artifact", emulated, async () => {
   const alices = await seed(ALICE);
   assert.equal(await deleteArtifact(BOB, alices.id, store), false);
   assert.ok(await getArtifact(ALICE, alices.id));
+});
+
+test("a title can be renamed without a new version", emulated, async () => {
+  const artifact = await seed(ALICE, "Onboarding wireframe");
+  const title = await renameArtifact(ALICE, artifact.id, "Q4 brief");
+  assert.equal(title, "Q4 brief");
+  const fresh = await getArtifact(ALICE, artifact.id);
+  assert.equal(fresh?.title, "Q4 brief");
+  assert.equal(fresh?.currentVersion, 1);
 });
 
 test("the object path carries the owner", () => {

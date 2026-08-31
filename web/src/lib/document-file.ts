@@ -9,7 +9,8 @@
  */
 
 export const DOCUMENT_ACCEPT =
-  ".pdf,.txt,.md,.markdown,text/plain,text/markdown,application/pdf," +
+  ".pdf,.txt,.md,.markdown,.docx,text/plain,text/markdown,application/pdf," +
+  "application/vnd.openxmlformats-officedocument.wordprocessingml.document," +
   "image/jpeg,image/png,image/webp,image/heic,image/heif";
 
 export const DOCUMENT_CAMERA_ACCEPT = "image/jpeg,image/png";
@@ -23,11 +24,15 @@ export const DOCUMENT_MAX_BYTES = 25 * 1024 * 1024;
  */
 const JSON_CEILING = 30 * 1024 * 1024;
 
+const MIME_WORD =
+  "application/vnd.openxmlformats-officedocument.wordprocessingml.document";
+
 const EXT: Record<string, string> = {
   pdf: "application/pdf",
   txt: "text/plain",
   md: "text/markdown",
   markdown: "text/markdown",
+  docx: MIME_WORD,
   jpg: "image/jpeg",
   jpeg: "image/jpeg",
   png: "image/png",

@@ -90,12 +90,14 @@ export function CompanionConversation({ autoFocus = false }: { autoFocus?: boole
               </div>
               )}
 
-              {m.steps?.length && m.id !== confirmId ? (
+              {m.steps?.length && !(m.id === confirmId && recorded === "ok") ? (
                 <div className="mt-2">
                   <PlanStack
                     steps={m.steps}
+                    sessionId={sessionId}
+                    locked={recorded === "ok"}
                     onSend={
-                      working || m.actions?.length || isComposeReview(m.steps)
+                      working || m.actions?.length || isComposeReview(m.steps) || m.id === confirmId
                         ? undefined
                         : send
                     }

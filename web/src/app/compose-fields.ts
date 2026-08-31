@@ -39,7 +39,7 @@ export function composeKind(sources: ComposeSource[]): ComposeKind {
     if (s.tool === "create_draft" && (!connector || connector === "google_gmail" || connector === "gmail")) {
       email = true;
     }
-    if (s.tool === "create_event" && (!connector || connector === "google_calendar" || connector === "calendar")) {
+    if (s.tool === "create_event") {
       calendar = true;
     }
     if (isWorkFileTool(s.tool) && (!connector || connector === "work_files")) {
@@ -72,10 +72,12 @@ export function composeStep(sources: ComposeSource[], kind: Exclude<ComposeKind,
   const tool = kind === "email" ? "create_draft" : "create_event";
   return (
     sources.find((s) => {
-      const connector = s.connector || "";
       if (s.tool !== tool) return false;
-      if (kind === "email") return !connector || connector === "google_gmail" || connector === "gmail";
-      return !connector || connector === "google_calendar" || connector === "calendar";
+      if (kind === "email") {
+        const connector = s.connector || "";
+        return !connector || connector === "google_gmail" || connector === "gmail";
+      }
+      return true;
     }) ?? null
   );
 }

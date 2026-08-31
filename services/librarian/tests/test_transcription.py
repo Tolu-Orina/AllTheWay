@@ -10,7 +10,7 @@ from __future__ import annotations
 
 import pytest
 
-from app.pipeline import IMAGE_TYPES, extract, pages_from_transcription, sniff_mime
+from app.pipeline import IMAGE_TYPES, WORD_TYPE, extract, pages_from_transcription, sniff_mime
 from app.transcribe import SUPPORTED, TranscriptionFailed, transcribe
 
 
@@ -62,6 +62,29 @@ def test_text_and_pdf_still_take_the_mechanical_path():
     pages, count = extract(b"Clause 7.2 applies.", "text/plain")
     assert pages == [(1, "Clause 7.2 applies.")]
     assert count == 1
+
+
+def test_a_docx_is_read_as_text():
+    pages, count = extract(_minimal_docx("Clause 7.2 applies."), WORD_TYPE, "brief.docx")
+    assert count == 1
+    assert pages[0][1].find("Clause 7.2") >= 0
+
+
+def _minimal_docx(text: str) -> bytes:
+    import io
+    import zipfile
+
+    buf = io.BytesIO()
+    with zipfile.ZipFile(buf, "w") as archive:
+        archive.writestr(
+            "word/document.xml",
+            (
+                '<?xml version="1.0" encoding="UTF-8"?>'
+                '<w:document xmlns:w="http://schemas.openxmlformats.org/wordprocessingml/2006/main">'
+                f"<w:body><w:p><w:r><w:t>{text}</w:t></w:r></w:p></w:body></w:document>"
+            ),
+        )
+    return buf.getvalue()
 
 
 def test_an_empty_type_jpeg_is_not_treated_as_text():

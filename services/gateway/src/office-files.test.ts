@@ -4,12 +4,23 @@ import { test } from "node:test";
 import JSZip from "jszip";
 
 import { buildOfficeFile } from "./office-files.js";
-import { previewBytes } from "./office-preview.js";
+import { previewBytes, wordText } from "./office-preview.js";
 import { MIME_SHEET, MIME_SLIDES, MIME_WORD } from "./office-mime.js";
 
 function isZip(body: Buffer): boolean {
   return body.length > 4 && body[0] === 0x50 && body[1] === 0x4b;
 }
+
+test("Word text is lifted so the model can read a .docx", async () => {
+  const file = await buildOfficeFile("create_document", {
+    title: "Q4 launch brief",
+    body: "# Goals\n- Finalise messaging\n- Ship the assets",
+  });
+  assert.ok(!("error" in file));
+  if ("error" in file) return;
+  const text = await wordText(file.body);
+  assert.match(text, /Goals|messaging|Q4/i);
+});
 
 test("a Word request becomes a real .docx", async () => {
   const file = await buildOfficeFile("create_document", {

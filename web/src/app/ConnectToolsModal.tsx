@@ -89,7 +89,7 @@ export function ConnectToolsModal({
                     connectors={data.connectors}
                     starting={starting}
                     onConnect={connect}
-                    connectedAsStatus
+                    connectedAsStatus={false}
                   />
                 )}
               </Async>

@@ -558,17 +558,19 @@ function ChatBubble({
   const webs = m.citations?.filter((c) => c.kind === "web") ?? [];
   const extras = (
     <>
-      {m.steps?.length && !confirming ? (
+      {m.steps?.length && !(confirming && recorded === "ok") ? (
         <PlanStack
           steps={m.steps}
+          sessionId={threadId}
+          locked={recorded === "ok"}
           onSend={
-            working || m.actions?.length || isComposeReview(m.steps)
+            confirming || working || m.actions?.length || isComposeReview(m.steps)
               ? undefined
               : onSend
           }
         />
       ) : null}
-      {!confirming && m.actions?.length
+      {!confirming && m.actions?.length && !m.steps?.length
         ? m.actions.map((a) => <ProposedActionCard key={a.label} action={a} />)
         : null}
       {confirming ? (
@@ -584,6 +586,7 @@ function ChatBubble({
           did={did}
           sessionId={threadId}
           steps={m.steps}
+          showSummary={false}
           onConfirm={onConfirm}
           onDecline={onDecline}
           onCorrect={(now) => onSend(now)}
@@ -610,7 +613,7 @@ function ChatBubble({
     </>
   );
   const hasExtras = Boolean(
-    (m.steps?.length && !confirming) ||
+    (m.steps?.length && !(confirming && recorded === "ok")) ||
       (!confirming && m.actions?.length) ||
       confirming ||
       m.phase === "error" ||
@@ -627,7 +630,7 @@ function ChatBubble({
     >
       {confirming || m.phase === "error" ? (
         <ChatTurn side="agent" at={m.at} footer={extras}>
-          {null}
+          {m.phase === "error" ? null : <Markdown className="md-compact">{m.text}</Markdown>}
         </ChatTurn>
       ) : (
         <ChatTurn

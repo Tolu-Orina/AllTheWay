@@ -202,12 +202,16 @@ export function VoiceCaptions({
         ) : null}
         {voice.turn?.note && !confirming ? <ChatTurn side="agent">{voice.turn.note}</ChatTurn> : null}
         {voice.turn?.question ? <ChatTurn side="agent">{voice.turn.question}</ChatTurn> : null}
-        {voice.turn?.plan?.length && !confirming ? (
+        {voice.turn?.plan?.length && !(confirming && recorded === "ok") ? (
           <div className="pl-8">
-            <PlanStack steps={voice.turn.plan} />
+            <PlanStack
+              steps={voice.turn.plan}
+              sessionId={voice.sessionId}
+              locked={recorded === "ok"}
+            />
           </div>
         ) : null}
-        {voice.turn?.actions?.length && !confirming ? (
+        {voice.turn?.actions?.length && !confirming && !voice.turn?.plan?.length ? (
           <div className="flex flex-col gap-2 pl-8">
             {voice.turn.actions.map((a) => (
               <ProposedActionCard key={a.label} action={a} />

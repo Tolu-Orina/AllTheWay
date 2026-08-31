@@ -9,6 +9,7 @@ import {
   deleteArtifact,
   getArtifact,
   listArtifacts,
+  renameArtifact,
 } from "../repos/artifacts.js";
 import { rememberVisual } from "../repos/visual.js";
 import { artifactStore, storageConfigured } from "../storage.js";
@@ -110,6 +111,22 @@ artifactRoutes.get("/:id", requireUser, async (req, res) => {
   // the right answer to give: confirming existence would leak it.
   if (!artifact) return res.status(404).json({ code: "not_found", message: "No such artifact." });
   res.json(artifact);
+});
+
+artifactRoutes.patch("/:id", requireUser, async (req, res) => {
+  const body = z.object({ title: z.string().min(1).max(200) }).safeParse(req.body);
+  if (!body.success) return bad(res, "Expected a title.");
+  const next = body.data.title.trim();
+  if (!next) return bad(res, "Expected a title.");
+  try {
+    const saved = await renameArtifact(req.uid!, param(req, "id"), next);
+    res.json({ title: saved });
+  } catch (err) {
+    if (err instanceof NotFound) {
+      return res.status(404).json({ code: "not_found", message: "No such artifact." });
+    }
+    throw err;
+  }
 });
 
 artifactRoutes.post("/", requireUser, async (req, res) => {

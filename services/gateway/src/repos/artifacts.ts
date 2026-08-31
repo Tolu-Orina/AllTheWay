@@ -9,6 +9,8 @@ import {
 import { FieldValue, Timestamp } from "firebase-admin/firestore";
 
 import { artifacts, artifactVersions, db } from "../firestore.js";
+import { MIME_WORD } from "../office-mime.js";
+import { wordText } from "../office-preview.js";
 import { artifactStore, type ByteStore } from "../storage.js";
 
 /**
@@ -160,6 +162,23 @@ export type NewVersion = {
   correction?: string;
 };
 
+export async function renameArtifact(
+  uid: string,
+  artifactId: string,
+  title: string,
+): Promise<string> {
+  const artifactRef = artifacts(uid).doc(artifactId);
+  const doc = await artifactRef.get();
+  if (!doc.exists) throw new NotFound(artifactId);
+  const next = title.trim();
+  if (!next) throw new Error("title required");
+  await artifactRef.update({
+    title: next,
+    updatedAt: FieldValue.serverTimestamp(),
+  });
+  return next;
+}
+
 export async function addVersion(
   uid: string,
   artifactId: string,
@@ -249,6 +268,10 @@ export type TurnFile = {
  * How the planner should see a file on this turn: a GCS URI Vertex can
  * fetch, or the bytes themselves when this is not GCS.
  *
+ * Gemini's generateContent document types are PDF and plain text. Images
+ * (PNG, JPEG, WebP, HEIC) are native. Word is a ZIP the model cannot open, so
+ * we lift the paragraphs and send them as text. Markdown is the same.
+ *
  * The librarian is not involved. Indexing is overnight.
  */
 export async function artifactFileRef(
@@ -264,15 +287,52 @@ export async function artifactFileRef(
   if (!verSnap.exists) return null;
   const mime = String(verSnap.get("mimeType") ?? "application/octet-stream");
   const storagePath = String(verSnap.get("storagePath") ?? "");
-  if (storagePath.startsWith("gs://")) {
+  if (vertexNative(mime, title) && storagePath.startsWith("gs://")) {
     return { name: title, mime, fileUri: storagePath };
   }
   try {
-    const body = await store.get(uid, artifactId, 1);
-    return { name: title, mime, data: body.toString("base64") };
+    const body = await store.get(uid, artifactId, n);
+    return modelTurnFile(title, mime, body);
   } catch {
+    if (storagePath.startsWith("gs://") && vertexNative(mime, title)) {
+      return { name: title, mime, fileUri: storagePath };
+    }
     return { name: title, mime };
   }
+}
+
+function vertexNative(mime: string, name: string): boolean {
+  if (mime.startsWith("image/")) return true;
+  if (mime === "application/pdf" || /\.pdf$/i.test(name)) return true;
+  return false;
+}
+
+function isWord(mime: string, name: string): boolean {
+  return mime === MIME_WORD || /\.docx$/i.test(name);
+}
+
+function isPlainText(mime: string, name: string): boolean {
+  return (
+    mime === "text/plain" ||
+    mime === "text/markdown" ||
+    mime === "text/csv" ||
+    /\.(txt|md|markdown|csv)$/i.test(name)
+  );
+}
+
+/** Bytes the planning model can actually read. */
+export async function modelTurnFile(name: string, mime: string, body: Buffer): Promise<TurnFile> {
+  if (isWord(mime, name)) {
+    const text = await wordText(body);
+    return { name, mime: "text/plain", data: Buffer.from(text, "utf8").toString("base64") };
+  }
+  if (isPlainText(mime, name)) {
+    return { name, mime: "text/plain", data: body.toString("base64") };
+  }
+  if (vertexNative(mime, name)) {
+    return { name, mime, data: body.toString("base64") };
+  }
+  return { name, mime, data: body.toString("base64") };
 }
 
 export async function listPendingIndex(
