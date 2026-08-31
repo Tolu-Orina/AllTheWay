@@ -10,7 +10,7 @@ import {
 import { useLocation, useNavigate } from "react-router";
 
 import { PlanStepSchema, type PlanStep } from "@alltheway/contracts";
-import { openVoiceSocket, applyVoiceCaption, captionsFromThread, speakGreeting, cancelGreeting, spokenGreetingLine, cueVoiceStart, type VoiceLine, type VoiceSocket } from "@/lib/voice";
+import { openVoiceSocket, applyVoiceCaption, captionsFromThread, speakGreeting, cancelGreeting, spokenGreetingLine, cueVoiceStart, isGreetingEchoTranscript, type VoiceLine, type VoiceSocket } from "@/lib/voice";
 import { useT } from "@/app/i18n";
 import { resolveVoiceSessionId, workIdFromPath } from "@/app/work-id";
 import { useCompanionThread } from "@/app/companion-thread";
@@ -106,7 +106,9 @@ export function VoiceProvider({ children }: { children: ReactNode }) {
   const spokenTexts = useRef<Set<string>>(new Set());
   const greetingFinished = useRef(false);
   const heardModel = useRef(false);
-  const fallbackTimer = useRef<number | null>(null);
+  /** Mic stays down until the hello has finished playing out the speakers. */
+  const micHeld = useRef(true);
+  const micHoldTimer = useRef<number | null>(null);
   /** Closes an in-flight Live handshake that is not on `socket` yet. */
   const startAbort = useRef<AbortController | null>(null);
 
@@ -123,9 +125,10 @@ export function VoiceProvider({ children }: { children: ReactNode }) {
     mutedRef.current = false;
     hangingUp.current = false;
     heardModel.current = false;
-    if (fallbackTimer.current !== null) {
-      window.clearTimeout(fallbackTimer.current);
-      fallbackTimer.current = null;
+    micHeld.current = true;
+    if (micHoldTimer.current !== null) {
+      window.clearTimeout(micHoldTimer.current);
+      micHoldTimer.current = null;
     }
     startAbort.current?.abort();
     startAbort.current = null;
@@ -151,6 +154,7 @@ export function VoiceProvider({ children }: { children: ReactNode }) {
     void speakGreeting(line).then(() => {
       greetingFinished.current = true;
       socket.current?.sendGreetingDone();
+      micHeld.current = false;
     });
   }, [user, recordSpoken]);
 
@@ -241,14 +245,15 @@ export function VoiceProvider({ children }: { children: ReactNode }) {
                 setFake(ready.fake === true);
                 setStatus("live");
                 heardModel.current = false;
+                micHeld.current = true;
                 if (ready.fake === true) {
                   greetNow();
                   return;
                 }
-                if (fallbackTimer.current !== null) window.clearTimeout(fallbackTimer.current);
-                fallbackTimer.current = window.setTimeout(() => {
-                  if (current() && !heardModel.current) greetNow();
-                }, 2_800);
+                if (micHoldTimer.current !== null) window.clearTimeout(micHoldTimer.current);
+                micHoldTimer.current = window.setTimeout(() => {
+                  if (current()) micHeld.current = false;
+                }, 12_000);
               },
               onPcm(pcm) {
                 if (!current() || mutedRef.current || hangingUp.current) return;
@@ -261,12 +266,12 @@ export function VoiceProvider({ children }: { children: ReactNode }) {
                   }
                 }
                 heardModel.current = true;
-                if (fallbackTimer.current !== null) {
-                  window.clearTimeout(fallbackTimer.current);
-                  fallbackTimer.current = null;
-                }
                 cancelGreeting();
                 pushPlay(pcm);
+                if (micHoldTimer.current !== null) window.clearTimeout(micHoldTimer.current);
+                micHoldTimer.current = window.setTimeout(() => {
+                  if (current()) micHeld.current = false;
+                }, 800);
               },
               onInterrupted() {
                 if (!current()) return;
@@ -274,6 +279,7 @@ export function VoiceProvider({ children }: { children: ReactNode }) {
               },
               onTranscript(side, text, finished) {
                 if (!current()) return;
+                if (side === "user" && (micHeld.current || isGreetingEchoTranscript(text))) return;
                 const next = applyVoiceCaption(linesRef.current, side, text, finished);
                 linesRef.current = next;
                 setLines(next);
@@ -429,7 +435,7 @@ export function VoiceProvider({ children }: { children: ReactNode }) {
           if (greetingFinished.current) voice.sendGreetingDone();
           capture.port.onmessage = (ev) => {
             const data = ev.data;
-            if (mutedRef.current || hangingUp.current || !current()) return;
+            if (micHeld.current || mutedRef.current || hangingUp.current || !current()) return;
             if (data instanceof Int16Array) voice?.sendPcm(data);
           };
         } catch (err) {

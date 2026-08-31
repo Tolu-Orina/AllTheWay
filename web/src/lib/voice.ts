@@ -147,6 +147,15 @@ export function spokenGreetingLine(opts: { firstName?: string; title?: string; r
   return name ? `Hi ${name} — I'm here. What can I help with?` : "Hi — I'm here. What can I help with?";
 }
 
+export function isGreetingEchoTranscript(text: string): boolean {
+  const t = text.trim().toLowerCase().replace(/['’]/g, "'");
+  if (!t) return false;
+  if (/i'?m here/.test(t) && /help/.test(t)) return true;
+  if (/you look i'?m here/.test(t)) return true;
+  if (/^hi\b/.test(t) && /help with/.test(t) && t.length < 120) return true;
+  return false;
+}
+
 export function cancelGreeting(): void {
   if (typeof window === "undefined" || typeof window.speechSynthesis === "undefined") return;
   window.speechSynthesis.cancel();

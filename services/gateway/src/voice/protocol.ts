@@ -150,11 +150,12 @@ export const SYSTEM_INSTRUCTION = [
   "",
   "# Starting a session",
   "",
-  "When you join, speak first. A short greeting — that you are here, and how you",
-  "can help — then wait. Do not wait for them to say hello. One or two sentences.",
-  "If you were given their name, use it in that greeting.",
-  "If they jump straight to a question or a task, skip the rest of the greeting",
-  "and just answer or act.",
+  "When you join, speak first. A short, natural hello — like picking up, not a",
+  "script. If you were given their name, use it. Then wait.",
+  "Do not wait for them to say hello. Do not say that you are here. Do not ask",
+  "how you can help as a catchphrase. Do not recap their calendar, meetings, or",
+  "day unless they asked.",
+  "If they jump straight to a question or a task, skip the hello and answer.",
   "If they last spoke another language, greet in that language; otherwise English.",
 ].join("\n");
 
@@ -281,12 +282,17 @@ export function liveWebSocketUrl(location: string): string {
 export function setupMessage(opts: {
   modelResource: string;
   resumeHandle?: string;
+  firstName?: string;
 }): Record<string, unknown> {
+  const name = speakable(opts.firstName ?? "", 24);
+  const instruction = name
+    ? `${SYSTEM_INSTRUCTION}\n\nThe person you are talking to is ${name}.`
+    : SYSTEM_INSTRUCTION;
   return {
     setup: {
       model: opts.modelResource,
       generationConfig: { responseModalities: ["AUDIO"] },
-      systemInstruction: { parts: [{ text: SYSTEM_INSTRUCTION }] },
+      systemInstruction: { parts: [{ text: instruction }] },
 
       // How readily it decides someone is talking to it.
       //
@@ -377,23 +383,17 @@ export type VoiceGreeting = {
   resumed: boolean;
 };
 
-export const GREETING_KICK_TEXT =
-  "Please greet me now with a short spoken hello, then wait for me to talk.";
+export const GREETING_KICK_TEXT = "Hello";
 
-/** How long to keep the mic off Vertex while the hello is generated. */
+/** How long to keep the mic off Vertex until the hello has finished playing. */
 export const GREETING_HOLD_MS = 10_000;
 
+/** After the hello ends, wait for speaker echo to die before the mic goes up. */
+export const GREETING_ECHO_MS = 800;
+
 export function greetingKickText(g: VoiceGreeting = { resumed: false }): string {
-  const name = speakable(g.firstName ?? "", 24);
-  const title = speakable(g.title ?? "", 40);
-  if (g.resumed && title) {
-    return name
-      ? `Please welcome ${name} back to ${title} with a short spoken hello that names that conversation, then wait for them to talk.`
-      : `Please welcome them back to ${title} with a short spoken hello that names that conversation, then wait for them to talk.`;
-  }
-  return name
-    ? `Please greet ${name} now with a short spoken hello that uses their name, then wait for them to talk.`
-    : GREETING_KICK_TEXT;
+  if (g.resumed) return "I'm back.";
+  return GREETING_KICK_TEXT;
 }
 
 /** What the local fake session speaks, matching the kick. */
@@ -411,11 +411,21 @@ export function spokenGreetingLine(g: VoiceGreeting = { resumed: false }): strin
 export function isGreetingKickTranscript(text: string): boolean {
   const t = text.trim();
   if (!t) return false;
+  if (/^hello[.!?]?$/i.test(t)) return true;
+  if (/^i'?m back[.!?]?$/i.test(t)) return true;
   if (/^please (greet|welcome)\b/i.test(t)) return true;
-  if (GREETING_KICK_TEXT.startsWith(t) && t.startsWith("Please greet")) return true;
-  // Older kick, still filtered if a session straddles a deploy.
   if (t.startsWith("The session has just started")) return true;
   return /they have not spoken|this line is not from them/i.test(t);
+}
+
+/** The speakers played the hello; the mic heard it. Not something they said. */
+export function isGreetingEchoTranscript(text: string): boolean {
+  const t = text.trim().toLowerCase().replace(/['’]/g, "'");
+  if (!t) return false;
+  if (/i'?m here/.test(t) && /help/.test(t)) return true;
+  if (/you look i'?m here/.test(t)) return true;
+  if (/^hi\b/.test(t) && /help with/.test(t) && t.length < 120) return true;
+  return false;
 }
 
 /**
@@ -455,30 +465,54 @@ export function greetingKickFlush(): Record<string, unknown> {
 }
 
 /**
- * Keep room audio off Vertex until the hello has played.
+ * Keep room audio off Vertex until the hello has *finished* playing.
  *
- * The browser starts sending PCM the instant the socket is ready. Native
- * audio treats that as barge-in, so the kick never becomes a spoken turn.
- * Holding until the first spoken audio (or this timeout) is what lets it greet.
+ * Opening on the first audio chunk used to let the rest of the hello leak
+ * into the mic. Native audio treated that echo as a user turn, captioned it
+ * as them, and answered it.
  */
 export function startGreetingGate(opts: {
   onOpen: () => void;
   timeoutMs?: number;
-}): { holding(): boolean; noteModelTurn(): void; dispose(): void } {
+  echoMs?: number;
+}): {
+  holding(): boolean;
+  noteModelAudio(): void;
+  noteGreetingFinished(): void;
+  heardAudio(): boolean;
+  dispose(): void;
+} {
   let holding = true;
-  const timer = setTimeout(() => open(), opts.timeoutMs ?? GREETING_HOLD_MS);
+  let heard = false;
+  let echoTimer: ReturnType<typeof setTimeout> | undefined;
+  const echoMs = opts.echoMs ?? GREETING_ECHO_MS;
+  const safety = setTimeout(() => open(), opts.timeoutMs ?? GREETING_HOLD_MS);
   const open = () => {
     if (!holding) return;
     holding = false;
-    clearTimeout(timer);
+    clearTimeout(safety);
+    if (echoTimer !== undefined) clearTimeout(echoTimer);
+    echoTimer = undefined;
     opts.onOpen();
   };
   return {
     holding: () => holding,
-    noteModelTurn: open,
+    heardAudio: () => heard,
+    noteModelAudio() {
+      heard = true;
+    },
+    noteGreetingFinished() {
+      if (!holding || echoTimer !== undefined) return;
+      if (echoMs <= 0) {
+        open();
+        return;
+      }
+      echoTimer = setTimeout(open, echoMs);
+    },
     dispose() {
       holding = false;
-      clearTimeout(timer);
+      clearTimeout(safety);
+      if (echoTimer !== undefined) clearTimeout(echoTimer);
     },
   };
 }

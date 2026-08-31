@@ -19,6 +19,7 @@ import {
   greetingKickMessage,
   isGreetingDoneMessage,
   isGreetingKickTranscript,
+  isGreetingEchoTranscript,
   startGreetingGate,
   GREETING_KICK_TEXT,
   greetingKickText,
@@ -295,6 +296,7 @@ test("the voice instruction greets first when a session starts", () => {
   assert.match(s, /speak first/);
   assert.match(s, /do not wait for them to say hello/);
   assert.match(s, /if you were given their name, use it/);
+  assert.match(s, /do not recap their calendar/);
   assert.doesNotMatch(s, /wait for them to tell you what they want/);
 });
 
@@ -309,6 +311,8 @@ test("a new live session sends a realtime text packet so the model can greet", (
   assert.equal(Buffer.from(rt?.mediaChunks?.[0]?.data ?? "", "base64").toString("utf8"), GREETING_KICK_TEXT);
   assert.equal("clientContent" in msg, false);
   assert.equal(isGreetingKickTranscript(GREETING_KICK_TEXT), true);
+  assert.equal(isGreetingKickTranscript("Hello"), true);
+  assert.equal(isGreetingKickTranscript("Hello."), true);
   assert.equal(isGreetingKickTranscript("Please greet me now"), true);
   assert.equal(isGreetingKickTranscript("Please greet"), true);
   assert.equal(isGreetingKickTranscript("Please welcome Ada back"), true);
@@ -323,18 +327,10 @@ test("the browser tells the relay when the spoken hello has finished", () => {
   assert.equal(isGreetingDoneMessage({ hangup: true }), false);
 });
 
-test("the greeting kick uses their first name, and names a resumed session", () => {
-  assert.match(greetingKickText({ firstName: "Ada", resumed: false }), /Ada/);
-  assert.doesNotMatch(greetingKickText({ firstName: "Ada", resumed: false }), /welcome/i);
-  const back = greetingKickText({
-    firstName: "Ada",
-    title: "Draft the nav",
-    resumed: true,
-  });
-  assert.match(back, /welcome/i);
-  assert.match(back, /Ada/);
-  assert.match(back, /Draft the nav/);
-  assert.equal(isGreetingKickTranscript(back), true);
+test("the greeting kick is a short user turn, not a stage direction", () => {
+  assert.equal(greetingKickText({ firstName: "Ada", resumed: false }), "Hello");
+  assert.equal(greetingKickText({ firstName: "Ada", title: "Draft the nav", resumed: true }), "I'm back.");
+  assert.equal(isGreetingKickTranscript("I'm back."), true);
   assert.equal(
     spokenGreetingLine({ firstName: "Ada", title: "Draft the nav", resumed: true }),
     "Welcome back, Ada, to Draft the nav. What can I help with?",
@@ -345,6 +341,21 @@ test("the greeting kick uses their first name, and names a resumed session", () 
   );
 });
 
+test("setup names the person so the hello can use it", () => {
+  const msg = setupMessage({
+    modelResource: "projects/p/locations/europe-west1/publishers/google/models/m",
+    firstName: "Tolulope",
+  });
+  const text = JSON.stringify(msg);
+  assert.match(text, /Tolulope/);
+});
+
+test("an echo of the hello is not treated as them speaking", () => {
+  assert.equal(isGreetingEchoTranscript("Hi Tom, you look I'm here. What can I help with?"), true);
+  assert.equal(isGreetingEchoTranscript("Hi Tolulope — I'm here. What can I help with?"), true);
+  assert.equal(isGreetingEchoTranscript("Draft an email to Ana"), false);
+});
+
 test("a greeting name is a first name, never the email", () => {
   assert.equal(firstNameFrom({ name: "Ada Okafor" }), "Ada");
   assert.equal(firstNameFrom({ email: "ada.okafor@example.com" }), "Ada");
@@ -353,13 +364,16 @@ test("a greeting name is a first name, never the email", () => {
 
 test("the greeting gate keeps the mic off Vertex until the hello finishes", async () => {
   let opened = 0;
-  const gate = startGreetingGate({ onOpen: () => opened++, timeoutMs: 50 });
+  const gate = startGreetingGate({ onOpen: () => opened++, timeoutMs: 5_000, echoMs: 0 });
   assert.equal(gate.holding(), true);
   assert.equal(opened, 0);
-  gate.noteModelTurn();
+  gate.noteModelAudio();
+  assert.equal(gate.holding(), true);
+  assert.equal(opened, 0);
+  gate.noteGreetingFinished();
   assert.equal(gate.holding(), false);
   assert.equal(opened, 1);
-  gate.noteModelTurn();
+  gate.noteGreetingFinished();
   assert.equal(opened, 1);
 });
 

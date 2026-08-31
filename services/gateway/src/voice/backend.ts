@@ -13,6 +13,7 @@ import {
   toolResponse,
   greetingKickMessage,
   isGreetingKickTranscript,
+  isGreetingEchoTranscript,
   startGreetingGate,
   type ParsedServer,
   type VoiceGreeting,
@@ -177,6 +178,7 @@ async function openVertexLive(opts: {
   const modelResource = liveModelResource(env.projectId, env.liveLocation, model);
   const url = liveWebSocketUrl(env.liveLocation);
 
+  const who = await Promise.resolve(opts.greeting ?? { resumed: false });
   let handle = opts.resumeHandle;
   let closed = false;
   let ready = false;
@@ -229,12 +231,12 @@ async function openVertexLive(opts: {
                 pendingBytes = 0;
               },
             });
-            void Promise.resolve(opts.greeting ?? { resumed: false }).then((g) => {
+            void Promise.resolve().then(() => {
               if (closed || socket !== ws || !greeting?.holding()) return;
               try {
-                ws.send(JSON.stringify(greetingKickMessage(g)));
+                ws.send(JSON.stringify(greetingKickMessage(who)));
               } catch {
-                greeting?.noteModelTurn();
+                greeting?.noteGreetingFinished();
               }
             });
           }
@@ -247,22 +249,23 @@ async function openVertexLive(opts: {
         }
       }
       for (const pcm of msg.pcm ?? []) {
-        // First spoken audio is the hello. Release the mic so they can
-        // barge in, but do not replay what we held — that is the room.
-        greeting?.noteModelTurn();
+        greeting?.noteModelAudio();
         events.onPcm(pcm);
       }
-      if (msg.userTranscript && !isGreetingKickTranscript(msg.userTranscript.text)) {
-        events.onUserTranscript(msg.userTranscript.text, msg.userTranscript.finished);
+      if (msg.userTranscript) {
+        const text = msg.userTranscript.text;
+        const hide =
+          greeting?.holding() ||
+          isGreetingKickTranscript(text) ||
+          isGreetingEchoTranscript(text);
+        if (!hide) events.onUserTranscript(text, msg.userTranscript.finished);
       }
       if (msg.modelTranscript) {
         events.onModelTranscript(msg.modelTranscript.text, msg.modelTranscript.finished);
       }
       if (msg.interrupted) events.onInterrupted();
       if (msg.turnComplete || msg.generationComplete) {
-        // Do not open the greeting gate here. A text kick is often ack'd with
-        // turnComplete and no audio; treating that as "hello done" is how the
-        // mic came back on before it had spoken.
+        if (greeting?.heardAudio()) greeting.noteGreetingFinished();
         events.onTurnComplete?.();
       }
       for (const call of msg.toolCalls ?? []) events.onToolCall(call);
@@ -284,7 +287,15 @@ async function openVertexLive(opts: {
   const connect = async (resume?: string) => {
     const token = await accessToken();
     const ws = await openSocket(url, token);
-    ws.send(JSON.stringify(setupMessage({ modelResource, resumeHandle: resume })));
+    ws.send(
+      JSON.stringify(
+        setupMessage({
+          modelResource,
+          resumeHandle: resume,
+          firstName: who.firstName,
+        }),
+      ),
+    );
     attach(ws);
   };
 
@@ -348,7 +359,7 @@ async function openVertexLive(opts: {
       socket.send(JSON.stringify(toolResponse(id, name, payload)));
     },
     releaseGreeting() {
-      greeting?.noteModelTurn();
+      greeting?.noteGreetingFinished();
     },
     close() {
       if (closed) return;
