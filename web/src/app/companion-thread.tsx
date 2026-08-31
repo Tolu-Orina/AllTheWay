@@ -39,7 +39,7 @@ type CompanionThread = {
   draft: string;
   setDraft: (text: string) => void;
   send: (text: string) => void;
-  startNewChat: () => Promise<void>;
+  startNewChat: () => Promise<string | undefined>;
   openChat: (id: string) => void;
   chatsVersion: number;
   startingNew: boolean;
@@ -334,6 +334,7 @@ export function CompanionThreadProvider({ children }: { children: React.ReactNod
       persistCompanionSessionId(created.id);
       setSessionId(created.id);
       setChatsVersion((n) => n + 1);
+      return created.id;
     } finally {
       setStartingNew(false);
     }

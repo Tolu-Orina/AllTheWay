@@ -111,7 +111,13 @@
     "connecting": "Yn cysylltu…",
     "pauseListening": "Oedi gwrando",
     "resumeListening": "Ailddechrau gwrando",
-    "stop": "Stopio"
+    "stop": "Stopio",
+    "currentSession": "Yn siarad",
+    "previousSessions": "Blaenorol",
+    "sessionTabs": "Sgyrsiau llais",
+    "previousEmpty": "Dim sgyrsiau cynharach eto",
+    "previousHint": "Mae pob sgwrs yn aros yn ei edefyn ei hun. Mae agor un yn gadael hon.",
+    "newSession": "Sgwrs newydd"
   },
   "share": {
     "heading": "Rhannu",

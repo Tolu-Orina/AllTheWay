@@ -96,7 +96,13 @@
     "connecting": "正在连接…",
     "pauseListening": "暂停聆听",
     "resumeListening": "继续聆听",
-    "stop": "停止"
+    "stop": "停止",
+    "currentSession": "正在说",
+    "previousSessions": "以往",
+    "sessionTabs": "语音对话",
+    "previousEmpty": "还没有更早的对话",
+    "previousHint": "每段对话都是独立的。打开另一段就会离开这一段。",
+    "newSession": "新对话"
   },
   "share": {
     "heading": "分享",

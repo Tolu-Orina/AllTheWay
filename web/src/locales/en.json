@@ -101,7 +101,13 @@
     "connecting": "Connecting…",
     "pauseListening": "Pause listening",
     "resumeListening": "Resume listening",
-    "stop": "Stop"
+    "stop": "Stop",
+    "currentSession": "Speaking",
+    "previousSessions": "Previous",
+    "sessionTabs": "Voice conversations",
+    "previousEmpty": "No earlier conversations yet",
+    "previousHint": "Each conversation stays its own thread. Opening one leaves this one.",
+    "newSession": "New conversation"
   },
   "share": {
     "heading": "Share",

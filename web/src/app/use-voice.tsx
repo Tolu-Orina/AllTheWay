@@ -7,12 +7,12 @@ import {
   useState,
   type ReactNode,
 } from "react";
-import { useLocation } from "react-router";
+import { useLocation, useNavigate } from "react-router";
 
 import { PlanStepSchema, type PlanStep } from "@alltheway/contracts";
 import { openVoiceSocket, applyVoiceCaption, captionsFromThread, type VoiceLine, type VoiceSocket } from "@/lib/voice";
 import { useT } from "@/app/i18n";
-import { resolveVoiceSessionId } from "@/app/work-id";
+import { resolveVoiceSessionId, workIdFromPath } from "@/app/work-id";
 import { useCompanionThread } from "@/app/companion-thread";
 import { api } from "@/app/data";
 
@@ -48,6 +48,10 @@ type VoiceState = {
   start: () => void;
   stop: () => void;
   toggleMute: () => void;
+  /** Hang up this thread and speak on another. Overlay stays open. */
+  switchTo: (sessionId: string) => void;
+  /** New isolated thread, then speak there. */
+  startFresh: () => Promise<void>;
 };
 
 const VoiceContext = createContext<VoiceState | null>(null);
@@ -60,8 +64,14 @@ export function useVoice(): VoiceState {
 
 export function VoiceProvider({ children }: { children: ReactNode }) {
   const t = useT();
+  const navigate = useNavigate();
   const { pathname } = useLocation();
-  const { recordSpoken, sessionId: companionSessionId } = useCompanionThread();
+  const {
+    recordSpoken,
+    sessionId: companionSessionId,
+    openChat,
+    startNewChat,
+  } = useCompanionThread();
   const [status, setStatus] = useState<VoiceStatus>("idle");
   const [error, setError] = useState("");
   const [lines, setLines] = useState<VoiceLine[]>([]);
@@ -144,224 +154,260 @@ export function VoiceProvider({ children }: { children: ReactNode }) {
     });
   }, []);
 
+  const begin = useCallback(
+    (sessionId: string, existingCtx?: AudioContext) => {
+      const mine = ++epoch.current;
+      const current = () => epoch.current === mine;
+
+      void (async () => {
+        setStatus("connecting");
+        setError("");
+        hangingUp.current = false;
+        setTurn(null);
+        setFake(false);
+
+        try {
+          // AudioContext is created in the same tap as the permission prompt
+          // unless the caller already spent the gesture (switch / new).
+          const ctx = existingCtx ?? new AudioContext({ latencyHint: "interactive" });
+          try {
+            const stream = await navigator.mediaDevices.getUserMedia({
+              audio: {
+                echoCancellation: true,
+                noiseSuppression: true,
+                autoGainControl: true,
+              },
+            });
+
+            if (!current()) {
+              stream.getTracks().forEach((t) => t.stop());
+              void ctx.close();
+              return;
+            }
+
+            await ctx.resume();
+
+            const [, , detail] = await Promise.all([
+              ctx.audioWorklet.addModule("/worklets/pcm-capture.js?v=2"),
+              ctx.audioWorklet.addModule("/worklets/pcm-play.js?v=3"),
+              api.session(sessionId).catch(() => null),
+            ]);
+
+            if (!current()) {
+              stream.getTracks().forEach((t) => t.stop());
+              void ctx.close();
+              return;
+            }
+
+            const seeded = captionsFromThread(detail?.thread ?? []);
+            linesRef.current = seeded;
+            setLines(seeded);
+            setContinued(seeded.length > 0);
+
+            const source = ctx.createMediaStreamSource(stream);
+            const capture = new AudioWorkletNode(ctx, "pcm-capture");
+            const play = new AudioWorkletNode(ctx, "pcm-play");
+            source.connect(capture);
+            play.connect(ctx.destination);
+            graph.current = { ctx, stream, play };
+
+            const voice = await openVoiceSocket(sessionId, {
+              onReady(ready) {
+                if (!current()) return;
+                setFake(ready.fake === true);
+                setStatus("live");
+              },
+              onPcm(pcm) {
+                if (!current() || mutedRef.current || hangingUp.current) return;
+                play.port.postMessage(pcm);
+              },
+              onInterrupted() {
+                if (!current()) return;
+                play.port.postMessage("flush");
+              },
+              onTranscript(side, text, finished) {
+                if (!current()) return;
+                const next = applyVoiceCaption(linesRef.current, side, text, finished);
+                linesRef.current = next;
+                setLines(next);
+                if (finished) {
+                  const last = [...next].reverse().find((l) => l.side === side);
+                  const spoken = last?.text.trim();
+                  if (spoken && !spokenTexts.current.has(spoken)) {
+                    spokenTexts.current.add(spoken);
+                    recordSpoken(side === "user" ? "user" : "agent", spoken);
+                  }
+                }
+              },
+              onTurn(event) {
+                if (!current()) return;
+                if (event && typeof event === "object") {
+                  const rec = event as Record<string, unknown>;
+                  const confirm = rec.confirm as
+                    | {
+                        summary?: string;
+                        options?: string[];
+                        actions?: {
+                          label: string;
+                          action: string;
+                          reason: string;
+                          connector?: string;
+                          tool?: string;
+                          arguments?: Record<string, unknown>;
+                        }[];
+                      }
+                    | undefined;
+                  const clarify = rec.clarify as { question?: string; options?: string[] } | undefined;
+                  const plan = Array.isArray(rec.plan)
+                    ? rec.plan.flatMap((step) => {
+                        const parsed = PlanStepSchema.safeParse(step);
+                        return parsed.success ? [parsed.data] : [];
+                      })
+                    : [];
+                  setTurn({
+                    decision: typeof rec.decision === "string" ? rec.decision : undefined,
+                    summary: confirm?.summary,
+                    question: clarify?.question,
+                    note: typeof rec.note === "string" ? rec.note : undefined,
+                    options: confirm?.options ?? clarify?.options,
+                    plan,
+                    actions: confirm?.actions ?? [],
+                  });
+                }
+              },
+              onError(message) {
+                if (!current()) return;
+                setError(message);
+                setStatus("error");
+              },
+              onClose(reason) {
+                if (!current()) return;
+                if (reason === "hangup") {
+                  hangingUp.current = true;
+                  const g = graph.current;
+                  socket.current = null;
+                  g?.stream.getTracks().forEach((track) => track.stop());
+                  const play = g?.play;
+                  if (!play || !g) {
+                    teardown();
+                    setMuted(false);
+                    setTurn(null);
+                    setStatus((s) => (s === "error" ? s : "idle"));
+                    return;
+                  }
+                  let finished = false;
+                  const finish = () => {
+                    if (finished || epoch.current !== mine) return;
+                    finished = true;
+                    graph.current = null;
+                    void g.ctx.close();
+                    epoch.current += 1;
+                    setMuted(false);
+                    setTurn(null);
+                    setStatus((s) => (s === "error" ? s : "idle"));
+                  };
+                  const timer = window.setTimeout(finish, 2_500);
+                  play.port.onmessage = (ev) => {
+                    if (ev.data && typeof ev.data === "object" && "drained" in ev.data) {
+                      window.clearTimeout(timer);
+                      finish();
+                    }
+                  };
+                  play.port.postMessage("drain");
+                  return;
+                }
+                teardown();
+                setMuted(false);
+                setTurn(null);
+                setStatus((s) => (s === "error" ? s : "idle"));
+              },
+            });
+
+            if (!current()) {
+              voice.hangup();
+              return;
+            }
+
+            socket.current = voice;
+            capture.port.onmessage = (ev) => {
+              const data = ev.data;
+              if (mutedRef.current || hangingUp.current || !current()) return;
+              if (data instanceof Int16Array) voice.sendPcm(data);
+            };
+          } catch (err) {
+            void ctx.close();
+            throw err;
+          }
+        } catch (err) {
+          if (!current()) return;
+          teardown();
+          const name = (err as DOMException)?.name;
+          setStatus("error");
+          setError(
+            name === "NotAllowedError" ? t("voice.micDenied") : t("voice.unavailable"),
+          );
+        }
+      })();
+    },
+    [teardown, t, recordSpoken],
+  );
+
   const start = useCallback(() => {
     if (status === "connecting" || status === "live") {
       stop();
       return;
     }
+    begin(resolveVoiceSessionId(pathname, companionSessionId));
+  }, [status, stop, begin, pathname, companionSessionId]);
 
-    const mine = ++epoch.current;
-    /** False as soon as stop, teardown, or another start has happened. */
-    const current = () => epoch.current === mine;
-
-    void (async () => {
-      setStatus("connecting");
-      setError("");
-      hangingUp.current = false;
-      setTurn(null);
-      setFake(false);
-
-      try {
-        // AudioContext is created in the same tap as the permission prompt.
-        // On iOS, creating it after `await getUserMedia` spends the user
-        // gesture, and playback stays silent — which is the "no audio" report
-        // on a phone. Both start on the click stack; we only wait after.
-        const ctx = new AudioContext({ latencyHint: "interactive" });
-        try {
-        const stream = await navigator.mediaDevices.getUserMedia({
-          audio: {
-            echoCancellation: true,
-            noiseSuppression: true,
-            autoGainControl: true,
-          },
-        });
-
-        if (!current()) {
-          // Stopped while the permission sheet was up. Release the microphone
-          // rather than leaving the recording indicator on with nothing behind it.
-          stream.getTracks().forEach((t) => t.stop());
-          void ctx.close();
-          return;
-        }
-
-        await ctx.resume();
-
-        const sessionId = resolveVoiceSessionId(pathname, companionSessionId);
-        const [, , detail] = await Promise.all([
-          ctx.audioWorklet.addModule("/worklets/pcm-capture.js?v=2"),
-          ctx.audioWorklet.addModule("/worklets/pcm-play.js?v=3"),
-          api.session(sessionId).catch(() => null),
-        ]);
-
-        if (!current()) {
-          stream.getTracks().forEach((t) => t.stop());
-          void ctx.close();
-          return;
-        }
-
-        const seeded = captionsFromThread(detail?.thread ?? []);
-        linesRef.current = seeded;
-        setLines(seeded);
-        setContinued(seeded.length > 0);
-
-        const source = ctx.createMediaStreamSource(stream);
-        const capture = new AudioWorkletNode(ctx, "pcm-capture");
-        const play = new AudioWorkletNode(ctx, "pcm-play");
-        source.connect(capture);
-        play.connect(ctx.destination);
-        graph.current = { ctx, stream, play };
-
-        const voice = await openVoiceSocket(sessionId, {
-          onReady(ready) {
-            // The check that stops a cancelled attempt reporting itself live.
-            if (!current()) return;
-            setFake(ready.fake === true);
-            setStatus("live");
-          },
-          onPcm(pcm) {
-            if (!current() || mutedRef.current || hangingUp.current) return;
-            play.port.postMessage(pcm);
-          },
-          onInterrupted() {
-            if (!current()) return;
-            play.port.postMessage("flush");
-          },
-          onTranscript(side, text, finished) {
-            if (!current()) return;
-            const next = applyVoiceCaption(linesRef.current, side, text, finished);
-            linesRef.current = next;
-            setLines(next);
-            if (finished) {
-              const last = [...next].reverse().find((l) => l.side === side);
-              const spoken = last?.text.trim();
-              if (spoken && !spokenTexts.current.has(spoken)) {
-                spokenTexts.current.add(spoken);
-                recordSpoken(side === "user" ? "user" : "agent", spoken);
-              }
-            }
-          },
-          onTurn(event) {
-            if (!current()) return;
-            if (event && typeof event === "object") {
-              const rec = event as Record<string, unknown>;
-              const confirm = rec.confirm as
-                | {
-                    summary?: string;
-                    options?: string[];
-                    actions?: {
-                      label: string;
-                      action: string;
-                      reason: string;
-                      connector?: string;
-                      tool?: string;
-                      arguments?: Record<string, unknown>;
-                    }[];
-                  }
-                | undefined;
-              const clarify = rec.clarify as { question?: string; options?: string[] } | undefined;
-              const plan = Array.isArray(rec.plan)
-                ? rec.plan.flatMap((step) => {
-                    const parsed = PlanStepSchema.safeParse(step);
-                    return parsed.success ? [parsed.data] : [];
-                  })
-                : [];
-              setTurn({
-                decision: typeof rec.decision === "string" ? rec.decision : undefined,
-                summary: confirm?.summary,
-                question: clarify?.question,
-                note: typeof rec.note === "string" ? rec.note : undefined,
-                options: confirm?.options ?? clarify?.options,
-                plan,
-                actions: confirm?.actions ?? [],
-              });
-            }
-          },
-          onError(message) {
-            if (!current()) return;
-            setError(message);
-            setStatus("error");
-          },
-          onClose(reason) {
-            if (!current()) return;
-            if (reason === "hangup") {
-              // Spoken hang-up (or a server close that used the hangup
-              // reason). Stop the mic, keep playing the farewell, then idle.
-              hangingUp.current = true;
-              const g = graph.current;
-              socket.current = null;
-              g?.stream.getTracks().forEach((track) => track.stop());
-              const play = g?.play;
-              if (!play || !g) {
-                teardown();
-                setMuted(false);
-                setTurn(null);
-                setStatus((s) => (s === "error" ? s : "idle"));
-                return;
-              }
-              let finished = false;
-              const finish = () => {
-                if (finished || epoch.current !== mine) return;
-                finished = true;
-                graph.current = null;
-                void g.ctx.close();
-                epoch.current += 1;
-                setMuted(false);
-                setTurn(null);
-                setStatus((s) => (s === "error" ? s : "idle"));
-              };
-              const timer = window.setTimeout(finish, 2_500);
-              play.port.onmessage = (ev) => {
-                if (ev.data && typeof ev.data === "object" && "drained" in ev.data) {
-                  window.clearTimeout(timer);
-                  finish();
-                }
-              };
-              play.port.postMessage("drain");
-              return;
-            }
-            // A close we did not ask for — the network dropped, or the upstream
-            // session ended. Without this the button still read "live" and
-            // pressing it did nothing, because there was nothing left to stop.
-            teardown();
-            setMuted(false);
-            setTurn(null);
-            setStatus((s) => (s === "error" ? s : "idle"));
-          },
-        });
-
-        if (!current()) {
-          // Stopped while the socket was opening. Hang it up rather than
-          // leaving a live session nothing on screen can reach.
-          voice.hangup();
-          return;
-        }
-
-        socket.current = voice;
-        capture.port.onmessage = (ev) => {
-          const data = ev.data;
-          // Muted means the room is not sent upstream at all. Dropping it here
-          // rather than at the socket keeps it out of the transcript too.
-          if (mutedRef.current || hangingUp.current || !current()) return;
-          if (data instanceof Int16Array) voice.sendPcm(data);
-        };
-        } catch (err) {
-          void ctx.close();
-          throw err;
-        }
-      } catch (err) {
-        // A cancelled attempt is not a failure, and must not paint one.
-        if (!current()) return;
-        teardown();
-        const name = (err as DOMException)?.name;
-        setStatus("error");
-        setError(
-          name === "NotAllowedError"
-            ? t("voice.micDenied")
-            : t("voice.unavailable"),
-        );
+  const switchTo = useCallback(
+    (sessionId: string) => {
+      const next = sessionId.trim();
+      if (!next) return;
+      if (next === resolveVoiceSessionId(pathname, companionSessionId)) return;
+      // Gesture must construct (and resume) AudioContext before any await.
+      const ctx = new AudioContext({ latencyHint: "interactive" });
+      void ctx.resume();
+      if (workIdFromPath(pathname)) {
+        navigate(`/app/work/${next}`);
+      } else {
+        openChat(next);
       }
-    })();
-  }, [pathname, companionSessionId, status, stop, teardown, t, recordSpoken]);
+      teardown();
+      setMuted(false);
+      setTurn(null);
+      spokenTexts.current.clear();
+      linesRef.current = [];
+      setLines([]);
+      begin(next, ctx);
+    },
+    [pathname, companionSessionId, navigate, openChat, teardown, begin],
+  );
+
+  const startFresh = useCallback(async () => {
+    const ctx = new AudioContext({ latencyHint: "interactive" });
+    void ctx.resume();
+    try {
+      const onWork = Boolean(workIdFromPath(pathname));
+      const created = onWork
+        ? await api.createSession("work")
+        : { id: (await startNewChat()) ?? "" };
+      if (!created.id) {
+        void ctx.close();
+        return;
+      }
+      if (onWork) navigate(`/app/work/${created.id}`);
+      teardown();
+      setMuted(false);
+      setTurn(null);
+      spokenTexts.current.clear();
+      linesRef.current = [];
+      setLines([]);
+      begin(created.id, ctx);
+    } catch {
+      void ctx.close();
+    }
+  }, [pathname, startNewChat, navigate, teardown, begin]);
 
   return (
     <VoiceContext.Provider
@@ -377,6 +423,8 @@ export function VoiceProvider({ children }: { children: ReactNode }) {
         start,
         stop,
         toggleMute,
+        switchTo,
+        startFresh,
       }}
     >
       {children}

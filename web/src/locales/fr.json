@@ -102,7 +102,13 @@
     "connecting": "Connexion…",
     "pauseListening": "Mettre l'écoute en pause",
     "resumeListening": "Reprendre l'écoute",
-    "stop": "Arrêter"
+    "stop": "Arrêter",
+    "currentSession": "En cours",
+    "previousSessions": "Précédents",
+    "sessionTabs": "Conversations vocales",
+    "previousEmpty": "Pas encore d'autres conversations",
+    "previousHint": "Chaque conversation reste un fil à part. En ouvrir une quitte celle-ci.",
+    "newSession": "Nouvelle conversation"
   },
   "share": {
     "heading": "Partager",

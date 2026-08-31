@@ -96,7 +96,13 @@
     "connecting": "Connecting…",
     "pauseListening": "Pause listening",
     "resumeListening": "Resume listening",
-    "stop": "Stop"
+    "stop": "Stop",
+    "currentSession": "Ń sọ̀rọ̀",
+    "previousSessions": "Tẹ́lẹ̀",
+    "sessionTabs": "Àwọn ìtàkúrọsọ ohùn",
+    "previousEmpty": "Kò tíì sí ìtàkúrọsọ tẹ́lẹ̀",
+    "previousHint": "Ìtàkúrọsọ kọ̀ọ̀kan dúró lọ́nà tirẹ̀. Ṣíṣí òmíràn kúrò nínú èyí.",
+    "newSession": "Ìtàkúrọsọ tuntun"
   },
   "share": {
     "heading": "Pín",
