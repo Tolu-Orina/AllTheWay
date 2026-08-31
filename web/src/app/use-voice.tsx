@@ -468,22 +468,28 @@ export function VoiceProvider({ children }: { children: ReactNode }) {
       begin(workId, ctx);
       return;
     }
-    if (voiceSessionId) {
-      begin(voiceSessionId, ctx);
-      return;
-    }
+    // Each Speak tap from idle is a new conversation. Reusing the stored id
+    // hydrated the last thread into this one. Previous is how you reopen.
+    const token = epoch.current;
+    setStatus("connecting");
+    setError("");
     void api
       .createSession("voice")
       .then((created) => {
+        if (epoch.current !== token) {
+          void ctx.close();
+          return;
+        }
         rememberVoice(created.id);
         begin(created.id, ctx);
       })
       .catch(() => {
         void ctx.close();
+        if (epoch.current !== token) return;
         setStatus("error");
         setError(t("voice.unavailable"));
       });
-  }, [status, stop, begin, pathname, voiceSessionId, rememberVoice, t]);
+  }, [status, stop, begin, pathname, rememberVoice, t]);
 
   const switchTo = useCallback(
     (sessionId: string) => {
@@ -512,9 +518,14 @@ export function VoiceProvider({ children }: { children: ReactNode }) {
   const startFresh = useCallback(async () => {
     const ctx = new AudioContext({ latencyHint: "interactive" });
     void ctx.resume();
+    const token = epoch.current;
     try {
       const onWork = Boolean(workIdFromPath(pathname));
       const created = await api.createSession(onWork ? "work" : "voice");
+      if (epoch.current !== token) {
+        void ctx.close();
+        return;
+      }
       if (!created.id) {
         void ctx.close();
         return;

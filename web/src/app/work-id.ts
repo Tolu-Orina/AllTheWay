@@ -2,8 +2,9 @@
  * Work threads, companion chats, and spoken sessions are different lists.
  *
  * Companion is session-bounded: plus starts a new chat, previous chats reopen
- * one. Voice talks to the work on screen when there is one, otherwise to its
- * own spoken session — never the typed companion thread.
+ * one. Voice never uses the typed companion thread. Speak from a work URL
+ * talks to that work. Everywhere else, each Speak tap from idle is a new
+ * spoken session. The last voice id is not reused; Previous is how you reopen.
  */
 export const COMPANION_SESSION_ID = "companion";
 export const COMPANION_SESSION_KEY = "atw:companion-session";

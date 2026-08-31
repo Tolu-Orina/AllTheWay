@@ -23,9 +23,10 @@ import { cn } from "@/lib/utils";
  * The live voice session, on one thread at a time.
  *
  * Spoken sessions are their own list. Opening Speak from Today must not
- * hydrate the typed companion chat into the overlay. Previous conversations
- * sit on a second pill so a new talk cannot bleed into an old one. Opening
- * one hangs this live session and starts on that thread.
+ * hydrate the typed companion chat into the overlay, and must not reopen
+ * the last spoken thread. Each tap from idle allocates a new session.
+ * Previous conversations sit on a second pill. Opening one hangs this live
+ * session and starts on that thread. Plus does the same while already speaking.
  *
  * Pause stops the room reaching the model without hanging up; Stop tears
  * the session down. Saying goodbye does the same as Stop once the farewell
