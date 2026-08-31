@@ -374,11 +374,12 @@ locals {
   #: than passed, so neither reaches Terraform state — and a rotation is a new
   #: secret version rather than a deploy.
   # Every service that publishes a card signs it. librarian and scribe joined in
-  # v3: until they did, the Specialists view had to show two of its four
-  # capabilities as "Internal", which was honest but not what the plan intended.
+  # v3; document-cell was added later and served a card with no key, so the
+  # registry correctly reported it unverified — including the URL it advertises.
   card_signing_services = [
     "orchestrator",
     "research-cell",
+    "document-cell",
     "connector-gateway",
     "librarian",
     "scribe",

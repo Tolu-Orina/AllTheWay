@@ -1,7 +1,10 @@
 import { AlertTriangle, ShieldCheck, ShieldX } from "lucide-react";
+import { useState } from "react";
 import { useT } from "@/app/i18n";
 
+import { CapabilityDetail, asideFor, workCtaFor } from "@/app/CapabilityDetail";
 import { Specialists } from "@/app/Specialists";
+import { useStartWork } from "@/app/use-start-work";
 import { useAsync } from "@/app/use-async";
 import { api, type Agent } from "@/app/data";
 import { cn } from "@/lib/utils";
@@ -58,19 +61,23 @@ export function RunningRoster() {
 
 export function AgentCard({ agent }: { agent: Agent }) {
   const t = useT();
+  const { startWork, starting } = useStartWork();
+  const [open, setOpen] = useState(false);
   const trusted = agent.signature?.trusted ?? false;
-  // Reachable but unverified is the case worth shouting about. Unreachable is
-  // an availability problem; unverified is a trust problem, and they should
-  // not look the same.
   const suspect = agent.reachable && !trusted;
+  const cta = workCtaFor(agent.id);
+  const asideKey = asideFor(agent.id);
 
   return (
-    <li
-      className={cn(
-        "rounded-brand border bg-card p-4",
-        suspect && "border-destructive/50 bg-destructive/5",
-      )}
-    >
+    <li>
+      <button
+        type="button"
+        onClick={() => setOpen(true)}
+        className={cn(
+          "w-full rounded-brand border bg-card p-4 text-left transition-colors hover:border-primary/40",
+          suspect && "border-destructive/50 bg-destructive/5",
+        )}
+      >
       <div className="flex items-start justify-between gap-3">
         <div className="min-w-0">
           <p className="text-[15px] font-semibold">{agent.name || agent.id}</p>
@@ -90,7 +97,7 @@ export function AgentCard({ agent }: { agent: Agent }) {
           ) : (
             <ShieldX className="size-3.5" aria-hidden="true" />
           )}
-          {trusted ? "Verified" : "Unverified"}
+          {trusted ? t("specialists.verified") : t("specialists.unverified")}
         </span>
       </div>
 
@@ -114,24 +121,24 @@ export function AgentCard({ agent }: { agent: Agent }) {
       </dl>
 
       {agent.skills.length ? (
-        <ul className="mt-3 flex flex-wrap gap-1.5">
+        <div className="mt-3 flex flex-wrap gap-1.5">
           {agent.skills.map((skill) => (
-            <li
+            <span
               key={skill.id}
               title={skill.description}
               className="rounded-full border bg-background px-2.5 py-1 text-[12px] text-muted-foreground"
             >
               {skill.name || skill.id}
-            </li>
+            </span>
           ))}
-        </ul>
+        </div>
       ) : null}
 
       {suspect ? (
         <p className="mt-3 flex items-start gap-1.5 text-[12.5px] text-destructive">
           <AlertTriangle className="mt-0.5 size-3.5 shrink-0" aria-hidden="true" />
           <span>
-            {agent.signature?.summary ?? "This agent's card could not be verified."}{" "}
+            {agent.signature?.summary ?? t("specialists.cardCouldNotBeVerified")}{" "}
             {t("common.nothingHereIsAttestedIncludingThe")}
           </span>
         </p>
@@ -140,6 +147,30 @@ export function AgentCard({ agent }: { agent: Agent }) {
       {!agent.reachable && agent.error ? (
         <p className="mt-3 text-[12.5px] text-muted-foreground">{agent.error}</p>
       ) : null}
+      </button>
+      <CapabilityDetail
+        open={open}
+        onOpenChange={setOpen}
+        title={agent.name || agent.id}
+        description={agent.purpose}
+        owner={agent.owner}
+        version={agent.version}
+        skills={agent.skills}
+        trusted={trusted}
+        suspect={suspect}
+        signatureSummary={agent.signature?.summary}
+        aside={asideKey ? t(asideKey) : null}
+        ctaLabel={cta ? t(cta.labelKey) : undefined}
+        starting={starting}
+        onCta={
+          cta
+            ? () => {
+                setOpen(false);
+                void startWork({ seed: cta.seed, promptOnly: cta.promptOnly });
+              }
+            : undefined
+        }
+      />
     </li>
   );
 }

@@ -16,6 +16,9 @@ import {
   SYSTEM_INSTRUCTION,
   foldTranscript,
   TranscriptAccumulator,
+  greetingKickMessage,
+  isGreetingKickTranscript,
+  GREETING_KICK_TEXT,
 } from "./voice/protocol.js";
 import { READ_TOOL_NAMES, SESSION_TOOL_NAMES, runReadTool } from "./voice/tools.js";
 import { END_THIS_CONVERSATION, setHangupDelaysForTests } from "./voice/hangup.js";
@@ -258,6 +261,29 @@ test("the voice instruction speaks the email on a compose confirm, never that it
   assert.match(s, /it does not send/);
   assert.match(s, /never refuse because saving drafts is off/);
   assert.match(s, /later details belong on that email/);
+});
+
+test("the voice instruction greets first when a session starts", () => {
+  const s = SYSTEM_INSTRUCTION.toLowerCase();
+  assert.match(s, /speak first/);
+  assert.match(s, /do not wait for them to say hello/);
+  assert.doesNotMatch(s, /wait for them to tell you what they want/);
+});
+
+test("a new live session sends a completed turn so the model can greet", () => {
+  const msg = greetingKickMessage();
+  const content = msg.clientContent as {
+    turnComplete?: boolean;
+    turns?: { role: string; parts?: { text?: string }[] }[];
+  };
+  assert.equal(content.turnComplete, true);
+  assert.equal(content.turns?.[0]?.role, "user");
+  assert.equal(content.turns?.[0]?.parts?.[0]?.text, GREETING_KICK_TEXT);
+  assert.equal(isGreetingKickTranscript(GREETING_KICK_TEXT), true);
+  assert.equal(isGreetingKickTranscript("The session has just started"), true);
+  assert.equal(isGreetingKickTranscript("The session"), true);
+  assert.equal(isGreetingKickTranscript("The"), false);
+  assert.equal(isGreetingKickTranscript("Draft an email to Ana"), false);
 });
 
 test("the voice instruction hangs up only when they are leaving the conversation", () => {

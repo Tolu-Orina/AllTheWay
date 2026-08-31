@@ -92,6 +92,7 @@
     "captions": "Ohun tí a ṣẹ̀ṣẹ̀ sọ",
     "sessionTitle": "Speaking with AllTheWay",
     "sessionHint": "Nothing irreversible happens until you say so.",
+    "continuing": "Ìtàkúrọsọ yìí ń tẹ̀síwájú.",
     "connecting": "Connecting…",
     "pauseListening": "Pause listening",
     "resumeListening": "Resume listening",
@@ -257,7 +258,18 @@
     "eachOfTheseIsASeparate": "Ọ̀kọ̀ọ̀kan àwọn wọ̀nyí jẹ́ aṣojú ọ̀tọ̀ọ̀tọ̀ pẹ̀lú káàdì tirẹ̀. Ẹ̀yà àti ìfọwọ́sí ìsàlẹ̀ ni a kà láti inú káàdì yẹn — nítorí náà agbára tí kò bá fìdí múlẹ̀ mọ́ yóò sọ bẹ́ẹ̀ níbí.",
     "internal": "Ti inú",
     "runsInsideTheProductAndPublishes": "Ó ń ṣiṣẹ́ nínú ẹ̀rọ náà kò sì gbé káàdì jáde — kò sí ohun láti òde tí ó lè pè é.",
-    "notRegisteredInThisDeploymentThis": "A kò forúkọ rẹ̀ sílẹ̀ níbí — agbára yìí kò sí."
+    "notRegisteredInThisDeploymentThis": "A kò forúkọ rẹ̀ sílẹ̀ níbí — agbára yìí kò sí.",
+    "verified": "Tí a fọwọ́sí",
+    "unverified": "Tí a kò fọwọ́sí",
+    "owner": "Olùṣàkóso",
+    "card": "Káàdì",
+    "publishedSkills": "Àwọn agbára tí a gbé jáde",
+    "startInWork": "Bẹ̀rẹ̀ nínú Work",
+    "makeADocument": "Ṣe àkọsílẹ̀",
+    "close": "Pa á",
+    "runsAfterYes": "Ó ń ṣe fáìlì náà lẹ́yìn tí o bá fọwọ́sí. Kò ní ìtàkúrọsọ tirẹ̀.",
+    "enforcesConnectors": "Ibi ìmúṣe ni ó jẹ́ níwájú gbogbo asopọ̀. O kì í bá a sọ̀rọ̀.",
+    "cardCouldNotBeVerified": "A kò lè fìdí káàdì aṣojú yìí múlẹ̀."
   },
   "usage": {
     "thisMonth": "Oṣù yìí",

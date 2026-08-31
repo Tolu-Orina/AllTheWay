@@ -92,6 +92,7 @@
     "captions": "刚才说的话",
     "sessionTitle": "正在与 AllTheWay 对话",
     "sessionHint": "你开口确认之前，不会发生任何不可逆的事。",
+    "continuing": "接着上次的对话。",
     "connecting": "正在连接…",
     "pauseListening": "暂停聆听",
     "resumeListening": "继续聆听",
@@ -257,7 +258,18 @@
     "eachOfTheseIsASeparate": "每个都是独立的智能体，具有公开发布的名片。下方的版本和签名均读取自该名片而非本页面 — 一旦某项功能失效，将在此提示。",
     "internal": "内部",
     "runsInsideTheProductAndPublishes": "在产品内部运行且不公开名片 — 外部无法调用。",
-    "notRegisteredInThisDeploymentThis": "未在此部署中注册 — 该功能不可用。"
+    "notRegisteredInThisDeploymentThis": "未在此部署中注册 — 该功能不可用。",
+    "verified": "已验证",
+    "unverified": "未验证",
+    "owner": "负责人",
+    "card": "名片",
+    "publishedSkills": "已发布的能力",
+    "startInWork": "在 Work 中开始",
+    "makeADocument": "制作文档",
+    "close": "关闭",
+    "runsAfterYes": "你确认之后，它才会编译文件。它没有自己的对话。",
+    "enforcesConnectors": "这是每个连接器前的执行关口。你不直接与它对话。",
+    "cardCouldNotBeVerified": "无法验证该智能体的名片。"
   },
   "usage": {
     "thisMonth": "本月",

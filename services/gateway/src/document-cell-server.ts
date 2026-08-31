@@ -9,6 +9,7 @@
 
 import express from "express";
 
+import { servedCard } from "./agent-card-sign.js";
 import { WALL_MS_WITH_IMAGES } from "./document-budget.js";
 import { critiqueDeck, vertexVision } from "./document-critic.js";
 import { generateStill } from "./document-images.js";
@@ -84,7 +85,7 @@ export function createDocumentCellApp() {
   app.get("/healthz", health);
   app.get("/healthz/", health);
   app.get("/.well-known/agent-card.json", (_req, res) => {
-    res.json(agentCard);
+    res.json(servedCard(agentCard as Record<string, unknown>));
   });
   app.post("/compile", (req, res) => {
     void compile(req, res);

@@ -39,6 +39,24 @@ export type VoiceLine = {
   finished: boolean;
 };
 
+export function captionsFromThread(
+  thread: Array<{ role: string; text: string }>,
+): VoiceLine[] {
+  const out: VoiceLine[] = [];
+  for (const m of thread) {
+    const text = m.text.trim();
+    if (!text) continue;
+    const side = m.role === "user" ? "user" : "model";
+    out.push({
+      id: (out[out.length - 1]?.id ?? 0) + 1,
+      side,
+      text,
+      finished: true,
+    });
+  }
+  return out;
+}
+
 /**
  * Same fold as the gateway (`protocol.ts`). Kept here so an older relay
  * that still forwards raw chunks does not overwrite the line on screen.

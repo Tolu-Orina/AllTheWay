@@ -1,7 +1,9 @@
 import { BadgeCheck, Lock, ShieldAlert } from "lucide-react";
+import { useState } from "react";
 import { useT } from "@/app/i18n";
 
 import type { Agent } from "@/app/data";
+import { CapabilityDetail, asideFor, workCtaFor } from "@/app/CapabilityDetail";
 import { useStartWork } from "@/app/use-start-work";
 import { cn } from "@/lib/utils";
 
@@ -90,13 +92,12 @@ const SPECIALISTS: Specialist[] = [
  * Takes the registry rather than fetching it.
  *
  * This screen already loads it, and asking again meant two identical requests —
- * each of which makes the registry fetch and verify a card from *five* services,
- * any of which may be scaling from zero. On a phone that doubled the wait for no
+ * each of which makes the registry fetch and verify a card from every live
+ * service, any of which may be scaling from zero. On a phone that doubled the wait for no
  * new information.
  */
 export function Specialists({ agents, pending = false }: { agents: Agent[]; pending?: boolean }) {
   const t = useT();
-  const { startWork, starting } = useStartWork();
 
   return (
     <section className="flex flex-col gap-3">
@@ -113,13 +114,6 @@ export function Specialists({ agents, pending = false }: { agents: Agent[]; pend
             key={specialist.agentId}
             specialist={specialist}
             agent={agents.find((a) => a.id === specialist.agentId)}
-            starting={starting}
-            onStart={() =>
-              void startWork({
-                seed: specialist.seed,
-                promptOnly: specialist.promptOnly,
-              })
-            }
             pending={pending}
           />
         ))}
@@ -131,32 +125,27 @@ export function Specialists({ agents, pending = false }: { agents: Agent[]; pend
 function SpecialistRow({
   specialist,
   agent,
-  starting,
-  onStart,
   pending,
 }: {
   specialist: Specialist;
   agent: Agent | undefined;
-  starting: boolean;
-  onStart: () => void;
   pending?: boolean;
 }) {
   const t = useT();
+  const { startWork, starting } = useStartWork();
+  const [open, setOpen] = useState(false);
   const trusted = agent?.signature?.trusted ?? false;
-  // An internal service is not "unverified" — the control does not apply to it.
-  // Conflating the two would either raise a false alarm or hide a real one.
-  // Reachable but unsigned is the state worth flagging: something is answering
-  // and we cannot prove it is what it claims to be.
   const suspect = !specialist.internal && Boolean(agent?.reachable) && !trusted;
+  const cta = workCtaFor(specialist.agentId);
+  const asideKey = asideFor(specialist.agentId);
 
   return (
     <li>
       <button
         type="button"
-        onClick={onStart}
-        disabled={starting}
+        onClick={() => setOpen(true)}
         className={cn(
-          "w-full rounded-brand border bg-card px-3.5 py-3 text-left transition-colors hover:border-primary/40 disabled:opacity-60",
+          "w-full rounded-brand border bg-card px-3.5 py-3 text-left transition-colors hover:border-primary/40",
           suspect && "border-destructive/40",
         )}
       >
@@ -185,7 +174,7 @@ function SpecialistRow({
             ) : (
               <ShieldAlert className="size-3.5" aria-hidden="true" />
             )}
-            {trusted ? "Verified" : "Unverified"}
+            {trusted ? t("specialists.verified") : t("specialists.unverified")}
           </span>
         ) : null}
       </div>
@@ -213,6 +202,29 @@ function SpecialistRow({
         </p>
       )}
       </button>
+      <CapabilityDetail
+        open={open}
+        onOpenChange={setOpen}
+        title={specialist.label}
+        description={specialist.description}
+        owner={agent?.owner}
+        version={agent?.version}
+        skills={agent?.skills ?? []}
+        trusted={trusted}
+        suspect={suspect}
+        signatureSummary={agent?.signature?.summary}
+        aside={asideKey ? t(asideKey) : null}
+        ctaLabel={cta ? t(cta.labelKey) : undefined}
+        starting={starting}
+        onCta={
+          cta
+            ? () => {
+                setOpen(false);
+                void startWork({ seed: cta.seed, promptOnly: cta.promptOnly });
+              }
+            : undefined
+        }
+      />
     </li>
   );
 }

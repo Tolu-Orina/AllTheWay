@@ -10,10 +10,11 @@ import {
 import { useLocation } from "react-router";
 
 import { PlanStepSchema, type PlanStep } from "@alltheway/contracts";
-import { openVoiceSocket, applyVoiceCaption, type VoiceLine, type VoiceSocket } from "@/lib/voice";
+import { openVoiceSocket, applyVoiceCaption, captionsFromThread, type VoiceLine, type VoiceSocket } from "@/lib/voice";
 import { useT } from "@/app/i18n";
 import { resolveVoiceSessionId } from "@/app/work-id";
 import { useCompanionThread } from "@/app/companion-thread";
+import { api } from "@/app/data";
 
 export type VoiceStatus = "idle" | "connecting" | "live" | "error";
 
@@ -38,6 +39,8 @@ type VoiceState = {
   status: VoiceStatus;
   error: string;
   lines: VoiceLine[];
+  /** True when this overlay opened onto a stored thread, not a blank start. */
+  continued: boolean;
   fake: boolean;
   turn: VoiceTurn | null;
   sessionId: string;
@@ -62,6 +65,7 @@ export function VoiceProvider({ children }: { children: ReactNode }) {
   const [status, setStatus] = useState<VoiceStatus>("idle");
   const [error, setError] = useState("");
   const [lines, setLines] = useState<VoiceLine[]>([]);
+  const [continued, setContinued] = useState(false);
   const [fake, setFake] = useState(false);
   const [turn, setTurn] = useState<VoiceTurn | null>(null);
   const [muted, setMuted] = useState(false);
@@ -118,6 +122,7 @@ export function VoiceProvider({ children }: { children: ReactNode }) {
     setTurn(null);
     linesRef.current = [];
     setLines([]);
+    setContinued(false);
     spokenTexts.current.clear();
   }, [teardown]);
 
@@ -152,8 +157,6 @@ export function VoiceProvider({ children }: { children: ReactNode }) {
     void (async () => {
       setStatus("connecting");
       setError("");
-      linesRef.current = [];
-      setLines([]);
       hangingUp.current = false;
       setTurn(null);
       setFake(false);
@@ -184,9 +187,10 @@ export function VoiceProvider({ children }: { children: ReactNode }) {
         await ctx.resume();
 
         const sessionId = resolveVoiceSessionId(pathname, companionSessionId);
-        await Promise.all([
+        const [, , detail] = await Promise.all([
           ctx.audioWorklet.addModule("/worklets/pcm-capture.js?v=2"),
           ctx.audioWorklet.addModule("/worklets/pcm-play.js?v=3"),
+          api.session(sessionId).catch(() => null),
         ]);
 
         if (!current()) {
@@ -194,6 +198,11 @@ export function VoiceProvider({ children }: { children: ReactNode }) {
           void ctx.close();
           return;
         }
+
+        const seeded = captionsFromThread(detail?.thread ?? []);
+        linesRef.current = seeded;
+        setLines(seeded);
+        setContinued(seeded.length > 0);
 
         const source = ctx.createMediaStreamSource(stream);
         const capture = new AudioWorkletNode(ctx, "pcm-capture");
@@ -360,6 +369,7 @@ export function VoiceProvider({ children }: { children: ReactNode }) {
         status,
         error,
         lines,
+        continued,
         fake,
         turn,
         sessionId: resolveVoiceSessionId(pathname, companionSessionId),

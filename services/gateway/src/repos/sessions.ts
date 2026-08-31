@@ -30,15 +30,76 @@ export const VOICE_TITLE = "Voice";
 /** Titles that the next utterance is still allowed to replace. */
 const UNLOCKED = new Set(["", DEFAULT_TITLE, COMPANION_TITLE, VOICE_TITLE]);
 
+/** A list row, not a transcript. Long enough to name the job, not the speech. */
+const TITLE_CAP = 40;
+
+const LEAD_IN =
+  /^(?:(?:hey|hi|hello|hiya|please|um+|uh+|er+|ah+|so|well|okay|ok|yeah|yep|yup|right)\b[,.!?]?\s*)+/i;
+
+const REQUEST =
+  /^(?:(?:can|could|would|will)\s+you(?:\s+please)?|please|(?:i(?:'d|\s+would)?\s+like\s+to)|i\s+want(?:ed)?\s+to|i\s+need(?:\s+you)?\s+to|can\s+we|could\s+we)\s+/i;
+
+const THIN_TITLE =
+  /^(hi|hey|hello|hiya|hey there|hello there|yeah|yes|ok|okay|yo|thanks|thank you|cheers)[.!?]*$/i;
+
 const toIso = (value: unknown): string =>
   value && typeof value === "object" && "toDate" in value
     ? (value as { toDate: () => Date }).toDate().toISOString()
     : new Date(0).toISOString();
 
+function sentenceCase(value: string): string {
+  const letter = value.match(/\p{L}/u);
+  if (!letter || letter.index === undefined) return value;
+  const i = letter.index;
+  return value.slice(0, i) + letter[0].toLocaleUpperCase() + value.slice(i + 1);
+}
+
+function isThinTitle(title: string): boolean {
+  const t = title.trim();
+  if (!t) return true;
+  if (UNLOCKED.has(t)) return true;
+  return THIN_TITLE.test(t);
+}
+
+/**
+ * A short label for the session list, from what they said.
+ *
+ * Not the utterance itself: a spoken first line is often a greeting, a
+ * request wrapper, and two jobs. The list needs a name you can scan.
+ */
 export function clipTitle(utterance: string): string {
-  const oneLine = utterance.replace(/\s+/g, " ").trim();
-  if (!oneLine) return "";
-  return oneLine.length <= 80 ? oneLine : oneLine.slice(0, 80).trimEnd();
+  let text = utterance.replace(/\s+/g, " ").trim();
+  if (!text) return "";
+
+  for (let n = 0; n < 4; n++) {
+    const next = text.replace(LEAD_IN, "").replace(REQUEST, "").trim();
+    if (next === text) break;
+    text = next;
+  }
+  if (!text) {
+    text = utterance.replace(/\s+/g, " ").trim();
+  }
+
+  const sentence = text.split(/(?<=[.!?])\s+/)[0] ?? text;
+  const primary = (sentence.split(/\s+(?:and also|and then)\s+/i)[0] ?? sentence).trim();
+  const stripped = primary.replace(/[,:;]+$/u, "").replace(/[.!?]+$/u, "").trim();
+  if (!stripped) return "";
+
+  if (stripped.length <= TITLE_CAP) return sentenceCase(stripped);
+
+  const cut = stripped.slice(0, TITLE_CAP);
+  const at = cut.lastIndexOf(" ");
+  const clipped = (at >= 12 ? cut.slice(0, at) : cut).trimEnd();
+  return sentenceCase(clipped.replace(/[,:;]+$/u, ""));
+}
+
+/** Next stored title. Unlocked and greeting-only rows can still be named. */
+export function nextTitle(current: string, utterance?: string): string {
+  const currentTitle = current.trim();
+  const fromUtterance = utterance ? clipTitle(utterance) : "";
+  const candidate = fromUtterance && !isThinTitle(fromUtterance) ? fromUtterance : "";
+  if (candidate && isThinTitle(currentTitle)) return candidate;
+  return currentTitle || candidate || DEFAULT_TITLE;
 }
 
 function asPlan(value: unknown): PlanStep[] {
@@ -106,7 +167,8 @@ export function sessionSurface(id: string, data: { surface?: unknown } = {}): Se
 }
 
 export type TouchInput = {
-  /** First user utterance. Titles a new row; ignored once the title is locked. */
+  /** First user utterance. Names a new row as a short summary; ignored once locked. */
+  utterance?: string;
   utterance?: string;
   plan?: PlanStep[];
   companionNote?: string;
@@ -154,11 +216,7 @@ export async function touchSession(uid: string, id: string, input: TouchInput = 
   const existing = snap.exists ? (snap.data() ?? {}) : {};
 
   const currentTitle = typeof existing.title === "string" ? existing.title.trim() : "";
-  const fromUtterance = input.utterance ? clipTitle(input.utterance) : "";
-  const title =
-    UNLOCKED.has(currentTitle) && fromUtterance
-      ? fromUtterance
-      : currentTitle || fromUtterance || DEFAULT_TITLE;
+  const title = nextTitle(currentTitle, input.utterance);
 
   const plan = input.plan !== undefined ? asPlan(input.plan) : asPlan(existing.plan);
   const writePlan = input.plan !== undefined ? planFields(plan) : snap.exists ? {} : planFields([]);
@@ -209,10 +267,21 @@ export async function appendThread(
   await db.runTransaction(async (tx) => {
     const snap = await tx.get(ref);
     const existing = asThread(snap.exists ? snap.get("thread") : []);
-    const next = [...existing, ...entries].slice(-THREAD_CAP);
+    const next = [...existing];
+    for (const entry of entries) {
+      const last = next[next.length - 1];
+      if (
+        last &&
+        last.role === entry.role &&
+        last.text.trim() === entry.text.trim()
+      ) {
+        continue;
+      }
+      next.push(entry);
+    }
     tx.set(
       ref,
-      { thread: next, updatedAt: FieldValue.serverTimestamp() },
+      { thread: next.slice(-THREAD_CAP), updatedAt: FieldValue.serverTimestamp() },
       { merge: true },
     );
   });

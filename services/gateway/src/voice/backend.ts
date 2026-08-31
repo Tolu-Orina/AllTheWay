@@ -11,6 +11,8 @@ import {
   realtimePcm,
   setupMessage,
   toolResponse,
+  greetingKickMessage,
+  isGreetingKickTranscript,
   type ParsedServer,
 } from "./protocol.js";
 
@@ -65,7 +67,10 @@ export function openFakeLive(opts: { events: LiveEvents }): Promise<LiveSession>
   let askedToLeave = false;
 
   queueMicrotask(() => {
-    if (!closed) events.onReady();
+    if (closed) return;
+    events.onReady();
+    events.onPcm(tonePcmBase64(523, 320));
+    events.onModelTranscript("Hi — I'm here. What can I help with?", true);
   });
 
   return Promise.resolve({
@@ -203,11 +208,20 @@ async function openVertexLive(opts: {
         if (!ready) {
           ready = true;
           events.onReady();
+          // Native audio waits for a user turn. Completing one here is what
+          // lets it greet. A resumed Vertex session already has the conversation.
+          if (!opts.resumeHandle) {
+            try {
+              ws.send(JSON.stringify(greetingKickMessage()));
+            } catch {
+              /* setup just completed; a send failure is onClose's problem */
+            }
+          }
         }
         flushPending(ws);
       }
       for (const pcm of msg.pcm ?? []) events.onPcm(pcm);
-      if (msg.userTranscript) {
+      if (msg.userTranscript && !isGreetingKickTranscript(msg.userTranscript.text)) {
         events.onUserTranscript(msg.userTranscript.text, msg.userTranscript.finished);
       }
       if (msg.modelTranscript) {

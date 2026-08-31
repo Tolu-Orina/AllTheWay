@@ -148,13 +148,14 @@ export const SYSTEM_INSTRUCTION = [
   "",
   "# Starting a session",
   "",
-  "When you join, greet them briefly in the language they first speak - one or",
-  "two words, nothing elaborate. Do not recap what was said before, do not",
-  "assume a task is still in progress, and do not ask if they want to continue",
-  "anything. Each session starts fresh: wait for them to tell you what they want.",
+  "When you join, speak first. A short greeting — that you are here, and how you",
+  "can help — then wait. Do not wait for them to say hello. One or two sentences.",
+  "If they last spoke another language, greet in that language; otherwise English.",
+  "Do not recap what was said before, do not assume a task is still in progress,",
+  "and do not ask if they want to continue anything unless they bring it up.",
   "",
-  "If they say hello, respond naturally. If they jump straight to a question or",
-  "a task, skip the greeting and just answer or act.",
+  "If they jump straight to a question or a task, skip the rest of the greeting",
+  "and just answer or act.",
 ].join("\n");
 
 export type AuthMessage = {
@@ -355,6 +356,38 @@ export function realtimePcm(base64: string): Record<string, unknown> {
   return {
     realtimeInput: {
       mediaChunks: [{ mimeType: PCM_MIME_IN, data: base64 }],
+    },
+  };
+}
+
+/**
+ * Ask the live model to speak first, after setup, not after they talk.
+ *
+ * Native audio waits for a user turn unless one is completed here. This is
+ * not something they said — captions must not show it.
+ */
+export const GREETING_KICK_TEXT =
+  "The session has just started. They have not spoken. Greet them now " +
+  "in a short spoken hello, then wait. This line is not from them.";
+
+export function isGreetingKickTranscript(text: string): boolean {
+  const t = text.trim();
+  if (!t) return false;
+  if (t.startsWith("The session has just started")) return true;
+  if (GREETING_KICK_TEXT.startsWith(t) && t.startsWith("The session")) return true;
+  return /they have not spoken|this line is not from them/i.test(t);
+}
+
+export function greetingKickMessage(): Record<string, unknown> {
+  return {
+    clientContent: {
+      turns: [
+        {
+          role: "user",
+          parts: [{ text: GREETING_KICK_TEXT }],
+        },
+      ],
+      turnComplete: true,
     },
   };
 }

@@ -98,6 +98,7 @@
     "captions": "O que acabou de ser dito",
     "sessionTitle": "Falar com o AllTheWay",
     "sessionHint": "Nada irreversível acontece até você dizer.",
+    "continuing": "A continuar esta conversa.",
     "connecting": "Conectando…",
     "pauseListening": "Pausar a escuta",
     "resumeListening": "Retomar a escuta",
@@ -263,7 +264,18 @@
     "eachOfTheseIsASeparate": "Cada um é um agente independente com seu próprio card. A versão e assinatura abaixo vêm desse card — capacidades sem validação serão indicadas aqui.",
     "internal": "Interno",
     "runsInsideTheProductAndPublishes": "Executa dentro do produto sem publicar card — inacessível externamente.",
-    "notRegisteredInThisDeploymentThis": "Não registrado nesta instalação — recurso indisponível."
+    "notRegisteredInThisDeploymentThis": "Não registrado nesta instalação — recurso indisponível.",
+    "verified": "Verificado",
+    "unverified": "Não verificado",
+    "owner": "Responsável",
+    "card": "Card",
+    "publishedSkills": "Competências publicadas",
+    "startInWork": "Começar no Work",
+    "makeADocument": "Fazer um documento",
+    "close": "Fechar",
+    "runsAfterYes": "Compila o arquivo depois que você confirma. Não tem conversa própria.",
+    "enforcesConnectors": "É o ponto de aplicação na frente de cada conector. Você não fala com ele.",
+    "cardCouldNotBeVerified": "Não foi possível verificar o card deste agente."
   },
   "usage": {
     "thisMonth": "Este mês",

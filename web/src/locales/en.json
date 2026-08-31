@@ -97,6 +97,7 @@
     "captions": "What was just said",
     "sessionTitle": "Speaking with AllTheWay",
     "sessionHint": "Nothing irreversible happens until you say so.",
+    "continuing": "Continuing this conversation.",
     "connecting": "Connecting…",
     "pauseListening": "Pause listening",
     "resumeListening": "Resume listening",
@@ -267,7 +268,18 @@
     "eachOfTheseIsASeparate": "Each of these is a separate agent with its own published card. The version and signature below are read from that card, not from this page — so a capability that stops verifying says so here.",
     "internal": "Internal",
     "runsInsideTheProductAndPublishes": "Runs inside the product and publishes no card — nothing outside can call it.",
-    "notRegisteredInThisDeploymentThis": "Not registered in this deployment — this capability is unavailable."
+    "notRegisteredInThisDeploymentThis": "Not registered in this deployment — this capability is unavailable.",
+    "verified": "Verified",
+    "unverified": "Unverified",
+    "owner": "Owner",
+    "card": "Card",
+    "publishedSkills": "Published skills",
+    "startInWork": "Start in Work",
+    "makeADocument": "Make a document",
+    "close": "Close",
+    "runsAfterYes": "This compiles the file after you confirm. It does not take a conversation of its own.",
+    "enforcesConnectors": "This is the enforcement point in front of every connector. You do not talk to it.",
+    "cardCouldNotBeVerified": "This agent's card could not be verified."
   },
   "usage": {
     "thisMonth": "This month",

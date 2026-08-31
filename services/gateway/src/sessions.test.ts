@@ -4,6 +4,7 @@ import { test } from "node:test";
 
 import {
   clipTitle,
+  nextTitle,
   DEFAULT_TITLE,
   ensureSession,
   getSession,
@@ -47,10 +48,32 @@ if (!live) {
 }
 const emulated = { skip: !live };
 
-test("clipTitle collapses whitespace and caps at 80 characters", () => {
-  assert.equal(clipTitle("  hello\nworld  "), "hello world");
-  assert.equal(clipTitle("a".repeat(90)).length, 80);
+test("clipTitle is a short summary, not the transcript", () => {
+  assert.equal(clipTitle("  Draft the\nnav  "), "Draft the nav");
   assert.equal(clipTitle("   "), "");
+  assert.ok(clipTitle("a".repeat(90)).length <= 40);
+  assert.equal(
+    clipTitle("Can you draft an email to Ana about the Q4 launch tomorrow"),
+    "Draft an email to Ana about the Q4",
+  );
+  assert.equal(
+    clipTitle(
+      "Hi yeah I wanted to draft an email to Ana about the Q4 launch and also check if we can move lunch",
+    ),
+    "Draft an email to Ana about the Q4",
+  );
+  assert.equal(clipTitle("What's on today?"), "What's on today");
+});
+
+test("a greeting-only first line does not lock the session title", () => {
+  assert.equal(nextTitle(VOICE_TITLE, "Hi"), VOICE_TITLE);
+  assert.equal(nextTitle(VOICE_TITLE, "Hey"), VOICE_TITLE);
+  assert.equal(nextTitle(VOICE_TITLE, "Draft an email to Ana"), "Draft an email to Ana");
+  assert.equal(nextTitle("Hi", "Call the supplier about the invoice"), "Call the supplier about the invoice");
+  assert.equal(
+    nextTitle("Draft an email to Ana", "Something else entirely"),
+    "Draft an email to Ana",
+  );
 });
 
 test("the legacy companion id is a companion chat, not work", () => {
@@ -268,6 +291,17 @@ test("appended thread messages survive a later touch", emulated, async () => {
   assert.equal(detail?.thread.length, 2);
   assert.equal(detail?.thread[0]?.role, "user");
   assert.equal(detail?.thread[1]?.text, "You have standup at 10.");
+});
+
+test("appending the same last line twice does not duplicate it", emulated, async () => {
+  const id = `dedupe-${Date.now()}`;
+  await ensureSession(UID, id);
+  const at = new Date().toISOString();
+  await appendThread(UID, id, [{ role: "user", text: "Lunch with Ana", at }]);
+  await appendThread(UID, id, [{ role: "user", text: "Lunch with Ana", at }]);
+  const detail = await getSession(UID, id);
+  assert.equal(detail?.thread.length, 1);
+  assert.equal(detail?.thread[0]?.text, "Lunch with Ana");
 });
 
 test("a correction lands on the session and survives a later touch", emulated, async () => {

@@ -107,6 +107,7 @@
     "captions": "Yr hyn a ddywedwyd gynnau",
     "sessionTitle": "Siarad ag AllTheWay",
     "sessionHint": "Does dim yn ddiwrthdro yn digwydd nes i chi ddweud.",
+    "continuing": "Yn parhau'r sgwrs hon.",
     "connecting": "Yn cysylltu…",
     "pauseListening": "Oedi gwrando",
     "resumeListening": "Ailddechrau gwrando",
@@ -272,7 +273,18 @@
     "eachOfTheseIsASeparate": "Mae pob un o'r rhain yn asiant ar wahân gyda'i gerdyn cyhoeddedig ei hun. Darllenir y fersiwn a'r llofnod isod o'r cerdyn hwnnw, nid o'r dudalen hon — felly bydd gallu sy'n peidio â dilysu yn dweud hynny yma.",
     "internal": "Mewnol",
     "runsInsideTheProductAndPublishes": "Yn rhedeg y tu mewn i'r cynnyrch ac nid yw'n cyhoeddi cerdyn — ni all unrhyw beth allanol ei alw.",
-    "notRegisteredInThisDeploymentThis": "Heb ei gofrestru yn y defnydd hwn — nid yw'r gallu hwn ar gael."
+    "notRegisteredInThisDeploymentThis": "Heb ei gofrestru yn y defnydd hwn — nid yw'r gallu hwn ar gael.",
+    "verified": "Wedi'i wirio",
+    "unverified": "Heb ei wirio",
+    "owner": "Perchennog",
+    "card": "Cerdyn",
+    "publishedSkills": "Sgiliau cyhoeddedig",
+    "startInWork": "Dechrau yn Work",
+    "makeADocument": "Gwneud dogfen",
+    "close": "Cau",
+    "runsAfterYes": "Mae'n llunio'r ffeil ar ôl i chi gadarnhau. Nid oes ganddo sgwrs ei hun.",
+    "enforcesConnectors": "Dyma'r pwynt gorfodi o flaen pob cysylltydd. Nid ydych yn siarad ag ef.",
+    "cardCouldNotBeVerified": "Ni ellid gwirio cerdyn yr asiant hwn."
   },
   "usage": {
     "thisMonth": "Y mis hwn",

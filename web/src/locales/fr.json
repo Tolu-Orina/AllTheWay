@@ -98,6 +98,7 @@
     "captions": "Ce qui vient d'être dit",
     "sessionTitle": "Parler avec AllTheWay",
     "sessionHint": "Rien d'irréversible n'arrive tant que vous ne le dites pas.",
+    "continuing": "Cette conversation continue.",
     "connecting": "Connexion…",
     "pauseListening": "Mettre l'écoute en pause",
     "resumeListening": "Reprendre l'écoute",
@@ -263,7 +264,18 @@
     "eachOfTheseIsASeparate": "Chacun est un agent distinct avec sa propre fiche. La version et la signature ci-dessous proviennent de cette fiche, non de cette page : toute anomalie de validation y sera signalée.",
     "internal": "Interne",
     "runsInsideTheProductAndPublishes": "S'exécute au sein du produit sans publier de fiche — inaccessible depuis l'extérieur.",
-    "notRegisteredInThisDeploymentThis": "Non enregistré sur ce déploiement — fonctionnalité indisponible."
+    "notRegisteredInThisDeploymentThis": "Non enregistré sur ce déploiement — fonctionnalité indisponible.",
+    "verified": "Vérifié",
+    "unverified": "Non vérifié",
+    "owner": "Responsable",
+    "card": "Fiche",
+    "publishedSkills": "Compétences publiées",
+    "startInWork": "Ouvrir dans Work",
+    "makeADocument": "Créer un document",
+    "close": "Fermer",
+    "runsAfterYes": "Il compile le fichier après votre confirmation. Il n'a pas de conversation à lui.",
+    "enforcesConnectors": "C'est le point d'application devant chaque connecteur. Vous ne lui parlez pas.",
+    "cardCouldNotBeVerified": "La fiche de cet agent n'a pas pu être vérifiée."
   },
   "usage": {
     "thisMonth": "Ce mois-ci",

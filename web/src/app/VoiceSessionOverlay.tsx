@@ -15,11 +15,13 @@ import { cn } from "@/lib/utils";
 /**
  * The live voice session, on the same companion thread.
  *
- * Captions are the surface. Pause stops the room reaching the model without
- * hanging up; Stop tears the session down. Saying goodbye does the same as
- * Stop once the farewell has played — the model calls `end_this_conversation`,
- * the gateway closes the socket, and this overlay follows. The thread stays
- * in the companion either way — this is not a second conversation.
+ * Captions are the surface, and they belong on the session thread — opening
+ * Speak again hydrates them rather than starting a blank overlay. Pause stops
+ * the room reaching the model without hanging up; Stop tears the session down.
+ * Saying goodbye does the same as Stop once the farewell has played — the
+ * model calls `end_this_conversation`, the gateway closes the socket, and this
+ * overlay follows. The thread stays in the companion either way — this is
+ * not a second conversation.
  *
  * Not stacked on other dialogs: Speak closes the to-do picker first, then
  * `start()` flips status off idle and this opens.
@@ -67,7 +69,9 @@ export function VoiceSessionOverlay() {
             <DialogTitle id="voice-session-title" className="text-[18px] font-semibold">
               {t("voice.sessionTitle")}
             </DialogTitle>
-            <DialogDescription className="mt-1">{t("voice.sessionHint")}</DialogDescription>
+            <DialogDescription className="mt-1">
+              {voice.continued ? t("voice.continuing") : t("voice.sessionHint")}
+            </DialogDescription>
             <p
               role="status"
               className={cn(

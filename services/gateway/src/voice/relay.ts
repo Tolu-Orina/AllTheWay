@@ -156,11 +156,23 @@ async function handleConnection(ws: WebSocket, opener: LiveOpener): Promise<void
     return;
   }
 
-  const usage = await readUsage(uid);
-  const voice = usage.meters.find((meter) => meter.meter === "voice_minutes");
+  // Metering is a display copy, not the authority. A stuck usage read must
+  // not hold the socket — that is the hang that looks like voice never starts.
+  let usage: Awaited<ReturnType<typeof readUsage>> | undefined;
+  try {
+    usage = await Promise.race([
+      readUsage(uid),
+      new Promise<never>((_, reject) => {
+        setTimeout(() => reject(new Error("usage-timeout")), 800);
+      }),
+    ]);
+  } catch (err) {
+    console.warn("[voice] usage check skipped", (err as Error).message);
+  }
+  const voice = usage?.meters.find((meter) => meter.meter === "voice_minutes");
   if (voice && voice.limit !== null && voice.remaining === 0) {
     const message =
-      usage.tier === "free"
+      usage?.tier === "free"
         ? "You've used this month's voice minutes. Upgrade to Plus for 600 minutes, or keep typing."
         : "You've used this month's voice minutes. You can keep typing.";
     send(ws, { error: { code: "plan_limit", message } });
@@ -207,6 +219,13 @@ async function handleConnection(ws: WebSocket, opener: LiveOpener): Promise<void
     if (retitle) titled = true;
     queueMicrotask(() => {
       void keep(uid, sessionId, persistSide, persistText);
+      void appendThread(uid, sessionId, [
+        {
+          role: persistSide === "user" ? "user" : "agent",
+          text: persistText,
+          at: new Date().toISOString(),
+        },
+      ]).catch((err) => console.error("[voice] persist caption", sessionId, err));
       if (retitle) {
         void touchSession(uid, sessionId, { utterance: persistText }).catch((err) =>
           console.error("[voice] retitle session", sessionId, err),
