@@ -4,7 +4,6 @@ import { useT } from "@/app/i18n";
 import type { Day, DayItem, Hat } from "@alltheway/contracts";
 
 import { cn } from "@/lib/utils";
-import { SendMeetBot } from "@/app/SendMeetBot";
 
 const HATS: Array<Hat | "all"> = ["all", "work", "home", "church"];
 
@@ -93,7 +92,6 @@ function DayRow({ item }: { item: DayItem }) {
           {item.placeLabel ? <span>{item.placeLabel}</span> : null}
           {item.leaveAt ? <span>{t("life.leaveAt", { time: wallTime(item.leaveAt) })}</span> : null}
         </span>
-        {item.meetUrl ? <SendMeetBot meetUrl={item.meetUrl} /> : null}
       </span>
     </li>
   );

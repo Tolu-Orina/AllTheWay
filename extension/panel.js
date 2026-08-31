@@ -24,9 +24,6 @@ const now = document.getElementById("now");
 const insightStatus = document.getElementById("insight-status");
 const hideWhilePresenting = document.getElementById("hide-while-presenting");
 const insightsSection = document.getElementById("insights-section");
-const botDisclosed = document.getElementById("bot-disclosed");
-const sendBot = document.getElementById("send-bot");
-const botStatus = document.getElementById("bot-status");
 
 const TOKEN_KEY = "idToken";
 const HIDE_INSIGHTS_KEY = "hideInsightsWhilePresenting";
@@ -272,61 +269,10 @@ now.addEventListener("click", () => {
   });
 });
 
-function renderBot() {
-  sendBot.disabled = botDisclosed.checked !== true;
-}
-
-botDisclosed.addEventListener("change", renderBot);
-
 hideWhilePresenting.addEventListener("change", () => {
   hideInsightsPref = hideWhilePresenting.checked === true;
   void chrome.storage.sync.set({ [HIDE_INSIGHTS_KEY]: hideInsightsPref });
   paintPrivateInsights();
-});
-
-sendBot.addEventListener("click", async () => {
-  botStatus.textContent = "Asking…";
-  sendBot.disabled = true;
-
-  const stored = await chrome.storage.session.get([GATEWAY_KEY, TOKEN_KEY]);
-  const gateway = stored[GATEWAY_KEY];
-  const token = stored[TOKEN_KEY];
-  if (!gateway || !token) {
-    botStatus.textContent = "Open AllTheWay in a tab and sign in first.";
-    renderBot();
-    return;
-  }
-  if (!(await ensureGatewayAccess(gateway))) {
-    botStatus.textContent = "Allow AllTheWay to reach the notes server, then try again.";
-    renderBot();
-    return;
-  }
-
-  const tab = await findMeetingTab();
-  const meetUrl = tab?.url ?? "";
-
-  try {
-    const response = await fetch(`${String(gateway).replace(/\/$/, "")}/api/meetings/bot`, {
-      method: "POST",
-      headers: {
-        Authorization: `Bearer ${token}`,
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        meetUrl,
-        disclosed: botDisclosed.checked === true,
-      }),
-    });
-    const body = await response.json().catch(() => ({}));
-    botStatus.textContent =
-      body.message ||
-      (body.ok
-        ? "Knocking. The host has five minutes to admit AllTheWay notes."
-        : "That did not start.");
-  } catch {
-    botStatus.textContent = "Could not reach AllTheWay.";
-  }
-  renderBot();
 });
 
 chrome.storage.session.onChanged.addListener((changes) => {
@@ -388,6 +334,5 @@ void chrome.runtime.sendMessage({ type: "status" }).then(async (state) => {
   }
 
   paintPrivateInsights();
-  renderBot();
   renderControls();
 });

@@ -10,7 +10,6 @@ import { ConfirmGate } from "@/app/ConfirmGate";
 import { useCompanionThread } from "@/app/companion-thread";
 import { ConnectionQuality, DurationNotice } from "@/app/MeetingHealth";
 import { MeetingInsights } from "@/app/MeetingInsights";
-import { SendMeetBot } from "@/app/SendMeetBot";
 
 /**
  * Meetings, and what the agent could and could not do in them.
@@ -128,9 +127,8 @@ export function Meetings() {
       <p className="text-[13.5px] leading-relaxed text-muted-foreground">
         {t("meetings.intro")}
       </p>
-      <p className="text-[12.5px] text-muted-foreground">{t("meetings.sendBotHint")}</p>
 
-      <GlobalSwitch
+      <GlobalSwitch>
         enabled={on}
         onChange={toggle}
         disabled={settings.status === "loading" && enabled === null}
@@ -316,13 +314,9 @@ function MeetingRow({
 
       <MeetingCommitments meetingId={meeting.id} />
 
-      {meetUrlFor(meeting) ? <SendMeetBot meetUrl={meetUrlFor(meeting)} /> : null}
-
       {canOverlaySpeakers(meeting) ? (
         <OverlaySpeakers meeting={meeting} />
       ) : null}
-
-      {meeting.bot ? <BotStatus bot={meeting.bot} /> : null}
 
       {/* Quality while it is happening, not a verdict afterwards. "It says
 
@@ -482,15 +476,6 @@ export function CommitmentCard({
   );
 }
 
-function meetUrlFor(meeting: Meeting): string {
-  if (meeting.bot?.meetUrl) return meeting.bot.meetUrl;
-  const id = meeting.conferenceId;
-  if (id && !id.includes("/") && !id.startsWith("tab-") && /^[a-z0-9][a-z0-9-]{2,}$/i.test(id)) {
-    return `https://meet.google.com/${id}`;
-  }
-  return "";
-}
-
 function canOverlaySpeakers(meeting: Meeting): boolean {
   const id = meeting.conferenceId;
   return (
@@ -534,20 +519,6 @@ function OverlaySpeakers({ meeting }: { meeting: Meeting }) {
       {note ? <p className="mt-1 text-[12px] text-muted-foreground">{note}</p> : null}
     </div>
   );
-}
-
-function BotStatus({ bot }: { bot: NonNullable<Meeting["bot"]> }) {
-  const t = useT();
-  if (bot.status === "vendor_pending") {
-    return <p className="mt-2 text-[12.5px] text-muted-foreground">{t("meetings.botVendorPending")}</p>;
-  }
-  if (bot.status === "knocking") {
-    return <p className="mt-2 text-[12.5px]">{t("meetings.knocking")}</p>;
-  }
-  if (bot.status === "not_admitted") {
-    return <p className="mt-2 text-[12.5px] text-muted-foreground">{t("meetings.notAdmitted")}</p>;
-  }
-  return null;
 }
 
 /**

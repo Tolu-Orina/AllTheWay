@@ -86,6 +86,11 @@ export default defineConfig({
   // `preview` does not inherit `server.proxy`, and the verification harnesses
   // run against the built app. Without this the built app has no gateway.
   preview: {
+    headers: {
+      // Google sign-in uses a popup. `same-origin` would break Firebase's
+      // window.closed poll; allow-popups is the pairing for OAuth.
+      "Cross-Origin-Opener-Policy": "same-origin-allow-popups",
+    },
     proxy: {
       "/api": {
         target: process.env.GATEWAY_URL ?? "http://localhost:8080",
@@ -95,6 +100,9 @@ export default defineConfig({
     },
   },
   server: {
+    headers: {
+      "Cross-Origin-Opener-Policy": "same-origin-allow-popups",
+    },
     proxy: {
       // Mirrors the Firebase Hosting rewrite, so the client is same-origin in
       // development. In production that holds for everything except the turn

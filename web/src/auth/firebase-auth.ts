@@ -164,6 +164,9 @@ async function signInWithGoogle(): Promise<AuthResult> {
   const provider = new GoogleAuthProvider();
   try {
     if (prefersGoogleRedirect()) return await redirectToGoogle(provider);
+    // Chrome logs Cross-Origin-Opener-Policy on popup.closed. That is
+    // Google's OAuth window, not a missing Cloud Console setting. Hosting
+    // sends COOP: same-origin-allow-popups; do not switch to same-origin.
     await signInWithPopup(firebaseAuth, provider, browserPopupRedirectResolver);
     return { ok: true };
   } catch (err) {

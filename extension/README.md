@@ -44,9 +44,9 @@ the server is the boundary.
 `chrome.tabCapture` targets the meeting tab after a click, with no picker. That
 is the whole reason this is an extension rather than a button in the web app.
 
-A guest notetaker bot is **not live**. Sending one is an opt-in in the side
-panel; until finance signs a join vendor the server answers `vendor_pending`
-and nothing knocks. It still cannot speak.
+A guest notetaker bot is **not live** and is not shown in the panel. Live notes
+are **Notes from this tab**. Until finance signs a join vendor, the server would
+answer `vendor_pending` and nothing knocks. It still cannot speak.
 
 ## The disclosure box is not a formality
 

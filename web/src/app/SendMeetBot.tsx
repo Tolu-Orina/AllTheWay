@@ -6,8 +6,9 @@ import { ConfirmGate } from "@/app/ConfirmGate";
 
 /**
  * Per-meeting opt-in for the labelled guest. Separate from tab-capture
- * disclosure. Until finance signs a vendor, the server answers vendor_pending
- * and nothing knocks.
+ * disclosure. Not mounted while finance reviews the join vendor — live notes
+ * are Notes from this tab. Keep this file; do not surface it until a vendor
+ * key is live.
  */
 export function SendMeetBot({ meetUrl }: { meetUrl: string }) {
   const t = useT();
