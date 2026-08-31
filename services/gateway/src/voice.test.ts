@@ -17,6 +17,7 @@ import {
   foldTranscript,
   TranscriptAccumulator,
   greetingKickMessage,
+  isGreetingDoneMessage,
   isGreetingKickTranscript,
   startGreetingGate,
   GREETING_KICK_TEXT,
@@ -294,20 +295,19 @@ test("the voice instruction greets first when a session starts", () => {
   assert.match(s, /speak first/);
   assert.match(s, /do not wait for them to say hello/);
   assert.match(s, /if you were given their name, use it/);
-  assert.match(s, /welcome them back to a named conversation/);
   assert.doesNotMatch(s, /wait for them to tell you what they want/);
 });
 
-test("a new live session completes a text turn so the model can greet", () => {
+test("a new live session sends a realtime text packet so the model can greet", () => {
   const msg = greetingKickMessage();
-  const content = msg.clientContent as {
-    turns?: Array<{ role?: string; parts?: Array<{ text?: string }> }>;
-    turnComplete?: boolean;
+  const rt = msg.realtimeInput as {
+    text?: string;
+    mediaChunks?: Array<{ mimeType?: string; data?: string }>;
   };
-  assert.equal(content?.turnComplete, true);
-  assert.equal(content?.turns?.[0]?.role, "user");
-  assert.equal(content?.turns?.[0]?.parts?.[0]?.text, GREETING_KICK_TEXT);
-  assert.equal("realtimeInput" in msg, false);
+  assert.equal(rt?.text, GREETING_KICK_TEXT);
+  assert.equal(rt?.mediaChunks?.[0]?.mimeType, "text/plain");
+  assert.equal(Buffer.from(rt?.mediaChunks?.[0]?.data ?? "", "base64").toString("utf8"), GREETING_KICK_TEXT);
+  assert.equal("clientContent" in msg, false);
   assert.equal(isGreetingKickTranscript(GREETING_KICK_TEXT), true);
   assert.equal(isGreetingKickTranscript("Please greet me now"), true);
   assert.equal(isGreetingKickTranscript("Please greet"), true);
@@ -315,6 +315,12 @@ test("a new live session completes a text turn so the model can greet", () => {
   assert.equal(isGreetingKickTranscript("Please"), false);
   assert.equal(isGreetingKickTranscript("The session has just started"), true);
   assert.equal(isGreetingKickTranscript("Draft an email to Ana"), false);
+});
+
+test("the browser tells the relay when the spoken hello has finished", () => {
+  assert.equal(isGreetingDoneMessage({ greetingDone: true }), true);
+  assert.equal(isGreetingDoneMessage({ pcm: "aa" }), false);
+  assert.equal(isGreetingDoneMessage({ hangup: true }), false);
 });
 
 test("the greeting kick uses their first name, and names a resumed session", () => {

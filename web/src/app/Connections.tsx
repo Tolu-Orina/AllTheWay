@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useT } from "@/app/i18n";
 import { Check, ExternalLink, Loader2 } from "lucide-react";
 
@@ -89,13 +89,17 @@ export function useGoogleConnect(returnTo: "/app" | "/app/you" = "/app/you") {
   const [drafts, setDrafts] = useState(false);
   const [outcome] = useState(() => consumeConnectedOutcome());
 
-  async function connect(connectorId: string) {
+  useEffect(() => {
+    if (state.status === "ready") setDrafts(state.data.drafts);
+  }, [state]);
+
+  async function connect(connectorId: string, draftsOverride?: boolean) {
     setStarting(connectorId);
     setError(null);
     try {
-  const { url } = await api.connectGoogle({
+      const { url } = await api.connectGoogle({
         connector: connectorId,
-        drafts,
+        drafts: draftsOverride ?? drafts,
         returnTo,
       });
       // A full navigation, not a popup: Google's consent screen refuses to
@@ -107,7 +111,26 @@ export function useGoogleConnect(returnTo: "/app" | "/app/you" = "/app/you") {
     }
   }
 
-  return { state, reload, drafts, setDrafts, starting, error, outcome, connect };
+  async function persistDrafts(next: boolean) {
+    const previous = drafts;
+    setDrafts(next);
+    try {
+      await api.setGmailDrafts(next);
+    } catch {
+      setDrafts(previous);
+      setError(t("connections.couldNotStart"));
+      return;
+    }
+    const gmail =
+      state.status === "ready"
+        ? state.data.connectors.find((c) => c.id === "google_gmail")
+        : undefined;
+    if (next && gmail?.connected) {
+      void connect("google_gmail", true);
+    }
+  }
+
+  return { state, reload, drafts, setDrafts: persistDrafts, starting, error, outcome, connect };
 }
 
 export function Connections() {

@@ -2,7 +2,7 @@ import "./test-env.js";
 import assert from "node:assert/strict";
 import { test } from "node:test";
 
-import { hatFromTitle, occurrencesInWindow, buildDayFromParts } from "./calendar-day.js";
+import { hatFromTitle, occurrencesInWindow, buildDayFromParts, calendarGrantStatus } from "./calendar-day.js";
 import type { Rhythm } from "@alltheway/contracts";
 
 test("church and school hats", () => {
@@ -49,4 +49,8 @@ test("a Meet hangoutLink is kept on the day row", () => {
     new Date("2099-01-01T08:00:00Z"),
   );
   assert.equal(day.hours[0]?.meetUrl, "https://meet.google.com/abc-defg-hij");
+});
+
+test("calendar events are not fetched when connections are not configured", async () => {
+  assert.equal(await calendarGrantStatus("anyone"), "missing");
 });

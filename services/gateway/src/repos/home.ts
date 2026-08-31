@@ -1,6 +1,6 @@
 import { HomeSchema, type Home } from "@alltheway/contracts";
 
-import { buildDayFromParts } from "../calendar-day.js";
+import { buildDayFromParts, calendarGrantStatus } from "../calendar-day.js";
 import { getOnboarding } from "./onboarding.js";
 import { getActiveHat } from "./hat.js";
 import { buildDigest } from "./digest.js";
@@ -23,7 +23,7 @@ import { listPeople, listPlaces, listProposed, listReminders, listRhythms, ensur
  */
 export async function buildHome(uid: string): Promise<Home> {
   const now = new Date();
-  const [onboarding, digest, sessions, runs, documents, reminders, proposed, people, places, rhythms, hat] =
+  const [onboarding, digest, sessions, runs, documents, reminders, proposed, people, places, rhythms, hat, calendar] =
     await Promise.all([
       getOnboarding(uid),
       buildDigest(uid),
@@ -36,13 +36,15 @@ export async function buildHome(uid: string): Promise<Home> {
       listPlaces(uid),
       listRhythms(uid),
       getActiveHat(uid),
+      calendarGrantStatus(uid),
     ]);
 
   const row = sessions.find((s) => s.done < s.total) ?? sessions[0];
   const plan = row ? await getSession(uid, row.id) : null;
 
-  // Rhythm-only day: instant, no external calls. Calendar events come via /home/day.
-  const day = buildDayFromParts(places, rhythms, people, { status: "missing", events: [] }, now);
+  // Rhythm-only day plus grant status. Calendar *events* come via /home/day
+  // so a cold connector-gateway cannot hold the page. Missing is instant.
+  const day = buildDayFromParts(places, rhythms, people, { status: calendar, events: [] }, now);
 
   // Fire-and-forget: creates leave reminders for upcoming rhythm items.
   // Does not block the response — reminders appear on next reload.

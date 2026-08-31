@@ -128,8 +128,85 @@ function pcmToB64(pcm: Int16Array): string {
 
 export type VoiceSocket = {
   sendPcm: (pcm: Int16Array) => void;
+  sendGreetingDone: () => void;
   hangup: () => void;
 };
+
+/**
+ * Same wording as the gateway (`spokenGreetingLine`). Spoken on the mic tap
+ * because Vertex Live native audio will not start a turn with no speech.
+ */
+export function spokenGreetingLine(opts: { firstName?: string; title?: string; resumed?: boolean }): string {
+  const name = (opts.firstName ?? "").trim().slice(0, 24);
+  const title = (opts.title ?? "").trim().slice(0, 40);
+  if (opts.resumed && title) {
+    return name
+      ? `Welcome back, ${name}, to ${title}. What can I help with?`
+      : `Welcome back to ${title}. What can I help with?`;
+  }
+  return name ? `Hi ${name} — I'm here. What can I help with?` : "Hi — I'm here. What can I help with?";
+}
+
+export function cancelGreeting(): void {
+  if (typeof window === "undefined" || typeof window.speechSynthesis === "undefined") return;
+  window.speechSynthesis.cancel();
+}
+
+/**
+ * Instant click feedback (~200ms). Gemini's greeting takes over after.
+ * A local spoken "Hi" here would double with the Live hello.
+ */
+export function cueVoiceStart(ctx: AudioContext): void {
+  const t0 = ctx.currentTime;
+  const osc = ctx.createOscillator();
+  const gain = ctx.createGain();
+  osc.type = "sine";
+  osc.frequency.setValueAtTime(523.25, t0);
+  osc.frequency.setValueAtTime(659.25, t0 + 0.08);
+  gain.gain.setValueAtTime(0.06, t0);
+  gain.gain.exponentialRampToValueAtTime(0.001, t0 + 0.2);
+  osc.connect(gain);
+  gain.connect(ctx.destination);
+  osc.start(t0);
+  osc.stop(t0 + 0.22);
+}
+
+/** Speak the hello now, in the tap's user-gesture window. */
+export function speakGreeting(text: string): Promise<void> {
+  const line = text.trim();
+  if (!line || typeof window === "undefined" || typeof window.speechSynthesis === "undefined") {
+    return Promise.resolve();
+  }
+  const synth = window.speechSynthesis;
+  synth.cancel();
+  const utter = new SpeechSynthesisUtterance(line);
+  utter.rate = 1.04;
+  const assignVoice = () => {
+    const voices = synth.getVoices();
+    const voice =
+      voices.find((v) => /^en-GB/i.test(v.lang) && /google/i.test(v.name)) ??
+      voices.find((v) => /^en/i.test(v.lang) && /google/i.test(v.name)) ??
+      voices.find((v) => /^en/i.test(v.lang));
+    if (voice) utter.voice = voice;
+  };
+  assignVoice();
+  if (synth.getVoices().length === 0) {
+    synth.addEventListener("voiceschanged", assignVoice, { once: true });
+  }
+  return new Promise((resolve) => {
+    let settled = false;
+    const finish = () => {
+      if (settled) return;
+      settled = true;
+      window.clearTimeout(timer);
+      resolve();
+    };
+    const timer = window.setTimeout(finish, 8_000);
+    utter.onend = finish;
+    utter.onerror = finish;
+    synth.speak(utter);
+  });
+}
 
 const BACKOFF_MS = [300, 800, 1600, 3200];
 
@@ -264,6 +341,10 @@ export async function openVoiceSocket(
     sendPcm(pcm) {
       if (closed || !ws || ws.readyState !== WebSocket.OPEN) return;
       ws.send(JSON.stringify({ pcm: pcmToB64(pcm) }));
+    },
+    sendGreetingDone() {
+      if (closed || !ws || ws.readyState !== WebSocket.OPEN) return;
+      ws.send(JSON.stringify({ greetingDone: true }));
     },
     hangup,
   };

@@ -3,11 +3,12 @@ import { FieldValue, Timestamp } from "firebase-admin/firestore";
 import { randomBytes } from "node:crypto";
 
 import { env } from "../env.js";
-import { db } from "../firestore.js";
+import { db, userDoc } from "../firestore.js";
 import { requireUser } from "../auth.js";
 import {
   GOOGLE_CONNECTOR_IDS,
   googleGrantId,
+  gmailDraftsOn,
   listedGoogleConnectors,
   scopesToRequest,
 } from "../google-scopes.js";
@@ -97,10 +98,15 @@ function safeReturnTo(value: unknown): "/app" | "/app/you" {
  * ------------------------------------------------------------------ */
 
 connectorRoutes.get("/", requireUser, async (req, res) => {
-  const doc = await grants().doc(googleGrantId(req.uid!)).get();
+  const uid = req.uid!;
+  const [doc, user] = await Promise.all([
+    grants().doc(googleGrantId(uid)).get(),
+    userDoc(uid).get(),
+  ]);
   const scopes: string[] = doc.exists ? (doc.get("scopes") ?? []) : [];
   const declared = doc.exists ? (doc.get("connectors") as string[] | undefined) : undefined;
   const listed = new Set(listedGoogleConnectors(scopes, declared));
+  const wantDrafts = user.exists && user.get("gmailDrafts") === true;
 
   res.json({
     connectors: CATALOGUE.map((c) => ({
@@ -111,7 +117,14 @@ connectorRoutes.get("/", requireUser, async (req, res) => {
       connected: listed.has(c.id),
     })),
     grantedScopes: scopes,
+    drafts: gmailDraftsOn(scopes, wantDrafts),
   });
+});
+
+connectorRoutes.post("/gmail-drafts", requireUser, async (req, res) => {
+  const drafts = req.body?.drafts === true;
+  await userDoc(req.uid!).set({ gmailDrafts: drafts }, { merge: true });
+  res.json({ drafts });
 });
 
 /* ------------------------------------------------------------------ *
@@ -143,7 +156,10 @@ connectorRoutes.post("/google/connect", requireUser, async (req, res) => {
     });
   }
 
-  const scopes = scopesToRequest(connector, wantsDrafts);
+  const user = await userDoc(req.uid!).get();
+  const wantDrafts =
+    wantsDrafts || (user.exists && user.get("gmailDrafts") === true);
+  const scopes = scopesToRequest(connector, wantDrafts);
 
   await states().doc(state).set({
     uid: req.uid,

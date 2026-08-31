@@ -14,7 +14,6 @@ import {
   greetingKickMessage,
   isGreetingKickTranscript,
   startGreetingGate,
-  spokenGreetingLine,
   type ParsedServer,
   type VoiceGreeting,
 } from "./protocol.js";
@@ -36,6 +35,8 @@ export type LiveEvents = {
 export type LiveSession = {
   sendPcm(base64: string): void;
   sendToolResult(id: string, name: string, payload: unknown): void;
+  /** Mic was held for the spoken hello; the browser has finished playing it. */
+  releaseGreeting?(): void;
   close(): void;
   handle(): string | undefined;
 };
@@ -77,14 +78,8 @@ export function openFakeLive(opts: {
   let askedToLeave = false;
 
   queueMicrotask(() => {
-    void (async () => {
-      if (closed) return;
-      events.onReady();
-      const g = await Promise.resolve(opts.greeting ?? { resumed: false });
-      if (closed) return;
-      events.onPcm(tonePcmBase64(523, 320));
-      events.onModelTranscript(spokenGreetingLine(g), true);
-    })();
+    if (closed) return;
+    events.onReady();
   });
 
   return Promise.resolve({
@@ -117,6 +112,7 @@ export function openFakeLive(opts: {
         args: {},
       });
     },
+    releaseGreeting() {},
     sendToolResult(_id, name) {
       if (closed) return;
       if (name !== END_THIS_CONVERSATION) return;
@@ -223,13 +219,12 @@ async function openVertexLive(opts: {
         attempts = 0;
         if (!ready) {
           ready = true;
-          // Kick first, then tell the browser we are live. Mic PCM that
-          // arrives on `onReady` must not reach Vertex until the hello
-          // has finished — that barge-in is why it never greeted.
+          // Kick on the realtime path the instant setup completes, with the
+          // mic held so room audio is not barge-in. The browser speaks only
+          // if this packet produces no audio.
           if (!opts.resumeHandle) {
             greeting = startGreetingGate({
               onOpen() {
-                // Room audio from during the hello is barge-in if replayed.
                 pending.length = 0;
                 pendingBytes = 0;
               },
@@ -351,6 +346,9 @@ async function openVertexLive(opts: {
     sendToolResult(id: string, name: string, payload: unknown) {
       if (closed || !socket || socket.readyState !== WebSocket.OPEN) return;
       socket.send(JSON.stringify(toolResponse(id, name, payload)));
+    },
+    releaseGreeting() {
+      greeting?.noteModelTurn();
     },
     close() {
       if (closed) return;

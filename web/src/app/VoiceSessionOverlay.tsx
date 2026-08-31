@@ -63,8 +63,9 @@ export function VoiceSessionOverlay() {
       disablePointerDismissal
     >
       <DialogContent
+        instant
         showCloseButton={false}
-        overlayClassName="z-[60] bg-black/50 supports-backdrop-filter:backdrop-blur-sm"
+        overlayClassName="z-[60] bg-black/50"
         className={cn(
           "z-[60] flex flex-col gap-0 p-0",
           "top-0 left-0 h-dvh w-full max-w-none translate-x-0 translate-y-0 rounded-none",

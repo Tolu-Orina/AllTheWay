@@ -1,5 +1,8 @@
 import type { Day, DayItem, Hat, Place, Rhythm } from "@alltheway/contracts";
 
+import { env } from "./env.js";
+import { db } from "./firestore.js";
+import { connectorIsConnected, googleGrantId } from "./google-scopes.js";
 import { runReadTool } from "./voice/tools.js";
 import { listPeople, listPlaces, listRhythms } from "./repos/life.js";
 
@@ -10,6 +13,19 @@ import { listPeople, listPlaces, listRhythms } from "./repos/life.js";
 
 const WINDOW_MS = 12 * 60 * 60 * 1000;
 const DEFAULT_BUFFER_MIN = 15;
+/** Home must not wait on a cold connector-gateway. Voice reads keep 20s. */
+const CALENDAR_EVENTS_MS = 4_000;
+
+export async function calendarGrantStatus(uid: string): Promise<Day["calendar"]> {
+  if (!env.connectorGatewayUrl) return "missing";
+  try {
+    const grant = await db.collection("connectorGrants").doc(googleGrantId(uid)).get();
+    const scopes: string[] = grant.exists ? (grant.get("scopes") ?? []) : [];
+    return grant.exists && connectorIsConnected("google_calendar", scopes) ? "connected" : "missing";
+  } catch {
+    return "error";
+  }
+}
 
 export function hatFromTitle(title: string): Hat {
   const t = title.toLowerCase();
@@ -193,10 +209,18 @@ async function readCalendar(
   uid: string,
   now: Date,
 ): Promise<{ status: Day["calendar"]; events: Array<{ id: string; title: string; startsAt: string; meetUrl?: string }> }> {
-  const result = await runReadTool(uid, "whats_on_my_calendar", {
-    limit: 25,
-    time_min: iso(now),
-  });
+  const status = await calendarGrantStatus(uid);
+  if (status !== "connected") return { status, events: [] };
+
+  const result = await Promise.race([
+    runReadTool(uid, "whats_on_my_calendar", {
+      limit: 25,
+      time_min: iso(now),
+    }),
+    new Promise<{ cannot: string }>((resolve) => {
+      setTimeout(() => resolve({ cannot: "calendar timed out" }), CALENDAR_EVENTS_MS);
+    }),
+  ]);
   if (typeof result.cannot === "string") {
     const missing = /not connected/i.test(String(result.cannot));
     return { status: missing ? "missing" : "error", events: [] };

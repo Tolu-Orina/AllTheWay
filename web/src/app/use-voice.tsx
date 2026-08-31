@@ -10,11 +10,12 @@ import {
 import { useLocation, useNavigate } from "react-router";
 
 import { PlanStepSchema, type PlanStep } from "@alltheway/contracts";
-import { openVoiceSocket, applyVoiceCaption, captionsFromThread, type VoiceLine, type VoiceSocket } from "@/lib/voice";
+import { openVoiceSocket, applyVoiceCaption, captionsFromThread, speakGreeting, cancelGreeting, spokenGreetingLine, cueVoiceStart, type VoiceLine, type VoiceSocket } from "@/lib/voice";
 import { useT } from "@/app/i18n";
 import { resolveVoiceSessionId, workIdFromPath } from "@/app/work-id";
 import { useCompanionThread } from "@/app/companion-thread";
 import { api } from "@/app/data";
+import { firstNameFor, useAppUser } from "@/app/user";
 
 export type VoiceStatus = "idle" | "connecting" | "live" | "error";
 
@@ -72,6 +73,7 @@ export function VoiceProvider({ children }: { children: ReactNode }) {
     openChat,
     startNewChat,
   } = useCompanionThread();
+  const user = useAppUser();
   const [status, setStatus] = useState<VoiceStatus>("idle");
   const [error, setError] = useState("");
   const [lines, setLines] = useState<VoiceLine[]>([]);
@@ -102,6 +104,11 @@ export function VoiceProvider({ children }: { children: ReactNode }) {
   // on reconnect so the same utterance cannot be stored twice if the socket
   // drops and comes back with the same final transcript.
   const spokenTexts = useRef<Set<string>>(new Set());
+  const greetingFinished = useRef(false);
+  const heardModel = useRef(false);
+  const fallbackTimer = useRef<number | null>(null);
+  /** Closes an in-flight Live handshake that is not on `socket` yet. */
+  const startAbort = useRef<AbortController | null>(null);
 
   const socket = useRef<VoiceSocket | null>(null);
   const graph = useRef<{
@@ -115,6 +122,14 @@ export function VoiceProvider({ children }: { children: ReactNode }) {
     epoch.current += 1;
     mutedRef.current = false;
     hangingUp.current = false;
+    heardModel.current = false;
+    if (fallbackTimer.current !== null) {
+      window.clearTimeout(fallbackTimer.current);
+      fallbackTimer.current = null;
+    }
+    startAbort.current?.abort();
+    startAbort.current = null;
+    cancelGreeting();
     socket.current?.hangup();
     socket.current = null;
     const g = graph.current;
@@ -123,7 +138,28 @@ export function VoiceProvider({ children }: { children: ReactNode }) {
     void g?.ctx.close();
   }, []);
 
+  const greetNow = useCallback(() => {
+    const line = spokenGreetingLine({ firstName: firstNameFor(user), resumed: false });
+    greetingFinished.current = false;
+    const next = applyVoiceCaption(linesRef.current, "model", line, true);
+    linesRef.current = next;
+    setLines(next);
+    if (!spokenTexts.current.has(line)) {
+      spokenTexts.current.add(line);
+      recordSpoken("agent", line);
+    }
+    void speakGreeting(line).then(() => {
+      greetingFinished.current = true;
+      socket.current?.sendGreetingDone();
+    });
+  }, [user, recordSpoken]);
+
   useEffect(() => () => teardown(), [teardown]);
+
+  useEffect(() => {
+    void fetch("/worklets/pcm-capture.js?v=2");
+    void fetch("/worklets/pcm-play.js?v=3");
+  }, []);
 
   const stop = useCallback(() => {
     teardown();
@@ -158,72 +194,83 @@ export function VoiceProvider({ children }: { children: ReactNode }) {
     (sessionId: string, existingCtx?: AudioContext) => {
       const mine = ++epoch.current;
       const current = () => epoch.current === mine;
+      const ac = new AbortController();
+      startAbort.current = ac;
 
       void (async () => {
-        setStatus("connecting");
-        setError("");
         hangingUp.current = false;
-        setTurn(null);
-        setFake(false);
 
         try {
-          // AudioContext is created in the same tap as the permission prompt
-          // unless the caller already spent the gesture (switch / new).
-          const ctx = existingCtx ?? new AudioContext({ latencyHint: "interactive" });
-          try {
-            const stream = await navigator.mediaDevices.getUserMedia({
-              audio: {
-                echoCancellation: true,
-                noiseSuppression: true,
-                autoGainControl: true,
-              },
-            });
+        // AudioContext must be constructed in the tap. Handshake, mic, and
+        // worklets start before the overlay setState so the Dialog paint does
+        // not sit in front of the Live connect.
+        const ctx = existingCtx ?? new AudioContext({ latencyHint: "interactive" });
+        void ctx.resume().then(() => {
+          if (current()) cueVoiceStart(ctx);
+        });
+        try {
+          performance.mark("voice-tap");
+        } catch {
+          /* mark is optional */
+        }
 
-            if (!current()) {
-              stream.getTracks().forEach((t) => t.stop());
-              void ctx.close();
-              return;
-            }
+        let playNode: AudioWorkletNode | undefined;
+        const pcmQ: Int16Array[] = [];
+        const MAX_Q = 250;
 
-            await ctx.resume();
+        const pushPlay = (msg: Int16Array | "flush") => {
+          if (playNode) {
+            playNode.port.postMessage(msg);
+            return;
+          }
+          if (msg instanceof Int16Array) {
+            if (pcmQ.length >= MAX_Q) pcmQ.shift();
+            pcmQ.push(msg);
+          }
+        };
 
-            const [, , detail] = await Promise.all([
-              ctx.audioWorklet.addModule("/worklets/pcm-capture.js?v=2"),
-              ctx.audioWorklet.addModule("/worklets/pcm-play.js?v=3"),
-              api.session(sessionId).catch(() => null),
-            ]);
+        let voice: VoiceSocket | undefined;
+        let stream: MediaStream | undefined;
 
-            if (!current()) {
-              stream.getTracks().forEach((t) => t.stop());
-              void ctx.close();
-              return;
-            }
-
-            const seeded = captionsFromThread(detail?.thread ?? []);
-            linesRef.current = seeded;
-            setLines(seeded);
-            setContinued(seeded.length > 0);
-
-            const source = ctx.createMediaStreamSource(stream);
-            const capture = new AudioWorkletNode(ctx, "pcm-capture");
-            const play = new AudioWorkletNode(ctx, "pcm-play");
-            source.connect(capture);
-            play.connect(ctx.destination);
-            graph.current = { ctx, stream, play };
-
-            const voice = await openVoiceSocket(sessionId, {
+        try {
+          const voiceP = openVoiceSocket(
+            sessionId,
+            {
               onReady(ready) {
                 if (!current()) return;
                 setFake(ready.fake === true);
                 setStatus("live");
+                heardModel.current = false;
+                if (ready.fake === true) {
+                  greetNow();
+                  return;
+                }
+                if (fallbackTimer.current !== null) window.clearTimeout(fallbackTimer.current);
+                fallbackTimer.current = window.setTimeout(() => {
+                  if (current() && !heardModel.current) greetNow();
+                }, 2_800);
               },
               onPcm(pcm) {
                 if (!current() || mutedRef.current || hangingUp.current) return;
-                play.port.postMessage(pcm);
+                if (!heardModel.current) {
+                  try {
+                    performance.mark("voice-first-audio");
+                    performance.measure("ttfac", "voice-tap", "voice-first-audio");
+                  } catch {
+                    /* marks are optional */
+                  }
+                }
+                heardModel.current = true;
+                if (fallbackTimer.current !== null) {
+                  window.clearTimeout(fallbackTimer.current);
+                  fallbackTimer.current = null;
+                }
+                cancelGreeting();
+                pushPlay(pcm);
               },
               onInterrupted() {
                 if (!current()) return;
-                play.port.postMessage("flush");
+                pushPlay("flush");
               },
               onTranscript(side, text, finished) {
                 if (!current()) return;
@@ -321,35 +368,89 @@ export function VoiceProvider({ children }: { children: ReactNode }) {
                 setTurn(null);
                 setStatus((s) => (s === "error" ? s : "idle"));
               },
-            });
+            },
+            { signal: ac.signal },
+          ).then((v) => {
+            voice = v;
+            return v;
+          });
 
-            if (!current()) {
-              voice.hangup();
-              return;
-            }
+          const micP = navigator.mediaDevices.getUserMedia({
+            audio: {
+              echoCancellation: true,
+              noiseSuppression: true,
+              autoGainControl: true,
+            },
+          });
+          const workletsP = Promise.all([
+            ctx.audioWorklet.addModule("/worklets/pcm-capture.js?v=2"),
+            ctx.audioWorklet.addModule("/worklets/pcm-play.js?v=3"),
+          ]);
+          const sessionP = api.session(sessionId).catch(() => null);
 
-            socket.current = voice;
-            capture.port.onmessage = (ev) => {
-              const data = ev.data;
-              if (mutedRef.current || hangingUp.current || !current()) return;
-              if (data instanceof Int16Array) voice.sendPcm(data);
-            };
-          } catch (err) {
+          setStatus("connecting");
+          setError("");
+          setTurn(null);
+          setFake(false);
+
+          const [gotStream, , detail] = await Promise.all([micP, workletsP, sessionP, voiceP]);
+          stream = gotStream;
+
+          if (!current()) {
+            voice?.hangup();
+            stream.getTracks().forEach((t) => t.stop());
             void ctx.close();
-            throw err;
+            return;
           }
+
+          const seeded = captionsFromThread(detail?.thread ?? []);
+          const hello = spokenGreetingLine({ firstName: firstNameFor(user), resumed: false });
+          const lines = spokenTexts.current.has(hello)
+            ? applyVoiceCaption(seeded, "model", hello, true)
+            : seeded;
+          linesRef.current = lines;
+          setLines(lines);
+          setContinued(seeded.length > 0);
+
+          const source = ctx.createMediaStreamSource(stream);
+          const capture = new AudioWorkletNode(ctx, "pcm-capture");
+          const play = new AudioWorkletNode(ctx, "pcm-play");
+          source.connect(capture);
+          play.connect(ctx.destination);
+          playNode = play;
+          for (const chunk of pcmQ) play.port.postMessage(chunk);
+          pcmQ.length = 0;
+          graph.current = { ctx, stream, play };
+
+          if (!voice) {
+            throw new Error("voice socket missing");
+          }
+          socket.current = voice;
+          if (greetingFinished.current) voice.sendGreetingDone();
+          capture.port.onmessage = (ev) => {
+            const data = ev.data;
+            if (mutedRef.current || hangingUp.current || !current()) return;
+            if (data instanceof Int16Array) voice?.sendPcm(data);
+          };
         } catch (err) {
-          if (!current()) return;
-          teardown();
-          const name = (err as DOMException)?.name;
-          setStatus("error");
-          setError(
-            name === "NotAllowedError" ? t("voice.micDenied") : t("voice.unavailable"),
-          );
+          voice?.hangup();
+          stream?.getTracks().forEach((t) => t.stop());
+          void ctx.close();
+          if (!current() || (err as DOMException)?.name === "AbortError") return;
+          throw err;
         }
+      } catch (err) {
+        if (!current()) return;
+        teardown();
+        const name = (err as DOMException)?.name;
+        setStatus("error");
+        setError(
+          name === "NotAllowedError" ? t("voice.micDenied") : t("voice.unavailable"),
+        );
+      }
       })();
     },
-    [teardown, t, recordSpoken],
+    [teardown, t, recordSpoken, user, greetNow],
   );
 
   const start = useCallback(() => {
@@ -357,7 +458,9 @@ export function VoiceProvider({ children }: { children: ReactNode }) {
       stop();
       return;
     }
-    begin(resolveVoiceSessionId(pathname, companionSessionId));
+    const ctx = new AudioContext({ latencyHint: "interactive" });
+    void ctx.resume();
+    begin(resolveVoiceSessionId(pathname, companionSessionId), ctx);
   }, [status, stop, begin, pathname, companionSessionId]);
 
   const switchTo = useCallback(

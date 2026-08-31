@@ -81,6 +81,7 @@ export const ConnectorSchema = z.object({
 export const ConnectorListSchema = z.object({
   connectors: z.array(ConnectorSchema),
   grantedScopes: z.array(z.string()),
+  drafts: z.boolean().default(false),
 });
 
 export type Connector = z.infer<typeof ConnectorSchema>;
@@ -424,6 +425,8 @@ export const api = {
     returnTo?: "/app" | "/app/you";
   }) =>
     apiPost("/connectors/google/connect", options, z.object({ url: z.string().url() })),
+  setGmailDrafts: (drafts: boolean) =>
+    apiPost("/connectors/gmail-drafts", { drafts }, z.object({ drafts: z.boolean() })),
 
   setWatcherRunning: (id: string, running: boolean) =>
     apiPost(`/watchers/${encodeURIComponent(id)}/running`, { running }, WatcherSchema),

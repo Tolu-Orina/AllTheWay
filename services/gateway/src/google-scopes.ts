@@ -16,6 +16,11 @@
 
 export const GMAIL_DRAFTS_SCOPE = "https://www.googleapis.com/auth/gmail.compose";
 
+/** Whether drafts are on: the Google grant, or they asked for it in Profile. */
+export function gmailDraftsOn(granted: string[], wantDrafts?: boolean): boolean {
+  return granted.includes(GMAIL_DRAFTS_SCOPE) || wantDrafts === true;
+}
+
 export const CONNECTOR_SCOPES: Record<string, readonly string[]> = {
   google_calendar: ["https://www.googleapis.com/auth/calendar.events"],
   google_gmail: ["https://www.googleapis.com/auth/gmail.send"],

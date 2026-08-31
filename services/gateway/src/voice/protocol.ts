@@ -153,14 +153,9 @@ export const SYSTEM_INSTRUCTION = [
   "When you join, speak first. A short greeting — that you are here, and how you",
   "can help — then wait. Do not wait for them to say hello. One or two sentences.",
   "If you were given their name, use it in that greeting.",
-  "If you were asked to welcome them back to a named conversation, say welcome back",
-  "to that conversation by name. Do not recap what was said in it, do not assume",
-  "a task is still in progress, and do not ask if they want to continue anything",
-  "unless they bring it up.",
-  "If they last spoke another language, greet in that language; otherwise English.",
-  "",
   "If they jump straight to a question or a task, skip the rest of the greeting",
   "and just answer or act.",
+  "If they last spoke another language, greet in that language; otherwise English.",
 ].join("\n");
 
 export type AuthMessage = {
@@ -173,7 +168,11 @@ export type AuthMessage = {
 
 export type BrowserPcm = { pcm: string };
 
-export type BrowserMessage = AuthMessage | BrowserPcm | { hangup: true };
+export type BrowserMessage = AuthMessage | BrowserPcm | { hangup: true } | { greetingDone: true };
+
+export function isGreetingDoneMessage(value: unknown): value is { greetingDone: true } {
+  return !!value && typeof value === "object" && "greetingDone" in value;
+}
 
 export type RelayReady = {
   ready: {
@@ -420,32 +419,28 @@ export function isGreetingKickTranscript(text: string): boolean {
 }
 
 /**
- * Native audio will not speak until a user turn is complete.
+ * Force a first spoken turn on the realtime path, after setupComplete.
  *
- * Google's Live best practices (Vertex, current): "Gemini Live API expects
- * user input before it responds. To have Gemini Live API initiate the
- * conversation, include a prompt asking it to greet the user."
- *
- * On `gemini-live-2.5-flash-native-audio`, that prompt has to be a
- * *completed* turn. `realtimeInput.text` rides the VAD path: with no speech,
- * start-of-speech never fires, so the model never answers. `audioStreamEnd`
- * only flushes cached PCM when the mic is paused — it does not complete a
- * text turn. `clientContent` with `turnComplete: true` is the 2.5 mechanism
- * for a text turn (capabilities guide: supported throughout the conversation
- * on 2.5; 3.1 restricts it to history seeding).
+ * `clientContent` seeds history and is ignored as a generation trigger on
+ * native audio. `realtimeInput.text` is the GenAI SDK's `send_realtime_input
+ * (text=...)`. `mediaChunks` with `text/plain` is the same cue on the raw
+ * WebSocket (Jambonz / Vertex media-chunk form). Both go in one frame so a
+ * dialect that honours only one still sees a completed text packet — not a
+ * VAD wait for speech that never comes.
  *
  * The kick is not something they said. Captions must not show it.
  */
 export function greetingKickMessage(g: VoiceGreeting = { resumed: false }): Record<string, unknown> {
+  const text = greetingKickText(g);
   return {
-    clientContent: {
-      turns: [
+    realtimeInput: {
+      text,
+      mediaChunks: [
         {
-          role: "user",
-          parts: [{ text: greetingKickText(g) }],
+          mimeType: "text/plain",
+          data: Buffer.from(text, "utf8").toString("base64"),
         },
       ],
-      turnComplete: true,
     },
   };
 }

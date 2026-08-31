@@ -8,8 +8,16 @@ import {
   scopesToRequest,
   googleGrantId,
   GMAIL_DRAFTS_SCOPE,
+  gmailDraftsOn,
   createDraftSkipReason,
 } from "./google-scopes.js";
+
+test("drafts is on when compose is granted, or when they asked for it", () => {
+  const sendOnly = ["https://www.googleapis.com/auth/gmail.send"];
+  assert.equal(gmailDraftsOn(sendOnly, false), false);
+  assert.equal(gmailDraftsOn(sendOnly, true), true);
+  assert.equal(gmailDraftsOn([...sendOnly, GMAIL_DRAFTS_SCOPE], false), true);
+});
 
 test("a Gmail-only grant does not mark Calendar, Drive or Docs connected", () => {
   const granted = ["https://www.googleapis.com/auth/gmail.send"];

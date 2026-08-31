@@ -15,7 +15,7 @@ import {
 } from "./hangup.js";
 import { readUsage, recordUsage } from "../repos/usage.js";
 import { recordLine } from "../repos/transcripts.js";
-import { appendThread, ensureSession, getSession, isThinTitle, overlayConfirmOnPlan, touchSession, VOICE_TITLE } from "../repos/sessions.js";
+import { appendThread, ensureSession, getSession, overlayConfirmOnPlan, touchSession, VOICE_TITLE } from "../repos/sessions.js";
 import { composeFollowUpTurn, composeNeedsAddress } from "../compose-followup.js";
 import { createLiveOpener, type LiveOpener } from "./backend.js";
 import {
@@ -25,9 +25,9 @@ import {
   TranscriptAccumulator,
   VOICE_PATH,
   isAuthMessage,
+  isGreetingDoneMessage,
   isPcmMessage,
   type RelayMessage,
-  type VoiceGreeting,
 } from "./protocol.js";
 import { isSpokenNo, isSpokenYes } from "./confirm.js";
 import { carryOutConfirmedPlan, declinePendingPlan, speakActOutcomes } from "../confirm-act.js";
@@ -37,34 +37,6 @@ function originAllowed(origin: string | undefined): boolean {
   // same-origin, or the Origin header is the Vite origin talking to :8080.
   if (env.webOrigins.length === 0) return true;
   return typeof origin === "string" && env.webOrigins.includes(origin);
-}
-
-/**
- * Name and title for the spoken hello. Must not hold the socket: a stuck
- * session read is the hang that looks like voice never starts.
- */
-async function loadVoiceGreeting(
-  uid: string,
-  sessionId: string,
-  firstName: string,
-): Promise<VoiceGreeting> {
-  let title = "";
-  try {
-    const session = await Promise.race([
-      getSession(uid, sessionId),
-      new Promise<null>((resolve) => {
-        setTimeout(() => resolve(null), 800);
-      }),
-    ]);
-    title = session?.title?.trim() ?? "";
-  } catch {
-    title = "";
-  }
-  return {
-    firstName,
-    title,
-    resumed: Boolean(title && !isThinTitle(title)),
-  };
 }
 
 /**
@@ -211,7 +183,10 @@ async function handleConnection(ws: WebSocket, opener: LiveOpener): Promise<void
   }
 
   const sessionId = raw.auth.sessionId.slice(0, 128);
-  const greeting = loadVoiceGreeting(uid, sessionId, caller.firstName);
+  const greeting = {
+    firstName: caller.firstName,
+    resumed: false,
+  };
   const cancelled = new Set<string>();
   const slot: {
     live?: {
@@ -389,6 +364,10 @@ async function handleConnection(ws: WebSocket, opener: LiveOpener): Promise<void
     const msg = parseJson(data);
     if (isPcmMessage(msg)) {
       slot.live?.sendPcm(msg.pcm);
+      return;
+    }
+    if (isGreetingDoneMessage(msg)) {
+      slot.live?.releaseGreeting?.();
       return;
     }
     if (msg && typeof msg === "object" && "hangup" in msg) {

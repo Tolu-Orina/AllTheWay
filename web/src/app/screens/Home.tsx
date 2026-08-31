@@ -70,21 +70,13 @@ function orderJobs(life: LifeContext | null): ActivationJob[] {
   return JOBS;
 }
 
-function HomeSkeleton() {
-  return (
-    <div className="space-y-4">
-      <div className="h-44 animate-pulse rounded-brand-lg bg-muted" />
-      <div className="h-32 animate-pulse rounded-brand-lg bg-muted" />
-    </div>
-  );
-}
-
 export default function Home() {
   const t = useT();
   const navigate = useNavigate();
   const { send, openCompanion } = useCompanionThread();
   const { refresh: refreshAlerts } = useLifeAlerts();
   const { state, reload } = useAsync(() => api.home());
+  const snapshot = state.status === "ready" ? state.data.day : null;
   const { state: dayState, reload: reloadDay } = useAsync(() => api.homeDay());
   const [docsOpen, setDocsOpen] = useState(false);
   const [rhythmsOpen, setRhythmsOpen] = useState(false);
@@ -140,7 +132,6 @@ export default function Home() {
       <BillingReturnBanner />
       <LifeTray />
 
-      {state.status === "loading" ? <HomeSkeleton /> : null}
       {state.status === "error" ? (
         <ErrorState message={state.message} onRetry={reloadAll} />
       ) : null}
@@ -148,6 +139,7 @@ export default function Home() {
       {/* Timeline: loads independently so it never blocks the rest of the page */}
       <DaySection
         dayState={dayState}
+        snapshot={snapshot}
         hat={hat}
         onHat={(next) => {
           setHat(next);
@@ -298,24 +290,24 @@ function HomeHeader() {
 
 function DaySection({
   dayState,
+  snapshot,
   hat,
   onHat,
   onConnect,
 }: {
   dayState: AsyncState<Day>;
+  snapshot: Day | null;
   hat: Hat | "all";
   onHat: (next: Hat | "all") => void;
   onConnect: () => void;
 }) {
-  if (dayState.status === "loading") {
+  const waitingOnEvents = snapshot?.calendar === "connected" && dayState.status === "loading";
+  if (waitingOnEvents) {
     return <div className="h-44 animate-pulse rounded-brand-lg bg-muted" />;
   }
-  if (dayState.status === "error") {
-    return <EmptyTimeline onConnect={onConnect} />;
-  }
-  const day = dayState.data;
-  if (day.calendar === "missing" || day.hours.length === 0) {
-    return <EmptyTimeline onConnect={onConnect} />;
+  const day = dayState.status === "ready" ? dayState.data : snapshot;
+  if (!day || day.calendar === "missing" || day.hours.length === 0) {
+    return <EmptyTimeline onConnect={onConnect} connected={day?.calendar === "connected"} />;
   }
   return (
     <DayTimeline
@@ -326,7 +318,7 @@ function DaySection({
   );
 }
 
-function EmptyTimeline({ onConnect }: { onConnect: () => void }) {
+function EmptyTimeline({ onConnect, connected }: { onConnect: () => void; connected?: boolean }) {
   const t = useT();
   return (
     <section className="flex flex-col items-center px-4 py-10 text-center">
@@ -335,16 +327,18 @@ function EmptyTimeline({ onConnect }: { onConnect: () => void }) {
       </span>
       <h2 className="mt-4 text-[18px] font-semibold">{t("life.nothingTimedYet")}</h2>
       <p className="mt-2 max-w-md text-[13.5px] leading-relaxed text-muted-foreground">
-        {t("life.timelineEmptyHint")}
+        {connected ? t("life.nothingTimedEmpty") : t("life.timelineEmptyHint")}
       </p>
-      <button
-        type="button"
-        onClick={onConnect}
-        className="mt-5 inline-flex items-center gap-2 rounded-brand bg-navy-deep px-4 py-2.5 text-[14px] font-semibold text-white transition-opacity hover:opacity-90"
-      >
-        <RefreshCw className="size-4" aria-hidden="true" />
-        {t("life.connectAccounts")}
-      </button>
+      {connected ? null : (
+        <button
+          type="button"
+          onClick={onConnect}
+          className="mt-5 inline-flex items-center gap-2 rounded-brand bg-navy-deep px-4 py-2.5 text-[14px] font-semibold text-white transition-opacity hover:opacity-90"
+        >
+          <RefreshCw className="size-4" aria-hidden="true" />
+          {t("life.connectAccounts")}
+        </button>
+      )}
     </section>
   );
 }
