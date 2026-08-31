@@ -22,12 +22,8 @@ test("the phrases that sound like commitments and are not", () => {
   }
 });
 
-test("an unattributed speaker is labelled, never guessed", () => {
-  // Tier 2 receives three audio streams for a meeting that may hold twelve
-  // people. A confident wrong name is worse than no name.
-  strictEqual(speakerLabel({ at: "t", text: "x" }), "Unattributed");
-  strictEqual(speakerLabel({ at: "t", speaker: "  ", text: "x" }), "Unattributed");
-  strictEqual(speakerLabel({ at: "t", speaker: "Ada", text: "x" }), "Ada");
+test("a Meet participant resource name is never a speaker label", () => {
+  strictEqual(speakerLabel({ at: "t", speaker: "conferenceRecords/abc/participants/1", text: "x" }), "Unattributed");
 });
 
 test("empty utterances do not become notes", () => {

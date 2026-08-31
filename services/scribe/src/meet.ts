@@ -38,6 +38,8 @@
  */
 
 
+import { isPlatformDisplayName, looksLikeMeetSpace } from "./speakers.js";
+
 export interface MeetingRef {
   meetingId: string;
   spaceName: string;
@@ -158,6 +160,98 @@ export async function transcriptEntries(
   }
 
   return entries;
+}
+
+/**
+ * A display name a person would recognise. Resource paths stay undefined.
+ */
+export function displayNameFromParticipant(resource: unknown): string | undefined {
+  if (!resource || typeof resource !== "object") return undefined;
+  const rec = resource as Record<string, unknown>;
+  const signed = rec.signedinUser as { displayName?: string } | undefined;
+  const anon = rec.anonymousUser as { displayName?: string } | undefined;
+  const phone = rec.phoneUser as { displayName?: string } | undefined;
+  const name = signed?.displayName || anon?.displayName || phone?.displayName;
+  const display = (name ?? "").trim();
+  return isPlatformDisplayName(display) ? display : undefined;
+}
+
+async function conferenceRecordId(
+  spaceOrRecord: string,
+  accessToken: string,
+): Promise<string | undefined> {
+  const raw = spaceOrRecord.trim();
+  if (!raw) return undefined;
+  if (raw.startsWith("conferenceRecords/")) {
+    return raw.replace(/^conferenceRecords\//, "");
+  }
+  if (!looksLikeMeetSpace(raw)) return undefined;
+
+  try {
+    const page = await meetGet<{ conferenceRecords?: Array<{ name?: string }> }>(
+      `conferenceRecords?filter=${encodeURIComponent(`space.meeting_code="${raw}"`)}`,
+      accessToken,
+    );
+    const name = page.conferenceRecords?.[0]?.name;
+    if (!name) return undefined;
+    return name.replace(/^conferenceRecords\//, "");
+  } catch {
+    return undefined;
+  }
+}
+
+async function participantDisplayName(
+  resourceName: string,
+  accessToken: string,
+): Promise<string | undefined> {
+  try {
+    const body = await meetGet<unknown>(resourceName, accessToken);
+    return displayNameFromParticipant(body);
+  } catch {
+    return undefined;
+  }
+}
+
+/**
+ * Transcript entries with platform display names, or nothing.
+ *
+ * Fail closed: an empty list, a missing token, or a participant we cannot
+ * resolve all become "leave Unattributed". Never render `conferenceRecords/…`.
+ */
+export async function namedEntriesForSpace(
+  spaceOrRecord: string,
+  accessToken: string,
+): Promise<TranscriptEntry[]> {
+  const conferenceId = await conferenceRecordId(spaceOrRecord, accessToken);
+  if (!conferenceId) return [];
+
+  const entries = await transcriptEntries(conferenceId, accessToken);
+  if (entries.length === 0) return [];
+
+  const cache = new Map<string, string>();
+  const named: TranscriptEntry[] = [];
+
+  for (const entry of entries) {
+    const resource = entry.speaker?.trim();
+    if (!resource) {
+      named.push({ at: entry.at, text: entry.text });
+      continue;
+    }
+    if (isPlatformDisplayName(resource)) {
+      named.push({ at: entry.at, text: entry.text, speaker: resource });
+      continue;
+    }
+
+    let display = cache.get(resource);
+    if (display === undefined) {
+      display = (await participantDisplayName(resource, accessToken)) ?? "";
+      cache.set(resource, display);
+    }
+    if (display) named.push({ at: entry.at, text: entry.text, speaker: display });
+    else named.push({ at: entry.at, text: entry.text });
+  }
+
+  return named;
 }
 
 

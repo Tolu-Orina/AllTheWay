@@ -80,7 +80,9 @@ function wallTimeInZone(near: Date, timeZone: string, hour: number, minute: numb
   return new Date(guess + driftMin * 60_000);
 }
 
-function parseEventsJson(raw: string): Array<{ id: string; title: string; startsAt: string }> {
+function parseEventsJson(
+  raw: string,
+): Array<{ id: string; title: string; startsAt: string; meetUrl?: string }> {
   try {
     const parsed = JSON.parse(raw) as { events?: unknown; error?: string };
     if (parsed.error || !Array.isArray(parsed.events)) return [];
@@ -90,8 +92,9 @@ function parseEventsJson(raw: string): Array<{ id: string; title: string; starts
       const id = String(rec.id ?? "");
       const title = String(rec.title ?? "").trim() || "(no title)";
       const startsAt = String(rec.startsAt ?? "");
+      const meetUrl = String(rec.hangoutLink ?? rec.meetUrl ?? "");
       if (!id || !startsAt) return [];
-      return [{ id, title, startsAt }];
+      return [{ id, title, startsAt, meetUrl }];
     });
   } catch {
     return [];
@@ -109,7 +112,7 @@ export function buildDayFromParts(
   places: Place[],
   rhythms: Rhythm[],
   people: Array<{ id: string; name: string }>,
-  calendar: { status: Day["calendar"]; events: Array<{ id: string; title: string; startsAt: string }> },
+  calendar: { status: Day["calendar"]; events: Array<{ id: string; title: string; startsAt: string; meetUrl?: string }> },
   now: Date,
 ): Day {
   const until = new Date(now.getTime() + WINDOW_MS);
@@ -131,6 +134,7 @@ export function buildDayFromParts(
         personName: "",
         leaveAt: iso(new Date(start.getTime() - DEFAULT_BUFFER_MIN * 60_000)),
         placeLabel: "",
+        meetUrl: event.meetUrl ?? "",
       });
     }
   }
@@ -148,6 +152,7 @@ export function buildDayFromParts(
         personName: rhythm.personId ? (personById.get(rhythm.personId)?.name ?? "") : "",
         leaveAt: iso(new Date(start.getTime() - buffer * 60_000)),
         placeLabel: place?.label ?? "",
+        meetUrl: "",
       });
     }
   }
@@ -187,7 +192,7 @@ export async function buildDay(uid: string, now = new Date()): Promise<Day> {
 async function readCalendar(
   uid: string,
   now: Date,
-): Promise<{ status: Day["calendar"]; events: Array<{ id: string; title: string; startsAt: string }> }> {
+): Promise<{ status: Day["calendar"]; events: Array<{ id: string; title: string; startsAt: string; meetUrl?: string }> }> {
   const result = await runReadTool(uid, "whats_on_my_calendar", {
     limit: 25,
     time_min: iso(now),

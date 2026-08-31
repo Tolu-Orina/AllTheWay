@@ -74,6 +74,10 @@ class Meter(StrEnum):
     #: repeatedly, which the schedule cannot see.
     MEETING_INSIGHTS = "meeting_insights"
 
+    #: Guest notetaker hours. Max only. A labelled bot in the room is a
+    #: paid stopgap until Meet Media, not a Team feature.
+    BOT_HOURS = "bot_hours"
+
     #: Images, via Nano Banana 2 Lite. Cheap enough to be conversational
     #: ($0.034/1K), so the limit is about abuse rather than cost.
     IMAGES = "images"
@@ -110,6 +114,7 @@ class Plan:
     #: the point — the feature is for people running client calls, and
     #: offering a taste of it on Free would be a taste of the expensive half.
     meeting_insights: int | None = 0
+    bot_hours: int | None = 0
 
     def allowance(self, meter: Meter) -> int | None:
         return {
@@ -121,6 +126,7 @@ class Plan:
             Meter.DRAFT_VIDEO_SECONDS: self.draft_video_seconds,
             Meter.FINAL_VIDEO_SECONDS: self.final_video_seconds,
             Meter.MEETING_INSIGHTS: self.meeting_insights,
+            Meter.BOT_HOURS: self.bot_hours,
         }[meter]
 
 
@@ -142,6 +148,7 @@ PLANS: dict[Tier, Plan] = {
         draft_video_seconds=0,
         final_video_seconds=0,
         meeting_insights=0,
+        bot_hours=0,
     ),
     Tier.PLUS: Plan(
         tier=Tier.PLUS,
@@ -159,6 +166,7 @@ PLANS: dict[Tier, Plan] = {
         # Plus cannot render a final. One 8-second render is $6 against £18.
         final_video_seconds=0,
         meeting_insights=0,
+        bot_hours=0,
     ),
     Tier.TEAM: Plan(
         tier=Tier.TEAM,
@@ -174,6 +182,7 @@ PLANS: dict[Tier, Plan] = {
         draft_video_seconds=60,
         final_video_seconds=10,
         meeting_insights=300,
+        bot_hours=0,
     ),
     Tier.MAX: Plan(
         tier=Tier.MAX,
@@ -191,6 +200,7 @@ PLANS: dict[Tier, Plan] = {
         draft_video_seconds=300,
         final_video_seconds=20,
         meeting_insights=None,
+        bot_hours=None,
     ),
 }
 

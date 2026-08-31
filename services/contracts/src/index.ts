@@ -395,6 +395,27 @@ export const MeetingSchema = z.object({
    */
   capturedLocally: z.boolean().default(false),
   optedOut: z.boolean().default(false),
+  bot: z
+    .object({
+      disclosed: z.boolean().default(false),
+      confirmedBy: z.string().optional().default(""),
+      confirmedAt: z.string().optional().default(""),
+      status: z.enum([
+        "idle",
+        "knocking",
+        "admitted",
+        "not_admitted",
+        "recording",
+        "ended",
+        "vendor_pending",
+      ]),
+      meetUrl: z.string().default(""),
+      displayName: z.string().default(""),
+      reason: z.string().default(""),
+    })
+    .nullable()
+    .optional()
+    .default(null),
   /**
    * Snapshot of the duration cap at list time. Shown so a long call can be
    * extended while there is still time, not after recording has already stopped.
@@ -600,6 +621,8 @@ export const DayItemSchema = z.object({
   personName: z.string().default(""),
   leaveAt: z.string().nullable(),
   placeLabel: z.string().default(""),
+  /** Google Meet URL when the calendar event has one. Empty otherwise. */
+  meetUrl: z.string().default(""),
 });
 
 export const NextLeaveSchema = z.object({
@@ -908,6 +931,7 @@ export const METERS = [
   "connector_calls",
   "documents",
   "meeting_insights",
+  "bot_hours",
   "images",
   "draft_video_seconds",
   "final_video_seconds",

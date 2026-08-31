@@ -10,6 +10,7 @@ import { ConfirmGate } from "@/app/ConfirmGate";
 import { useCompanionThread } from "@/app/companion-thread";
 import { ConnectionQuality, DurationNotice } from "@/app/MeetingHealth";
 import { MeetingInsights } from "@/app/MeetingInsights";
+import { SendMeetBot } from "@/app/SendMeetBot";
 
 /**
  * Meetings, and what the agent could and could not do in them.
@@ -127,6 +128,7 @@ export function Meetings() {
       <p className="text-[13.5px] leading-relaxed text-muted-foreground">
         {t("meetings.intro")}
       </p>
+      <p className="text-[12.5px] text-muted-foreground">{t("meetings.sendBotHint")}</p>
 
       <GlobalSwitch
         enabled={on}
@@ -314,6 +316,16 @@ function MeetingRow({
 
       <MeetingCommitments meetingId={meeting.id} />
 
+      {meetUrlFor(meeting) ? <SendMeetBot meetUrl={meetUrlFor(meeting)} /> : null}
+
+      {canOverlaySpeakers(meeting) ? (
+        <OverlaySpeakers meeting={meeting} />
+      ) : null}
+
+      {meeting.bot ? <BotStatus bot={meeting.bot} /> : null}
+
+      {/* Quality while it is happening, not a verdict afterwards. "It says
+
       {/* Quality while it is happening, not a verdict afterwards. "It says
           patchy, I'll take my own notes for this bit" is a recovery that no
           amount of post-hoc labelling can offer. */}
@@ -468,6 +480,74 @@ export function CommitmentCard({
       <PutOnCalendar text={commitment.text} />
     </li>
   );
+}
+
+function meetUrlFor(meeting: Meeting): string {
+  if (meeting.bot?.meetUrl) return meeting.bot.meetUrl;
+  const id = meeting.conferenceId;
+  if (id && !id.includes("/") && !id.startsWith("tab-") && /^[a-z0-9][a-z0-9-]{2,}$/i.test(id)) {
+    return `https://meet.google.com/${id}`;
+  }
+  return "";
+}
+
+function canOverlaySpeakers(meeting: Meeting): boolean {
+  const id = meeting.conferenceId;
+  return (
+    meeting.capturedLocally &&
+    Boolean(id) &&
+    !id.includes("/") &&
+    !id.startsWith("tab-") &&
+    /^[a-z0-9][a-z0-9-]{2,}$/i.test(id)
+  );
+}
+
+function OverlaySpeakers({ meeting }: { meeting: Meeting }) {
+  const t = useT();
+  const [busy, setBusy] = useState(false);
+  const [note, setNote] = useState<string | null>(null);
+
+  return (
+    <div className="mt-2">
+      <button
+        type="button"
+        disabled={busy}
+        onClick={() => {
+          setBusy(true);
+          setNote(null);
+          void api
+            .overlayMeetingSpeakers(meeting.id)
+            .then((result) => {
+              setNote(
+                result.overlaid
+                  ? t("meetings.overlayDone", { count: result.overlaid })
+                  : t("meetings.overlayNone"),
+              );
+            })
+            .catch(() => setNote(t("common.saveFailed")))
+            .finally(() => setBusy(false));
+        }}
+        className="text-[12.5px] underline underline-offset-2 text-muted-foreground disabled:opacity-50"
+      >
+        {t("meetings.overlaySpeakers")}
+      </button>
+      {note ? <p className="mt-1 text-[12px] text-muted-foreground">{note}</p> : null}
+    </div>
+  );
+}
+
+function BotStatus({ bot }: { bot: NonNullable<Meeting["bot"]> }) {
+  const t = useT();
+  if (bot.status === "vendor_pending") {
+    return <p className="mt-2 text-[12.5px] text-muted-foreground">{t("meetings.botVendorPending")}</p>;
+  }
+  if (bot.status === "knocking") {
+    return <p className="mt-2 text-[12.5px]">{t("meetings.knocking")}</p>;
+  }
+  if (bot.status === "not_admitted") {
+    return <p className="mt-2 text-[12.5px] text-muted-foreground">{t("meetings.notAdmitted")}</p>;
+  }
+  return null;
 }
 
 /**

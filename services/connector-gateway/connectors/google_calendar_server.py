@@ -86,6 +86,7 @@ def list_events(limit: int = 10, time_min: str = "") -> str:
             "title": item.get("summary", "(no title)"),
             "startsAt": (item.get("start") or {}).get("dateTime")
             or (item.get("start") or {}).get("date"),
+            "hangoutLink": item.get("hangoutLink") or "",
         }
         for item in payload.get("items", [])
         if isinstance(item, dict)

@@ -122,6 +122,13 @@ export const env = {
   scribeUrl: (process.env.SCRIBE_URL ?? "").replace(/\/$/, ""),
 
   /**
+   * Join-vendor API key. Empty until finance signs a BaaS. Presence is the
+   * only thing `decideBotStart` treats as "configured" — the key never appears
+   * in logs or in a client response.
+   */
+  meetingBotVendorKey: process.env.MEETING_BOT_VENDOR_KEY ?? "",
+
+  /**
    * The Agent Gateway, for reads made during a voice turn.
    *
    * Empty in an environment without one, and the voice tools then say so rather

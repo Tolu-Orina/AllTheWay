@@ -21,7 +21,16 @@
  *
  * `getMediaStreamId` requires the extension context and a recent user gesture.
  * The offscreen document has neither, so the id is minted here and handed over.
+ *
+ * ## State lives in session storage, not in this process
+ *
+ * `capturing` used to be a variable. Chrome kills this worker; the offscreen
+ * document keeps recording; the popup then claimed nothing was happening.
+ * Session storage survives the worker. It does not survive the browser closing,
+ * which is the same lifetime as the recording itself.
  */
+
+import { ALLTHEWAY_URL_PATTERNS, ensureGatewayAccess, findMeetingTab } from "./meeting-tab.js";
 
 const OFFSCREEN_PATH = "offscreen.html";
 
@@ -29,8 +38,50 @@ const OFFSCREEN_PATH = "offscreen.html";
 const TOKEN_KEY = "idToken";
 /** The gateway origin, learned from the page rather than compiled in. */
 const GATEWAY_KEY = "gateway";
+const CAPTURE_KEY = "capturing";
+const LINES_KEY = "transcriptLines";
+const INSIGHTS_KEY = "insightCards";
+
+/** ID tokens last about an hour. Ask for a new one before that, not after. */
+const TOKEN_REFRESH_MS = 40 * 60_000;
 
 let capturing = null; // { tabId, meetingId, startedAt }
+let refreshTimer = null;
+
+async function persistCapture(state) {
+  capturing = state;
+  if (state) {
+    await chrome.storage.session.set({ [CAPTURE_KEY]: state });
+    return;
+  }
+  await chrome.storage.session.remove(CAPTURE_KEY);
+}
+
+async function restoreCapture() {
+  const { [CAPTURE_KEY]: stored } = await chrome.storage.session.get(CAPTURE_KEY);
+  if (!stored) {
+    capturing = null;
+    return;
+  }
+
+  const hasOffscreen = await chrome.offscreen.hasDocument?.();
+  if (!hasOffscreen) {
+    // The worker restarted and the offscreen document is gone: we are not
+    // recording, whatever session storage still says.
+    capturing = null;
+    await chrome.storage.session.remove(CAPTURE_KEY);
+    await chrome.action.setBadgeText({ text: "" });
+    stopTokenRefreshLoop();
+    return;
+  }
+
+  capturing = stored;
+  await chrome.action.setBadgeText({ text: "REC" });
+  await chrome.action.setBadgeBackgroundColor({ color: "#b91c1c" });
+  startTokenRefreshLoop();
+}
+
+void restoreCapture();
 
 async function ensureOffscreen() {
   const existing = await chrome.offscreen.hasDocument?.();
@@ -46,11 +97,42 @@ async function ensureOffscreen() {
   });
 }
 
+function startTokenRefreshLoop() {
+  if (refreshTimer) return;
+  refreshTimer = setInterval(() => void askPagesForFreshToken(), TOKEN_REFRESH_MS);
+  void askPagesForFreshToken();
+}
+
+function stopTokenRefreshLoop() {
+  if (!refreshTimer) return;
+  clearInterval(refreshTimer);
+  refreshTimer = null;
+}
+
+async function askPagesForFreshToken() {
+  let tabs = [];
+  try {
+    tabs = await chrome.tabs.query({ url: ALLTHEWAY_URL_PATTERNS });
+  } catch {
+    tabs = [];
+  }
+
+  for (const tab of tabs) {
+    if (typeof tab.id !== "number") continue;
+    chrome.tabs.sendMessage(tab.id, { type: "ask-token", force: true }, () => {
+      // The AllTheWay tab may have no content script (not signed in, or a
+      // page we do not inject on). Keep capturing until verify fails.
+      void chrome.runtime.lastError;
+    });
+  }
+}
+
 async function startCapture({ tabId, meetingId, disclosed }) {
-  if (!disclosed) {
-    // Refused here as well as in the popup. The popup is a convenience; this is
-    // the boundary, and a message crafted without the flag must not start a
-    // recording nobody in the room was told about.
+  if (disclosed !== true) {
+    // Refused here as well as in the panel. The checkbox is a convenience;
+    // this is the client-side boundary, and a message crafted without the flag
+    // must not start a recording nobody in the room was told about. The
+    // gateway refuses again.
     return { ok: false, reason: "Nobody has been told about this recording yet." };
   }
 
@@ -72,11 +154,23 @@ async function startCapture({ tabId, meetingId, disclosed }) {
     };
   }
 
-  // Minted here, while the user's click is still recent.
-  const streamId = await chrome.tabCapture.getMediaStreamId({ targetTabId: tabId });
+  // Asked here so a Start click is still a user gesture. The panel also asks
+  // first; this is the fallback if that call lost the gesture.
+  if (!(await ensureGatewayAccess(gateway))) {
+    return {
+      ok: false,
+      reason: "Allow AllTheWay to reach the notes server, then try again.",
+    };
+  }
+
+  const streamId = await chrome.tabCapture.getMediaStreamId({ targetTabId: tabId }).catch(() => null);
+  if (!streamId) {
+    return { ok: false, reason: "Could not capture this meeting tab." };
+  }
 
   await ensureOffscreen();
 
+  const tab = await chrome.tabs.get(tabId);
   const started = await chrome.runtime.sendMessage({
     target: "offscreen",
     type: "start",
@@ -84,19 +178,24 @@ async function startCapture({ tabId, meetingId, disclosed }) {
     token,
     meetingId,
     gateway,
-    // The tab's own title is the best name available for a meeting the user
-    // never named. Better than "Meeting 3".
-    origin: (await chrome.tabs.get(tabId)).title ?? "Meeting",
+    disclosed: true,
+    origin: tab.title ?? "Meeting",
+    meetUrl: tab.url ?? "",
   });
 
   if (started?.ok) {
-    capturing = { tabId, meetingId, startedAt: Date.now() };
-    // Opened with the recording, not left for the user to find. An insight
-    // panel nobody knows about is a reasoning call nobody reads.
-    try {
-      await chrome.sidePanel.open({ tabId });
-    } catch {
-      // Older Chrome, or a window that refuses. Capture still works.
+    await persistCapture({ tabId, meetingId, startedAt: Date.now() });
+    await chrome.storage.session.set({ [LINES_KEY]: [], [INSIGHTS_KEY]: [] });
+    startTokenRefreshLoop();
+    const { presenting } = await chrome.storage.session.get("presenting");
+    // While they present, the side panel is the room's screen. Insights stay
+    // on the phone. Capture still runs.
+    if (!presenting) {
+      try {
+        await chrome.sidePanel.open({ tabId });
+      } catch {
+        // Older Chrome, or a window that refuses. Capture still works.
+      }
     }
     await chrome.action.setBadgeText({ text: "REC" });
     await chrome.action.setBadgeBackgroundColor({ color: "#b91c1c" });
@@ -111,7 +210,8 @@ async function stopCapture() {
     // The offscreen document may already be gone. Stopping something that has
     // stopped is not an error worth surfacing.
   }
-  capturing = null;
+  await persistCapture(null);
+  stopTokenRefreshLoop();
   await chrome.action.setBadgeText({ text: "" });
   return { ok: true };
 }
@@ -120,16 +220,32 @@ chrome.runtime.onMessage.addListener((message, _sender, respond) => {
   if (message?.target === "offscreen") return false; // not ours
 
   if (message?.type === "start") {
-    void startCapture(message).then(respond);
+    void startCapture(message)
+      .then(respond)
+      .catch(() => respond({ ok: false, reason: "Capture did not start." }));
     return true;
   }
   if (message?.type === "stop") {
-    void stopCapture().then(respond);
+    void stopCapture()
+      .then(respond)
+      .catch(() => respond({ ok: true }));
     return true;
   }
   if (message?.type === "status") {
-    void chrome.storage.session.get(TOKEN_KEY).then(({ [TOKEN_KEY]: token }) =>
-      respond({ capturing, signedIn: Boolean(token) }),
+    void (async () => {
+      if (!capturing) await restoreCapture();
+      const { [TOKEN_KEY]: token } = await chrome.storage.session.get(TOKEN_KEY);
+      respond({ capturing, signedIn: Boolean(token) });
+    })();
+    return true;
+  }
+  if (message?.type === "pick-meeting-tab") {
+    void findMeetingTab().then((tab) =>
+      respond(
+        tab?.id
+          ? { ok: true, tabId: tab.id, title: tab.title ?? "Meeting", url: tab.url ?? "" }
+          : { ok: false },
+      ),
     );
     return true;
   }
@@ -168,8 +284,30 @@ chrome.runtime.onMessage.addListener((message, _sender, respond) => {
     // The offscreen document reporting that capture stopped on its own — the
     // tab closed, or the stream ended. The badge must not keep claiming to
     // record something that is no longer being recorded.
-    capturing = null;
+    void persistCapture(null);
+    stopTokenRefreshLoop();
     void chrome.action.setBadgeText({ text: "" });
+    return false;
+  }
+  if (message?.type === "meet-caption") {
+    if (
+      capturing &&
+      typeof message.speaker === "string" &&
+      typeof message.text === "string"
+    ) {
+      void chrome.runtime.sendMessage({
+        target: "offscreen",
+        type: "caption",
+        speaker: message.speaker,
+        text: message.text,
+      }, () => {
+        void chrome.runtime.lastError;
+      });
+    }
+    return false;
+  }
+  if (message?.type === "meet-presenting") {
+    void chrome.storage.session.set({ presenting: message.presenting === true });
     return false;
   }
   return false;

@@ -2,7 +2,7 @@ import "./test-env.js";
 import assert from "node:assert/strict";
 import { test } from "node:test";
 
-import { hatFromTitle, occurrencesInWindow } from "./calendar-day.js";
+import { hatFromTitle, occurrencesInWindow, buildDayFromParts } from "./calendar-day.js";
 import type { Rhythm } from "@alltheway/contracts";
 
 test("church and school hats", () => {
@@ -28,4 +28,25 @@ test("weekday school-run occurrences stay in the window", () => {
   for (const at of found) {
     assert.ok(at >= from && at < until);
   }
+});
+
+test("a Meet hangoutLink is kept on the day row", () => {
+  const day = buildDayFromParts(
+    [],
+    [],
+    [],
+    {
+      status: "connected",
+      events: [
+        {
+          id: "e1",
+          title: "Standup",
+          startsAt: "2099-01-01T10:00:00Z",
+          meetUrl: "https://meet.google.com/abc-defg-hij",
+        },
+      ],
+    },
+    new Date("2099-01-01T08:00:00Z"),
+  );
+  assert.equal(day.hours[0]?.meetUrl, "https://meet.google.com/abc-defg-hij");
 });

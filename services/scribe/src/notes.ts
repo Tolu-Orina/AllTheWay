@@ -30,6 +30,8 @@
  * sees text that has already passed.
  */
 
+import { isPlatformDisplayName } from "./speakers.js";
+
 export interface Utterance {
   at: string;
   /** Absent when attribution was not confident. Never guessed. */
@@ -93,9 +95,9 @@ export function isCommitment(text: string): boolean {
 /** The label for an utterance whose speaker may be unknown. */
 export function speakerLabel(utterance: Utterance): string {
   const name = utterance.speaker?.trim();
-  // Best-effort attribution, said plainly. Three audio streams cannot reliably
-  // separate twelve voices, and a confident wrong name is worse than none.
-  return name ? name : "Unattributed";
+  // A Meet REST participant resource (`conferenceRecords/…`) is an id, not a
+  // person. Printing it would be a guessed name by another route.
+  return name && isPlatformDisplayName(name) ? name : "Unattributed";
 }
 
 export function toNotes(utterances: Utterance[]): Note[] {

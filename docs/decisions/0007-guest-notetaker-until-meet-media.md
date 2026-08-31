@@ -35,9 +35,10 @@ So C is a **stopgap with an off-ramp**, not a new identity.
 ## Constraints that travel with the decision
 
 - Per-meeting confirm. No calendar auto-join in the first slice.
+- Bot-hours are **Max only**.
 - Display name is obviously AllTheWay. Camera off, mic muted, no uplink audio, no TTS. One disclosure chat line at most.
 - Same scribe / screening / insights / confirm gate as tab capture.
-- Buy join infrastructure; do not own a Playwright Meet client.
+- Buy join infrastructure; do not own a Playwright Meet client. Vendor (Recall EU vs alternative) waits on a finance review; do not sign until that lands.
 - Meet bot dies the day Media works. Zoom/Teams bots remain until those have a sanctioned listen API we are enrolled in.
 
 ## Alternatives rejected

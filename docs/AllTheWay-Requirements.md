@@ -410,10 +410,15 @@ Commitments extracted from a call are proposals until confirmed. Nothing is sent
 - **Priority:** M · **Traces:** USR-15, SYS-12
 
 #### FR-C3
-Live listening requires the user to be host, is opt-in per meeting (and honour a global off), and is visibly indicated for its whole duration.
+Live capture is opt-in per meeting (and honour a global off), and is visibly indicated for its whole duration.
+
+- **Meet Media (Tier 2):** the user must be host. Google’s initiation dialog is the room-visible indicator.
+- **Tab capture (Tier 1.5):** anyone in the Chrome tab who disclosed. Not host-only.
+- **Guest notetaker (Tier 2.5):** anyone who confirmed send-into-the-room; a host must admit; labelled in the roster for the whole time it is there.
 
 - **Priority:** M · **Traces:** USR-14
 - **Accept:** Switch hydrates from server so refresh does not look like withdrawn consent.
+- **Rewritten 2026-08-31:** host-only applied to Meet Media, not to tab capture. See [AllTheWay-Meeting-Joiner-Plan.md](AllTheWay-Meeting-Joiner-Plan.md).
 
 #### FR-C4
 The product shall never claim the agent can speak in a meeting. UI copy and indicators are passive.

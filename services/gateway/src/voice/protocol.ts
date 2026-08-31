@@ -587,8 +587,12 @@ export function parseServerMessage(raw: unknown): ParsedServer {
   }
 
   const topIn = transcription(pick(obj, "inputTranscription", "input_transcription"));
+  const topInterim = transcription(
+    pick(obj, "interimInputTranscription", "interim_input_transcription"),
+  );
   const topOut = transcription(pick(obj, "outputTranscription", "output_transcription"));
   if (topIn) out.userTranscript = topIn;
+  else if (topInterim) out.userTranscript = { text: topInterim.text, finished: false };
   if (topOut) out.modelTranscript = topOut;
 
   const server = asObject(pick(obj, "serverContent", "server_content"));
@@ -601,8 +605,12 @@ export function parseServerMessage(raw: unknown): ParsedServer {
   }
 
   const nestedIn = transcription(pick(server, "inputTranscription", "input_transcription"));
+  const nestedInterim = transcription(
+    pick(server, "interimInputTranscription", "interim_input_transcription"),
+  );
   const nestedOut = transcription(pick(server, "outputTranscription", "output_transcription"));
   if (nestedIn) out.userTranscript = nestedIn;
+  else if (nestedInterim) out.userTranscript = { text: nestedInterim.text, finished: false };
   if (nestedOut) out.modelTranscript = nestedOut;
 
   const turn = asObject(pick(server, "modelTurn", "model_turn"));

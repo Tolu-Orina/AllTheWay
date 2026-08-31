@@ -1,7 +1,7 @@
 import { GoogleAuth } from "google-auth-library";
 import { WebSocket } from "ws";
 
-import { liveWebSocketUrl } from "../voice/protocol.js";
+import { liveWebSocketUrl, parseServerMessage, foldTranscript } from "../voice/protocol.js";
 import { env } from "../env.js";
 import {
   FRAME_MS,
@@ -56,19 +56,31 @@ interface Leg {
   pending: string[];
 }
 
-function extractText(message: Record<string, unknown>): string {
-  const server = (message.serverContent ?? message.server_content) as
-    | Record<string, unknown>
-    | undefined;
-  const transcription = (server?.inputTranscription ?? server?.input_transcription) as
-    | Record<string, unknown>
-    | undefined;
-  const text = transcription?.text;
-  return typeof text === "string" ? text : "";
+/**
+ * Fold a Live transcription fragment into the current utterance.
+ *
+ * Interims are hypotheses of the same sentence. Emitting each as a new note
+ * is how a meeting record filled with duplicates. Commit only when the
+ * server says the utterance is finished, or the turn is complete.
+ */
+export function takeTranscript(
+  current: string,
+  incoming: { text: string; finished: boolean } | undefined,
+  turnComplete: boolean,
+): { held: string; committed: string | undefined } {
+  const held = incoming ? foldTranscript(current, incoming.text) : current;
+  if ((incoming?.finished || turnComplete) && held.trim()) {
+    return { held: "", committed: held.trim() };
+  }
+  return { held, committed: undefined };
 }
 
 /** One Live session. Resolves once the server has confirmed setup. */
-async function openLeg(events: TranscribeEvents, languageCodes: string[]): Promise<Leg> {
+async function openLeg(
+  events: TranscribeEvents,
+  languageCodes: string[],
+  fold: { held: string },
+): Promise<Leg> {
   const token = await auth.getAccessToken();
   if (!token) throw new Error("no credential for transcription");
 
@@ -117,15 +129,19 @@ async function openLeg(events: TranscribeEvents, languageCodes: string[]): Promi
       return;
     }
 
-    const text = extractText(message).trim();
-    if (!text) return;
-
-    events.onUtterance({
-      at: new Date().toISOString(),
-      // No speaker: this model does not diarize. "Unattributed" downstream is
-      // the honest rendering, and better than a name nobody can stand behind.
-      text,
-    });
+    const parsed = parseServerMessage(message);
+    const next = takeTranscript(fold.held, parsed.userTranscript, parsed.turnComplete === true);
+    fold.held = next.held;
+    if (next.committed) {
+      events.onUtterance({
+        at: new Date().toISOString(),
+        // No speaker: this model does not diarize. "Unattributed" downstream is
+        // the honest rendering, and better than a name nobody can stand behind.
+        text: next.committed,
+      });
+      return;
+    }
+    if (next.held) events.onPartial?.(next.held);
   });
 
   socket.on("error", (error) => events.onError((error as Error).message.slice(0, 200)));
@@ -165,7 +181,10 @@ export async function openLiveTranscriber(
   events: TranscribeEvents,
   languageCodes: string[] = [],
 ): Promise<TranscribeSession> {
-  let leg = await openLeg(events, languageCodes);
+  // Shared across rotated legs so a sentence in flight is not lost at the
+  // eight-and-a-half-minute boundary.
+  const fold = { held: "" };
+  let leg = await openLeg(events, languageCodes, fold);
   let rotating = false;
   let closed = false;
 
@@ -177,7 +196,7 @@ export async function openLiveTranscriber(
     try {
       // Opened and confirmed before the old one goes, so frames always have
       // somewhere to land. The overlap is deliberate.
-      leg = await openLeg(events, languageCodes);
+      leg = await openLeg(events, languageCodes, fold);
       previous.socket.close();
     } catch (error) {
       // The old session still has some capacity left, so keep using it rather

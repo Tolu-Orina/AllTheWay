@@ -6,27 +6,31 @@ import {
   appendNotes,
   durationState,
   extendMeeting,
+  listNotes,
   readHealth,
   readInsights,
+  recordBot,
   recordGaps,
   recordInsights,
   recordHealth,
+  relabelNotes,
   closeMeeting,
   confirmCommitment,
+  conferenceIdOf,
   listCommitments,
   listMeetings,
   markMeetingOptedOut,
   openMeeting,
 } from "./meetings.js";
 import { resolveTier, type Attempt } from "./tier.js";
-import { connectTier1, connectTier2 } from "./meet.js";
+import { connectTier1, connectTier2, namedEntriesForSpace, subscribeToSpace } from "./meet.js";
 import { getGlobal, mayJoin, setGlobal, setMeetingOptOut } from "./consent.js";
 import { readMeetEvent, spaceIdFrom } from "./events.js";
 import { servedCard } from "./a2a-card.js";
 import { rememberSpace, ownerOfSpace } from "./registry.js";
 import { accessTokenFor } from "./credentials.js";
 import { isClean } from "./screening.js";
-import { subscribeToSpace, transcriptEntries } from "./meet.js";
+import { overlayNames } from "./speakers.js";
 
 /**
  * The scribe: one service owns meetings, whichever tier serves them.
@@ -380,7 +384,7 @@ app.post("/events/meet", (req, res) => {
 
     try {
       const token = await accessTokenFor(owner.uid);
-      const entries = await transcriptEntries(event.conferenceId, token);
+      const entries = await namedEntriesForSpace(event.conferenceId, token);
 
       if (entries.length === 0) {
         await closeMeeting(owner.uid, owner.meetingId, "ready");
@@ -577,6 +581,89 @@ app.get("/meetings/:id/insights", (req, res) => {
       return;
     }
     res.json({ insights: await readInsights(uid, req.params.id) });
+  })();
+});
+
+app.post("/meetings/bot", (req, res) => {
+  void (async () => {
+    const uid = userOf(req);
+    if (!uid) {
+      res.status(401).json({ code: "unauthenticated", message: "No user on this request." });
+      return;
+    }
+
+    const body = z
+      .object({
+        meetingId: z.string().min(1).max(200),
+        conferenceId: z.string().min(1).max(200),
+        meetUrl: z.string().max(500),
+        displayName: z.string().max(80).default("AllTheWay notes"),
+        status: z.enum([
+          "idle",
+          "knocking",
+          "admitted",
+          "not_admitted",
+          "recording",
+          "ended",
+          "vendor_pending",
+        ]),
+        reason: z.string().max(400).default(""),
+        disclosed: z.literal(true),
+      })
+      .safeParse(req.body);
+
+    if (!body.success) {
+      res.status(400).json({ code: "invalid_request", message: "Expected a confirmed bot start." });
+      return;
+    }
+
+    await recordBot(uid, body.data);
+    res.json({ stored: true });
+  })();
+});
+
+app.post("/meetings/:id/overlay-speakers", (req, res) => {
+  void (async () => {
+    const uid = userOf(req);
+    if (!uid) {
+      res.status(401).json({ code: "unauthenticated", message: "No user on this request." });
+      return;
+    }
+
+    const meetingId = req.params.id;
+    const notes = await listNotes(uid, meetingId);
+    if (notes.length === 0) {
+      res.json({ overlaid: 0, reason: "none" });
+      return;
+    }
+
+    const space = typeof req.body?.conferenceId === "string" ? req.body.conferenceId : "";
+    const conferenceId = space || (await conferenceIdOf(uid, meetingId));
+    if (!conferenceId) {
+      res.json({ overlaid: 0, reason: "none" });
+      return;
+    }
+
+    let token: string;
+    try {
+      token = await accessTokenFor(uid);
+    } catch {
+      res.json({ overlaid: 0, reason: "no_token" });
+      return;
+    }
+
+    const entries = await namedEntriesForSpace(conferenceId, token);
+    if (entries.length === 0) {
+      res.json({ overlaid: 0, reason: "none" });
+      return;
+    }
+
+    const next = overlayNames(notes, entries);
+    const changed = next.filter(
+      (note, i) => note.speakerLabel !== "Unattributed" && notes[i]?.speakerLabel === "Unattributed",
+    );
+    const overlaid = await relabelNotes(uid, meetingId, changed);
+    res.json({ overlaid });
   })();
 });
 

@@ -39,6 +39,8 @@ export interface Utterance {
 
 export interface TranscribeEvents {
   onUtterance: (utterance: Utterance) => void;
+  /** Latest unfinished hypothesis. Not stored; the panel uses it to show hearing. */
+  onPartial?: (text: string) => void;
   onError: (reason: string) => void;
 }
 

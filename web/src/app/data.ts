@@ -526,4 +526,23 @@ export const api = {
     apiPost(`/meetings/${meetingId}/extend`, { minutes }),
   optOutOfMeeting: (meetingId: string) =>
     apiPost(`/meetings/${meetingId}/opt-out`, { optedOut: true }),
+  startMeetingBot: (body: { meetUrl: string; disclosed: true; firstName?: string; meetingId?: string }) =>
+    apiPost(
+      "/meetings/bot",
+      body,
+      z.object({
+        ok: z.boolean(),
+        code: z.string().optional(),
+        message: z.string().optional(),
+        meetingId: z.string().optional(),
+        status: z.string().optional(),
+        displayName: z.string().optional(),
+      }),
+    ),
+  overlayMeetingSpeakers: (meetingId: string) =>
+    apiPost(
+      `/meetings/${meetingId}/overlay-speakers`,
+      {},
+      z.object({ overlaid: z.number().optional(), reason: z.string().optional() }),
+    ),
 };

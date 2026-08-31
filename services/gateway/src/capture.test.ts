@@ -225,6 +225,12 @@ test("a session rotates before the model's ten-minute audio limit", async () => 
 });
 
 
+function authFrame(meetingId: string, extra: Record<string, unknown> = {}): string {
+  return JSON.stringify({
+    auth: { token: "anything", meetingId, disclosed: true, ...extra },
+  });
+}
+
 test("an utterance does not crash the session before insights are set up", async () => {
   /**
    * The bug this pins down.
@@ -242,14 +248,14 @@ test("an utterance does not crash the session before insights are set up", async
       ...deps(),
       runInsights: async () => {
         heard.push("ran");
-        return [];
+        return { insights: [] };
       },
     }),
   );
 
   const ws = connect(port, CAPTURE_PATH);
   await new Promise((r) => ws.once("open", r));
-  ws.send(JSON.stringify({ auth: { token: "anything", meetingId: "m1" } }));
+  ws.send(authFrame("m1"));
 
   // ALLOW_ANONYMOUS is set for tests, so this authenticates and the session
   // opens; the first frame back tells us it survived setup.
@@ -273,14 +279,16 @@ test("insights can be asked for rather than waited for", async () => {
       ...deps(),
       runInsights: async () => {
         ran += 1;
-        return [{ id: "i1", at: new Date().toISOString(), kind: "context", text: "x", sources: [] }];
+        return {
+          insights: [{ id: "i1", at: new Date().toISOString(), kind: "context", text: "x", sources: [] }],
+        };
       },
     }),
   );
 
   const ws = connect(port, CAPTURE_PATH);
   await new Promise((r) => ws.once("open", r));
-  ws.send(JSON.stringify({ auth: { token: "anything", meetingId: "m2" } }));
+  ws.send(authFrame("m2"));
   await firstFrame(ws, 6000).catch(() => null);
 
   ws.send(JSON.stringify({ insights: "now" }));
@@ -289,6 +297,125 @@ test("insights can be asked for rather than waited for", async () => {
   // the first scheduled mark at one minute.
   await new Promise((r) => setTimeout(r, 400));
   strictEqual(ran, 1, "an explicit request did not run a pass");
+
+  ws.close();
+  server.close();
+});
+
+test("a session without disclosure is refused before it opens", async () => {
+  const opened: string[] = [];
+  const { server, port } = await listening((s) =>
+    attachCapture(s, {
+      ...deps(),
+      onOpen: async (_uid, meetingId) => void opened.push(meetingId),
+    }),
+  );
+
+  const ws = connect(port, CAPTURE_PATH);
+  await new Promise((r) => ws.once("open", r));
+  ws.send(JSON.stringify({ auth: { token: "anything", meetingId: "m-secret" } }));
+
+  const frame = await firstFrame(ws);
+  strictEqual((frame.error as { code?: string })?.code, "undisclosed");
+  strictEqual(opened.length, 0, "an undisclosed session must not create a meeting");
+
+  ws.close();
+  server.close();
+});
+
+test("disclosure must be the boolean true, not a string", async () => {
+  const opened: string[] = [];
+  const { server, port } = await listening((s) =>
+    attachCapture(s, {
+      ...deps(),
+      onOpen: async (_uid, meetingId) => void opened.push(meetingId),
+    }),
+  );
+
+  const ws = connect(port, CAPTURE_PATH);
+  await new Promise((r) => ws.once("open", r));
+  ws.send(
+    JSON.stringify({ auth: { token: "anything", meetingId: "m-str", disclosed: "true" } }),
+  );
+
+  const frame = await firstFrame(ws);
+  strictEqual((frame.error as { code?: string })?.code, "undisclosed");
+  strictEqual(opened.length, 0);
+
+  ws.close();
+  server.close();
+});
+
+test("a capture token can be refreshed mid-session", async () => {
+  const { server, port } = await listening((s) => attachCapture(s, deps()));
+  const ws = connect(port, CAPTURE_PATH);
+  await new Promise((r) => ws.once("open", r));
+  ws.send(authFrame("m-refresh"));
+  await firstFrame(ws, 6000);
+
+  ws.send(JSON.stringify({ refresh: { token: "anything" } }));
+  ws.send(JSON.stringify({ pcm: "AAAA" }));
+
+  const frame = await firstFrame(ws, 4000);
+  ok((frame as { transcript?: { text?: string } }).transcript, "refresh closed the session");
+
+  ws.close();
+  server.close();
+});
+
+test("Check now always answers, even when there is nothing to show", async () => {
+  const { server, port } = await listening((s) =>
+    attachCapture(s, {
+      ...deps(),
+      runInsights: async () => ({ insights: [], quiet: "metered" }),
+    }),
+  );
+
+  const ws = connect(port, CAPTURE_PATH);
+  await new Promise((r) => ws.once("open", r));
+  ws.send(authFrame("m-quiet"));
+  await firstFrame(ws, 6000);
+
+  ws.send(JSON.stringify({ insights: "now" }));
+  const frame = await firstFrame(ws, 4000);
+  strictEqual((frame as { quiet?: string }).quiet, "metered");
+  ok(Array.isArray((frame as { insights?: unknown[] }).insights));
+
+  ws.close();
+  server.close();
+});
+
+test("a Meet caption name attaches only when the utterance matches", async () => {
+  const heard: Array<{ text: string; speaker?: string }> = [];
+  const { server, port } = await listening((s) =>
+    attachCapture(s, {
+      ...deps(),
+      openTranscriber: async (events) => ({
+        sendPcm: () => {
+          events.onUtterance({ at: new Date().toISOString(), text: "I'll send the contract today" });
+        },
+        close: () => {},
+      }),
+      onUtterance: async (_uid, _id, utterance) => {
+        heard.push({ text: utterance.text, speaker: utterance.speaker });
+      },
+    }),
+  );
+
+  const ws = connect(port, CAPTURE_PATH);
+  await new Promise((r) => ws.once("open", r));
+  ws.send(authFrame("m-cap", { meetUrl: "https://meet.google.com/abc-defg-hij" }));
+  await firstFrame(ws, 6000);
+
+  ws.send(JSON.stringify({ caption: { speaker: "Ada Cole", text: "I'll send the contract today" } }));
+  ws.send(JSON.stringify({ pcm: "AAAA" }));
+
+  const frame = await firstFrame(ws, 4000);
+  const transcript = frame as { transcript?: { speaker?: string; text?: string } };
+  strictEqual(transcript.transcript?.speaker, "Ada Cole");
+
+  await new Promise((r) => setTimeout(r, 50));
+  strictEqual(heard[0]?.speaker, "Ada Cole");
 
   ws.close();
   server.close();

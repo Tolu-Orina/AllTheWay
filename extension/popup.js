@@ -1,5 +1,5 @@
 /**
- * The popup: one decision, made explicitly.
+ * The popup: a thin path to the same start/stop as the side panel.
  *
  * ## Why the disclosure checkbox is not a formality
  *
@@ -14,10 +14,15 @@
  * would silently assert it about the next.
  */
 
+import { ensureGatewayAccess, findMeetingTab } from "./meeting-tab.js";
+
+const GATEWAY_KEY = "gateway";
+
 const disclosed = document.getElementById("disclosed");
 const toggle = document.getElementById("toggle");
 const status = document.getElementById("status");
 const error = document.getElementById("error");
+const openPanel = document.getElementById("open-panel");
 
 let capturing = null;
 
@@ -32,7 +37,7 @@ function render() {
     toggle.classList.add("stop");
     toggle.disabled = false;
     disclosed.disabled = true;
-    status.innerHTML = '<span class="recording">Recording this tab.</span>';
+    status.innerHTML = '<span class="recording">Recording this meeting.</span>';
     return;
   }
 
@@ -41,7 +46,7 @@ function render() {
   // Stopping never needs permission; starting always does.
   toggle.disabled = !disclosed.checked;
   disclosed.disabled = false;
-  status.textContent = "Notes appear in AllTheWay when the meeting ends.";
+  status.textContent = "Notes stay in the side panel, and in AllTheWay when the meeting ends.";
 }
 
 disclosed.addEventListener("change", () => {
@@ -60,9 +65,16 @@ toggle.addEventListener("click", async () => {
     return;
   }
 
-  const [tab] = await chrome.tabs.query({ active: true, currentWindow: true });
+  const { [GATEWAY_KEY]: gateway } = await chrome.storage.session.get(GATEWAY_KEY);
+  if (gateway && !(await ensureGatewayAccess(gateway))) {
+    show("Allow AllTheWay to reach the notes server, then try again.");
+    render();
+    return;
+  }
+
+  const tab = await findMeetingTab();
   if (!tab?.id) {
-    show("No tab to record.");
+    show("Open a Meet, Zoom, or Teams tab first.");
     render();
     return;
   }
@@ -73,7 +85,7 @@ toggle.addEventListener("click", async () => {
     // Derived from the tab so a meeting is identifiable without asking the user
     // to name it. Stable for the life of the call, which is all it needs to be.
     meetingId: `tab-${tab.id}-${Date.now()}`,
-    disclosed: disclosed.checked,
+    disclosed: disclosed.checked === true,
   });
 
   if (!result?.ok) {
@@ -84,6 +96,16 @@ toggle.addEventListener("click", async () => {
 
   capturing = true;
   render();
+});
+
+openPanel.addEventListener("click", async () => {
+  const [tab] = await chrome.tabs.query({ active: true, currentWindow: true });
+  if (!tab?.id) return;
+  try {
+    await chrome.sidePanel.open({ tabId: tab.id });
+  } catch {
+    show("Could not open the notes panel in this window.");
+  }
 });
 
 void chrome.runtime.sendMessage({ type: "status" }).then((state) => {

@@ -74,6 +74,33 @@ function endOf(text: string, chars: number): string {
   return text.length <= chars ? text : text.slice(text.length - chars);
 }
 
+export function citeOrDrop(
+  kind: string | undefined,
+  named: string,
+  passages: Array<{ title?: string; page?: number }>,
+  webSources: Array<{ title?: string; uri?: string }>,
+): Array<{ kind: "document" | "web"; title: string; locator: string }> | null {
+  const fromDocuments = passages
+    .filter((p) => named && p.title && named.includes(p.title))
+    .map((p) => ({
+      kind: "document" as const,
+      title: p.title ?? "Your document",
+      locator: p.page ? `p${p.page}` : "",
+    }));
+
+  const fromWeb = webSources
+    .filter((w) => named && (named.includes(w.uri ?? "") || (w.title && named.includes(w.title))))
+    .map((w) => ({
+      kind: "web" as const,
+      title: w.title ?? w.uri ?? "Web",
+      locator: w.uri ?? "",
+    }));
+
+  const sources = [...fromDocuments, ...fromWeb];
+  if (sources.length === 0 && kind !== "unanswered") return null;
+  return sources;
+}
+
 /**
  * One pass over the meeting so far.
  *
@@ -165,31 +192,8 @@ export async function insightsFor(
       if (!sentence) return null;
 
       const named = String(raw.source ?? "").trim();
-
-      // Matched against what was actually retrieved or actually searched. A
-      // source the model named but nothing produced is an invented citation,
-      // and an invented citation is worse than none — it looks like evidence.
-      const fromDocuments = passages
-        .filter((p) => named && p.title && named.includes(p.title))
-        .map((p) => ({
-          kind: "document" as const,
-          title: p.title ?? "Your document",
-          locator: p.page ? `p${p.page}` : "",
-        }));
-
-      const fromWeb = webSources
-        .filter((w) => named && (named.includes(w.uri ?? "") || (w.title && named.includes(w.title))))
-        .map((w) => ({
-          kind: "web" as const,
-          title: w.title ?? w.uri ?? "Web",
-          locator: w.uri ?? "",
-        }));
-
-      const sources = [...fromDocuments, ...fromWeb];
-
-      // An unanswered question is about the meeting itself and needs no source.
-      // Everything else must be able to point at something.
-      if (sources.length === 0 && raw.kind !== "unanswered") return null;
+      const sources = citeOrDrop(raw.kind, named, passages, webSources);
+      if (!sources) return null;
 
       const insight = {
         id: randomUUID(),

@@ -102,3 +102,14 @@ window.addEventListener("pageshow", () => {
 document.addEventListener("visibilitychange", () => {
   if (!document.hidden && !haveToken) ask();
 });
+
+chrome.runtime.onMessage.addListener((message) => {
+  if (message?.type !== "ask-token") return;
+  // A long capture outlives one ID token. The service worker asks the page
+  // for a fresh one; even if we already handed one over, this must force a
+  // new mint rather than replaying the cached hour-old token.
+  window.postMessage(
+    { type: REQUEST, force: message.force === true },
+    window.location.origin,
+  );
+});

@@ -60,7 +60,18 @@
     "confirming": "Enregistrement…",
     "notThis": "Pas celui-ci",
     "confirmed": "Confirmé",
-    "putOnCalendar": "Mettre au calendrier"
+    "putOnCalendar": "Mettre au calendrier",
+    "sendBot": "Send AllTheWay notes into this Meet",
+    "sendBotHint": "No bot unless you send one. It still cannot speak. The host must admit it.",
+    "sendBotConfirm": "Send a labelled, muted guest into this Meet to take notes.",
+    "sendBotAction": "Knock as AllTheWay notes",
+    "sendBotReason": "The host must admit it. It cannot speak. Nothing joins until you confirm.",
+    "botVendorPending": "Finance is still reviewing the join vendor. Nothing has joined this call. Notes from this tab still work.",
+    "overlaySpeakers": "Use Meet names on Unattributed notes",
+    "overlayNone": "Meet did not return display names for these notes.",
+    "overlayDone": "Updated {{count}} Unattributed notes.",
+    "knocking": "Knocking. The host has five minutes to admit AllTheWay notes.",
+    "notAdmitted": "Not admitted. That is not a recording failure."
   },
   "documents": {
     "heading": "Vos documents",
@@ -300,6 +311,7 @@
     "documentsFull": "Supprimez-en un pour libérer une place.",
     "videoIsMax": "La vidéo finale est sur Max.",
     "meetingsAreTeam": "Les contrôles en réunion sont sur Team.",
+    "botHoursAreMax": "Sending AllTheWay into the room is on Max.",
     "talkToUs": "Contactez-nous"
   },
   "visual": {

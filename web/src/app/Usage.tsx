@@ -31,6 +31,7 @@ const LABELS: Record<MeterReading["meter"], string> = {
   connector_calls: "Connector calls",
   documents: "Documents",
   meeting_insights: "Live meeting insights",
+  bot_hours: "Guest notetaker hours",
   images: "Images",
   draft_video_seconds: "Video drafts",
   final_video_seconds: "Final video",
@@ -42,6 +43,7 @@ const UNITS: Record<MeterReading["meter"], string> = {
   connector_calls: "calls",
   documents: "stored",
   meeting_insights: "checks",
+  bot_hours: "hours",
   images: "images",
   draft_video_seconds: "seconds",
   final_video_seconds: "seconds",
@@ -226,7 +228,11 @@ export function Usage({ heading }: { heading?: string }) {
 
             <ul className="flex flex-col gap-2">
               {usage.meters
-                .filter((meter) => !(meter.meter === "meeting_insights" && meter.limit === 0))
+                .filter(
+                  (meter) =>
+                    !(meter.meter === "meeting_insights" && meter.limit === 0) &&
+                    !(meter.meter === "bot_hours" && meter.limit === 0),
+                )
                 .map((meter) => (
                 <MeterRow
                   key={meter.meter}
@@ -244,6 +250,14 @@ export function Usage({ heading }: { heading?: string }) {
                 </Link>
               </p>
             ) : null}
+            {usage.meters.some((m) => m.meter === "bot_hours" && m.limit === 0) ? (
+              <p className="text-[12.5px] text-muted-foreground">
+                {t("usage.botHoursAreMax")}{" "}
+                <button type="button" className="underline underline-offset-2" onClick={() => void go("max")}>
+                  {t("usage.getMax")}
+                </button>
+              </p>
+            ) : null}
           </>
         )}
       </Async>
@@ -257,6 +271,7 @@ function upgradeTarget(
 ): "plus" | "max" | "team" | null {
   if (tier === "max" || tier === "team") return null;
   if (meter === "meeting_insights") return "team";
+  if (meter === "bot_hours") return "max";
   if (meter === "final_video_seconds" || meter === "draft_video_seconds") return "max";
   if (tier === "plus") return "max";
   return "plus";

@@ -30,21 +30,30 @@ import { screened } from "./screening-client.js";
  * — the cost was incurred either way.
  */
 
-export async function runInsightPass(uid: string, transcript: string): Promise<Insight[]> {
-  if (transcript.trim().length < 200) return [];
+export type InsightQuiet = "too_little" | "metered" | "screened" | "unavailable" | "none";
+
+export type InsightPass = {
+  insights: Insight[];
+  quiet?: InsightQuiet;
+};
+
+export async function runInsightPass(uid: string, transcript: string): Promise<InsightPass> {
+  if (transcript.trim().length < 200) return { insights: [], quiet: "too_little" };
 
   const usage = await readUsage(uid).catch(() => null);
-  if (!usage) return [];
+  if (!usage) return { insights: [], quiet: "unavailable" };
 
   const allowance = usage.meters.find((m) => m.meter === "meeting_insights");
   // `null` limit means unmetered. A missing entry means the plan does not offer
-  // this at all, which is the same answer as a spent allowance: quietly none.
-  if (!allowance) return [];
-  if (allowance.limit !== null && allowance.used >= allowance.limit) return [];
+  // this at all, which is the same answer as a spent allowance.
+  if (!allowance) return { insights: [], quiet: "metered" };
+  if (allowance.limit !== null && allowance.used >= allowance.limit) {
+    return { insights: [], quiet: "metered" };
+  }
 
   // Screened as one body rather than line by line: an instruction split across
   // two utterances is invisible to a screener that only ever sees one of them.
-  if (!(await screened(transcript))) return [];
+  if (!(await screened(transcript))) return { insights: [], quiet: "screened" };
 
   const insights = await insightsFor(uid, transcript);
 
@@ -53,5 +62,5 @@ export async function runInsightPass(uid: string, transcript: string): Promise<I
   // most of them, and exactly the ones the schedule exists to pay for.
   await recordUsage(uid, "meeting_insights", 1).catch(() => {});
 
-  return insights;
+  return insights.length > 0 ? { insights } : { insights: [], quiet: "none" };
 }

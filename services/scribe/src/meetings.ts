@@ -1,6 +1,7 @@
 import { FieldValue, getFirestore } from "firebase-admin/firestore";
 
 import { proposals, toNotes, type Note, type Utterance } from "./notes.js";
+import { isPlatformDisplayName } from "./speakers.js";
 import { tierExplanation, type Outcome } from "./tier.js";
 import { capState, describeGap, reportableGaps, utteranceId, type Gap } from "./session.js";
 
@@ -50,6 +51,25 @@ export interface HealthSample {
 
 export type MeetingStatus = "listening" | "processing" | "ready" | "blocked";
 
+export type BotStatus =
+  | "idle"
+  | "knocking"
+  | "admitted"
+  | "not_admitted"
+  | "recording"
+  | "ended"
+  | "vendor_pending";
+
+export interface BotRecord {
+  disclosed: boolean;
+  confirmedBy: string;
+  confirmedAt: string;
+  status: BotStatus;
+  meetUrl: string;
+  displayName: string;
+  reason: string;
+}
+
 export interface MeetingRecord {
   id: string;
   spaceName: string;
@@ -67,11 +87,39 @@ export interface MeetingRecord {
   capturedLocally: boolean;
   optedOut: boolean;
   duration: { minutesRemaining: number; warn: boolean; stop: boolean };
+  /** Guest notetaker, only when they confirmed send. Null if they never asked. */
+  bot: BotRecord | null;
 }
 
 const db = () => getFirestore();
 
 const meetings = (uid: string) => db().collection("users").doc(uid).collection("meetings");
+
+const BOT_STATUSES = new Set<BotStatus>([
+  "idle",
+  "knocking",
+  "admitted",
+  "not_admitted",
+  "recording",
+  "ended",
+  "vendor_pending",
+]);
+
+function asBot(raw: unknown): BotRecord | null {
+  if (!raw || typeof raw !== "object") return null;
+  const rec = raw as Record<string, unknown>;
+  const status = rec.status;
+  if (typeof status !== "string" || !BOT_STATUSES.has(status as BotStatus)) return null;
+  return {
+    disclosed: rec.disclosed === true,
+    confirmedBy: String(rec.confirmedBy ?? ""),
+    confirmedAt: String(rec.confirmedAt ?? ""),
+    status: status as BotStatus,
+    meetUrl: String(rec.meetUrl ?? "").slice(0, 500),
+    displayName: String(rec.displayName ?? "").slice(0, 80),
+    reason: String(rec.reason ?? "").slice(0, 400),
+  };
+}
 
 export async function openMeeting(
   uid: string,
@@ -195,6 +243,7 @@ export async function listMeetings(uid: string): Promise<MeetingRecord[]> {
       health: (d.get("health") as MeetingRecord["health"]) ?? null,
       capturedLocally: Boolean(d.get("capturedLocally")),
       optedOut: Boolean(d.get("optedOut")),
+      bot: asBot(d.get("bot")),
       duration: capState(
         at(d.get("startedAt")) ?? "",
         new Date(),
@@ -443,6 +492,105 @@ export async function recordInsights(
 
   await batch.commit();
   return insights.length;
+}
+
+export interface StoredNote {
+  id: string;
+  at: string;
+  speakerLabel: string;
+  text: string;
+  isCommitment: boolean;
+}
+
+export async function conferenceIdOf(uid: string, meetingId: string): Promise<string> {
+  const doc = await meetings(uid).doc(meetingId).get();
+  if (!doc.exists) return "";
+  return String(doc.get("conferenceId") ?? "");
+}
+
+export async function listNotes(uid: string, meetingId: string): Promise<StoredNote[]> {
+  const snap = await meetings(uid).doc(meetingId).collection("notes").get();
+  return snap.docs.map((d) => ({
+    id: d.id,
+    at: d.get("at") ?? "",
+    speakerLabel: d.get("speakerLabel") ?? "Unattributed",
+    text: d.get("text") ?? "",
+    isCommitment: Boolean(d.get("isCommitment")),
+  }));
+}
+
+/**
+ * Fill Unattributed in place. The document id was hashed with "Unattributed"
+ * at write time; creating a second doc with the new name would duplicate the
+ * line and leave the unnamed one sitting there.
+ */
+export async function relabelNotes(
+  uid: string,
+  meetingId: string,
+  notes: StoredNote[],
+): Promise<number> {
+  const collection = meetings(uid).doc(meetingId).collection("notes");
+  const batch = db().batch();
+  let changed = 0;
+
+  for (const note of notes) {
+    if (!note.id || note.speakerLabel === "Unattributed") continue;
+    if (!isPlatformDisplayName(note.speakerLabel)) continue;
+    batch.set(collection.doc(note.id), { speakerLabel: note.speakerLabel }, { merge: true });
+    changed += 1;
+  }
+
+  if (changed === 0) return 0;
+  await batch.commit();
+  return changed;
+}
+
+export async function recordBot(
+  uid: string,
+  input: {
+    meetingId: string;
+    conferenceId: string;
+    meetUrl: string;
+    displayName: string;
+    status: BotStatus;
+    reason: string;
+    disclosed: boolean;
+  },
+): Promise<void> {
+  const bot: BotRecord = {
+    disclosed: input.disclosed === true,
+    confirmedBy: uid,
+    confirmedAt: new Date().toISOString(),
+    status: input.status,
+    meetUrl: input.meetUrl.slice(0, 500),
+    displayName: input.displayName.slice(0, 80),
+    reason: input.reason.slice(0, 400),
+  };
+
+  const ref = meetings(uid).doc(input.meetingId);
+  const existing = await ref.get();
+  if (!existing.exists) {
+    await ref.set({
+      spaceName: input.displayName || "AllTheWay notes",
+      conferenceId: input.conferenceId,
+      participants: [],
+      tier: 0,
+      tierReason: input.reason,
+      explanation:
+        "A labelled guest notetaker was requested. Nothing has joined unless the host admitted it.",
+      capturedLocally: false,
+      status:
+        input.status === "knocking" || input.status === "admitted" || input.status === "recording"
+          ? "listening"
+          : "processing",
+      startedAt: FieldValue.serverTimestamp(),
+      endedAt: null,
+      bot,
+    });
+    return;
+  }
+
+  await ref.set({ bot }, { merge: true });
 }
 
 export async function readInsights(uid: string, meetingId: string): Promise<StoredInsight[]> {

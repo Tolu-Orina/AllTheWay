@@ -23,6 +23,7 @@
  */
 
 const SOCKET_PATH = "/api/meetings/capture";
+const TOKEN_KEY = "idToken";
 
 let context = null;
 let socket = null;
@@ -41,7 +42,17 @@ function socketUrl(origin) {
   return `${base}${SOCKET_PATH}`;
 }
 
-async function start({ streamId, token, meetingId, origin, gateway }) {
+/**
+ * The panel may be closed. That is not a fault — MV3 reports
+ * "Receiving end does not exist" and, unhandled, looks like a crash.
+ */
+function tell(message) {
+  chrome.runtime.sendMessage(message, () => {
+    void chrome.runtime.lastError;
+  });
+}
+
+async function start({ streamId, token, meetingId, origin, gateway, disclosed, meetUrl }) {
   if (socket) return { ok: false, reason: "Already recording." };
 
   try {
@@ -94,9 +105,17 @@ async function start({ streamId, token, meetingId, origin, gateway }) {
 
   // The first frame authenticates, exactly as the voice relay does. Sending
   // audio before this would be sending a meeting to an unauthenticated socket.
+  // `disclosed` is required by the gateway as a boolean true — a missing flag
+  // is how a crafted client used to skip the checkbox.
   socket.send(
     JSON.stringify({
-      auth: { token, meetingId, title: origin },
+      auth: {
+        token,
+        meetingId,
+        title: origin,
+        disclosed: disclosed === true,
+        meetUrl: typeof meetUrl === "string" ? meetUrl : "",
+      },
     }),
   );
 
@@ -122,26 +141,36 @@ async function start({ streamId, token, meetingId, origin, gateway }) {
       return;
     }
 
-    // Forwarded to the side panel rather than handled here: this document has
-    // no UI and exists only to hold the stream.
-    if (Array.isArray(message?.insights) && message.insights.length > 0) {
-      chrome.runtime.sendMessage({ type: "insights", insights: message.insights });
+    if (message?.error) {
+      tell({ type: "capture-error", error: message.error });
+    }
+
+    // Forwarded even when empty: Check now must be able to say "nothing" rather
+    // than look like a dead button. Scheduled passes with cards still arrive.
+    if (Array.isArray(message?.insights)) {
+      tell({ type: "insights", insights: message.insights, quiet: message.quiet });
     }
     if (message?.transcript?.text) {
-      chrome.runtime.sendMessage({ type: "transcript", text: message.transcript.text });
+      tell({
+        type: "transcript",
+        text: message.transcript.text,
+        at: message.transcript.at,
+        finished: message.transcript.finished !== false,
+        speaker: message.transcript.speaker,
+      });
     }
   };
 
   socket.onclose = () => {
     void stop();
-    chrome.runtime.sendMessage({ type: "ended" });
+    tell({ type: "ended" });
   };
 
   // A tab that closes ends its stream. Reported rather than left as a socket
   // that quietly stops carrying anything.
   stream.getAudioTracks()[0]?.addEventListener("ended", () => {
     void stop();
-    chrome.runtime.sendMessage({ type: "ended" });
+    tell({ type: "ended" });
   });
 
   return { ok: true };
@@ -172,6 +201,13 @@ async function stop() {
   return { ok: true };
 }
 
+chrome.storage.session.onChanged.addListener((changes) => {
+  const next = changes[TOKEN_KEY]?.newValue;
+  if (typeof next !== "string" || !next) return;
+  if (socket?.readyState !== WebSocket.OPEN) return;
+  socket.send(JSON.stringify({ refresh: { token: next } }));
+});
+
 chrome.runtime.onMessage.addListener((message, _sender, respond) => {
   if (message?.target !== "offscreen") return false;
 
@@ -190,6 +226,13 @@ chrome.runtime.onMessage.addListener((message, _sender, respond) => {
       socket.send(JSON.stringify({ insights: "now" }));
     }
     respond({ ok: socket?.readyState === WebSocket.OPEN });
+    return true;
+  }
+  if (message.type === "caption") {
+    if (socket?.readyState === WebSocket.OPEN && typeof message.speaker === "string") {
+      socket.send(JSON.stringify({ caption: { speaker: message.speaker, text: message.text ?? "" } }));
+    }
+    respond({ ok: true });
     return true;
   }
   return false;

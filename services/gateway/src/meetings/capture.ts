@@ -5,6 +5,7 @@ import { uidFromToken } from "../auth.js";
 import { routeUpgrade } from "../ws-router.js";
 import type { TranscriberOpener, Utterance } from "./transcriber.js";
 import { insightDue } from "@alltheway/contracts";
+import { speakerFromCaptions, type Caption } from "./speaker.js";
 
 /**
  * Tier 1.5: the meeting the user is already in, captured on their own machine.
@@ -44,16 +45,25 @@ const MAX_SESSION_MS = 90 * 60_000;
 export interface CaptureDeps {
   openTranscriber: TranscriberOpener;
   /**
-   * One insight pass over the meeting so far. Optional: a deployment without it
-   * still captures notes, which is the part that must not depend on anything.
+   * One insight pass over the meeting so far. Optional: a deployment without
+   * it still captures notes, which is the part that must not depend on anything.
+   *
+   * `quiet` is why a pass produced nothing. Scheduled passes stay silent when
+   * there is nothing to show. An explicit "Check now" always gets an answer.
    */
-  runInsights?: (uid: string, transcript: string) => Promise<unknown[]>;
+  runInsights?: (
+    uid: string,
+    transcript: string,
+  ) => Promise<{
+    insights: unknown[];
+    quiet?: "too_little" | "metered" | "screened" | "unavailable" | "none";
+  }>;
   /** Keeps insights so surfaces other than the extension can read them. */
   onInsights?: (uid: string, meetingId: string, insights: unknown[]) => Promise<void>;
   /** Called with each finished utterance, in order. */
   onUtterance: (uid: string, meetingId: string, utterance: Utterance) => Promise<void>;
   /** Called once when a session opens, so the meeting record exists. */
-  onOpen: (uid: string, meetingId: string, title: string) => Promise<void>;
+  onOpen: (uid: string, meetingId: string, title: string, extra?: { meetUrl?: string }) => Promise<void>;
   onClose: (uid: string, meetingId: string) => Promise<void>;
 }
 
@@ -121,12 +131,26 @@ async function handle(ws: WebSocket, deps: CaptureDeps): Promise<void> {
     return;
   }
 
+  // Boolean `true` only. A string, a 1, or a missing field is a crafted client
+  // skipping the checkbox, and this is the boundary a checkbox cannot be.
+  if (auth.disclosed !== true) {
+    send(ws, {
+      error: {
+        code: "undisclosed",
+        message: "Everyone in the room must be told before notes start.",
+      },
+    });
+    ws.close(4003, "undisclosed");
+    return;
+  }
+
   // Captured once, so the narrowing above survives into the closures below.
   const user: string = uid;
   const meetingId = auth.meetingId.slice(0, 128);
   const title = typeof auth.title === "string" ? auth.title.slice(0, 200) : "Meeting";
+  const meetUrl = typeof auth.meetUrl === "string" ? auth.meetUrl.slice(0, 500) : "";
 
-  await deps.onOpen(uid, meetingId, title);
+  await deps.onOpen(uid, meetingId, title, meetUrl ? { meetUrl } : undefined);
 
   let session: { sendPcm: (b: string) => void; close: () => void } | undefined;
   let closed = false;
@@ -158,6 +182,7 @@ async function handle(ws: WebSocket, deps: CaptureDeps): Promise<void> {
   const startedAt = Date.now();
   let lastInsightAt: number | null = null;
   let insightRunning = false;
+  const captions: Caption[] = [];
 
   const elapsedMinutes = () => (Date.now() - startedAt) / 60_000;
 
@@ -173,17 +198,23 @@ async function handle(ws: WebSocket, deps: CaptureDeps): Promise<void> {
     lastInsightAt = elapsed;
 
     try {
-      const insights = await deps.runInsights(user, transcript);
+      const result = await deps.runInsights(user, transcript);
+      const insights = Array.isArray(result.insights) ? result.insights : [];
       if (insights.length > 0) {
         send(ws, { insights });
         // Stored after sending: the panel beside the meeting should not wait
         // on a write, and the write is what every other surface reads.
         void deps.onInsights?.(user, meetingId, insights).catch(() => {});
+      } else if (force) {
+        // Asked for, so an empty answer is still an answer. Scheduled passes
+        // stay quiet: most of them find nothing, and a banner every fifteen
+        // minutes would be the distraction this feature is trying not to be.
+        send(ws, { insights: [], quiet: result.quiet ?? "none" });
       }
     } catch {
-      // Silence. An insight that could not be produced is the ordinary case —
-      // most passes find nothing worth saying — and an error banner mid-meeting
-      // would be the distraction this feature is trying not to be.
+      if (force) {
+        send(ws, { insights: [], quiet: "unavailable" });
+      }
     } finally {
       insightRunning = false;
     }
@@ -192,18 +223,27 @@ async function handle(ws: WebSocket, deps: CaptureDeps): Promise<void> {
   try {
     session = await deps.openTranscriber({
       onUtterance(utterance) {
-        // Sent back so the extension can show that it is hearing something —
-        // a recorder with no visible sign of working is one people stop and
-        // restart mid-meeting.
-        send(ws, { transcript: { text: utterance.text, at: utterance.at } });
+        const speaker = utterance.speaker ?? speakerFromCaptions(utterance.text, captions);
+        const labelled = speaker ? { ...utterance, speaker } : utterance;
+        send(ws, {
+          transcript: {
+            text: labelled.text,
+            at: labelled.at,
+            finished: true,
+            speaker: labelled.speaker,
+          },
+        });
 
         transcript = `${transcript}
 ${utterance.text}`.slice(-40_000);
         void maybeInsights();
-        void deps.onUtterance(uid, meetingId, utterance).catch(() => {
+        void deps.onUtterance(uid, meetingId, labelled).catch(() => {
           // A note that fails to store must not take the session down: the rest
           // of the meeting is still worth capturing.
         });
+      },
+      onPartial(text) {
+        send(ws, { transcript: { text, at: new Date().toISOString(), finished: false } });
       },
       onError(reason) {
         send(ws, { error: { code: "upstream_error", message: reason } });
@@ -238,6 +278,31 @@ ${utterance.text}`.slice(-40_000);
       // settles, and the moment someone actually wants a check is exactly the
       // moment the next scheduled pass is furthest away.
       void maybeInsights(true);
+      return;
+    }
+
+    const refresh = message.refresh as Record<string, unknown> | undefined;
+    if (refresh && typeof refresh.token === "string") {
+      // Firebase ID tokens last about an hour; the session lasts ninety
+      // minutes. The extension must hand a new one. The uid has to match:
+      // a refresh is not a way to take over someone else's meeting.
+      void uidFromToken(refresh.token).then((next) => {
+        if (closed) return;
+        if (!next || next !== user) {
+          send(ws, { error: { code: "unauthenticated", message: "Sign in to continue." } });
+          finish();
+          ws.close(4001, "unauthenticated");
+        }
+      });
+      return;
+    }
+
+    const caption = message.caption as Record<string, unknown> | undefined;
+    if (caption && typeof caption.speaker === "string" && typeof caption.text === "string") {
+      // Meet already labelled this line. We keep a short ring and attach
+      // the name only when the audio utterance matches. Fail closed otherwise.
+      if (captions.length >= 40) captions.shift();
+      captions.push({ speaker: caption.speaker.slice(0, 80), text: caption.text.slice(0, 2_000) });
       return;
     }
 

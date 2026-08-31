@@ -1,8 +1,8 @@
 {
   "manifest_version": 3,
   "name": "AllTheWay meeting notes",
-  "version": "0.1.1",
-  "description": "Takes notes in the meeting you are already in. It listens on your own machine; nothing joins the call.",
+  "version": "0.3.0",
+  "description": "Takes notes in the meeting you are already in. On Meet it can read names Meet already shows in captions. It cannot speak. Nothing joins unless you send AllTheWay notes.",
   "minimum_chrome_version": "116",
   "permissions": [
     "activeTab",
@@ -12,12 +12,24 @@
     "tabCapture"
   ],
   "host_permissions": [
+    "https://alltheway.rinegansolutions.com/*",
+    "https://alltheway-prod.web.app/*",
+    "https://meet.google.com/*",
+    "https://zoom.us/*",
+    "https://*.zoom.us/*",
+    "https://teams.microsoft.com/*",
+    "https://*.teams.microsoft.com/*",
+    "https://teams.live.com/*"
+  ],
+  "optional_host_permissions": [
     "https://*.run.app/*",
     "https://*.a.run.app/*",
     "wss://*.run.app/*",
     "wss://*.a.run.app/*",
-    "https://alltheway.rinegansolutions.com/*",
-    "https://alltheway-prod.web.app/*"
+    "http://localhost:*/*",
+    "http://127.0.0.1:*/*",
+    "ws://localhost:*/*",
+    "ws://127.0.0.1:*/*"
   ],
   "background": {
     "service_worker": "background.js",
@@ -37,10 +49,21 @@
     {
       "matches": [
         "https://alltheway.rinegansolutions.com/*",
-        "https://alltheway-prod.web.app/*"
+        "https://alltheway-prod.web.app/*",
+        "http://localhost:*/*",
+        "http://127.0.0.1:*/*"
       ],
       "js": [
         "bridge.js"
+      ],
+      "run_at": "document_idle"
+    },
+    {
+      "matches": [
+        "https://meet.google.com/*"
+      ],
+      "js": [
+        "meet-captions.js"
       ],
       "run_at": "document_idle"
     }

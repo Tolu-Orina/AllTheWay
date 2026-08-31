@@ -137,6 +137,28 @@ test("transcript chunks fold as either deltas or refinements", () => {
   assert.deepEqual(acc.flush(), []);
 });
 
+test("interim input transcription is always unfinished", () => {
+  const camel = parseServerMessage({
+    serverContent: { interimInputTranscription: { text: "hel", finished: true } },
+  });
+  assert.deepEqual(camel.userTranscript, { text: "hel", finished: false });
+
+  const snake = parseServerMessage({
+    server_content: { interim_input_transcription: { text: "hel" } },
+  });
+  assert.deepEqual(snake.userTranscript, { text: "hel", finished: false });
+});
+
+test("a final inputTranscription wins over an interim on the same message", () => {
+  const parsed = parseServerMessage({
+    serverContent: {
+      interimInputTranscription: { text: "hel" },
+      inputTranscription: { text: "hello", finished: true },
+    },
+  });
+  assert.deepEqual(parsed.userTranscript, { text: "hello", finished: true });
+});
+
 test("a resumable=false update is not a handle to reconnect with", () => {
   const parsed = parseServerMessage({
     sessionResumptionUpdate: { newHandle: "stale", resumable: false },

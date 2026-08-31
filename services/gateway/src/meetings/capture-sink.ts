@@ -1,7 +1,8 @@
 import { authenticatingFetch } from "../a2a.js";
 import { env } from "../env.js";
-import type { CaptureDeps, } from "./capture.js";
+import type { CaptureDeps } from "./capture.js";
 import type { Utterance } from "./transcriber.js";
+import { meetSpaceFromUrl } from "./speaker.js";
 
 /**
  * Where captured utterances go: the scribe, exactly like Tier 1 and Tier 2.
@@ -92,16 +93,19 @@ export function captureToScribe(): Omit<CaptureDeps, "openTranscriber" | "runIns
       });
     },
 
-    async onOpen(uid, meetingId, title) {
+    async onOpen(uid, meetingId, title, extra) {
       pending.set(key(uid, meetingId), { utterances: [], timer: null });
 
-      // Tier 0 in the ladder's terms: nothing was refused, because nothing was
-      // attempted — the user is capturing it themselves. Recorded as its own
-      // tier so the meeting says how it was heard.
+      // Prefer the Meet space code when the tab is Meet, so after-call REST
+      // can overlay names onto the same record. A tab- id is not a conference.
+      const conferenceId = extra?.meetUrl
+        ? (meetSpaceFromUrl(extra.meetUrl) ?? extra.meetUrl.slice(0, 200))
+        : meetingId;
+
       await post("/meetings/start", uid, {
         meetingId,
         spaceName: title,
-        conferenceId: meetingId,
+        conferenceId,
         participants: [],
         capturedLocally: true,
       }).catch(() => {});

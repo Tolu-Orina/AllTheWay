@@ -3,6 +3,9 @@ import { z } from "zod";
 
 import { authenticatingFetch } from "../a2a.js";
 import { env } from "../env.js";
+import { decideBotStart } from "../meetings/bot-start.js";
+import { diarizeMix, meetSpaceFromUrl } from "../meetings/speaker.js";
+import { readUsage } from "../repos/usage.js";
 
 /**
  * Meetings, proxied to the scribe.
@@ -266,6 +269,110 @@ meetingRoutes.post("/meetings/:id/commitments/confirm", (req, res) => {
     } catch (err) {
       console.warn(`[meetings] could not reach scribe: ${(err as Error).message}`);
       res.status(502).json({ code: "upstream_error", message: "That could not be confirmed." });
+    }
+  })();
+});
+
+/**
+ * Guest notetaker. Disclosure is the same boolean-true gate as tab capture.
+ * There is no join client in this tree; a configured vendor key still cannot
+ * knock until finance signs and a join module exists. We never log that key.
+ */
+const BotStartSchema = z.object({
+  meetUrl: z.string().min(1).max(500),
+  disclosed: z.unknown(),
+  firstName: z.string().max(40).optional(),
+  meetingId: z.string().max(200).optional(),
+});
+
+meetingRoutes.post("/meetings/bot", (req, res) => {
+  void (async () => {
+    const body = BotStartSchema.safeParse(req.body);
+    if (!body.success) {
+      res.status(400).json({ code: "invalid_request", message: "Expected a Meet URL and a confirmation." });
+      return;
+    }
+
+    const usage = await readUsage(req.uid!).catch(() => null);
+    const decided = decideBotStart({
+      disclosed: body.data.disclosed,
+      meetUrl: body.data.meetUrl,
+      tier: usage?.tier ?? "free",
+      // A key without a join client would look like a bot is knocking.
+      vendorConfigured: false,
+      firstName: body.data.firstName,
+    });
+
+    if (!decided.ok && decided.code === "undisclosed") {
+      res.status(403).json({ ok: false, code: decided.code, message: decided.message });
+      return;
+    }
+
+    const space = decided.ok ? decided.space : (meetSpaceFromUrl(body.data.meetUrl) ?? "unknown");
+    const meetingId = (body.data.meetingId || `bot-${space}`).slice(0, 128);
+
+    if (unavailable(res)) return;
+
+    try {
+      await callScribe(req.uid!, "/meetings/bot", {
+        method: "POST",
+        body: JSON.stringify({
+          meetingId,
+          conferenceId: space,
+          meetUrl: body.data.meetUrl,
+          displayName: decided.ok ? decided.displayName : "AllTheWay notes",
+          status: decided.ok ? "knocking" : decided.code === "vendor_pending" ? "vendor_pending" : "ended",
+          reason: decided.ok ? "" : decided.message,
+          disclosed: true,
+        }),
+      });
+    } catch (err) {
+      console.warn(`[meetings] could not record bot start: ${(err as Error).message}`);
+    }
+
+    if (!decided.ok) {
+      res.json({
+        ok: false,
+        code: decided.code,
+        message: decided.message,
+        meetingId,
+        status: decided.code === "vendor_pending" ? "vendor_pending" : decided.code,
+      });
+      return;
+    }
+
+    res.json({
+      ok: true,
+      meetingId,
+      status: "knocking",
+      displayName: decided.displayName,
+      chatLine: decided.chatLine,
+    });
+  })();
+});
+
+meetingRoutes.post("/meetings/:id/diarize", (_req, res) => {
+  // We do not store mixed PCM. Inventing Speaker 1–N from text is the
+  // guessed-names path the ladder rejected.
+  res.json(diarizeMix(null));
+});
+
+meetingRoutes.post("/meetings/:id/overlay-speakers", (req, res) => {
+  void (async () => {
+    if (unavailable(res)) return;
+    try {
+      const upstream = await callScribe(
+        req.uid!,
+        `/meetings/${encodeURIComponent(req.params.id)}/overlay-speakers`,
+        {
+          method: "POST",
+          body: JSON.stringify({ conferenceId: req.body?.conferenceId }),
+        },
+      );
+      await relay(res, upstream);
+    } catch (err) {
+      console.warn(`[meetings] could not overlay speakers: ${(err as Error).message}`);
+      res.status(502).json({ code: "upstream_error", message: "Those names could not be loaded." });
     }
   })();
 });

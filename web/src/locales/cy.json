@@ -69,7 +69,18 @@
     "confirming": "Yn cofnodi…",
     "notThis": "Nid hwn",
     "confirmed": "Wedi'i gadarnhau",
-    "putOnCalendar": "Rhoi hyn ar y calendr"
+    "putOnCalendar": "Rhoi hyn ar y calendr",
+    "sendBot": "Send AllTheWay notes into this Meet",
+    "sendBotHint": "No bot unless you send one. It still cannot speak. The host must admit it.",
+    "sendBotConfirm": "Send a labelled, muted guest into this Meet to take notes.",
+    "sendBotAction": "Knock as AllTheWay notes",
+    "sendBotReason": "The host must admit it. It cannot speak. Nothing joins until you confirm.",
+    "botVendorPending": "Finance is still reviewing the join vendor. Nothing has joined this call. Notes from this tab still work.",
+    "overlaySpeakers": "Use Meet names on Unattributed notes",
+    "overlayNone": "Meet did not return display names for these notes.",
+    "overlayDone": "Updated {{count}} Unattributed notes.",
+    "knocking": "Knocking. The host has five minutes to admit AllTheWay notes.",
+    "notAdmitted": "Not admitted. That is not a recording failure."
   },
   "documents": {
     "heading": "Eich dogfennau",
@@ -309,6 +320,7 @@
     "documentsFull": "Dilewch un i ryddhau lle.",
     "videoIsMax": "Mae fideo terfynol ar Max.",
     "meetingsAreTeam": "Mae gwiriadau cyfarfod byw ar Team.",
+    "botHoursAreMax": "Sending AllTheWay into the room is on Max.",
     "talkToUs": "Siaradwch â ni"
   },
   "visual": {

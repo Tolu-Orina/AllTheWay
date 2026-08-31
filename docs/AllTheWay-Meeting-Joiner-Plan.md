@@ -55,7 +55,7 @@ Verified in `extension/`, `services/gateway/src/meetings/`, `services/scribe/`.
 | Tier | What | Status |
 |---|---|---|
 | **2** Meet Media API (live, receive-only, exactly 3 audio transceivers) | Not enrolled. `connectTier2` throws a recorded refusal. | Code exists to fail honestly. **V** `services/scribe/src/meet.ts` |
-| **2.5** Guest notetaker (this plan) | Visible mute participant, host-admitted | **Not built.** |
+| **2.5** Guest notetaker (this plan) | Visible mute participant, host-admitted | **Contract in tree. Vendor unsigned — `vendor_pending`.** |
 | **1** Meet REST transcript after the call | Host’s Google credential; entries can carry a **participant resource name**, not a display name. | Reachable if transcription was on. |
 | **1.5** Extension `chrome.tabCapture` | Audio of the tab you are already in. Nothing joins. | This is the live path we actually have. |
 
@@ -244,9 +244,13 @@ The popup can shrink to Start / Stop + disclosure; the panel holds the work. The
 
 ### Phase 0 — Make today’s path true
 
+Shipped in tree 2026-08-31 (gateway + extension 0.2.0 + web token mint). Needs a gateway deploy and a web deploy before production meetings see it.
+
 Ship before any new capability. Fitness: a 20-minute Meet tab produces a scribe record whose utterance count matches finals, not interims; a 70-minute capture stays authenticated; gateway rejects `disclosed: false`.
 
 ### Phase 1 — Sidebar as the product (A)
+
+Shipped in tree 2026-08-31 with Phase 0 (extension 0.2.0). Reload the unpacked extension.
 
 - Move start/stop + disclosure into the side panel (popup optional).  
 - Full transcript list (not 200 chars); pin newest; don’t auto-steal focus.  
@@ -258,6 +262,21 @@ Ship before any new capability. Fitness: a 20-minute Meet tab produces a scribe 
 **Trade-off:** more Chrome UI to maintain vs a recorder nobody uses.
 
 ### Phase 2 — Insights you can trust in the room
+
+Shipped in tree 2026-08-31 (cite-or-drop enforced on the pass; Check now quiet reasons; phone `MeetingInsights` still polls; presenting hides the panel insights and skips `sidePanel.open`).
+
+- Keep the bar: no summaries, cite or drop (already in `insights.ts`).  
+- Show **why** Check now was quiet (too little transcript / screened / metered).  
+- Keep phone polling (`MeetingInsights`) — screen-share still leaks the desktop panel.  
+- Optional: one “private insights” mode that refuses to open the panel on a sharing tab (detect `display-capture` / Meet presenting — **I**, needs a probe).
+
+### Phase 3 — Speaker column without a bot (A ladder)
+
+Shipped in tree 2026-08-31 (extension 0.3.0). 3b is a recorded refusal (`no_stored_audio`) — we do not store mixed PCM. 3c overlays Meet REST display names onto Unattributed notes; resource paths never render.
+
+### Phase 4 — Guest notetaker, Meet-first (C, stopgap)
+
+Shipped in tree as the **product contract** 2026-08-31 (Max-only `bot_hours`, disclosure on `POST /meetings/bot`, Meet-only, no unmute path). **No vendor is signed.** A start returns `vendor_pending`; the UI says so. Do not fake a knock.
 
 - Keep the bar: no summaries, cite or drop (already in `insights.ts`).  
 - Show **why** Check now was quiet (too little transcript / screened / metered).  
@@ -284,7 +303,7 @@ Do not block Phase 1 on 3a. Caption scraping is a one-way listing decision. 3a i
 - On join: one chat line if the platform allows bot chat — “I’m taking notes for {name}. I cannot speak. Remove me if this call should not be recorded.”  
 - Waiting-room / high-scrutiny queue: UI state **Knocking** with a 5-minute clock. If ejected, the meeting record says **not admitted**, not “recording failed.” Invite-to-ongoing-call is the recovery (vendors already recommend this when the host is late).  
 - Media pipeline: BaaS WebSocket PCM → existing `/api/meetings/capture` (or a sibling that shares `capture-sink`). Same screening, same transcriber, same insight runner.  
-- Meter bot-hours. Team/Max first (**A:** Plus if we can price a small cap).  
+- Meter bot-hours. **Max only.** Plus and Team stay on tab capture / after-call.  
 - Locale / empty-state copy changes: “No bot unless you send one. It still cannot speak.”
 
 **Must not:** calendar auto-join; Zoom/Teams yet; speaking; storing BaaS’s own LLM notes (we already have insights).
@@ -376,20 +395,15 @@ PRD “What we refuse / a meeting bot that joins as a guest” and v3.5 “No me
 
 ## Decision / Ask
 
-**Decided (this revision):**
+**Decided (2026-08-31, owner):**
 
-1. WalkCroach stays a page companion; meetings stay `extension/` + server-side bot.  
-2. Phase 0 is still the next engineering slice (P0-1, P0-2, P0-4, P0-8 before new capture).  
-3. Speaker names are a **ladder**. Live tab default remains Unattributed unless 3a. Live bot/Media may use **platform** names.  
-4. Guest notetaker is **in**, Meet-first, buy-not-build, opt-in, mute, host-admitted, retired on Meet when Media works.  
-5. FR-C7’s “not a guest” Won’t is superseded for labelled admitted bots; unannounced join remains a Won’t.
+1. Phase 3a (Meet caption content script) is allowed in the Chrome listing.  
+2. Bot-hours are **Max only** (not Team).  
+3. Apply to the Workspace Developer Preview **two weeks from 2026-08-31** (target ~2026-09-14), not this week.  
+4. Bot vendor (Recall EU vs alternative) waits on a finance review. Do not sign a BaaS until that lands.  
+5. Phase 0 and Phase 1 shipped in tree. Phases 2–4 are in tree as of 2026-08-31: cite-or-drop, Meet captions, overlay, Max-only bot contract. The guest notetaker does **not** knock until finance signs a vendor.
 
-**Needed from you:**
-
-1. Confirm Phase 3a (Meet content script) is acceptable in the Chrome listing. Independent of the bot.  
-2. Confirm bot-hours live on **Team/Max** first (recommended) vs Plus.  
-3. Confirm we apply to the [Workspace Developer Preview](https://developers.google.com/workspace/preview) **this week** so Phase 9 is not folklore.  
-4. Vendor: Recall.ai EU (recommended) vs Meeting BaaS / later bake-off. Default is Recall unless a data-residency constraint appears.
+WalkCroach is a separate product. A screenshot of it is not a meeting-joiner requirement.
 
 ---
 

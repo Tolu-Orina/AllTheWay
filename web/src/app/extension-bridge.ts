@@ -68,18 +68,22 @@ function announceSignIn(): void {
 
 let replyInFlight = false;
 let lastReplyAt = 0;
+let pendingForce = false;
 
-async function reply(): Promise<void> {
-  if (replyInFlight) return;
+async function reply(force = false): Promise<void> {
+  if (replyInFlight) {
+    if (force) pendingForce = true;
+    return;
+  }
   replyInFlight = true;
   try {
     const user = firebaseAuth.currentUser;
     if (!user) return;
-    if (Date.now() - lastReplyAt < 400) return;
+    if (!force && Date.now() - lastReplyAt < 400) return;
 
     let token: string;
     try {
-      token = await user.getIdToken(false);
+      token = await user.getIdToken(force);
     } catch {
       return;
     }
@@ -96,14 +100,19 @@ async function reply(): Promise<void> {
     lastReplyAt = Date.now();
   } finally {
     replyInFlight = false;
+    if (pendingForce) {
+      pendingForce = false;
+      void reply(true);
+    }
   }
 }
 
 export function serveExtensionToken(): () => void {
   const onMessage = (event: MessageEvent) => {
     if (event.source !== window || event.origin !== window.location.origin) return;
-    if ((event.data as { type?: string } | null)?.type !== REQUEST) return;
-    void reply();
+    const data = event.data as { type?: string; force?: boolean } | null;
+    if (data?.type !== REQUEST) return;
+    void reply(data.force === true);
   };
 
   window.addEventListener("message", onMessage);
@@ -125,7 +134,13 @@ export function serveExtensionToken(): () => void {
   // persistence). Push once so we do not wait for a request that already flew.
   void reply();
 
+  // ID tokens last about an hour; a meeting lasts up to ninety minutes. Mint
+  // a fresh one on a timer so the extension can refresh the capture socket
+  // without holding a Firebase refresh token.
+  const timer = window.setInterval(() => void reply(true), 45 * 60_000);
+
   return () => {
+    window.clearInterval(timer);
     window.removeEventListener("message", onMessage);
     unsub();
   };

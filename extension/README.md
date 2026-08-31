@@ -23,18 +23,30 @@ appears in the participant list, and no audio goes to a third party.
     chrome://extensions → Developer mode → Load unpacked → select this folder
 
 Then open AllTheWay in a tab and sign in once. The extension asks the page for a
-token; it never reads one out of storage, and it never receives a refresh token,
-so it has to come back to a signed-in page every hour.
+token; it never reads one out of storage, and it never receives a refresh token.
+While a meeting is being captured it asks the signed-in page again before the
+hour is out, and the page mints a fresh ID token (`getIdToken(true)`). If that
+tab is gone, capture continues until the gateway rejects the expired token.
 
 ## Using it
 
-1. Join the meeting as normal.
-2. Click the extension, tick the disclosure box, press **Start taking notes**.
-3. Notes and commitments appear in AllTheWay, exactly as for any other meeting.
+1. Join a Meet, Zoom web, or Teams web meeting as normal.
+2. Open the side panel (or the popup) on AllTheWay meeting notes, tick the
+   disclosure box, press **Start taking notes**. The extension records the
+   meeting tab, not whichever tab happens to be focused.
+3. The transcript and Check now live in the side panel. Notes and commitments
+   also appear in AllTheWay when the meeting ends.
 
-There is no picker dialog: `chrome.tabCapture` targets the active tab directly.
-That is the whole reason this is an extension rather than a button in the web
-app, where `getDisplayMedia` would force a picker on every meeting.
+The disclosure box is unticked every time. The gateway refuses a session without
+`disclosed: true` as a boolean — a checkbox in the extension is a courtesy and
+the server is the boundary.
+
+`chrome.tabCapture` targets the meeting tab after a click, with no picker. That
+is the whole reason this is an extension rather than a button in the web app.
+
+A guest notetaker bot is **not live**. Sending one is an opt-in in the side
+panel; until finance signs a join vendor the server answers `vendor_pending`
+and nothing knocks. It still cannot speak.
 
 ## The disclosure box is not a formality
 
@@ -43,7 +55,7 @@ This announces nothing, and the obligation moves entirely to the person pressing
 the button. In all-party-consent jurisdictions — California and Illinois among
 them — recording without telling everyone is unlawful however it is done.
 
-The box is unticked every time the popup opens, deliberately. "I told them" is
+The box is unticked every time the panel or popup opens, deliberately. "I told them" is
 true of one meeting; remembering it would silently assert it about the next.
 The server refuses a session without it too, because a checkbox in an extension
 is a courtesy and the gateway is the boundary.
@@ -51,7 +63,8 @@ is a courtesy and the gateway is the boundary.
 ## Known limits
 
 - **Chromium only**, and **browser tabs only** — a native Zoom or Teams desktop
-  client cannot be captured this way.
+  client cannot be captured this way. Start looks for a Meet, Zoom web, or
+  Teams web tab; if none is open, it refuses rather than recording AllTheWay.
 - **Closing the captured tab ends the recording.** Chrome gives no way around
   this; the extension reports it rather than appearing to still record.
 - **Switching tabs can drop audio briefly** through background throttling.
@@ -70,12 +83,17 @@ engineering.
 ### Done
 
 - Icons at 16/32/48/128.
-- `host_permissions` narrowed to four specific hosts. It briefly read
-  `https://*.run.app/*`, which is every Cloud Run service on the internet —
-  more access than this needs and the first thing a reviewer would ask about.
-  Note the **hashed** Cloud Run hostname is the one that matters: that is what
-  the web build bakes into `VITE_STREAM_ORIGIN`, and narrowing to only the
-  deterministic `{service}-{project}.{region}` form silently blocks the socket.
+- Required `host_permissions` are AllTheWay itself plus Meet / Zoom web /
+  Teams web, so the extension can find the meeting tab without the broad
+  `tabs` permission. On Meet it also injects `meet-captions.js` so names
+  Meet already shows in captions can label notes. That is disclosed in this
+  listing. It does not invent a name, and it does not inject into Zoom or Teams.
+- Cloud Run (`https://*.run.app/*`, `wss://*.run.app/*`) and localhost live in
+  `optional_host_permissions`. On Start, the extension asks for the **exact**
+  origin the signed-in page handed over (`VITE_STREAM_ORIGIN`). The hashed
+  Cloud Run hostname is the one that matters: that is what the web build
+  bakes, and narrowing to only the deterministic `{service}-{project}.{region}`
+  form silently blocks the socket.
 
 ### Still required before submitting
 
@@ -92,6 +110,7 @@ engineering.
    stated purpose matches what the code does. Collecting anything beyond that
    purpose is now a policy violation regardless of disclosure.
 5. **A developer account** (one-off fee).
+6. **Strip `http://localhost:*/*` from `content_scripts`** for a store listing. It is there so an unpacked build can handshake with a local AllTheWay tab. A published extension should only inject on the production AllTheWay origins.
 
 ### Which visibility
 
@@ -133,8 +152,9 @@ Three properties of that model shape the implementation:
   opening seconds of every meeting, where people say what it is about, would
   vanish.
 
-**No speaker diarization.** This model does not support it, so notes render
-speakers as "Unattributed" rather than guessing. Word-level timestamps are also
+**No speaker diarization on tab audio.** This model does not support it, so notes
+render speakers as "Unattributed" unless Meet captions already named the line,
+or Meet REST overlay fills the name afterwards. Word-level timestamps are also
 unsupported; utterance-level are.
 
 **85+ languages, auto-detected, including switching mid-sentence.** No language

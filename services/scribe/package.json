@@ -8,7 +8,7 @@
     "start": "node dist/index.js",
     "build": "tsc -p tsconfig.build.json",
     "typecheck": "tsc -p tsconfig.json --noEmit",
-    "test": "node --import tsx --test src/tier.test.ts src/notes.test.ts src/consent.test.ts src/events.test.ts src/screening.test.ts src/session.test.ts src/a2a-card.test.ts"
+    "test": "node --import tsx --test src/tier.test.ts src/notes.test.ts src/consent.test.ts src/events.test.ts src/screening.test.ts src/session.test.ts src/a2a-card.test.ts src/meet-names.test.ts"
   },
   "dependencies": {
     "@alltheway/contracts": "*",

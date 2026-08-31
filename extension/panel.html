@@ -2,25 +2,103 @@
 <html lang="en">
   <head>
     <meta charset="utf-8" />
-    <title>AllTheWay</title>
+    <title>AllTheWay meeting notes</title>
     <style>
       :root {
         color-scheme: light dark;
-        --fg: #111827; --muted: #6b7280; --line: #e5e7eb; --bg: #fff; --accent: #1d4ed8;
+        --fg: #111827;
+        --muted: #6b7280;
+        --line: #e5e7eb;
+        --bg: #ffffff;
+        --accent: #1d4ed8;
+        --danger: #b91c1c;
+        --surface: #f3f4f6;
       }
       @media (prefers-color-scheme: dark) {
-        :root { --fg: #f3f4f6; --muted: #9ca3af; --line: #374151; --bg: #111827; --accent: #60a5fa; }
+        :root {
+          --fg: #f3f4f6;
+          --muted: #9ca3af;
+          --line: #374151;
+          --bg: #111827;
+          --accent: #60a5fa;
+          --surface: #1f2937;
+        }
       }
+      * { box-sizing: border-box; }
       body {
-        margin: 0; padding: 14px; background: var(--bg); color: var(--fg);
+        margin: 0;
+        padding: 16px;
+        background: var(--bg);
+        color: var(--fg);
         font: 13px/1.55 system-ui, -apple-system, "Segoe UI", sans-serif;
       }
-      h1 { font-size: 13px; margin: 0 0 2px; }
-      .sub { color: var(--muted); font-size: 12px; margin: 0 0 12px; }
-      /* Quiet by construction: no colour, no motion, nothing that pulls the eye
-         away from the meeting unless it has something to say. */
-      .insight { border: 1px solid var(--line); border-left-width: 3px; border-radius: 8px;
-                 padding: 9px 10px; margin-bottom: 8px; }
+      h1 { font-size: 14px; margin: 0 0 4px; font-weight: 650; }
+      h2 { font-size: 11px; text-transform: uppercase; letter-spacing: 0.06em;
+           color: var(--muted); margin: 0 0 8px; font-weight: 600; }
+      .sub { color: var(--muted); font-size: 12px; margin: 0 0 16px; }
+      .disclose {
+        display: flex;
+        gap: 8px;
+        align-items: flex-start;
+        border: 1px solid var(--line);
+        border-radius: 8px;
+        padding: 10px;
+        margin-bottom: 8px;
+      }
+      .disclose label { font-size: 12.5px; }
+      button {
+        width: 100%;
+        padding: 8px;
+        font: inherit;
+        border-radius: 8px;
+        border: 1px solid var(--line);
+        background: transparent;
+        color: inherit;
+        cursor: pointer;
+      }
+      button:disabled { opacity: 0.45; cursor: not-allowed; }
+      #toggle {
+        border-color: transparent;
+        background: var(--accent);
+        color: #fff;
+        margin-bottom: 8px;
+      }
+      #toggle.stop { background: var(--danger); }
+      .note { font-size: 12px; color: var(--muted); margin: 0 0 8px; }
+      .error { color: var(--danger); font-size: 12px; margin: 0 0 8px; }
+      .recording { color: var(--danger); font-weight: 600; }
+      section { margin: 16px 0 0; }
+      .transcript {
+        max-height: 280px;
+        overflow: auto;
+        border: 1px solid var(--line);
+        border-radius: 8px;
+        padding: 8px;
+        background: var(--surface);
+      }
+      .line {
+        margin: 0 0 8px;
+        font-size: 12.5px;
+        white-space: pre-wrap;
+        word-break: break-word;
+      }
+      .line:last-child { margin-bottom: 0; }
+      .line.interim { color: var(--muted); font-style: italic; }
+      .who {
+        display: block;
+        font-size: 11px;
+        color: var(--muted);
+        font-weight: 600;
+        margin-bottom: 2px;
+      }
+      .empty { color: var(--muted); font-size: 12px; margin: 0; }
+      .insight {
+        border: 1px solid var(--line);
+        border-left-width: 3px;
+        border-radius: 8px;
+        padding: 9px 10px;
+        margin-bottom: 8px;
+      }
       .insight.contradiction { border-left-color: #b45309; }
       .insight.context { border-left-color: var(--accent); }
       .insight.unanswered { border-left-color: #6b7280; }
@@ -28,31 +106,64 @@
       .text { margin: 3px 0 5px; }
       .src { font-size: 11.5px; color: var(--muted); }
       .src a { color: inherit; }
-      button { width: 100%; padding: 8px; font: inherit; border-radius: 8px;
-               border: 1px solid var(--line); background: transparent; color: inherit; cursor: pointer; }
-      .empty { color: var(--muted); font-size: 12px; }
-      .live { margin-bottom: 12px; }
-      .live-label { font-size: 11px; text-transform: uppercase; letter-spacing: .06em; color: var(--muted); margin: 0 0 4px; }
-      .live-text { font-size: 12px; color: var(--fg); background: var(--line); border-radius: 6px;
-                   padding: 6px 8px; min-height: 1.4em; white-space: pre-wrap; word-break: break-word; }
+      .hint { color: var(--muted); font-size: 11.5px; margin: 0 0 8px; }
+      #now { margin-top: 8px; }
+      #send-bot { margin-bottom: 8px; }
     </style>
   </head>
   <body>
-    <h1>While you are in this meeting</h1>
+    <h1>Meeting notes</h1>
     <p class="sub">
-      Only things you could not already know from being in the room. Silence is
-      normal.
+      It listens on this machine and takes notes. It cannot speak. No bot
+      unless you send one.
     </p>
 
-    <div class="live" id="live-section" hidden>
-      <p class="live-label">Hearing</p>
-      <div class="live-text" id="live-text"></div>
+    <div class="disclose" id="disclose-block">
+      <input type="checkbox" id="disclosed" />
+      <label for="disclosed">
+        I have told everyone in this meeting that it is being transcribed.
+      </label>
     </div>
 
-    <div id="insights"><p class="empty">Nothing yet.</p></div>
+    <button id="toggle" disabled>Start taking notes</button>
+    <p class="note" id="status"></p>
+    <p class="error" id="error" hidden></p>
 
-    <button id="now">Check now</button>
+    <div class="disclose" id="bot-block">
+      <input type="checkbox" id="bot-disclosed" />
+      <label for="bot-disclosed">
+        I have told everyone, and the host will admit AllTheWay notes.
+      </label>
+    </div>
+    <button id="send-bot" type="button" disabled>Send AllTheWay notes into this Meet</button>
+    <p class="note" id="bot-status">
+      No bot unless you send one. It still cannot speak. Insights stay on your
+      phone while you present.
+    </p>
 
-    <script src="panel.js"></script>
+    <label class="disclose" id="private-block">
+      <input type="checkbox" id="hide-while-presenting" checked />
+      <span>
+        Hide insights in this panel while I am presenting. They still appear on
+        your phone.
+      </span>
+    </label>
+
+    <section>
+      <h2>Transcript</h2>
+      <div class="transcript" id="lines" aria-live="polite">
+        <p class="empty" id="lines-empty">Nothing heard yet. Notes appear as people speak.</p>
+      </div>
+    </section>
+
+    <section id="insights-section">
+      <h2>Insights</h2>
+      <p class="hint">Live checks are on Team and Max. Silence is normal. While you present, use the phone.</p>
+      <div id="insights"><p class="empty">Nothing yet.</p></div>
+      <p class="note" id="insight-status" hidden></p>
+      <button id="now" disabled>Check now</button>
+    </section>
+
+    <script type="module" src="panel.js"></script>
   </body>
 </html>

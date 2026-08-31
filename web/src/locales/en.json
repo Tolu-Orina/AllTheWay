@@ -27,8 +27,8 @@
   },
   "meetings": {
     "heading": "Meetings",
-    "intro": "It listens and takes notes. It cannot speak in a meeting, and everyone in the room is asked before it connects.",
-    "none": "It listens on calls you host, or reads the transcript after. It cannot speak. No bot in the participant list unless you opted into live listen.",
+    "intro": "It listens and takes notes. It cannot speak. No bot unless you send one.",
+    "none": "It listens on a tab you are in, or reads the transcript after. It cannot speak. No bot in the participant list unless you send one.",
     "listenedLive": "Listened live",
     "readTranscript": "Read the transcript afterwards",
     "noNotes": "No notes",
@@ -57,7 +57,18 @@
     "confirming": "Recording…",
     "notThis": "Not this",
     "confirmed": "Confirmed",
-    "putOnCalendar": "Put this on the calendar"
+    "putOnCalendar": "Put this on the calendar",
+    "sendBot": "Send AllTheWay notes into this Meet",
+    "sendBotHint": "No bot unless you send one. It still cannot speak. The host must admit it.",
+    "sendBotConfirm": "Send a labelled, muted guest into this Meet to take notes.",
+    "sendBotAction": "Knock as AllTheWay notes",
+    "sendBotReason": "The host must admit it. It cannot speak. Nothing joins until you confirm.",
+    "botVendorPending": "Finance is still reviewing the join vendor. Nothing has joined this call. Notes from this tab still work.",
+    "overlaySpeakers": "Use Meet names on Unattributed notes",
+    "overlayNone": "Meet did not return display names for these notes.",
+    "overlayDone": "Updated {{count}} Unattributed notes.",
+    "knocking": "Knocking. The host has five minutes to admit AllTheWay notes.",
+    "notAdmitted": "Not admitted. That is not a recording failure."
   },
   "documents": {
     "heading": "Your documents",
@@ -304,6 +315,7 @@
     "documentsFull": "Delete one to free a slot.",
     "videoIsMax": "Final video is on Max.",
     "meetingsAreTeam": "Live meeting checks are on Team.",
+    "botHoursAreMax": "Sending AllTheWay into the room is on Max.",
     "talkToUs": "Talk to us"
   },
   "visual": {
