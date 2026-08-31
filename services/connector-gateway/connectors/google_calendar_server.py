@@ -91,7 +91,13 @@ def list_events(limit: int = 10, time_min: str = "") -> str:
         for item in payload.get("items", [])
         if isinstance(item, dict)
     ]
-    return json.dumps({"events": events})
+    body: dict[str, object] = {"events": events}
+    cal_status, calendar = _request("GET", f"/calendars/{CALENDAR_ID}")
+    if cal_status == 200 and isinstance(calendar, dict):
+        zone = str(calendar.get("timeZone") or "").strip()
+        if zone:
+            body["timeZone"] = zone
+    return json.dumps(body)
 
 
 @mcp.tool()

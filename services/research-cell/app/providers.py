@@ -21,6 +21,8 @@ import time
 from dataclasses import dataclass
 from typing import Protocol
 
+from .ground import WebSource, chunks_from_response
+
 
 @dataclass(frozen=True)
 class Completion:
@@ -31,6 +33,10 @@ class Completion:
 
 class ResearchProvider(Protocol):
     def generate(self, system: str, user: str, max_output_tokens: int) -> Completion: ...
+
+    def grounded_lookup(self, topic: str, max_output_tokens: int) -> tuple[str, list[WebSource]]:
+        """One Vertex Google Search. Empty sources means it did not look anything up."""
+        ...
 
 
 class FakeProvider:
@@ -65,6 +71,10 @@ class FakeProvider:
         words = text.split()
         capped = " ".join(words[:max_output_tokens])
         return Completion(text=capped, output_tokens=min(len(words), max_output_tokens))
+
+    def grounded_lookup(self, topic: str, max_output_tokens: int) -> tuple[str, list[WebSource]]:
+        del topic, max_output_tokens
+        return "", []
 
 
 def _topic_of(user: str) -> str:
@@ -150,6 +160,26 @@ class VertexProvider:
         # cost is unknown would let an unmeasured run spend without limit.
         spent = getattr(usage, "candidates_token_count", None) or max_output_tokens
         return Completion(text=response.text or "", output_tokens=int(spent))
+
+    def grounded_lookup(self, topic: str, max_output_tokens: int) -> tuple[str, list[WebSource]]:
+        client = self._client_or_init()
+        response = client.models.generate_content(
+            model=self.model,
+            contents=topic,
+            config={
+                "system_instruction": (
+                    "Answer in a few short sentences. Use only the web results. "
+                    "Never invent a source or a URL."
+                ),
+                "max_output_tokens": max_output_tokens,
+                "tools": [{"google_search": {}}],
+            },
+        )
+        usage = getattr(response, "usage_metadata", None)
+        spent = getattr(usage, "candidates_token_count", None) or max_output_tokens
+        del spent
+        sources = chunks_from_response(response)
+        return (response.text or "").strip(), sources
 
 
 def create_provider() -> ResearchProvider:

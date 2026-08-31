@@ -96,7 +96,8 @@
   "citations": {
     "passage": "Darn",
     "page": "Tudalen {{page}}",
-    "open": "Agor y dyfyniad o {{title}}"
+    "open": "Agor y dyfyniad o {{title}}",
+    "openWeb": "Agor {{title}} mewn tab newydd"
   },
   "voice": {
     "heading": "Sgyrsiau llafar",
@@ -147,6 +148,17 @@
     "heading": "Iaith",
     "hint": "Iaith y rhyngwyneb hwn. Nid yw'n newid yr iaith rydych yn siarad ag ef ynddi — mae hynny'n dilyn eich dewis chi.",
     "dismiss": "Dim diolch"
+  },
+  "clock": {
+    "heading": "Cylchfa amser",
+    "hint": "Pa bryd yw hi, a ble mae heddiw yn dechrau ar gyfer eich calendr. Dyma'r gylchfa y mae'r ddyfais hon yn ei hadrodd, neu un rydych chi wedi'i gosod. Nid ydym yn defnyddio GPS nac eich IP i ddyfalu dinas.",
+    "useDevice": "Defnyddio'r ddyfais hon",
+    "overrideLabel": "Defnyddio cylchfa benodol",
+    "sourceDevice": "O'r ddyfais hon",
+    "sourceCalendar": "O'ch calendr",
+    "sourceOverride": "Chi osododd hyn",
+    "differ": "Mae eich calendr yn {{calendar}}. Cwestiynau calendr a digwyddiadau newydd yn defnyddio'r gylchfa honno.",
+    "current": "{{zone}}"
   },
   "common": {
     "retry": "Rhowch gynnig arall",
@@ -445,6 +457,10 @@
     "nameSaved": "Enw wedi'i gadw.",
     "nameSaveFailed": "Ni chadwyd yr enw hwnnw. Ni newidiodd dim — ceisiwch eto."
   },
+  "chat": {
+    "you": "Chi",
+    "companion": "AllTheWay"
+  },
   "companion": {
     "newChat": "Sgwrs newydd",
     "currentChat": "Sgwrs gyfredol",
@@ -474,6 +490,7 @@
     "dropHere": "Gollwng yma",
     "privacyNote": "Mae ymatebion yn cael eu creu yn ddiogel.",
     "learnPrivacy": "Dysgu am breifatrwydd.",
+    "send": "Anfon",
     "thinking": "Yn meddwl…",
     "officeEditHint": "Nid yw’r fformat hwn yn cael ei olygu yn y porwr. Llwythwch i lawr i’w agor yn Word, Excel, PowerPoint, neu fel PDF — neu gofynnwch yn y sgwrs am fersiwn newydd.",
     "kindDocument": "Dogfen",

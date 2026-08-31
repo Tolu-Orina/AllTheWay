@@ -1,3 +1,5 @@
+import { startOfDayInZone, startOfYesterdayInZone } from "./clock.js";
+import { getClock } from "./repos/clock.js";
 import { runReadTool, type ToolResult } from "./voice/tools.js";
 
 /**
@@ -59,16 +61,14 @@ function wantsDayWindow(text: string): boolean {
   return DAY_WINDOW.test(text) && !LATER_ONLY.test(text);
 }
 
-/** Start of the UTC day. Good enough until we store a timezone. */
+/** Start of the UTC day. Prefer `startOfDayInZone` once a zone is known. */
 export function startOfUtcDay(now = new Date()): string {
-  const d = new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate()));
-  return d.toISOString().replace(/\.\d{3}Z$/, "Z");
+  return startOfDayInZone(now, "UTC");
 }
 
-/** Start of yesterday in UTC. */
+/** Start of yesterday in UTC. Prefer `startOfYesterdayInZone`. */
 export function startOfYesterdayUtc(now = new Date()): string {
-  const d = new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate() - 1));
-  return d.toISOString().replace(/\.\d{3}Z$/, "Z");
+  return startOfYesterdayInZone(now, "UTC");
 }
 
 /**
@@ -79,16 +79,21 @@ export function startOfYesterdayUtc(now = new Date()): string {
  * is useful context for the plan — but the planner still has to name the
  * write and stop at confirm.
  */
-export function selectReadTools(message: string): ReadCall[] {
+export function selectReadTools(
+  message: string,
+  opts: { timeZone?: string; now?: Date } = {},
+): ReadCall[] {
   const text = message.trim();
   if (!text) return [];
+  const zone = opts.timeZone || "UTC";
+  const now = opts.now ?? new Date();
   const out: ReadCall[] = [];
   if (wantsCalendar(text)) {
     const args: Record<string, unknown> = { limit: 10 };
     if (YESTERDAY.test(text)) {
-      args.time_min = startOfYesterdayUtc();
+      args.time_min = startOfYesterdayInZone(now, zone);
     } else if (wantsDayWindow(text)) {
-      args.time_min = startOfUtcDay();
+      args.time_min = startOfDayInZone(now, zone);
     }
     out.push({ name: "whats_on_my_calendar", args });
   }
@@ -123,7 +128,8 @@ function withBudget<T>(promise: Promise<T>, fallback: T): Promise<T> {
  * the conversation, the same as before this existed.
  */
 export async function connectedLookups(uid: string, message: string): Promise<string[]> {
-  const calls = selectReadTools(message);
+  const clock = await getClock(uid);
+  const calls = selectReadTools(message, { timeZone: clock.calendarTimeZone });
   if (!calls.length) return [];
 
   const lines = await Promise.all(

@@ -121,6 +121,10 @@ class Citation(BaseModel):
     title: str = ""
     page: int = 0
     text: str = ""
+    #: "document" (a retrieved passage) or "web" (a URL that actually came
+    #: back from a grounded look-up). Web URLs are never taken from the model.
+    kind: str = "document"
+    url: str = ""
 
 
 class TurnResponse(BaseModel):

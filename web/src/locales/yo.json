@@ -81,7 +81,8 @@
   "citations": {
     "passage": "Àyọkà",
     "page": "Ojú-ìwé {{page}}",
-    "open": "Ṣí ìtọ́kasí láti {{title}}"
+    "open": "Ṣí ìtọ́kasí láti {{title}}",
+    "openWeb": "Ṣí {{title}} nínú táàbù tuntun"
   },
   "voice": {
     "heading": "Àwọn ìjíròrò ohùn",
@@ -132,6 +133,17 @@
     "heading": "Èdè",
     "hint": "Èdè ojú-ìbòjú yìí. Kò ní yí èdè tí o fi ń bá a sọ̀rọ̀ padà — èyí tẹ̀lé ọ.",
     "dismiss": "Rárá o, o ṣeun"
+  },
+  "clock": {
+    "heading": "Àkókò agbègbè",
+    "hint": "Kí ni aago, àti ibi tí òní ti bẹ̀rẹ̀ fún kàlẹ́ńdà rẹ. Àgbègbè tí ẹ̀rọ yìí sọ, tàbí èyí tí o yàn. A kò lo GPS tàbí IP láti ṣe àsọtẹ́lẹ̀ ìlú.",
+    "useDevice": "Lo ẹ̀rọ yìí",
+    "overrideLabel": "Yan àgbègbè kan pàtó",
+    "sourceDevice": "Láti ẹ̀rọ yìí",
+    "sourceCalendar": "Láti kàlẹ́ńdà rẹ",
+    "sourceOverride": "Ìwọ ni o yàn",
+    "differ": "Kàlẹ́ńdà rẹ wà ní {{calendar}}. Ìbéèrè kàlẹ́ńdà àti ìṣẹ̀lẹ̀ tuntun lo àgbègbè yẹn.",
+    "current": "{{zone}}"
   },
   "common": {
     "retry": "Gbìyànjú lẹ́ẹ̀kan síi",
@@ -430,6 +442,10 @@
     "nameSaved": "Name saved.",
     "nameSaveFailed": "That name did not save. Nothing changed — try again."
   },
+  "chat": {
+    "you": "Ìwọ",
+    "companion": "AllTheWay"
+  },
   "companion": {
     "newChat": "Ìjíròrò tuntun",
     "currentChat": "Ìjíròrò lọ́wọ́lọ́wọ́",
@@ -459,6 +475,7 @@
     "dropHere": "Jù ú síbí",
     "privacyNote": "A ń ṣe àwọn èsì ní ààbò.",
     "learnPrivacy": "Kẹ́kọ̀ọ́ nípa ìkọ̀kọ̀.",
+    "send": "Firánṣẹ́",
     "thinking": "Ń ronú…",
     "officeEditHint": "A kò ṣe àtúnṣe irú èyí nínú ìwòye. Ṣe ìgbàsílẹ̀ rẹ̀ kí o ṣí i nínú Word, Excel, PowerPoint tàbí PDF — tàbí béèrè nínú ìjíròrò fún ẹ̀yà tuntun.",
     "kindDocument": "Ìwé",

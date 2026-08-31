@@ -6,6 +6,8 @@ import { env } from "../env.js";
 import { routeUpgrade } from "../ws-router.js";
 import { runTurn } from "../orchestrator.js";
 import { loadTurnContext } from "../turn-context.js";
+import { clockPrompt } from "../clock.js";
+import { getClock } from "../repos/clock.js";
 import { READ_TOOL_NAMES, runReadTool, THEY_SAID_NO, THEY_SAID_YES } from "./tools.js";
 import {
   END_THIS_CONVERSATION,
@@ -183,10 +185,11 @@ async function handleConnection(ws: WebSocket, opener: LiveOpener): Promise<void
   }
 
   const sessionId = raw.auth.sessionId.slice(0, 128);
-  const greeting = {
+  const greeting = (async () => ({
     firstName: caller.firstName,
     resumed: false,
-  };
+    clock: clockPrompt(await getClock(uid)),
+  }))();
   const cancelled = new Set<string>();
   const slot: { live?: LiveSession } = {};
   const spokenHangup = new SpokenHangup(() => {

@@ -64,9 +64,21 @@ export const CitationSchema = z.object({
   page: z.number().int(),
   title: z.string(),
   text: z.string(),
+  kind: z.enum(["document", "web"]).default("document"),
+  url: z.string().default(""),
 });
 
 export type Citation = z.infer<typeof CitationSchema>;
+
+export const ClockSourceSchema = z.enum(["device", "calendar", "override"]);
+export const ClockSchema = z.object({
+  timeZone: z.string(),
+  calendarTimeZone: z.string(),
+  deviceTimeZone: z.string(),
+  source: ClockSourceSchema,
+  differ: z.boolean(),
+});
+export type Clock = z.infer<typeof ClockSchema>;
 
 /**
  * A document-derived answer that claims to be grounded must cite.
@@ -101,9 +113,10 @@ export const TurnEventSchema = z.discriminatedUnion("kind", [
   z.object({ kind: z.literal("step"), step: PlanStepSchema }),
   /**
    * A retrieved passage this turn actually used. The chip opens `text`;
-   * nothing is fetched from another user.
+   * nothing is fetched from another user. `url` is set when this is a web
+   * source that actually came back — the event `kind` stays `citation`.
    */
-  CitationSchema.extend({ kind: z.literal("citation") }),
+  CitationSchema.omit({ kind: true }).extend({ kind: z.literal("citation") }),
   /** The Clarify Gate stopped the turn. No plan follows this. */
   z.object({
     kind: z.literal("clarify"),

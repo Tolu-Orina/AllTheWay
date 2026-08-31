@@ -15,6 +15,7 @@ import { Meetings } from "@/app/Meetings";
 import { SharedWithMe } from "@/app/SharedWithMe";
 import { VoiceTranscripts } from "@/app/VoiceTranscripts";
 import { LanguageChoice, LanguageOffer } from "@/app/LanguageChoice";
+import { ClockChoice } from "@/app/ClockChoice";
 import { nameFor, useAppUser } from "@/app/user";
 import { useAuth } from "@/auth/useAuth";
 import { LOGIN } from "@/auth/paths";
@@ -222,6 +223,7 @@ export default function Profile() {
         </h2>
         <LanguageOffer />
         <LanguageChoice />
+        <ClockChoice />
         <VoiceTranscripts />
       </section>
 

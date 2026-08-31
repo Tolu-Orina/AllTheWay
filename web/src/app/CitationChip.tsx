@@ -36,6 +36,7 @@ export function CitationChip({
   const [open, setOpen] = useState(false);
   const [status, setStatus] = useState<string | null>(null);
   const label = citation.title || t("citations.passage");
+  const webUrl = citation.url.startsWith("http") ? citation.url : "";
 
   const remember = async (kind: "reask" | "miss" | "hit"): Promise<boolean> => {
     if (!citation.documentId) return false;
@@ -49,6 +50,20 @@ export function CitationChip({
       return false;
     }
   };
+
+  if (webUrl) {
+    return (
+      <a
+        href={webUrl}
+        target="_blank"
+        rel="noopener noreferrer"
+        aria-label={t("citations.openWeb", { title: label })}
+        className="rounded-full border bg-background px-3 py-1.5 text-[12.5px] text-muted-foreground transition-colors hover:border-primary/40 hover:text-foreground"
+      >
+        {label}
+      </a>
+    );
+  }
 
   return (
     <>

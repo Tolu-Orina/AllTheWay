@@ -442,6 +442,7 @@ test("voice can look things up, and every lookup is read-only", () => {
   const names = decls.map((d) => d.name);
 
   assert.ok(names.includes("whats_on_my_calendar"), "voice must be able to see the day");
+  assert.ok(names.includes("look_this_up"), "a public fact is a read, not a 30s research swarm");
   assert.ok(names.includes("ask_my_documents"));
   assert.ok(names.includes("whats_waiting_for_me"));
   assert.ok(names.includes("my_recent_meetings"));
@@ -471,6 +472,23 @@ test("voice can look things up, and every lookup is read-only", () => {
   }
   assert.equal(SESSION_TOOL_NAMES.has(END_THIS_CONVERSATION), true);
   assert.equal(READ_TOOL_NAMES.has(END_THIS_CONVERSATION), false);
+});
+
+test("voice sees CLOCK and is forbidden from GPS", () => {
+  const clock =
+    "CLOCK: the current instant is 2026-08-31T12:00:00Z (UTC). It is Monday 31 August 2026, 13:00, Europe/London (from this device).";
+  const msg = setupMessage({
+    modelResource: "projects/p/locations/global/publishers/google/models/gemini-live-2.5-flash-native-audio",
+    clock,
+  });
+  const setup = msg.setup as { systemInstruction: { parts: { text: string }[] } };
+  const text = setup.systemInstruction.parts.map((p) => p.text).join("\n");
+  assert.match(text, /^You are AllTheWay/);
+  assert.match(text, /CLOCK: the current instant is 2026-08-31T12:00:00Z/);
+  assert.match(SYSTEM_INSTRUCTION, /look_this_up/);
+  assert.match(SYSTEM_INSTRUCTION, /Never a map pin/);
+  assert.match(SYSTEM_INSTRUCTION, /Language is not location/);
+  assert.doesNotMatch(SYSTEM_INSTRUCTION, /GPS|geolocation|latitude|longitude/i);
 });
 
 test("a read tool answers rather than throwing, even when it cannot help", async () => {

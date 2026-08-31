@@ -2,6 +2,7 @@ import { useState } from "react";
 import { useT } from "@/app/i18n";
 import { Loader2, Mic } from "lucide-react";
 
+import { ChatTurn } from "@/app/ChatTurn";
 import { useAsync } from "@/app/use-async";
 import { api } from "@/app/data";
 
@@ -100,7 +101,7 @@ export function SessionTranscript({ sessionId }: { sessionId: string }) {
   if (state.status !== "ready" || state.data.length === 0) return null;
 
   return (
-    <section className="flex flex-col gap-2 border-t pt-4">
+    <section className="flex flex-col gap-4 border-t px-6 pt-4 pb-4 sm:px-8">
       <div className="flex items-center justify-between gap-3">
         <h3 className="flex items-center gap-1.5 text-[12px] font-semibold tracking-[0.08em] text-blue-deep uppercase dark:text-blue-bright">
           <Mic className="size-3.5" aria-hidden="true" />
@@ -126,13 +127,12 @@ export function SessionTranscript({ sessionId }: { sessionId: string }) {
         </button>
       </div>
 
-      <ol className="flex flex-col gap-1.5">
+      <ol className="flex flex-col gap-6">
         {state.data.map((line, i) => (
-          <li key={`${line.at}-${i}`} className="text-[13px] leading-relaxed">
-            <span className="text-muted-foreground">
-              {line.side === "user" ? "You" : "It"}:{" "}
-            </span>
-            {line.text}
+          <li key={`${line.at}-${i}`}>
+            <ChatTurn side={line.side === "user" ? "user" : "agent"} at={line.at}>
+              {line.text}
+            </ChatTurn>
           </li>
         ))}
       </ol>

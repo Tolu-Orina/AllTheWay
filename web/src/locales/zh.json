@@ -81,7 +81,8 @@
   "citations": {
     "passage": "原文",
     "page": "第 {{page}} 页",
-    "open": "打开 {{title}} 的引文"
+    "open": "打开 {{title}} 的引文",
+    "openWeb": "在新标签页打开 {{title}}"
   },
   "voice": {
     "heading": "语音对话",
@@ -132,6 +133,17 @@
     "heading": "语言",
     "hint": "界面的显示语言。这不会改变您与它对话时使用的语言——对话语言将跟随您的输入。",
     "dismiss": "不用了"
+  },
+  "clock": {
+    "heading": "时区",
+    "hint": "现在几点，以及日历上的“今天”从何时算起。这是本设备报告的时区，或您自行设定的时区。我们不会用 GPS 或 IP 来猜测城市。",
+    "useDevice": "使用本设备",
+    "overrideLabel": "指定时区",
+    "sourceDevice": "来自本设备",
+    "sourceCalendar": "来自您的日历",
+    "sourceOverride": "由您设定",
+    "differ": "您的日历在 {{calendar}}。日历相关问题和新建日程使用该时区。",
+    "current": "{{zone}}"
   },
   "common": {
     "retry": "重试",
@@ -430,6 +442,10 @@
     "nameSaved": "姓名已保存。",
     "nameSaveFailed": "姓名没有保存成功。什么都没改——请再试一次。"
   },
+  "chat": {
+    "you": "你",
+    "companion": "AllTheWay"
+  },
   "companion": {
     "newChat": "新对话",
     "currentChat": "当前对话",
@@ -459,6 +475,7 @@
     "dropHere": "拖到这里",
     "privacyNote": "回复在安全环境中生成。",
     "learnPrivacy": "了解隐私。",
+    "send": "发送",
     "thinking": "思考中…",
     "officeEditHint": "浏览器里不能编辑这种格式。下载后用 Word、Excel、PowerPoint 打开，或另存为 PDF，或在对话里要求生成新版本。",
     "kindDocument": "文档",

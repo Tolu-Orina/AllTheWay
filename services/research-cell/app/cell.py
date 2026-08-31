@@ -53,6 +53,7 @@ from concurrent.futures import ThreadPoolExecutor
 from dataclasses import dataclass, field
 
 from .budget import Budget, BudgetExceeded, Ledger
+from .ground import WebSource
 from .providers import ResearchProvider
 
 #: Exactly two, named. The fan-out is over this tuple, so widening the swarm
@@ -87,7 +88,8 @@ class ResearchResult:
     """What leaves the cell.
 
     Deliberately has no field for worker output. See the module docstring: this
-    is where FR-10 is enforced.
+    is where FR-10 is enforced. `sources` are URLs from a grounded look-up,
+    never worker prose.
     """
 
     answer: str
@@ -97,6 +99,7 @@ class ResearchResult:
     #: True when the answer rests on fewer findings than the run intended.
     degraded: bool = False
     output_tokens: int = 0
+    sources: list = field(default_factory=list)
 
 
 @dataclass
@@ -160,16 +163,45 @@ async def research(
     ledger = Ledger(budget=budget)
     started = time.monotonic()
     run_deadline = started + budget.wall_clock_s
-    # The workers get less than the run does, so a hung worker cannot spend the
-    # time synthesis needs to write the answer the other worker made possible.
     worker_deadline = started + budget.worker_wall_clock_s
     trace = [f"Fanned out to {len(ANGLES)} workers: {', '.join(ANGLES)}"]
+
+    sources: list[WebSource] = []
+    lookup_text = ""
+    try:
+        cap = ledger.authorise("lookup", min(400, budget.worker_output_tokens))
+        remaining = worker_deadline - time.monotonic()
+        if remaining > 0:
+            loop = asyncio.get_running_loop()
+            lookup_text, sources = await asyncio.wait_for(
+                loop.run_in_executor(
+                    _POOL, provider.grounded_lookup, topic, cap
+                ),
+                timeout=remaining,
+            )
+            ledger.record("lookup", cap)
+    except Exception as exc:  # noqa: BLE001
+        trace.append(f"Look-up did not run ({_why(exc)})")
+        sources = []
+
+    if sources:
+        trace.append("Looked this up")
+    else:
+        trace.append("No web sources; answering from the model only")
+
+    worker_topic = topic
+    if sources:
+        listed = "\n".join(f"- {s.title}: {s.uri}" for s in sources)
+        worker_topic = (
+            f"{topic}\n\nWeb sources (use only these URLs):\n{listed}"
+            + (f"\n\nLook-up notes:\n{lookup_text}" if lookup_text else "")
+        )
 
     # return_exceptions so one worker's failure cannot cancel the other. With
     # gather's default, a single raise takes the whole fan-out down and the
     # cell would degrade to nothing precisely when degrading gracefully matters.
     settled = await asyncio.gather(
-        *(_worker(provider, angle, topic, ledger, worker_deadline) for angle in ANGLES),
+        *(_worker(provider, angle, worker_topic, ledger, worker_deadline) for angle in ANGLES),
         return_exceptions=True,
     )
 
@@ -193,6 +225,7 @@ async def research(
             workers_answered=0,
             degraded=True,
             output_tokens=ledger.spent_output_tokens,
+            sources=_source_payload(sources),
         )
 
     if degraded:
@@ -204,7 +237,7 @@ async def research(
             provider,
             "synthesis",
             f"ANGLE: synthesis\n{_SYNTHESIS_BRIEF}",
-            _brief(topic, findings),
+            _brief(topic, findings, sources),
             cap,
             run_deadline,
         )
@@ -220,6 +253,7 @@ async def research(
             workers_answered=len(findings),
             degraded=True,
             output_tokens=ledger.spent_output_tokens,
+            sources=_source_payload(sources),
         )
 
     trace.append(f"Synthesised {len(findings)} finding(s) into one answer")
@@ -234,12 +268,21 @@ async def research(
         workers_answered=len(findings),
         degraded=degraded,
         output_tokens=ledger.spent_output_tokens,
+        sources=_source_payload(sources),
     )
 
 
-def _brief(topic: str, findings: list[_Finding]) -> str:
+def _source_payload(sources: list[WebSource]) -> list[dict]:
+    return [{"title": s.title, "uri": s.uri, "snippet": s.snippet} for s in sources]
+
+
+def _brief(topic: str, findings: list[_Finding], sources: list[WebSource] | None = None) -> str:
     body = "\n\n".join(f"[{f.angle}]\n{f.text}" for f in findings)
-    return f"Topic: {topic}\n\nFindings:\n{body}"
+    urls = ""
+    if sources:
+        listed = "\n".join(f"- {s.title}: {s.uri}" for s in sources)
+        urls = f"\n\nWeb sources (cite only these URLs):\n{listed}"
+    return f"Topic: {topic}\n\nFindings:\n{body}{urls}"
 
 
 def _why(exc: BaseException) -> str:

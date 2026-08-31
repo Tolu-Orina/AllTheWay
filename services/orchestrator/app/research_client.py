@@ -45,6 +45,28 @@ class Finding:
     trace: list[str] = field(default_factory=list)
     degraded: bool = False
     workers_answered: int = 0
+    #: URLs that actually came back from a grounded look-up. Never worker text.
+    sources: list[dict] = field(default_factory=list)
+
+
+def _sources_of(raw: object) -> list[dict]:
+    if not isinstance(raw, list):
+        return []
+    out: list[dict] = []
+    for item in raw:
+        if not isinstance(item, dict):
+            continue
+        uri = str(item.get("uri") or item.get("url") or "").strip()
+        if not uri.startswith("http"):
+            continue
+        out.append(
+            {
+                "title": str(item.get("title") or uri),
+                "uri": uri,
+                "snippet": str(item.get("snippet") or "")[:500],
+            }
+        )
+    return out
 
 
 def _message(topic: str) -> Message:
@@ -85,6 +107,7 @@ async def _send(topic: str) -> Finding | None:
                     trace=list(payload.get("trace", [])),
                     degraded=bool(payload.get("degraded", False)),
                     workers_answered=int(payload.get("workersAnswered", 0)),
+                    sources=_sources_of(payload.get("sources")),
                 )
         return None
 

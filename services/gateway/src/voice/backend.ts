@@ -293,6 +293,7 @@ async function openVertexLive(opts: {
           modelResource,
           resumeHandle: resume,
           firstName: who.firstName,
+          clock: who.clock,
         }),
       ),
     );

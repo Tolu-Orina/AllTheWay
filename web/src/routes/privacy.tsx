@@ -86,6 +86,16 @@ export default function PrivacyPage() {
             </section>
 
             <section>
+              <h2 className="text-[19px] font-semibold">Time zone, not a location</h2>
+              <p className="mt-2 text-muted-foreground">
+                We store the IANA time zone this device reports, the zone on
+                your connected calendar if you have one, and any override you
+                set. That answers “what time is it” and “where am I”. We do
+                not use GPS, and we do not guess a city from your IP address.
+              </p>
+            </section>
+
+            <section>
               <h2 className="text-[19px] font-semibold">Who else is involved</h2>
               <p className="mt-2 text-muted-foreground">
                 We run on Google Cloud, and Google's models process what you say

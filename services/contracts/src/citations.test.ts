@@ -72,6 +72,37 @@ test("a citation without the passage text is not a citation", () => {
   );
 });
 
+test("a web citation is a URL that came back, not a document chunk", () => {
+  const parsed = CitationSchema.safeParse({
+    documentId: "",
+    chunkId: "web:https://www.metoffice.gov.uk/x",
+    page: 0,
+    title: "Met Office",
+    text: "https://www.metoffice.gov.uk/x",
+    kind: "web",
+    url: "https://www.metoffice.gov.uk/x",
+  });
+  ok(parsed.success);
+  ok(parsed.success && parsed.data.kind === "web");
+  ok(parsed.success && parsed.data.url.startsWith("https://"));
+});
+
+test("a citation event keeps a web URL without becoming kind web", () => {
+  const parsed = TurnEventSchema.safeParse({
+    kind: "citation",
+    documentId: "",
+    chunkId: "web:https://www.metoffice.gov.uk/x",
+    page: 0,
+    title: "Met Office",
+    text: "https://www.metoffice.gov.uk/x",
+    url: "https://www.metoffice.gov.uk/x",
+  });
+  ok(parsed.success);
+  if (parsed.success && parsed.data.kind === "citation") {
+    ok(parsed.data.url.startsWith("https://"));
+  }
+});
+
 test("an ordinary done event with no citations still parses", () => {
   // Chat that never opened a document. Empty citations here is honesty, not a
   // hole — GroundedDoneSchema is the fixture that closes the hole.

@@ -32,7 +32,7 @@ from a2a.utils.constants import PROTOCOL_VERSION_CURRENT
 from .budget import Budget
 
 #: Bumped when the card's contract changes, independently of the service build.
-CARD_VERSION = "1.0.0"
+CARD_VERSION = "1.1.0"
 
 #: Name of the security scheme entry, referenced from security_requirements.
 BEARER_SCHEME = "service_oidc"
@@ -87,8 +87,10 @@ def build_agent_card(public_url: str | None = None) -> AgentCard:
                 id="research_topic",
                 name="Research a topic",
                 description=(
-                    "Investigates one topic from two independent angles and returns a "
-                    "single synthesised answer with a trace of how it was produced. "
+                    "Looks the topic up (grounded web search), then investigates "
+                    "from two independent angles and returns a single synthesised "
+                    "answer with a trace of how it was produced. Worker output never "
+                    "leaves the cell. "
                     f"Bounded in code: {budget.workers} workers, {budget.rounds} round, "
                     f"{budget.wall_clock_s:g}s wall clock, "
                     f"{budget.total_output_tokens} output tokens. Degrades to a partial "

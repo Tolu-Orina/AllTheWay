@@ -136,3 +136,19 @@ test("the A2A message carries passages as labelled metadata, not as the user's t
   assert.deepEqual(meta.lookups, ["Standup at 10."]);
   assert.deepEqual(meta.struggles, []);
 });
+
+test("a CLOCK paragraph is passed through, not replaced with a bare ISO instant", () => {
+  const input = assembleTurnContext({
+    uid: "u1",
+    sessionId: "s1",
+    message: "what time is it",
+    prefs: [],
+    passages: [],
+    lookups: [],
+    thread: [],
+    clock:
+      "CLOCK: the current instant is 2026-08-31T12:00:00Z (UTC). It is Monday 31 August 2026, 13:00, Europe/London (from this device).",
+  });
+  assert.match(input.clock ?? "", /^CLOCK:/);
+  assert.doesNotMatch(input.clock ?? "", /^20\d{2}-/);
+});

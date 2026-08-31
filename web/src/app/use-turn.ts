@@ -108,6 +108,8 @@ export function useTurn(sessionId: string) {
                       page: event.page,
                       title: event.title,
                       text: event.text,
+                      kind: event.url.startsWith("http") ? "web" : "document",
+                      url: event.url,
                     },
                   ],
                 };

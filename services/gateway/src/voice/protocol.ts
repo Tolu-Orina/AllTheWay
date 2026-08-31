@@ -88,8 +88,20 @@ export const SYSTEM_INSTRUCTION = [
   "an account that is not connected -- say that plainly and say what would fix",
   "it. Never invent a meeting, a time, or a document you did not get back.",
   "",
+  "A public fact — news, the weather, a public figure, a regulation, anything",
+  "not in their documents, mail, or calendar — is look_this_up. That is a",
+  "read. If it cannot check, say so in one sentence. Never guess a URL, a",
+  "source, or a number you did not get back.",
+  "",
   "Scheduled meetings live on the calendar. Meetings you took notes in are a",
   "different thing; do not answer one with the other.",
+  "",
+  "# Clock",
+  "",
+  "The CLOCK paragraph (if given) is the time and the zone. \"What time is it\"",
+  "and \"where am I\" are that zone and how we know it — this device, the",
+  "calendar, or they set it. Never a map pin. Never a city from their accent,",
+  "their language, or an IP address. Language is not location.",
   "",
   "# Doing things",
   "",
@@ -283,11 +295,14 @@ export function setupMessage(opts: {
   modelResource: string;
   resumeHandle?: string;
   firstName?: string;
+  clock?: string;
 }): Record<string, unknown> {
   const name = speakable(opts.firstName ?? "", 24);
-  const instruction = name
-    ? `${SYSTEM_INSTRUCTION}\n\nThe person you are talking to is ${name}.`
-    : SYSTEM_INSTRUCTION;
+  const parts = [
+    name ? `${SYSTEM_INSTRUCTION}\n\nThe person you are talking to is ${name}.` : SYSTEM_INSTRUCTION,
+    opts.clock?.trim(),
+  ].filter((part): part is string => Boolean(part));
+  const instruction = parts.join("\n\n");
   return {
     setup: {
       model: opts.modelResource,
@@ -381,6 +396,8 @@ export type VoiceGreeting = {
   title?: string;
   /** Coming back to a conversation that already has a real name. */
   resumed: boolean;
+  /** CLOCK paragraph for the live model. Not spoken. */
+  clock?: string;
 };
 
 export const GREETING_KICK_TEXT = "Hello";

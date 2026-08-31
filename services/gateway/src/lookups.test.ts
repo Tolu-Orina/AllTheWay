@@ -22,16 +22,16 @@ test("a waiting/digest question selects the digest read", () => {
   assert.equal(calls[0]?.name, "whats_waiting_for_me");
 });
 
-test("a meeting-today question selects the calendar, not meeting notes", () => {
-  const calls = selectReadTools("Did I have any meeting today?");
+test("a meeting-today question uses the calendar zone, not UTC midnight", () => {
+  const calls = selectReadTools("Did I have any meeting today?", {
+    timeZone: "Europe/London",
+    now: new Date("2026-08-31T15:51:00.000Z"),
+  });
   assert.deepEqual(
     calls.map((c) => c.name),
     ["whats_on_my_calendar"],
   );
-  assert.ok(
-    typeof calls[0]?.args.time_min === "string" && String(calls[0].args.time_min).endsWith("Z"),
-    "today includes this morning, so the window starts at the beginning of the day",
-  );
+  assert.equal(calls[0]?.args.time_min, "2026-08-30T23:00:00Z");
 });
 
 test("any meetings today also selects the calendar", () => {

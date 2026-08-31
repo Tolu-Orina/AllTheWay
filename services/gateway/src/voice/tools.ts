@@ -10,6 +10,8 @@ import {
   GMAIL_DRAFTS_SCOPE,
   googleGrantId,
 } from "../google-scopes.js";
+import { groundedLookup } from "../look-up-run.js";
+import { rememberCalendarTimeZone } from "../repos/clock.js";
 import { END_THIS_CONVERSATION } from "./hangup.js";
 
 export const THEY_SAID_YES = "they_said_yes";
@@ -81,6 +83,20 @@ export const READ_TOOLS = [
             "last night, or the day before.",
         },
       },
+    },
+  },
+  {
+    name: "look_this_up",
+    description:
+      "Look up a public fact on the web. Use this for news, the weather, a " +
+      "public figure, a regulation, or anything not in their documents, mail, " +
+      "or calendar. Read-only. If it cannot check, say so — never guess.",
+    parameters: {
+      type: "OBJECT",
+      properties: {
+        query: { type: "STRING", description: "What to look up, in the user's words." },
+      },
+      required: ["query"],
     },
   },
   {
@@ -351,6 +367,23 @@ async function upstreamJson(
  * result at the exact moment it is about to speak, and an empty result is what
  * a confident invention looks like from the inside.
  */
+function calendarZoneOf(result: ToolResult): string {
+  if (!result || typeof result !== "object") return "";
+  const rec = result as Record<string, unknown>;
+  if (typeof rec.timeZone === "string") return rec.timeZone;
+  if (typeof rec.time_zone === "string") return rec.time_zone;
+  if (typeof rec.result === "string") {
+    try {
+      const parsed = JSON.parse(rec.result) as Record<string, unknown>;
+      if (typeof parsed.timeZone === "string") return parsed.timeZone;
+      if (typeof parsed.time_zone === "string") return parsed.time_zone;
+    } catch {
+      /* not JSON */
+    }
+  }
+  return "";
+}
+
 export async function runReadTool(
   uid: string,
   name: string,
@@ -362,7 +395,16 @@ export async function runReadTool(
         const call: Record<string, unknown> = { limit: num(args.limit, 10, 25) };
         const timeMin = typeof args.time_min === "string" ? args.time_min.trim() : "";
         if (timeMin) call.time_min = timeMin;
-        return await connectorRead(uid, "google_calendar", "list_events", call);
+        const result = await connectorRead(uid, "google_calendar", "list_events", call);
+        const zone = calendarZoneOf(result);
+        if (zone) void rememberCalendarTimeZone(uid, zone);
+        return result;
+      }
+
+      case "look_this_up": {
+        const query = String(args.query ?? "").trim();
+        if (!query) return { cannot: "I need to know what to look up." };
+        return await groundedLookup(query);
       }
 
       case "find_in_my_drive":

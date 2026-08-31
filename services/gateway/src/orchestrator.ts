@@ -135,6 +135,18 @@ function stepsOf(payloads: Record<string, unknown>[]): PlanStep[] {
  * (FR-D2). A citation that is only an id would force a second fetch, which is
  * how another user's chunk gets opened.
  */
+function asCitationEvent(c: Citation): Extract<TurnEvent, { kind: "citation" }> {
+  return {
+    kind: "citation",
+    documentId: c.documentId,
+    chunkId: c.chunkId,
+    page: c.page,
+    title: c.title,
+    text: c.text,
+    url: c.url,
+  };
+}
+
 function citationsOf(payloads: Record<string, unknown>[]): Citation[] {
   const part = payloads.find((p) => Array.isArray(p.citations));
   if (!part) return [];
@@ -367,7 +379,7 @@ export async function* streamTurn(input: TurnInput): AsyncGenerator<TurnEvent> {
         // a question about what was meant.
         if (pendingConfirm) {
           for (const c of citations) {
-            yield { kind: "citation", ...c };
+            yield asCitationEvent(c);
           }
           yield {
             kind: "confirm",
@@ -387,7 +399,7 @@ export async function* streamTurn(input: TurnInput): AsyncGenerator<TurnEvent> {
       }
       case TaskState.TASK_STATE_COMPLETED: {
         for (const c of citations) {
-          yield { kind: "citation", ...c };
+          yield asCitationEvent(c);
         }
         yield { kind: "done", note, citations };
         settled = true;

@@ -130,7 +130,7 @@ export function VoiceSessionOverlay() {
         </header>
 
         {mode === "speaking" ? (
-          <VoiceCaptions variant="session" className="min-h-0 flex-1 px-5 py-4" />
+          <VoiceCaptions variant="session" className="min-h-0 flex-1 px-6 py-4" />
         ) : (
           <VoicePreviousSessions
             currentId={voice.sessionId}

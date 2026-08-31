@@ -28,6 +28,7 @@ import {
   type LifeContext,
   UsageSchema,
   type ArtifactPreview,
+  ClockSchema,
 } from "@alltheway/contracts";
 import { z } from "zod";
 
@@ -68,6 +69,7 @@ export type {
   Rhythm,
   Reminder,
   ProposedCommitment,
+  Clock,
 } from "@alltheway/contracts";
 
 export const ConnectorSchema = z.object({
@@ -508,6 +510,9 @@ export const api = {
     apiPost("/life/templates/draft", { name }, z.object({ body: z.string() })),
   locale: () => apiGet("/settings/locale", z.object({ locale: z.string().nullable() })),
   setLocale: (locale: string) => apiPost("/settings/locale", { locale }),
+  clock: () => apiGet("/settings/clock", ClockSchema),
+  setClock: (input: { timeZone: string; source: "device" | "override" | "ping" }) =>
+    apiPost("/settings/clock", input, ClockSchema),
   onboarding: () => apiGet("/settings/onboarding", OnboardingSchema),
   setOnboarding: (input: { job: OnboardingJob; lifeContext?: LifeContext | null }) =>
     apiPost("/settings/onboarding", input, OnboardingSchema),

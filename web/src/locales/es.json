@@ -87,7 +87,8 @@
   "citations": {
     "passage": "Pasaje",
     "page": "Página {{page}}",
-    "open": "Abrir la cita de {{title}}"
+    "open": "Abrir la cita de {{title}}",
+    "openWeb": "Abrir {{title}} en una pestaña nueva"
   },
   "voice": {
     "heading": "Conversaciones de voz",
@@ -138,6 +139,17 @@
     "heading": "Idioma",
     "hint": "El idioma de la interfaz. No cambia el idioma en el que le hablas: responderá en el que uses.",
     "dismiss": "No, gracias"
+  },
+  "clock": {
+    "heading": "Zona horaria",
+    "hint": "Qué hora es, y dónde empieza hoy para tu calendario. Es la zona que indica este dispositivo, o la que tú eliges. No usamos GPS ni tu IP para adivinar una ciudad.",
+    "useDevice": "Usar este dispositivo",
+    "overrideLabel": "Usar una zona concreta",
+    "sourceDevice": "De este dispositivo",
+    "sourceCalendar": "De tu calendario",
+    "sourceOverride": "Lo has establecido tú",
+    "differ": "Tu calendario está en {{calendar}}. Las preguntas de calendario y los eventos nuevos usan esa zona.",
+    "current": "{{zone}}"
   },
   "common": {
     "retry": "Reintentar",
@@ -436,6 +448,10 @@
     "nameSaved": "Nombre guardado.",
     "nameSaveFailed": "Ese nombre no se guardó. No cambió nada — inténtalo de nuevo."
   },
+  "chat": {
+    "you": "Tú",
+    "companion": "AllTheWay"
+  },
   "companion": {
     "newChat": "Chat nuevo",
     "currentChat": "Chat actual",
@@ -465,6 +481,7 @@
     "dropHere": "Suéltalo aquí",
     "privacyNote": "Las respuestas se generan de forma segura.",
     "learnPrivacy": "Más sobre privacidad.",
+    "send": "Enviar",
     "thinking": "Pensando…",
     "officeEditHint": "Este formato no se edita en el navegador. Descárgalo para abrirlo en Word, Excel, PowerPoint, o como PDF — o pide en el chat una versión nueva.",
     "kindDocument": "Documento",

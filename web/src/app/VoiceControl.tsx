@@ -1,6 +1,7 @@
 import { Mic, MicOff, Loader2, Square } from "lucide-react";
 import { useEffect, useRef } from "react";
 
+import { ChatStatus, ChatTurn, ProposedActionCard } from "@/app/ChatTurn";
 import { useVoice } from "@/app/use-voice";
 import { useT } from "@/app/i18n";
 import { cn } from "@/lib/utils";
@@ -169,88 +170,89 @@ export function VoiceCaptions({
   }
   if (variant !== "session" && !hasBody) return null;
 
+  const session = variant === "session";
+
   return (
-    <div className={cn(variant === "session" ? "flex min-h-0 flex-col" : "px-4 pb-2", className)}>
+    <div className={cn(session ? "flex min-h-0 flex-col" : undefined, className)}>
       <div
         ref={logRef}
         role="log"
         aria-live="polite"
         aria-label={t("voice.captions")}
         className={cn(
-          "rounded-brand border bg-background px-3 py-2 text-[13px] leading-relaxed",
-          variant === "log" && "max-h-48 overflow-y-auto",
-          variant === "session" &&
-            "min-h-0 flex-1 overflow-y-auto text-[15px] leading-relaxed",
+          "space-y-6",
+          variant === "log" && "max-h-64 overflow-y-auto",
+          session && "min-h-0 flex-1 overflow-y-auto",
         )}
       >
-        {connecting ? (
-          <p className="text-muted-foreground">{t("voice.connecting")}</p>
-        ) : null}
-        {listening ? (
-          <p className="text-muted-foreground">{t("voice.listening")}</p>
-        ) : null}
+        {connecting ? <ChatStatus className="pl-8">{t("voice.connecting")}</ChatStatus> : null}
+        {listening ? <ChatStatus className="pl-8">{t("voice.listening")}</ChatStatus> : null}
         {shown.map((line) => (
-          <p
+          <ChatTurn
             key={line.id}
-            className={cn(
-              line.side === "user" ? "text-muted-foreground" : "text-foreground",
-              line.id !== shown[0]?.id && "mt-1.5",
-              !line.finished && "opacity-80",
-            )}
+            side={line.side === "user" ? "user" : "agent"}
+            at={line.at}
+            live={!line.finished}
           >
-            {line.side === "user" ? (
-              <span className="font-medium text-foreground">{t("voice.you")} </span>
-            ) : null}
             {line.text}
-            {!line.finished ? (
-              <span className="ml-0.5 inline-block h-3 w-0.5 translate-y-px bg-foreground/50 motion-safe:animate-pulse" />
-            ) : null}
-          </p>
+          </ChatTurn>
         ))}
         {voice.turn?.summary && !confirming ? (
-          <p className="mt-1.5 font-medium">{voice.turn.summary}</p>
+          <ChatTurn side="agent">{voice.turn.summary}</ChatTurn>
         ) : null}
-        {voice.turn?.note && !confirming ? <p className="mt-1.5">{voice.turn.note}</p> : null}
-        {voice.turn?.question ? <p className="mt-1.5">{voice.turn.question}</p> : null}
-        {voice.turn?.plan?.length ? (
-          <div className="mt-2">
+        {voice.turn?.note && !confirming ? <ChatTurn side="agent">{voice.turn.note}</ChatTurn> : null}
+        {voice.turn?.question ? <ChatTurn side="agent">{voice.turn.question}</ChatTurn> : null}
+        {voice.turn?.plan?.length && !confirming ? (
+          <div className="pl-8">
             <PlanStack steps={voice.turn.plan} />
           </div>
         ) : null}
-        {confirming ? (
-          <div className="mt-2">
-            <ConfirmGate
-              summary={voice.turn?.summary ?? "Should I go ahead?"}
-              actions={voice.turn?.actions ?? []}
-              confirmLabel={voice.turn?.options?.[0] ?? "Yes, go ahead"}
-              declineLabel={voice.turn?.options?.[1] ?? "No, stop"}
-              status={decisionStatus}
-              sessionId={voice.sessionId}
-              steps={voice.turn?.plan}
-              onConfirm={() =>
-                void decide("confirmed", {
-                  summary: voice.turn?.summary ?? "Should I go ahead?",
-                  actions: voice.turn?.actions ?? [],
-                  modality: "voice",
-                })
-              }
-              onDecline={() =>
-                void decide("declined", {
-                  summary: voice.turn?.summary ?? "Should I go ahead?",
-                  actions: voice.turn?.actions ?? [],
-                  modality: "voice",
-                })
-              }
-              onCorrect={(now) =>
-                void decide("corrected", {
-                  summary: voice.turn?.summary ?? "Should I go ahead?",
-                  actions: voice.turn?.actions ?? [],
-                  modality: "voice",
-                  now,
-                })
-              }
-            />
+        {voice.turn?.actions?.length && !confirming ? (
+          <div className="flex flex-col gap-2 pl-8">
+            {voice.turn.actions.map((a) => (
+              <ProposedActionCard key={a.label} action={a} />
+            ))}
           </div>
+        ) : null}
+        {confirming ? (
+          <ChatTurn
+            side="agent"
+            footer={
+              <ConfirmGate
+                summary={voice.turn?.summary ?? "Should I go ahead?"}
+                actions={voice.turn?.actions ?? []}
+                confirmLabel={voice.turn?.options?.[0] ?? "Yes, go ahead"}
+                declineLabel={voice.turn?.options?.[1] ?? "No, stop"}
+                status={decisionStatus}
+                sessionId={voice.sessionId}
+                steps={voice.turn?.plan}
+                onConfirm={() =>
+                  void decide("confirmed", {
+                    summary: voice.turn?.summary ?? "Should I go ahead?",
+                    actions: voice.turn?.actions ?? [],
+                    modality: "voice",
+                  })
+                }
+                onDecline={() =>
+                  void decide("declined", {
+                    summary: voice.turn?.summary ?? "Should I go ahead?",
+                    actions: voice.turn?.actions ?? [],
+                    modality: "voice",
+                  })
+                }
+                onCorrect={(now) =>
+                  void decide("corrected", {
+                    summary: voice.turn?.summary ?? "Should I go ahead?",
+                    actions: voice.turn?.actions ?? [],
+                    modality: "voice",
+                    now,
+                  })
+                }
+              />
+            }
+          >
+            {null}
+          </ChatTurn>
         ) : null}
       </div>
     </div>

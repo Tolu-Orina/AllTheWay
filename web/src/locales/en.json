@@ -86,7 +86,8 @@
   "citations": {
     "passage": "Passage",
     "page": "Page {{page}}",
-    "open": "Open citation from {{title}}"
+    "open": "Open citation from {{title}}",
+    "openWeb": "Open {{title}} in a new tab"
   },
   "voice": {
     "heading": "Spoken conversations",
@@ -137,6 +138,17 @@
     "heading": "Language",
     "hint": "The language of this interface. It does not change the language you speak to it in — that follows you.",
     "dismiss": "No thanks"
+  },
+  "clock": {
+    "heading": "Time zone",
+    "hint": "What time it is, and where today starts for your calendar. This is the zone this device reports, or one you set. We do not use GPS or your IP to guess a city.",
+    "useDevice": "Use this device",
+    "overrideLabel": "Use a specific zone",
+    "sourceDevice": "From this device",
+    "sourceCalendar": "From your calendar",
+    "sourceOverride": "You set this",
+    "differ": "Your calendar is {{calendar}}. Calendar questions and new events use that zone.",
+    "current": "{{zone}}"
   },
   "common": {
     "retry": "Try again",
@@ -457,6 +469,10 @@
     "nameSaved": "Name saved.",
     "nameSaveFailed": "That name did not save. Nothing changed — try again."
   },
+  "chat": {
+    "you": "You",
+    "companion": "AllTheWay"
+  },
   "companion": {
     "newChat": "New chat",
     "currentChat": "Current Chat",
@@ -486,6 +502,7 @@
     "dropHere": "Drop it here",
     "privacyNote": "Responses are generated securely.",
     "learnPrivacy": "Learn about privacy.",
+    "send": "Send",
     "thinking": "Thinking…",
     "officeEditHint": "This format is not edited in the browser. Download it to open in Word, Excel, PowerPoint, or as a PDF — or ask in the chat and a new version will be generated.",
     "kindDocument": "Document",

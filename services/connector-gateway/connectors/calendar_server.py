@@ -70,7 +70,7 @@ def list_events(limit: int = 10, time_min: str = "") -> str:
     signature. The in-memory store has no clock, so it is ignored.
     """
     del time_min
-    return json.dumps({"events": _EVENTS[:limit]})
+    return json.dumps({"events": _EVENTS[:limit], "timeZone": "UTC"})
 
 
 @mcp.tool()

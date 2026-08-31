@@ -50,7 +50,7 @@ from .plan_validation import (
     validate,
 )
 from .providers import ModelProvider, iter_text
-from .research_client import research
+from .research_client import Finding, research
 from .voice import UNCLEAR, confirmation_for, transcript_verdict
 
 SYSTEM = (
@@ -86,8 +86,9 @@ SYSTEM = (
     "media: generate_image(prompt, style), draft_video(prompt, seconds), "
     "render_video(prompt, seconds). "
     "starts_at is RFC 3339 with a numeric offset (or Z). Resolve today/tomorrow from "
-    "the CLOCK in this prompt, not from training. UK/London/Britain is Europe/London: "
-    "put that in time_zone and use the local wall time in starts_at, e.g. "
+    "the CLOCK in this prompt, not from training. Use CLOCK's calendar zone for "
+    "events unless they named a zone. UK/London/Britain is Europe/London if they "
+    "named it: put that in time_zone and use the local wall time in starts_at, e.g. "
     "2026-08-31T10:00:00 with time_zone Europe/London for 10:00 UK. "
     "attendees is a comma-separated list of email addresses they named. Put invites on "
     "create_event. send_invite is only for an existing event_id they already have — "
@@ -290,15 +291,18 @@ def _struggles_block(request: TurnRequest) -> str:
 
 
 def _clock_block(request: TurnRequest) -> str:
-    """The instant this turn was planned, so 'tomorrow 10am UK' is not guessed."""
+    """The instant this turn was planned, so 'tomorrow 10am' is not guessed."""
     clock = (request.clock or "").strip()
     if not clock:
         return ""
+    if clock.startswith("CLOCK:"):
+        return clock
     return (
         "CLOCK: the current instant is "
         + clock
         + " (UTC). Resolve relative dates from this, not from training data. "
-        "A time the user named in UK/London/Britain is Europe/London."
+        "A time the user named in UK/London/Britain is Europe/London. "
+        "Use CLOCK's calendar zone for events when one is given."
     )
 
 
@@ -469,6 +473,29 @@ def _claimed_citations(document: dict) -> list[Citation]:
     return claimed
 
 
+def _web_citations(finding: Finding) -> list[Citation]:
+    """URLs the cell actually retrieved. The model never supplies these."""
+    out: list[Citation] = []
+    for item in finding.sources:
+        uri = str(item.get("uri") or "").strip()
+        if not uri.startswith("http"):
+            continue
+        title = str(item.get("title") or uri)
+        snippet = str(item.get("snippet") or uri)[:2000]
+        out.append(
+            Citation(
+                chunk_id=f"web:{uri}",
+                document_id="",
+                title=title,
+                page=0,
+                text=snippet or uri,
+                kind="web",
+                url=uri,
+            )
+        )
+    return out
+
+
 _FETCHED_READS = frozenset({"list_events", "list_files"})
 _CALENDAR_WRITE = frozenset({"create_event", "delete_event", "send_invite"})
 _CALENDAR_WORDS = ("calendar", "schedule", "agenda", "upcoming", "meetings")
@@ -568,6 +595,7 @@ def _finish(
     emitted: int,
     note: str,
     document: dict | None = None,
+    extra_citations: list[Citation] | None = None,
 ) -> Iterator[TurnEvent]:
     """The one place a turn is allowed to end successfully.
 
@@ -591,6 +619,8 @@ def _finish(
     # claim about its sources is a claim, not a fact. A citation naming a
     # passage that was not retrieved is a footnote that looks like evidence.
     citations, grounding_notes = check_grounding(_claimed_citations(document or {}), request.passages)
+    if extra_citations:
+        citations = list(citations) + list(extra_citations)
     for line in grounding_notes:
         yield TurnEvent(kind="trace", text=line)
 
@@ -762,10 +792,21 @@ def run_turn_stream(
             for line in finding.trace:
                 yield TurnEvent(kind="trace", text=f"Research cell: {line}")
 
+            urls = [
+                str(s.get("uri"))
+                for s in finding.sources
+                if str(s.get("uri") or "").startswith("http")
+            ]
             informed = (
                 system
-                + "\n\nA research cell investigated this and found:\n"
+                + "\n\nA research cell looked this up and found:\n"
                 + finding.answer
+                + (
+                    "\n\nWeb URLs that actually came back (do not invent others): "
+                    + "; ".join(urls)
+                    if urls
+                    else "\n\nNo web sources came back; do not invent URLs."
+                )
                 + "\n\nPlan in light of that finding."
             )
             second = 0
@@ -779,13 +820,14 @@ def run_turn_stream(
                     planned.append(event.step)
                     yield event
             if second:
-                # The synthesis is what the user reads; the second pass's own
-                # note is dropped rather than shown alongside it.
-                # No document here: the informed pass streams events rather
-                # than returning a parsed object, so there is nothing to read
-                # citations from. Passing None is honest — this path cites
-                # research, and research citations are not Phase B's concern.
-                yield from _finish(request, planned, emitted, note, None)
+                yield from _finish(
+                    request,
+                    planned,
+                    emitted,
+                    note,
+                    None,
+                    extra_citations=_web_citations(finding),
+                )
                 return
             # The informed pass produced nothing usable. Release the first
             # pass's steps rather than losing the turn.

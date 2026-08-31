@@ -69,6 +69,8 @@ import {
   type ThreadMessage,
 } from "@alltheway/contracts";
 import { getOnboarding, setOnboarding } from "./repos/onboarding.js";
+import { clockWire, isIanaTimeZone } from "./clock.js";
+import { getClock, rememberDeviceTimeZone, setClock } from "./repos/clock.js";
 import { attachVoice } from "./voice/relay.js";
 import { attachCapture } from "./meetings/capture.js";
 import { openLiveTranscriber } from "./meetings/live-transcriber.js";
@@ -1003,6 +1005,47 @@ api.post(
       .doc("locale")
       .set({ locale: locale.data }, { merge: true });
     res.status(204).end();
+  }),
+);
+
+// IANA clock. Device ping, calendar zone, or an override they set. Never GPS.
+api.get(
+  "/settings/clock",
+  handle(async (req, res) => {
+    res.json(clockWire(await getClock(req.uid!)));
+  }),
+);
+
+api.post(
+  "/settings/clock",
+  handle(async (req, res) => {
+    const body = z
+      .object({
+        timeZone: z.string(),
+        source: z.enum(["device", "override", "ping"]),
+      })
+      .safeParse(req.body);
+    if (!body.success || !isIanaTimeZone(body.data.timeZone)) {
+      res.status(400).json({ code: "invalid_request", message: "Not a recognised time zone." });
+      return;
+    }
+    if (body.data.source === "ping") {
+      await rememberDeviceTimeZone(req.uid!, body.data.timeZone);
+      res.json(clockWire(await getClock(req.uid!)));
+      return;
+    }
+    try {
+      res.json(
+        clockWire(
+          await setClock(req.uid!, {
+            timeZone: body.data.timeZone,
+            source: body.data.source,
+          }),
+        ),
+      );
+    } catch {
+      res.status(400).json({ code: "invalid_request", message: "Not a recognised time zone." });
+    }
   }),
 );
 

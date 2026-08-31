@@ -222,6 +222,28 @@ def test_citation_wire_is_a_named_function_and_carries_no_uid():
     )
     assert payload["documentId"] == "d1"
     assert payload["chunkId"] == "c1"
+    assert payload["kind"] == "document"
+    assert payload["url"] == ""
+    assert "uid" not in payload
+
+
+def test_a_web_citation_carries_the_url_that_came_back():
+    from app.a2a_executor import _citation_wire
+    from app.models import Citation
+
+    payload = _citation_wire(
+        Citation(
+            chunk_id="web:https://www.metoffice.gov.uk/x",
+            document_id="",
+            page=0,
+            title="Met Office",
+            text="https://www.metoffice.gov.uk/x",
+            kind="web",
+            url="https://www.metoffice.gov.uk/x",
+        )
+    )
+    assert payload["kind"] == "web"
+    assert payload["url"].startswith("https://")
     assert "uid" not in payload
 
 

@@ -330,6 +330,53 @@ def test_the_clock_is_in_the_system_context_not_the_user_message():
     assert spy.user == "QA tomorrow 10am UK"
 
 
+def test_a_clock_paragraph_is_not_wrapped_again():
+    class Spy:
+        def __init__(self):
+            self.system = ""
+            self.user = ""
+
+        def structured(self, system, user, schema_hint):
+            self.system = system
+            self.user = user
+            return {"decision": "plan", "note": "Noted.", "plan": []}
+
+    paragraph = (
+        "CLOCK: the current instant is 2026-08-31T12:00:00Z (UTC). "
+        "It is Monday 31 August 2026, 13:00, Europe/London (from this device)."
+    )
+    spy = Spy()
+    run_turn(
+        TurnRequest(
+            session_id="s1",
+            user_id="u1",
+            message="Draft a nav wireframe for the desktop dashboard",
+            clock=paragraph,
+        ),
+        spy,
+    )
+    assert spy.system.count("CLOCK:") == 1
+    assert paragraph in spy.system
+
+
+def test_web_citations_are_urls_that_came_back():
+    from app.graph import _web_citations
+    from app.research_client import Finding
+
+    finding = Finding(
+        answer="Rain later.",
+        sources=[
+            {"title": "Met Office", "uri": "https://www.metoffice.gov.uk/x"},
+            {"title": "invented", "uri": "not-a-url"},
+        ],
+    )
+    citations = _web_citations(finding)
+    assert len(citations) == 1
+    assert citations[0].kind == "web"
+    assert citations[0].url == "https://www.metoffice.gov.uk/x"
+    assert citations[0].chunk_id.startswith("web:")
+
+
 def test_struggles_are_in_the_system_context_not_the_user_message():
     from app.models import Struggle
 

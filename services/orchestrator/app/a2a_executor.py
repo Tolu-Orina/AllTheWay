@@ -206,6 +206,8 @@ def _citation_wire(citation: Citation) -> dict:
         "page": citation.page,
         "title": citation.title,
         "text": citation.text,
+        "kind": citation.kind or "document",
+        "url": citation.url or "",
     }
 
 

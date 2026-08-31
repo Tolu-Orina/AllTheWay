@@ -128,7 +128,7 @@ export function Meetings() {
         {t("meetings.intro")}
       </p>
 
-      <GlobalSwitch>
+      <GlobalSwitch
         enabled={on}
         onChange={toggle}
         disabled={settings.status === "loading" && enabled === null}

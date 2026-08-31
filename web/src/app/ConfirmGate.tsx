@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from "react";
 import { ShieldAlert } from "lucide-react";
 
 import { api } from "@/app/data";
+import { calendarZone } from "@/app/clock";
 import { useT } from "@/app/i18n";
 import {
   argString,
@@ -222,7 +223,7 @@ function useComposeFields(
   const incomingCalendar: CalendarFields = {
     title: argString(step?.arguments, "title"),
     starts: toDatetimeLocal(argString(step?.arguments, "starts_at")),
-    timeZone: argString(step?.arguments, "time_zone") || "Europe/London",
+    timeZone: argString(step?.arguments, "time_zone") || calendarZone(),
     attendees: argString(step?.arguments, "attendees"),
   };
   const [email, setEmail] = useState<EmailFields>(incomingEmail);
@@ -275,7 +276,7 @@ function useComposeFields(
             arguments: {
               title: calendar.title,
               starts_at: fromDatetimeLocal(calendar.starts),
-              time_zone: calendar.timeZone.trim() || "Europe/London",
+              time_zone: calendar.timeZone.trim() || calendarZone(),
               attendees: calendar.attendees,
             },
           }
@@ -300,7 +301,7 @@ function useComposeFields(
             arguments: {
               title: calendar.title,
               starts_at: fromDatetimeLocal(calendar.starts),
-              time_zone: calendar.timeZone.trim() || "Europe/London",
+              time_zone: calendar.timeZone.trim() || calendarZone(),
               attendees: calendar.attendees,
             },
           };

@@ -87,7 +87,8 @@
   "citations": {
     "passage": "Passage",
     "page": "Page {{page}}",
-    "open": "Ouvrir la citation de {{title}}"
+    "open": "Ouvrir la citation de {{title}}",
+    "openWeb": "Ouvrir {{title}} dans un nouvel onglet"
   },
   "voice": {
     "heading": "Conversations vocales",
@@ -138,6 +139,17 @@
     "heading": "Langue",
     "hint": "Langue de cette interface. Ne modifie pas la langue dans laquelle vous vous adressez à lui.",
     "dismiss": "Non merci"
+  },
+  "clock": {
+    "heading": "Fuseau horaire",
+    "hint": "L'heure qu'il est, et où commence aujourd'hui pour votre agenda. C'est le fuseau que cet appareil indique, ou celui que vous avez choisi. Nous n'utilisons ni GPS ni adresse IP pour deviner une ville.",
+    "useDevice": "Utiliser cet appareil",
+    "overrideLabel": "Choisir un fuseau",
+    "sourceDevice": "D'après cet appareil",
+    "sourceCalendar": "D'après votre agenda",
+    "sourceOverride": "Vous l'avez choisi",
+    "differ": "Votre agenda est en {{calendar}}. Les questions d'agenda et les nouveaux événements utilisent ce fuseau.",
+    "current": "{{zone}}"
   },
   "common": {
     "retry": "Réessayer",
@@ -436,6 +448,10 @@
     "nameSaved": "Nom enregistré.",
     "nameSaveFailed": "Ce nom n'a pas été enregistré. Rien n'a changé — réessayez."
   },
+  "chat": {
+    "you": "Vous",
+    "companion": "AllTheWay"
+  },
   "companion": {
     "newChat": "Nouveau chat",
     "currentChat": "Chat actuel",
@@ -465,6 +481,7 @@
     "dropHere": "Déposez-le ici",
     "privacyNote": "Les réponses sont générées de façon sécurisée.",
     "learnPrivacy": "En savoir plus sur la confidentialité.",
+    "send": "Envoyer",
     "thinking": "Réflexion…",
     "officeEditHint": "Ce format ne s’édite pas dans le navigateur. Téléchargez-le pour l’ouvrir dans Word, Excel, PowerPoint, ou en PDF — ou demandez dans le chat pour générer une nouvelle version.",
     "kindDocument": "Document",

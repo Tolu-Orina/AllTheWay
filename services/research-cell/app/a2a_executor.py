@@ -115,6 +115,10 @@ class ResearchExecutor(AgentExecutor):
                         "workersStarted": result.workers_started,
                         "workersAnswered": result.workers_answered,
                         "outputTokens": result.output_tokens,
+                        "sources": [
+                            {"title": s["title"], "uri": s["uri"], "snippet": s.get("snippet", "")}
+                            for s in result.sources
+                        ],
                     }
                 )
             ],

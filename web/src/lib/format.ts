@@ -27,6 +27,15 @@ export function relativeTime(iso: string): string {
   return rtf.format(minutes, "minute");
 }
 
+/** Time of day in the viewer's locale — "2:14 PM" or "14:14". */
+export function spokenTime(iso?: string): string {
+  if (!iso) return "";
+  const d = new Date(iso);
+  return Number.isNaN(d.getTime())
+    ? ""
+    : d.toLocaleTimeString(undefined, { hour: "numeric", minute: "2-digit" });
+}
+
 /** "09:14" for a run timestamp. */
 export function timeOfDay(iso: string): string {
   const d = new Date(iso);

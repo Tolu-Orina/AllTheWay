@@ -37,10 +37,11 @@ export type VoiceLine = {
   side: "user" | "model";
   text: string;
   finished: boolean;
+  at?: string;
 };
 
 export function captionsFromThread(
-  thread: Array<{ role: string; text: string }>,
+  thread: Array<{ role: string; text: string; at?: string }>,
 ): VoiceLine[] {
   const out: VoiceLine[] = [];
   for (const m of thread) {
@@ -52,6 +53,7 @@ export function captionsFromThread(
       side,
       text,
       finished: true,
+      at: m.at,
     });
   }
   return out;
@@ -106,7 +108,7 @@ export function applyVoiceCaption(
   }
   if (!text && finished) return next;
   const id = (next[next.length - 1]?.id ?? 0) + 1;
-  next.push({ id, side, text, finished });
+  next.push({ id, side, text, finished, at: new Date().toISOString() });
   return next;
 }
 

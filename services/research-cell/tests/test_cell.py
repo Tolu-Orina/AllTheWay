@@ -40,7 +40,27 @@ def test_a_healthy_run_answers_from_both_workers():
 
 def test_the_trace_shows_the_fan_out():
     # Required by the phase's exit criteria: a user can see that a swarm ran.
-    assert any("Fanned out to 2 workers" in line for line in run().trace)
+    trace = run().trace
+    assert any("Fanned out to 2 workers" in line for line in trace)
+    assert any("No web sources; answering from the model only" in line for line in trace)
+
+
+def test_a_grounded_lookup_is_named_in_the_trace_and_on_the_result():
+    from app.ground import WebSource
+
+    class Grounded:
+        def generate(self, system, user, max_output_tokens):
+            return FakeProvider().generate(system, user, max_output_tokens)
+
+        def grounded_lookup(self, topic, max_output_tokens):
+            del topic, max_output_tokens
+            return "Rain later.", [
+                WebSource(title="Met Office", uri="https://www.metoffice.gov.uk/x")
+            ]
+
+    result = run(provider=Grounded())
+    assert any("Looked this up" in line for line in result.trace)
+    assert result.sources[0]["uri"] == "https://www.metoffice.gov.uk/x"
 
 
 # ------------------------------------------------------- FR-10: nothing leaks
@@ -61,6 +81,7 @@ def test_the_result_type_cannot_carry_worker_output():
         "workers_answered",
         "degraded",
         "output_tokens",
+        "sources",
     }
 
 

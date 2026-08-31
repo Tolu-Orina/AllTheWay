@@ -1,10 +1,10 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import { Link, useLocation, useNavigate } from "react-router";
-import { Camera, Loader2, Paperclip, Send } from "lucide-react";
+import { Camera, Folder, Loader2, Paperclip, ArrowUp } from "lucide-react";
 import { motion, useReducedMotion } from "motion/react";
 
-import { LogoMark } from "@/components/primitives/logo";
 import { CitationChip } from "@/app/CitationChip";
+import { ChatStatus, ChatTurn, ProposedActionCard } from "@/app/ChatTurn";
 import { ConfirmGate, pendingConfirmId } from "@/app/ConfirmGate";
 import { PlanStack } from "@/app/PlanStack";
 import { Recovery } from "@/app/Recovery";
@@ -32,6 +32,7 @@ type ChatMessage = {
   id: number;
   role: "agent" | "user";
   text: string;
+  at?: string;
   phase?: TurnPhase;
   options?: string[];
   actions?: ProposedAction[];
@@ -44,6 +45,7 @@ function fromStored(thread: ThreadMessage[]): ChatMessage[] {
     id: i + 1,
     role: m.role,
     text: m.text,
+    at: m.at,
     phase: m.phase,
     options: m.options,
     actions: m.actions,
@@ -130,9 +132,9 @@ function NewWorkChat() {
   };
 
   return (
-    <section className="flex min-h-[32rem] flex-1 flex-col rounded-brand-lg border bg-card shadow-e1 lg:min-h-[calc(100dvh-11rem)]">
+    <section className="flex h-[calc(100dvh-11rem)] min-h-0 flex-1 flex-col bg-card lg:rounded-brand-lg lg:border lg:shadow-e1">
       <div className="flex flex-1 flex-col items-center justify-center px-6 text-center">
-        <h1 className="text-[28px] leading-tight font-bold tracking-[-0.02em] sm:text-[32px]">
+        <h1 className="text-[32px] leading-tight font-semibold tracking-[-0.02em] text-navy-deep sm:text-[40px] dark:text-foreground">
           {t(greetingKey())}.
         </h1>
         <p className="mt-3 max-w-md text-[15px] leading-relaxed text-muted-foreground">
@@ -226,11 +228,11 @@ function SessionWorkChat({
       return;
     }
     hadTurn.current = true;
-    setHistory((prev) =>
-      prev.some((m) => m.role === "user" && m.text === found.seed)
-        ? prev
-        : [...prev, { id: prev.length + 1, role: "user", text: found.seed }],
-    );
+        setHistory((prev) =>
+          prev.some((m) => m.role === "user" && m.text === found.seed)
+            ? prev
+            : [...prev, { id: prev.length + 1, role: "user", text: found.seed, at: new Date().toISOString() }],
+        );
     void runTurn(found.seed);
   }, [sessionId, seedState?.seed, seedState?.promptOnly, runTurn, navigate]);
 
@@ -277,6 +279,7 @@ function SessionWorkChat({
           id: prev.length + 1,
           role: "agent",
           text,
+          at: new Date().toISOString(),
           phase: turn.phase,
           options: turn.options,
           actions: turn.actions,
@@ -304,7 +307,7 @@ function SessionWorkChat({
         [...history].reverse().find((m) => m.role === "agent");
       if (lastAgent?.actions?.length && isPendingConfirmReply(trimmed, lastAgent)) {
         hadTurn.current = true;
-        setHistory((prev) => [...prev, { id: prev.length + 1, role: "user", text: trimmed }]);
+        setHistory((prev) => [...prev, { id: prev.length + 1, role: "user", text: trimmed, at: new Date().toISOString() }]);
         setDraft("");
         void decide("confirmed", { summary: lastAgent.text, actions: lastAgent.actions }).then(() =>
           onSettled?.(),
@@ -312,7 +315,7 @@ function SessionWorkChat({
         return;
       }
       hadTurn.current = true;
-      setHistory((prev) => [...prev, { id: prev.length + 1, role: "user", text: trimmed }]);
+      setHistory((prev) => [...prev, { id: prev.length + 1, role: "user", text: trimmed, at: new Date().toISOString() }]);
       setDraft("");
       if (
         lastAgent?.actions?.some((a) => a.connector && a.tool) &&
@@ -358,15 +361,15 @@ function SessionWorkChat({
       : t("work.getStarted");
 
   return (
-    <section className="flex min-h-[32rem] min-w-0 flex-1 flex-col rounded-brand-lg border bg-card shadow-e1 lg:min-h-[calc(100dvh-11rem)]">
-      <header className="border-b px-5 py-4 sm:px-6">
-        <h1 className="text-[24px] leading-tight font-bold tracking-[-0.02em] sm:text-[28px]">
+    <section className="flex h-[calc(100dvh-11rem)] min-h-0 min-w-0 flex-1 flex-col bg-card lg:rounded-brand-lg lg:border lg:shadow-e1">
+      <header className="px-6 pt-8 pb-4 sm:px-8">
+        <h1 className="text-[32px] leading-tight font-semibold tracking-[-0.02em] text-navy-deep sm:text-[40px] dark:text-foreground">
           {t(greetingKey())}.
         </h1>
-        <p className="mt-1 text-[14px] text-muted-foreground">{context}</p>
+        <p className="mt-2 text-[15px] leading-relaxed text-muted-foreground">{context}</p>
       </header>
 
-      <div className="min-h-0 flex-1 space-y-4 overflow-y-auto px-5 py-5 sm:px-6">
+      <div className="min-h-0 flex-1 space-y-8 overflow-y-auto px-6 py-4 sm:px-8">
         {history.map((m) => (
           <ChatBubble
             key={m.id}
@@ -394,7 +397,7 @@ function SessionWorkChat({
         ))}
 
         {last?.role === "agent" && last.phase === "clarify" && last.options?.length ? (
-          <div className="flex flex-wrap gap-2 pl-[42px]">
+          <div className="pl-8">
             {last.options.map((option) => (
               <button
                 key={option}
@@ -410,16 +413,16 @@ function SessionWorkChat({
         ) : null}
 
         {working ? (
-          <div className="pl-[42px]">
+          <div className="pl-8">
             {turn.steps.length > 0 ? (
               <div className="max-w-[36rem]">
                 <PlanStack steps={turn.steps} live />
               </div>
             ) : (
-              <p role="status" className="flex items-center gap-2 text-[13px] text-muted-foreground">
+              <ChatStatus className="flex items-center gap-2">
                 <Loader2 className="size-3.5 animate-spin motion-reduce:animate-none" aria-hidden="true" />
                 {t("work.thinking")}
-              </p>
+              </ChatStatus>
             )}
           </div>
         ) : null}
@@ -434,6 +437,9 @@ function SessionWorkChat({
         fileRef={fileRef}
         cameraRef={cameraRef}
         note={note}
+        contextLabel={
+          session && session.title && session.title !== "New work" ? session.title : null
+        }
         confirmPending={turn.phase === "confirm" || confirmId !== null}
         onFiles={async (files) => {
           const file = Array.from(files)[0];
@@ -480,67 +486,71 @@ function ChatBubble({
   onDecline: () => void;
 }) {
   const reduced = useReducedMotion();
+  const extras = (
+    <>
+      {m.steps?.length && !confirming ? <PlanStack steps={m.steps} /> : null}
+      {!confirming && m.actions?.length
+        ? m.actions.map((a) => <ProposedActionCard key={a.label} action={a} />)
+        : null}
+      {confirming ? (
+        <ConfirmGate
+          summary={m.text}
+          actions={m.actions ?? []}
+          confirmLabel={m.options?.[0] ?? "Yes, go ahead"}
+          declineLabel={m.options?.[1] ?? "No, stop"}
+          busy={working || Boolean(decisionStatus)}
+          status={decisionStatus}
+          sessionId={threadId}
+          steps={m.steps}
+          onConfirm={onConfirm}
+          onDecline={onDecline}
+          onCorrect={(now) => onSend(now)}
+        />
+      ) : null}
+      {m.phase === "error" ? (
+        <Recovery
+          kind={failureKindFrom(m.text)}
+          message={m.text}
+          turnId={`${threadId}-${m.id}`}
+          onRetry={() => onSend(m.text)}
+        />
+      ) : null}
+      {m.citations?.length ? (
+        <div className="flex flex-wrap gap-1.5">
+          {m.citations.map((c) => (
+            <CitationChip key={c.chunkId} citation={c} />
+          ))}
+        </div>
+      ) : null}
+    </>
+  );
+  const hasExtras = Boolean(
+    (m.steps?.length && !confirming) ||
+      (!confirming && m.actions?.length) ||
+      confirming ||
+      m.phase === "error" ||
+      m.citations?.length,
+  );
+
   return (
     <motion.div
       initial={reduced ? false : { opacity: 0, y: 8 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.25, ease: [0.22, 1, 0.36, 1] }}
-      className={cn("flex gap-3", m.role === "user" && "justify-end")}
     >
-      {m.role === "agent" ? <LogoMark className="mt-0.5 size-7 shrink-0" /> : null}
-      <div className="max-w-[min(42rem,100%)]">
-        {confirming ? null : m.phase === "error" ? null : (
-          <div
-            className={cn(
-              "rounded-brand px-3.5 py-2.5 text-[14px] leading-relaxed",
-              m.role === "agent"
-                ? "rounded-tl-sm border bg-background"
-                : "rounded-tr-sm bg-accent text-accent-foreground",
-            )}
-          >
-            {m.role === "agent" ? <Markdown className="md-compact">{m.text}</Markdown> : m.text}
-          </div>
-        )}
-        {m.steps?.length && !confirming ? (
-          <div className="mt-2">
-            <PlanStack steps={m.steps} />
-          </div>
-        ) : null}
-        {confirming ? (
-          <div className="mt-2">
-            <ConfirmGate
-              summary={m.text}
-              actions={m.actions ?? []}
-              confirmLabel={m.options?.[0] ?? "Yes, go ahead"}
-              declineLabel={m.options?.[1] ?? "No, stop"}
-              busy={working || Boolean(decisionStatus)}
-              status={decisionStatus}
-              sessionId={threadId}
-              steps={m.steps}
-              onConfirm={onConfirm}
-              onDecline={onDecline}
-              onCorrect={(now) => onSend(now)}
-            />
-          </div>
-        ) : null}
-        {m.phase === "error" ? (
-          <div className="mt-2">
-            <Recovery
-              kind={failureKindFrom(m.text)}
-              message={m.text}
-              turnId={`${threadId}-${m.id}`}
-              onRetry={() => onSend(m.text)}
-            />
-          </div>
-        ) : null}
-        {m.citations?.length ? (
-          <div className="mt-1.5 flex flex-wrap gap-1.5">
-            {m.citations.map((c) => (
-              <CitationChip key={c.chunkId} citation={c} />
-            ))}
-          </div>
-        ) : null}
-      </div>
+      {confirming || m.phase === "error" ? (
+        <ChatTurn side="agent" at={m.at} footer={extras}>
+          {null}
+        </ChatTurn>
+      ) : (
+        <ChatTurn
+          side={m.role === "user" ? "user" : "agent"}
+          at={m.at}
+          footer={m.role === "agent" && hasExtras ? extras : undefined}
+        >
+          {m.role === "agent" ? <Markdown className="md-compact">{m.text}</Markdown> : m.text}
+        </ChatTurn>
+      )}
     </motion.div>
   );
 }
@@ -555,6 +565,7 @@ function WorkComposer({
   note,
   onFiles,
   confirmPending = false,
+  contextLabel = null,
 }: {
   draft: string;
   setDraft: (value: string) => void;
@@ -565,21 +576,22 @@ function WorkComposer({
   note: string | null;
   onFiles: (files: FileList) => void | Promise<void>;
   confirmPending?: boolean;
+  contextLabel?: string | null;
 }) {
   const t = useT();
   const [dropping, setDropping] = useState(false);
 
   return (
-    <div>
+    <div className="px-6 pb-4 sm:px-8">
       {note ? (
-        <p role="status" className="border-t px-4 py-2 text-[12.5px] text-muted-foreground">
+        <p role="status" className="pb-2 text-[12.5px] text-muted-foreground">
           {note}
         </p>
       ) : null}
       <form
         className={cn(
-          "flex items-center gap-2 border-t p-3 transition-colors",
-          dropping && "bg-primary/5 ring-1 ring-primary/40 ring-inset",
+          "rounded-brand-lg bg-muted px-4 pt-4 pb-3 transition-colors focus-within:ring-2 focus-within:ring-ring/40 dark:bg-accent",
+          dropping && "ring-2 ring-navy-deep/30 ring-inset",
         )}
         onDragOver={(e) => {
           e.preventDefault();
@@ -622,26 +634,9 @@ function WorkComposer({
             e.target.value = "";
           }}
         />
-        <button
-          type="button"
-          aria-label={t("documents.choose")}
-          disabled={working}
-          onClick={() => fileRef.current?.click()}
-          className="grid size-9 shrink-0 place-items-center rounded-full text-muted-foreground transition-colors hover:bg-muted hover:text-foreground disabled:opacity-40"
-        >
-          <Paperclip className="size-4" aria-hidden="true" />
-        </button>
-        <button
-          type="button"
-          aria-label={t("documents.photograph")}
-          disabled={working}
-          onClick={() => cameraRef.current?.click()}
-          className="hidden size-9 shrink-0 place-items-center rounded-full text-muted-foreground transition-colors hover:bg-muted hover:text-foreground disabled:opacity-40 [@media(pointer:coarse)]:grid"
-        >
-          <Camera className="size-4" aria-hidden="true" />
-        </button>
-        <input
+        <textarea
           id="composer"
+          rows={2}
           value={draft}
           onChange={(e) => setDraft(e.target.value)}
           disabled={working}
@@ -654,20 +649,53 @@ function WorkComposer({
                   ? t("work.answerOrType")
                   : t("work.askAnything")
           }
-          className="min-w-0 flex-1 rounded-full border bg-background px-3.5 py-2.5 text-[14px] outline-none placeholder:text-muted-foreground disabled:opacity-60"
+          onKeyDown={(e) => {
+            if (e.key === "Enter" && !e.shiftKey) {
+              e.preventDefault();
+              onSend(draft);
+            }
+          }}
+          className="min-h-16 w-full resize-none bg-transparent text-[14px] leading-relaxed outline-none placeholder:text-muted-foreground disabled:opacity-60"
         />
-        <button
-          type="submit"
-          aria-label="Send"
-          disabled={!draft.trim() || working}
-          className="grid size-9 shrink-0 place-items-center rounded-full bg-primary text-primary-foreground transition-opacity disabled:opacity-40"
-        >
-          <Send className="size-4" aria-hidden="true" />
-        </button>
+        <div className="mt-3 flex items-center gap-2">
+          <button
+            type="button"
+            aria-label={t("documents.choose")}
+            disabled={working}
+            onClick={() => fileRef.current?.click()}
+            className="grid size-8 shrink-0 place-items-center rounded-full text-muted-foreground transition-colors hover:bg-background/80 hover:text-foreground disabled:opacity-40"
+          >
+            <Paperclip className="size-4" aria-hidden="true" />
+          </button>
+          <button
+            type="button"
+            aria-label={t("documents.photograph")}
+            disabled={working}
+            onClick={() => cameraRef.current?.click()}
+            className="hidden size-8 shrink-0 place-items-center rounded-full text-muted-foreground transition-colors hover:bg-background/80 hover:text-foreground disabled:opacity-40 [@media(pointer:coarse)]:grid"
+          >
+            <Camera className="size-4" aria-hidden="true" />
+          </button>
+          {contextLabel ? (
+            <span className="inline-flex min-w-0 items-center gap-1.5 rounded-full bg-card px-2.5 py-1 font-mono text-[11px] text-muted-foreground">
+              <Folder className="size-4 shrink-0" aria-hidden="true" />
+              <span className="truncate">{contextLabel}</span>
+            </span>
+          ) : null}
+          <span className="flex-1" />
+          <button
+            type="submit"
+            aria-label={t("work.send")}
+            disabled={!draft.trim() || working}
+            className="grid size-10 shrink-0 place-items-center rounded-full bg-navy-deep text-white transition-opacity hover:opacity-90 disabled:opacity-40"
+          >
+            <ArrowUp className="size-5" aria-hidden="true" />
+          </button>
+        </div>
       </form>
-      <p className="px-4 pb-3 text-center text-[11px] text-muted-foreground">
+      <p className="mt-3 text-center font-mono text-[11px] text-muted-foreground">
         {t("work.privacyNote")}{" "}
-        <Link to="/privacy" className="underline-offset-2 hover:underline">
+        <Link to="/privacy" className="underline underline-offset-2">
           {t("work.learnPrivacy")}
         </Link>
       </p>

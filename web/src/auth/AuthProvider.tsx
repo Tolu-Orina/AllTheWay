@@ -6,6 +6,7 @@ import { firebaseConfigured } from "@/auth/firebase";
 import { AuthContext } from "@/auth/context";
 import type { AuthAdapter, AuthUser } from "@/auth/types";
 import { serveExtensionToken } from "@/app/extension-bridge";
+import { reportDeviceClock } from "@/app/clock";
 
 /**
  * Chooses the adapter.
@@ -69,6 +70,11 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     if (!firebaseConfigured) return;
     return serveExtensionToken();
   }, []);
+
+  useEffect(() => {
+    if (!user) return;
+    reportDeviceClock();
+  }, [user]);
 
   const value = useMemo(
     () => ({ user, loading, adapter }),

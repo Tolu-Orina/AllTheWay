@@ -1,7 +1,9 @@
 import type { ThreadMessage } from "@alltheway/contracts";
 
+import { clockPrompt } from "./clock.js";
 import { connectedLookups } from "./lookups.js";
 import type { TurnInput } from "./orchestrator.js";
+import { getClock } from "./repos/clock.js";
 import { listConcepts } from "./repos/concepts.js";
 import { getActiveHat } from "./repos/hat.js";
 import { listPreferences } from "./repos/preferences.js";
@@ -22,6 +24,7 @@ export function assembleTurnContext(args: {
   lookups: string[];
   thread: ThreadMessage[];
   struggles?: NonNullable<TurnInput["struggles"]>;
+  clock?: string;
 }): TurnInput {
   return {
     sessionId: args.sessionId,
@@ -32,7 +35,7 @@ export function assembleTurnContext(args: {
     lookups: args.lookups,
     thread: conversationContext(args.thread),
     struggles: args.struggles ?? [],
-    clock: new Date().toISOString(),
+    clock: args.clock ?? new Date().toISOString(),
   };
 }
 
@@ -49,12 +52,13 @@ export async function loadTurnContext(
   message: string,
 ): Promise<TurnInput> {
   const hat = await getActiveHat(uid);
-  const [prefs, passages, lookups, session, struggles] = await Promise.all([
+  const [prefs, passages, lookups, session, struggles, clock] = await Promise.all([
     listPreferences(uid, { hat, forTurn: true }),
     retrieve(uid, message, { hat }),
     connectedLookups(uid, message),
     getSession(uid, sessionId),
     listConcepts(uid),
+    getClock(uid),
   ]);
   return assembleTurnContext({
     uid,
@@ -70,5 +74,6 @@ export async function loadTurnContext(
       reasked: c.reasked,
       confidence: c.confidence,
     })),
+    clock: clockPrompt(clock),
   });
 }
