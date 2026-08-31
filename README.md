@@ -149,7 +149,7 @@ You do not need to run this repo. Open the hosted product and sign in.
 2. Sign in with the test account:
    - **Email:** `alltheway@rinegansolutions.com`
    - **Password:** in the Devpost submission (judges and managers only — it is not in this README)
-3. You land on Today. From there you can talk to the companion, add a document and ask about it, open Watchers, or enable meetings.
+3. You land on Today. From there you can talk to the voice ai companion, have a work session that helps improve your productivity by handling trivial document creation tasks with an inbuilt AI-planning step, open Watchers to follow up with your reminders, or leverage the creative studio experience to generate poster images, videos for your content, etc.
 
 That is the same production stack the architecture diagram describes. A cold start on Cloud Run can take a few seconds on the first request.
 

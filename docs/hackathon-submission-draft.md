@@ -16,19 +16,25 @@ So AllTheWay started from two commitments. It should keep working when you're no
 
 AllTheWay is a companion you talk to, that watches and acts for you, and that learns how you think from your corrections.
 
-**Voice, and it follows you between languages.** Real-time speech in and out over a WebSocket, relayed through our own gateway so we can meter it, screen it, and keep the transcript. It handles 85+ languages, and it switches when you switch — mid-conversation, mid-sentence — because we deliberately send no language code and instruct it to mirror the speaker. It also mirrors code-mixing, which matters: plenty of people speak English and Yorùbá in the same sentence, and a companion that tidies that into one language is correcting them.
+**Today:** Open the app and you get the next twelve hours: what is on the calendar, when to leave for it, and what is still waiting on you. Connect Calendar, Gmail, and Drive from that screen. It will not quietly rearrange your day.
 
-**Watchers.** Standing instructions that run without you, on a schedule we can observe. Each has an autonomy ceiling you set — draft only, send after review, or send automatically — and a floor enforced server-side that no setting can raise. Anything irreversible stops and asks.
+**Talk, typed or spoken:** Same companion, same memory. Voice follows the language you are using, including halfway through a sentence. Plenty of people speak English and Yorùbá in the same breath. If the companion "tidies" that into one language, it is correcting them.
 
-**Meetings.** It joins, listens, and takes notes, and it cannot speak — a property of how it's built, not a setting. Everyone is asked before it connects. It ladders down gracefully: live transcription where available, the transcript afterwards where not, and a browser extension that captures locally when neither is possible. Live insights arrive on a backing-off schedule — one minute, three, five, ten, fifteen, then every fifteen — so a ninety-minute meeting costs ten reasoning passes instead of ninety.
+**It shows the plan first:** If something cannot be undone, you see it, you can edit it, and it waits. Yes puts the event on the calendar or saves the Gmail draft. No does nothing. "Not quite" is the learning path: you say what it should have been, and that is stored. It does not send mail because the model sounded sure.
 
-**Documents, answered with citations you can click.** Add a contract or a spec and it answers from it. Deleting the document removes what it learned from it.
+**Work chats, and things you can keep:** You describe the job. It writes a document, a sheet, a deck, an image, or a short clip. "No, shorter, and drop the second paragraph" becomes the reason on the next version. Those files sit beside the thread, not in a separate tool you have to go find.
 
-**Artifacts you can correct.** Every document, image or video it produces is versioned. "No, shorter, and drop the second paragraph" is stored as the reason for the next version. The Feedback Ledger is append-only — reverting a learned preference stamps it rather than deleting it, so the history of what it believed about you stays intact.
+**Documents you can ask about:** Add a contract or a spec. Answers come with citations you can click. Delete the file and what it learned from it goes too.
 
-**Everything is inspectable.** Every specialist agent publishes a signed AgentCard, and the Agents page verifies each signature *at the moment you ask*, not at deploy time. A capability that stops verifying says so.
+**Watchers:** Watchers track your connectors and reminds you of upcoming activities so you don't miss anything important. Create a new watcher and tell it what you want monitoredu.
 
-**Seven languages.** 234 interface strings, each locale shipped as its own ~8KB chunk. Plural forms come from `Intl.PluralRules`, never a hand-written table.
+**Meetings:** It joins, listens, and takes notes. It cannot speak; that is how it is built, not a setting you might forget. Everyone is asked before it connects. If live listen is not available, it uses the transcript afterwards, or a browser extension that captures on your machine. Action items from a call stay as proposals until you confirm them.
+
+**Your Profile:** Preferences it has learned sit on a page you can read, with evidence. Revert stamps the old belief rather than deleting it, so you can still see what it used to think.
+
+**The interface in seven languages:** English, French, Spanish, Portuguese, Chinese, Yorùbá, and Welsh. Voice covers 85+ and switches when you do.
+
+**You can check who is allowed to act:** Each specialist publishes a signed capability card. The Agents page verifies that signature when you open it, not only when the app was deployed. A capability that stops verifying says so.
 
 ## How we built it
 
