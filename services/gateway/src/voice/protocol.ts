@@ -420,22 +420,37 @@ export function isGreetingKickTranscript(text: string): boolean {
 }
 
 /**
- * Native audio speaks from the realtime channel, not from history.
+ * Native audio will not speak until a user turn is complete.
  *
- * `clientContent` is for seeding context. On this model it is often ingested
- * with an empty turnComplete and no audio — which is why a kick that used it
- * never became a hello. `realtimeInput.text` is the same path their speech
- * takes, and is what Google's Live clients use for typed turns.
+ * Google's Live best practices (Vertex, current): "Gemini Live API expects
+ * user input before it responds. To have Gemini Live API initiate the
+ * conversation, include a prompt asking it to greet the user."
+ *
+ * On `gemini-live-2.5-flash-native-audio`, that prompt has to be a
+ * *completed* turn. `realtimeInput.text` rides the VAD path: with no speech,
+ * start-of-speech never fires, so the model never answers. `audioStreamEnd`
+ * only flushes cached PCM when the mic is paused — it does not complete a
+ * text turn. `clientContent` with `turnComplete: true` is the 2.5 mechanism
+ * for a text turn (capabilities guide: supported throughout the conversation
+ * on 2.5; 3.1 restricts it to history seeding).
+ *
+ * The kick is not something they said. Captions must not show it.
  */
 export function greetingKickMessage(g: VoiceGreeting = { resumed: false }): Record<string, unknown> {
   return {
-    realtimeInput: {
-      text: greetingKickText(g),
+    clientContent: {
+      turns: [
+        {
+          role: "user",
+          parts: [{ text: greetingKickText(g) }],
+        },
+      ],
+      turnComplete: true,
     },
   };
 }
 
-/** Mic is held during the hello; this flushes Vertex so it does not wait for audio. */
+/** Flush cached PCM when the mic is paused. Not how a text greeting completes. */
 export function greetingKickFlush(): Record<string, unknown> {
   return {
     realtimeInput: {

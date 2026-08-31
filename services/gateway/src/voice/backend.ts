@@ -12,7 +12,6 @@ import {
   setupMessage,
   toolResponse,
   greetingKickMessage,
-  greetingKickFlush,
   isGreetingKickTranscript,
   startGreetingGate,
   spokenGreetingLine,
@@ -239,7 +238,6 @@ async function openVertexLive(opts: {
               if (closed || socket !== ws || !greeting?.holding()) return;
               try {
                 ws.send(JSON.stringify(greetingKickMessage(g)));
-                ws.send(JSON.stringify(greetingKickFlush()));
               } catch {
                 greeting?.noteModelTurn();
               }
