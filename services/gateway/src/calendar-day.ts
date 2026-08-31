@@ -225,7 +225,8 @@ async function readCalendar(
     const missing = /not connected/i.test(String(result.cannot));
     return { status: missing ? "missing" : "error", events: [] };
   }
-  const raw = typeof result.result === "string" ? result.result : JSON.stringify(result);
+  const payload = result as { result?: unknown };
+  const raw = typeof payload.result === "string" ? payload.result : JSON.stringify(result);
   return { status: "connected", events: parseEventsJson(rawOf(raw)) };
 }
 

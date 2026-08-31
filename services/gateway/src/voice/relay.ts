@@ -17,7 +17,7 @@ import { readUsage, recordUsage } from "../repos/usage.js";
 import { recordLine } from "../repos/transcripts.js";
 import { appendThread, ensureSession, getSession, overlayConfirmOnPlan, touchSession, VOICE_TITLE } from "../repos/sessions.js";
 import { composeFollowUpTurn, composeNeedsAddress } from "../compose-followup.js";
-import { createLiveOpener, type LiveOpener } from "./backend.js";
+import { createLiveOpener, type LiveOpener, type LiveSession } from "./backend.js";
 import {
   AUTH_TIMEOUT_MS,
   INPUT_HZ,
@@ -188,13 +188,7 @@ async function handleConnection(ws: WebSocket, opener: LiveOpener): Promise<void
     resumed: false,
   };
   const cancelled = new Set<string>();
-  const slot: {
-    live?: {
-      sendPcm: (b: string) => void;
-      sendToolResult: (id: string, name: string, payload: unknown) => void;
-      close: () => void;
-    };
-  } = {};
+  const slot: { live?: LiveSession } = {};
   const spokenHangup = new SpokenHangup(() => {
     slot.live?.close();
   }, hangupDelays);

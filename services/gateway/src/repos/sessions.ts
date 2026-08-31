@@ -169,7 +169,6 @@ export function sessionSurface(id: string, data: { surface?: unknown } = {}): Se
 export type TouchInput = {
   /** First user utterance. Names a new row as a short summary; ignored once locked. */
   utterance?: string;
-  utterance?: string;
   plan?: PlanStep[];
   companionNote?: string;
   scope?: string;
